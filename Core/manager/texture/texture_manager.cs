@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing.Imaging;
 using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
+using StbImageSharp;
 
 namespace Core.manager.texture {
 
@@ -17,17 +18,12 @@ namespace Core.manager.texture {
             int handle  = GL.GenTexture();
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, handle);
-            using var image = new Bitmap(texture_name);
 
-            // Warning origen, currently unknown
-            // downgrading to an older version (5.0.0) of [System.Drawing.Common] can hide the warning but not solve root problem
-            image.RotateFlip(RotateFlipType.RotateNoneFlipX);
-            var data = image.LockBits(
-                new Rectangle(0,0,image.Width, image.Height),
-                ImageLockMode.ReadOnly,
-                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            FileStream stream = File.OpenRead(texture_name);
+            ImageResult result = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+            ImageInfo? info = ImageInfo.FromStream(stream);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, image.Width, image.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, info.Value.Width, info.Value.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, result.Data);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);

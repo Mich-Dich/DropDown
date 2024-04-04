@@ -89,13 +89,13 @@ namespace DropDown {
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             System.Numerics.Vector2 position = new System.Numerics.Vector2(0, 0);
-            System.Numerics.Vector2 scale = new System.Numerics.Vector2(100, 100);
-            float rotation = MathF.Sin((float)delta_time.total.TotalMilliseconds) * MathF.PI * 2f;
+            System.Numerics.Vector2 scale = new System.Numerics.Vector2(50, 50);
+            //float rotation = MathF.Sin((float)delta_time.total.TotalMilliseconds) * MathF.PI * 2f;
             
             Matrix4x4 trans = Matrix4x4.CreateTranslation(position.X, position.Y, 0);
             Matrix4x4 sca = Matrix4x4.CreateScale(scale.X, scale.Y, 1);
-            Matrix4x4 rot = Matrix4x4.CreateRotationZ(rotation);
-            _shader.set_matrix_4x4("model", sca * rot * trans);
+            //Matrix4x4 rot = Matrix4x4.CreateRotationZ(rotation);
+            _shader.set_matrix_4x4("model", sca * trans);
 
             _shader.use();
             _shader.set_matrix_4x4("projection", camera.get_projection_matrix());
