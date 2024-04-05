@@ -1,13 +1,7 @@
 ﻿using Core.renderer;
 using OpenTK.Graphics.OpenGL4;
-using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing.Imaging;
-using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
 using StbImageSharp;
+using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
 
 namespace Core.manager.texture {
 

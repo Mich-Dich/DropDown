@@ -1,10 +1,5 @@
 ﻿using Core.manager.texture;
 using Core.renderer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.manager {
 

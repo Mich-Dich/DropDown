@@ -1,5 +1,4 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Windowing.Desktop;
 using System.Numerics;
 
 namespace Core.renderer {

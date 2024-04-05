@@ -5,12 +5,16 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using static OpenTK.Graphics.OpenGL.GL;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Core
 {
     public abstract class game {
+        
+        public GameWindowSettings _game_window_settings = GameWindowSettings.Default;
+        public NativeWindowSettings _native_window_settings = NativeWindowSettings.Default;
 
         // ============================================================================== public ============================================================================== 
         public game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
@@ -23,11 +27,13 @@ namespace Core
             _native_window_settings.Title = title;
             _native_window_settings.StartVisible = false;
             _native_window_settings.StartFocused = true;
-            _native_window_settings.Vsync = VSyncMode.On;
+            //_native_window_settings.Vsync = VSyncMode.On;
             _native_window_settings.API = ContextAPI.OpenGL;
             _native_window_settings.Profile = ContextProfile.Core;
             _native_window_settings.Flags = ContextFlags.Default;
 
+            _game_window_settings.UpdateFrequency = 60.0;
+            
         }
 
         public void run() {
@@ -67,8 +73,14 @@ namespace Core
                 window.SwapBuffers();
             };
 
+            //window.KeyDown += key_dow_test;
             window.Unload += unload;
             window.Run();
+        }
+
+        public void key_dow_test(KeyboardKeyEventArgs Args) {
+
+            Console.WriteLine("Key down: {0}", Args.Key);
         }
 
         //  ============================================================================== protected ============================================================================== 
@@ -86,8 +98,7 @@ namespace Core
         protected abstract void render(game_time delta_time);
 
         //  ============================================================================== private ============================================================================== 
-        private GameWindowSettings _game_window_settings = GameWindowSettings.Default;
-        public NativeWindowSettings _native_window_settings = NativeWindowSettings.Default;
+
 
     }
 }
