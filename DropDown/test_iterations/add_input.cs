@@ -8,9 +8,9 @@ using System.Numerics;
 
 namespace DropDown {
 
-    internal class buffer_abstraction : Core.game {
+    internal class add_input : Core.game {
 
-        public buffer_abstraction(String title, Int32 inital_window_width, Int32 inital_window_height)
+        public add_input(String title, Int32 inital_window_width, Int32 inital_window_height)
             : base(title, inital_window_width, inital_window_height) { }
 
         private readonly float[] _verticies = {
@@ -59,6 +59,8 @@ namespace DropDown {
             _texture.use();
 
             camera = new(OpenTK.Mathematics.Vector2.Zero, this.window.Size, 1);
+
+            player_controller = new PC_default();
         }
 
         protected override void unload() {
@@ -76,7 +78,7 @@ namespace DropDown {
 
             System.Numerics.Vector2 position = new System.Numerics.Vector2(0, 0);
             System.Numerics.Vector2 scale = new System.Numerics.Vector2(50, 50);
-            float rotation = 0; /*MathF.Sin((float)delta_time.total.TotalMilliseconds) * MathF.PI * 2f;*/
+            float rotation = MathF.Sin((float)delta_time.total.TotalMilliseconds) * MathF.PI * 2f; /*MathF.Sin((float)delta_time.total.TotalMilliseconds) * MathF.PI * 2f;*/
 
             Matrix4x4 trans = Matrix4x4.CreateTranslation(position.X, position.Y, 0);
             Matrix4x4 sca = Matrix4x4.CreateScale(scale.X, scale.Y, 1);

@@ -1,16 +1,13 @@
 ﻿
+using Core.controllers;
 using Core.game_objects;
 using Core.util;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using static OpenTK.Graphics.OpenGL.GL;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Core
-{
+namespace Core {
     public abstract class game {
         
         public GameWindowSettings _game_window_settings = GameWindowSettings.Default;
@@ -42,7 +39,6 @@ namespace Core
             window = new GameWindow(_game_window_settings, _native_window_settings);
             window.CenterWindow();
 
-            game_time game_time = new();
 
             window.Load += () => {
 
@@ -52,9 +48,9 @@ namespace Core
 
             window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
-                double time = eventArgs.Time;
-                game_time.elapsed = TimeSpan.FromMilliseconds(time);
-                game_time.total += TimeSpan.FromMilliseconds(time);
+                update_game_time(eventArgs.Time);
+
+                this.player_controller.update(game_time);
                 update(game_time);
             };
 
@@ -66,21 +62,46 @@ namespace Core
 
             window.Resize += (ResizeEventArgs eventArgs) => {
 
-                GL.Viewport(0, 0, window.Size.X, window.Size.Y);
+                update_game_time(window.TimeSinceLastUpdate());
+                window.ResetTimeSinceLastUpdate();
 
+                GL.Viewport(0, 0, window.Size.X, window.Size.Y);
                 camera.set_view_size(window.Size);
-                render(game_time);
+                render(this.game_time);
                 window.SwapBuffers();
             };
 
-            //window.KeyDown += key_dow_test;
+            window.KeyDown += key_down_test;
+            window.MouseDown += mouse_bu_down_test;
+            window.MouseMove += mouse_move;
+
             window.Unload += unload;
             window.Run();
         }
 
-        public void key_dow_test(KeyboardKeyEventArgs Args) {
+        private void update_game_time(double delta_time) {
 
-            Console.WriteLine("Key down: {0}", Args.Key);
+            this.game_time.elapsed = TimeSpan.FromMilliseconds(delta_time);
+            this.game_time.total += TimeSpan.FromMilliseconds(delta_time);
+        }
+
+        // ============================ input ============================ 
+        public void key_down_test(KeyboardKeyEventArgs args) {
+
+            // add new event to Queue
+            Console.WriteLine("Key down: {0}", args.Key);
+        }
+
+        public void mouse_bu_down_test(MouseButtonEventArgs args) {
+
+            // add new event to Queue
+            Console.WriteLine("mouse_buttom down: {0}", args.Button);
+        }
+
+        public void mouse_move(MouseMoveEventArgs args) {
+
+            // add new event to Queue
+            Console.WriteLine("mouse_buttom down: {0}", args.Delta);
         }
 
         //  ============================================================================== protected ============================================================================== 
@@ -88,8 +109,10 @@ namespace Core
         protected int inital_window_width { get; set; }
         protected int inital_window_height { get; set; }
 
+        protected player_controller player_controller { get; set; }
         protected GameWindow window { get; private set; }
         protected camera camera;
+        protected game_time game_time = new();
 
         protected abstract void init();
         protected abstract void load();

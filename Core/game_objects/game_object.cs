@@ -14,10 +14,17 @@ namespace Core.game_objects {
             this.rotation = rotation;
         }
 
-        protected Vector2 position { get; set; }
-        protected Vector2 size { get; set; }
-        protected float scale { get; set; }
-        protected float rotation { get; set; }
+        public mobility mobility { get; set; }      // conserning update method
+        public Vector2 position { get; set; }
+        public Vector2 size { get; set; }
+        public float scale { get; set; }
+        public float rotation { get; set; }
+    }
 
+    public enum mobility {
+
+        STATIC = 0,
+        MOVABLE = 1,
+        DYNAMIC = 2,
     }
 }
