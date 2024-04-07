@@ -51,14 +51,32 @@ namespace Core.visual {
         }
 
         // set translation in world
-        public void set_position(Vector2 position) { this.position = position; }
-        public void set_scale(Vector2 scale) { this.scale = scale; }
-        public void set_rotation(float rotation) { this.rotation = rotation; }
+        public void set_position(Vector2 position) { 
+            
+            this.position = position;
+            if (this.mobility == mobility.STATIC)
+                _model_matrix = calc_modle_matrix();
+        }
+        public void set_scale(Vector2 scale) { 
+
+            this.scale = scale;
+            if (this.mobility == mobility.STATIC)
+                _model_matrix = calc_modle_matrix();
+        }
+        public void set_rotation(float rotation) {
+            
+            this.rotation = rotation;
+            if(this.mobility == mobility.STATIC)
+                _model_matrix = calc_modle_matrix();
+        }
         public void set_translation(Vector2 position, Vector2 scale, float rotation) {
         
             this.position = position;
             this.scale = scale;
             this.rotation = rotation;
+
+            if(this.mobility == mobility.STATIC)
+                _model_matrix = calc_modle_matrix();
         }
 
         public void set_mobility(mobility mobility) {

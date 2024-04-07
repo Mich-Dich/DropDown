@@ -47,5 +47,8 @@ namespace Core {
             }
         }
 
+        public static double radians_to_degree(double angle) { return angle * (180 / Math.PI); }
+        public static double degree_to_radians(double angle) { return angle * (Math.PI / 180); }
+
     }
 }
