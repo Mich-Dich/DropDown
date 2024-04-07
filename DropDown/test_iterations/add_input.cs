@@ -35,9 +35,7 @@ namespace DropDown {
 
         // ========================================================= functions =========================================================
 
-        protected override void init() { }
-
-        protected override void load() {
+        protected override void init() {
 
             GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
 
@@ -63,7 +61,7 @@ namespace DropDown {
             player_controller = new PC_default();
         }
 
-        protected override void unload() {
+        protected override void shutdown() {
 
             GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -80,9 +78,9 @@ namespace DropDown {
             System.Numerics.Vector2 scale = new System.Numerics.Vector2(50, 50);
             float rotation = MathF.Sin((float)delta_time.total.TotalMilliseconds) * MathF.PI * 2f; /*MathF.Sin((float)delta_time.total.TotalMilliseconds) * MathF.PI * 2f;*/
 
-            Matrix4x4 trans = Matrix4x4.CreateTranslation(position.X, position.Y, 0);
-            Matrix4x4 sca = Matrix4x4.CreateScale(scale.X, scale.Y, 1);
-            Matrix4x4 rot = Matrix4x4.CreateRotationZ(rotation);
+            Matrix4 trans = Matrix4.CreateTranslation(position.X, position.Y, 0);
+            Matrix4 sca = Matrix4.CreateScale(scale.X, scale.Y, 1);
+            Matrix4 rot = Matrix4.CreateRotationZ(rotation);
 
             _shader.use();
             _shader.set_matrix_4x4("model", sca * rot * trans);

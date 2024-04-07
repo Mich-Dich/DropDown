@@ -1,11 +1,12 @@
-﻿
-using Core.controllers;
+﻿using Core.controllers;
 using Core.game_objects;
+using Core.input;
 using Core.util;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Core {
     public abstract class game {
@@ -24,40 +25,43 @@ namespace Core {
             _native_window_settings.Title = title;
             _native_window_settings.StartVisible = false;
             _native_window_settings.StartFocused = true;
-            //_native_window_settings.Vsync = VSyncMode.On;
+            _native_window_settings.Vsync = VSyncMode.On;
             _native_window_settings.API = ContextAPI.OpenGL;
             _native_window_settings.Profile = ContextProfile.Core;
             _native_window_settings.Flags = ContextFlags.Default;
-
-            _game_window_settings.UpdateFrequency = 60.0;
-            
         }
 
         public void run() {
             
-            init();
             window = new GameWindow(_game_window_settings, _native_window_settings);
             window.CenterWindow();
 
+            window.Unload += () => {
+                
+                // kill OpenGL
+                GL.BindVertexArray(0);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.UseProgram(0);
 
+                shutdown();
+            };
             window.Load += () => {
 
                 window.IsVisible = true;
-                load();
+                init();
             };
 
             window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
                 update_game_time(eventArgs.Time);
-
-                this.player_controller.update(game_time);
+                //this.player_controller.update(game_time);
                 update(game_time);
             };
 
             window.RenderFrame += (FrameEventArgs eventArgs) => {
 
-                render(game_time);
                 window.SwapBuffers();
+                render(game_time);
             };
 
             window.Resize += (ResizeEventArgs eventArgs) => {
@@ -71,37 +75,33 @@ namespace Core {
                 window.SwapBuffers();
             };
 
-            window.KeyDown += key_down_test;
-            window.MouseDown += mouse_bu_down_test;
-            window.MouseMove += mouse_move;
+            // ============================ input ============================ 
+            window.KeyDown += (KeyboardKeyEventArgs args) => {      _input_event.Add(new input_event((key_code)args.Key, args.Modifiers, args.IsRepeat, (args.IsRepeat ? 1 : 0), key_state.Pressed)); };
+            window.KeyUp += (KeyboardKeyEventArgs args) => {        _input_event.Add(new input_event((key_code)args.Key, args.Modifiers, args.IsRepeat, (args.IsRepeat ? 1 : 0), key_state.Pressed)); };
+            window.MouseDown += (MouseButtonEventArgs args) => {    _input_event.Add(new input_event((key_code)args.Button, args.Modifiers, false, 0, key_state.Pressed)); };
+            window.MouseUp += (MouseButtonEventArgs args) => {      _input_event.Add(new input_event((key_code)args.Button, args.Modifiers, false, 0, key_state.Release)); };
 
-            window.Unload += unload;
+            // make two events for X/Y of mouse wheel movement
+            window.MouseWheel += (MouseWheelEventArgs args) => {
+
+                if(args.OffsetX > 0)
+                    _input_event.Add(new input_event(key_code.MouseWheelX, (KeyModifiers)0, false, (int)args.OffsetX, key_state.Repeat));
+
+                if(args.OffsetY > 0)
+                    _input_event.Add(new input_event(key_code.MouseWheelY, (KeyModifiers)0, false, (int)args.OffsetY, key_state.Repeat));
+            };
+            
+            // make two events for X/Y of mouse movement
+            window.MouseMove += (MouseMoveEventArgs args) => {
+
+                if(args.DeltaX < 0)
+                    _input_event.Add(new input_event(key_code.CursorPositionX, (KeyModifiers)0, false, (int)args.DeltaX, key_state.Repeat));
+
+                if(args.DeltaY < 0)
+                    _input_event.Add(new input_event(key_code.CursorPositionX, (KeyModifiers)0, false, (int)args.DeltaY, key_state.Repeat));
+            };
+
             window.Run();
-        }
-
-        private void update_game_time(double delta_time) {
-
-            this.game_time.elapsed = TimeSpan.FromMilliseconds(delta_time);
-            this.game_time.total += TimeSpan.FromMilliseconds(delta_time);
-        }
-
-        // ============================ input ============================ 
-        public void key_down_test(KeyboardKeyEventArgs args) {
-
-            // add new event to Queue
-            Console.WriteLine("Key down: {0}", args.Key);
-        }
-
-        public void mouse_bu_down_test(MouseButtonEventArgs args) {
-
-            // add new event to Queue
-            Console.WriteLine("mouse_buttom down: {0}", args.Button);
-        }
-
-        public void mouse_move(MouseMoveEventArgs args) {
-
-            // add new event to Queue
-            Console.WriteLine("mouse_buttom down: {0}", args.Delta);
         }
 
         //  ============================================================================== protected ============================================================================== 
@@ -111,17 +111,32 @@ namespace Core {
 
         protected player_controller player_controller { get; set; }
         protected GameWindow window { get; private set; }
-        protected camera camera;
-        protected game_time game_time = new();
+        protected camera camera { get; set; }
+        protected game_time game_time { get; } = new();
 
         protected abstract void init();
-        protected abstract void load();
-        protected abstract void unload();
+        protected abstract void shutdown();
         protected abstract void update(game_time delta_time);
         protected abstract void render(game_time delta_time);
 
+        protected void set_update_frequency(double frequency) { 
+            
+            window.UpdateFrequency = frequency;
+            //window.VSync = false;
+            //window.RenderTime;
+            //window.UpdateTime;
+        }
+
+        // input system
+        protected List<input_event> _input_event { get; }  = new List<input_event>();
+
+        protected void reset_input_event_list() { _input_event.Clear(); }
+
         //  ============================================================================== private ============================================================================== 
+        private void update_game_time(double delta_time) {
 
-
+            this.game_time.elapsed = TimeSpan.FromMilliseconds(delta_time);
+            this.game_time.total += TimeSpan.FromMilliseconds(delta_time);
+        }
     }
 }

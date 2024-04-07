@@ -61,14 +61,14 @@ namespace Core.input {
 
     public struct key_details {
 
-        public keys key { get; set; }
+        public key_code key { get; set; }
         public trigger_flags trigger_flags { get; set; }
         public modefier_flags modefier_flags { get; set; }
 
         public MouseButton button { get; set; }
 
         // Static factory method
-        public static key_details create(keys key, trigger_flags triggerFlags, modefier_flags modifierFlags) {
+        public static key_details create(key_code key, trigger_flags triggerFlags, modefier_flags modifierFlags) {
             return new key_details {
 
                 key = key,

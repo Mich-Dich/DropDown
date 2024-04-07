@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using System.Numerics;
 
 namespace Core.renderer {
@@ -79,14 +80,14 @@ namespace Core.renderer {
             GL.UseProgram(programm_id);
         }
 
-        public void set_matrix_4x4(string uniform_name, Matrix4x4 mat) {
+        public void set_matrix_4x4(string uniform_name, Matrix4 mat) {
 
             int location = GL.GetUniformLocation(programm_id, uniform_name);
-            GL.UniformMatrix4(location, 1, false, get_matrix4x4_values(mat));
+            GL.UniformMatrix4(location, 1, false, get_matrix4_values(mat));
 
         }
 
-        public float[] get_matrix4x4_values(Matrix4x4 mat) {
+        public float[] get_matrix4_values(Matrix4 mat) {
 
             return new float[] {
                 mat.M11, mat.M12, mat.M13, mat.M14,

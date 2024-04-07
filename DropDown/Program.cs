@@ -15,7 +15,10 @@ namespace DropDown {
             //game game = new buffer_abstraction("Texture_test", 1800, 900);
             //game.run();
 
-            game game = new add_input("Texture_test", 1800, 900);
+            //game game = new add_input("Texture_test", 1800, 900);
+            //game.run();
+
+            game game = new sprite_abstraction("Texture_test", 1800, 900);
             game.run();
         }
     }

@@ -16,10 +16,10 @@ namespace DropDown {
                 0f,
                 new List<key_details> {
 
-                    key_details.create(keys.W, 0, 0),
-                    key_details.create(keys.S, 0, 0),
-                    key_details.create(keys.A, 0, 0),
-                    key_details.create(keys.D, 0, 0),
+                    key_details.create(key_code.W, 0, 0),
+                    key_details.create(key_code.S, 0, 0),
+                    key_details.create(key_code.A, 0, 0),
+                    key_details.create(key_code.D, 0, 0),
                 }));
 
             add_input_action(new action(
@@ -29,8 +29,8 @@ namespace DropDown {
                 0f,
                 new List<key_details> {
 
-                    key_details.create(keys.CursorPositionX, 0, 0),
-                    key_details.create(keys.CursorPositionY, 0, 0),
+                    key_details.create(key_code.CursorPositionX, 0, 0),
+                    key_details.create(key_code.CursorPositionY, 0, 0),
                 }));
 
         }

@@ -22,9 +22,7 @@ namespace DropDown {
         private int _vertex_array;
         private shader _shader;
 
-        protected override void init() { }
-
-        protected override void load() {
+        protected override void init() {
 
             GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
 
@@ -48,7 +46,7 @@ namespace DropDown {
 
         }
 
-        protected override void unload() {
+        protected override void shutdown() {
 
             GL.BindVertexArray(0);
             GL.DeleteVertexArray(_vertex_array);

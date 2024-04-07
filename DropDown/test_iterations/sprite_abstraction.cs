@@ -1,17 +1,15 @@
 ﻿using Core.game_objects;
-using Core.manager;
 using Core.renderer;
 using Core.util;
 using Core.visual;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Numerics;
 
 namespace DropDown {
 
-    internal class buffer_abstraction : Core.game {
+    internal class sprite_abstraction : Core.game {
 
-        public buffer_abstraction(String title, Int32 inital_window_width, Int32 inital_window_height)
+        public sprite_abstraction(String title, Int32 inital_window_width, Int32 inital_window_height)
             : base(title, inital_window_width, inital_window_height) { }
 
         private sprite_square _floor;
@@ -26,19 +24,15 @@ namespace DropDown {
             GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
 
             _shader = new(shader.parse_shader("shaders/texture_vert.glsl", "shaders/texture_frag.glsl"), true);
+            _shader.use();
 
-            _floor = new sprite_square(mobility.DYNAMIC, OpenTK.Mathematics.Vector2.Zero, OpenTK.Mathematics.Vector2.One, OpenTK.Mathematics.Vector2.One, 0);
+            camera = new(Vector2.Zero, this.window.Size, 1);
+
+            _floor = new sprite_square(mobility.DYNAMIC, new Vector2(100, -150), Vector2.One, new Vector2(50, 50), 0);
             _floor.add_texture("textures/floor_000.png");
-
-            camera = new(OpenTK.Mathematics.Vector2.Zero, this.window.Size, 1);
         }
 
-        protected override void shutdown() {
-
-            GL.BindVertexArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.UseProgram(0);
-        }
+        protected override void shutdown() { }
 
         protected override void update(game_time delta_time) { }
 
@@ -46,10 +40,8 @@ namespace DropDown {
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            _shader.use();
             _shader.set_matrix_4x4("projection", camera.get_projection_matrix());
 
-            // actual draw call
             _floor.draw(_shader);
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using OpenTK.Mathematics;
+using System.Numerics;
 
 namespace Core.game_objects {
 
@@ -11,7 +12,7 @@ namespace Core.game_objects {
 
             this.position = position;
             this.size = window_size;
-            this.scale = zoom;
+            this.scale = new OpenTK.Mathematics.Vector2(zoom, zoom);
         }
 
         public void set_view_size(OpenTK.Mathematics.Vector2 window_size) {
@@ -19,15 +20,15 @@ namespace Core.game_objects {
             this.size = window_size;
         }
 
-        public Matrix4x4 get_projection_matrix() {
+        public Matrix4 get_projection_matrix() {
 
             float left = this.position.X - (size.X / 2f);
             float right = this.position.X + (size.X / 2f);
             float top = this.position.Y - (size.Y / 2f);
             float bottom = this.position.Y + (size.Y / 2f);
 
-            Matrix4x4 orthographic_matrix = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, .00f, 100f);
-            Matrix4x4 zoom_matrix = Matrix4x4.CreateScale(scale);
+            Matrix4 orthographic_matrix = Matrix4.CreateOrthographicOffCenter(left, right, bottom, top, .00f, 100f);
+            Matrix4 zoom_matrix = Matrix4.CreateScale(scale.X, scale.Y, 1);
 
             return orthographic_matrix * zoom_matrix;
         }
