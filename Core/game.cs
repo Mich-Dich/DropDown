@@ -1,6 +1,7 @@
 ﻿using Core.controllers;
 using Core.game_objects;
 using Core.input;
+using Core.renderer;
 using Core.util;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -9,6 +10,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Core {
+
     public abstract class game {
         
         public GameWindowSettings _game_window_settings = GameWindowSettings.Default;
@@ -45,6 +47,7 @@ namespace Core {
 
                 shutdown();
             };
+
             window.Load += () => {
 
                 window.IsVisible = true;
@@ -54,8 +57,10 @@ namespace Core {
             window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
                 update_game_time(eventArgs.Time);
-                //this.player_controller.update(game_time);
+                //Console.WriteLine($"fps: {(int)(1 / window.UpdateTime)}");
+                this.player_controller.update_internal(game_time, _input_event);
                 update(game_time);
+                _input_event.Clear();
             };
 
             window.RenderFrame += (FrameEventArgs eventArgs) => {
@@ -104,6 +109,16 @@ namespace Core {
             window.Run();
         }
 
+        public static game instance {
+
+            get {
+                if(instance == null)
+                    throw new Exception($"Instance not Initaliced");
+
+                return instance;
+            }
+        }
+
         //  ============================================================================== protected ============================================================================== 
         protected string title { get; set; }
         protected int inital_window_width { get; set; }
@@ -119,12 +134,10 @@ namespace Core {
         protected abstract void update(game_time delta_time);
         protected abstract void render(game_time delta_time);
 
-        protected void set_update_frequency(double frequency) { 
-            
+        protected void set_update_frequency(double frequency) {
+
+            window.VSync = VSyncMode.Off;
             window.UpdateFrequency = frequency;
-            //window.VSync = false;
-            //window.RenderTime;
-            //window.UpdateTime;
         }
 
         // input system
@@ -133,6 +146,8 @@ namespace Core {
         protected void reset_input_event_list() { _input_event.Clear(); }
 
         //  ============================================================================== private ============================================================================== 
+        private game _instance;
+
         private void update_game_time(double delta_time) {
 
             this.game_time.elapsed = TimeSpan.FromMilliseconds(delta_time);

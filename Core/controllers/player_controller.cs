@@ -1,4 +1,5 @@
-﻿using Core.util;
+﻿using Core.input;
+using Core.util;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
@@ -8,25 +9,27 @@ using System.Threading.Tasks;
 
 namespace Core.controllers {
 
-    public class player_controller : controller {
+    public abstract class player_controller : controller {
 
-        public List<input.action> actions { get; set; } = new List<input.action>();
-
-
-        public player_controller() {
-
-        }
+        public player_controller() { }
 
         public player_controller(List<input.action> actions) {
 
             this.actions = actions;
         }
 
-        public void update(game_time delta_time) {
+        public void update_internal(game_time delta_time, List<input_event> input_event) {
 
-            for (int x = 0; x < actions.Count; x++) {   // loop over all actions
+            //Console.WriteLine($"input_event count: {input_event.Count}");
 
-                for (int y = 0; y < actions[x].keys.Count; y++) {  // loop over all keys in action
+            // TODO: set target_payload_value based on events
+
+            // TODO: interpulate payload_value based on target_payload_value
+
+
+            for(int x = 0; x < actions.Count; x++) {   // loop over all actions
+
+                for(int y = 0; y < actions[x].keys.Count; y++) {  // loop over all keys in action
 
                     //actions[x].keys[y].key;
 
@@ -44,6 +47,11 @@ namespace Core.controllers {
 
             return actions.Remove(action);
         }
+
+        // ============================= protected  ============================= 
+
+        protected List<input.action> actions { get; set; } = new List<input.action>();
+        protected abstract void update(game_time delta_time);
 
     }
 }

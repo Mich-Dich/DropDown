@@ -1,5 +1,6 @@
 ﻿using Core;
 using Core.game_objects;
+using Core.manager;
 using Core.renderer;
 using Core.util;
 using Core.visual;
@@ -13,25 +14,27 @@ namespace DropDown {
         public generate_map(String title, Int32 inital_window_width, Int32 inital_window_height)
             : base(title, inital_window_width, inital_window_height) { }
 
-        private sprite_square _floor;
         private shader _shader;
         private map _map;
 
         // ========================================================= functions =========================================================
         protected override void init() {
 
-            //window.UpdateFrequency = 144.0f;
+            this.player_controller = new PC_default();
+            set_update_frequency(144.0f);
             GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
 
             _shader = new(shader.parse_shader("shaders/texture_vert.glsl", "shaders/texture_frag.glsl"), true);
             _shader.use();
 
+            var texture_sampler_uniform_location = _shader.get_uniform_location("u_texture[0]");
+            int[] samplers = new int[5] { 0, 1 ,2, 3, 4};
+            GL.Uniform1(texture_sampler_uniform_location, samplers.Length, samplers);
+
             camera = new(Vector2.Zero, this.window.Size, 1);
 
-            _map = new map(_shader);
-
-            _floor = new sprite_square(mobility.DYNAMIC, new Vector2(100, -150), Vector2.One, new Vector2(50, 50), 0);
-            _floor.add_texture("textures/floor_000.png");
+            _map = new map(_shader)
+                .generate_square(17, 8);
         }
 
         protected override void shutdown() { }

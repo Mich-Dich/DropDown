@@ -8,49 +8,6 @@ using System.Threading.Tasks;
 
 namespace Core.input {
 
-    public readonly struct input_event {
-
-        //
-        // Summary:
-        //     Gets the key that generated this event.
-        public key_code key { get; }
-        //
-        // Summary:
-        //     Gets a bitwise combination representing the key modifiers were active when this
-        //     event was generated.
-        public KeyModifiers modifiers { get; }
-        //
-        // Summary:
-        //     Gets a value indicating whether this key event is a repeat.
-        //
-        // Value:
-        //     true, if this event was caused by the user holding down a key; false, if this
-        //     was caused by the user pressing a key for the first time.
-        public bool is_repeat { get; }
-        //
-        // Summary:
-        //     state the key is in when generating this event
-        public key_state key_state { get; }
-
-        public int repeat_amout { get; }
-
-        public input_event(key_code key, KeyModifiers modifiers, bool is_repeat, int repeat_amout, key_state key_state) {
-
-            this.key = key;
-            this.modifiers = modifiers;
-            this.is_repeat = is_repeat;
-            this.repeat_amout = repeat_amout;
-            this.key_state = key_state;
-        }
-    }
-
-    public enum key_state {
-
-        Pressed = 0,
-        Release = 1,
-        Repeat = 2,
-    }
-
     //
     // Summary:
     //     Specifies key codes and modifiers in US keyboard layout.

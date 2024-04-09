@@ -65,6 +65,14 @@ namespace Core.renderer {
             GL.DeleteShader(vert_shader);
             GL.DeleteShader(frag_shader);
 
+            GL.GetProgram(programm_id, GetProgramParameterName.ActiveUniforms, out var total_uniforms);
+            for (int x = 0; x < total_uniforms; x++) {
+
+                string key = GL.GetActiveUniform(programm_id, x, out _, out _);
+                int location = GL.GetUniformLocation(programm_id, key);
+                _uniforms.Add(key, location);
+            }
+
             _is_compiled = true;
             return true;
         }
@@ -113,7 +121,10 @@ namespace Core.renderer {
             return new shader_programm_source(vert_shader, frag_shader );
         }
 
+        public int get_uniform_location(string name) => _uniforms[name];
+
         //  ============================================================================== private ============================================================================== 
+        private readonly IDictionary<string, int> _uniforms = new Dictionary<string, int>();
         private shader_programm_source _shader_programm_source { get; }
         private bool _is_compiled = false;
     }

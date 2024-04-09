@@ -59,23 +59,44 @@ namespace Core.input {
 
     // ----------------------- data ----------------------- 
 
+    public readonly struct input_event {
+
+        public key_code key { get; }
+        public KeyModifiers modifiers { get; }
+        public bool is_repeat { get; }
+        public key_state key_state { get; }
+        public int repeat_amout { get; }
+
+        public input_event(key_code key, KeyModifiers modifiers, bool is_repeat, int repeat_amout, key_state key_state) {
+
+            this.key = key;
+            this.modifiers = modifiers;
+            this.is_repeat = is_repeat;
+            this.repeat_amout = repeat_amout;
+            this.key_state = key_state;
+        }
+    }
+
     public struct key_details {
 
         public key_code key { get; set; }
         public trigger_flags trigger_flags { get; set; }
         public modefier_flags modefier_flags { get; set; }
-
         public MouseButton button { get; set; }
 
-        // Static factory method
-        public static key_details create(key_code key, trigger_flags triggerFlags, modefier_flags modifierFlags) {
-            return new key_details {
+        public key_details(key_code key, trigger_flags triggerFlags, modefier_flags modifierFlags) {
 
-                key = key,
-                trigger_flags = triggerFlags,
-                modefier_flags = modifierFlags
-            };
+            this.key = key;
+            this.trigger_flags = triggerFlags;
+            this.modefier_flags = modifierFlags;
         }
+    }
+
+    public enum key_state {
+
+        Pressed = 0,
+        Release = 1,
+        Repeat = 2,
     }
 
     public enum action_type {

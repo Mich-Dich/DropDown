@@ -6,13 +6,28 @@ namespace Core.renderer {
     
         // ========================================================= public =========================================================
         public int handle { get; private set; }
+        public int width { get; set; }
+        public int height { get; set; }
+        public TextureUnit texture_slot { get; set; } = TextureUnit.Texture0;
 
         public texture_2d(int handle) {
 
             this.handle = handle;
         }
 
+        public texture_2d(Int32 handle, Int32 width, Int32 height) : this(handle) {
+
+            this.width = width;
+            this.height = height;
+        }
+
+        public texture_2d(Int32 handle, Int32 width, Int32 height, TextureUnit texture_slot) : this(handle, width, height) {
+
+            this.texture_slot = texture_slot;
+        }
+
         ~texture_2d() {
+
             Dispose(false);
         }
 

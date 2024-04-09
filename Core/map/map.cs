@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Mathematics;
 using Core.renderer;
+using Core.manager;
 
 namespace Core {
 
@@ -23,67 +24,80 @@ namespace Core {
             init();
         }
 
-        public map(shader shader, List<tile_translation> positions) {
+        public map(shader shader, List<tile_data> positions) {
 
             _shader = shader;
-            _positions = positions;
+            _tile_data = positions;
             init();
         }
 
-        private sprite_square _core_sprite = new sprite_square(mobility.STATIC, Vector2.Zero, new Vector2(100), new Vector2(50, 50), 0);
-        private shader _shader;
+        public Vector2 tile_size { get; set; } = new Vector2(100, 100);
 
-        public struct tile_translation {
-            
+        public struct tile_data {
+
             public Vector2 pos;
             public float rotation;
+            public int texture_slot { get; set; }
 
-            public tile_translation(Vector2 pos, float rotation) {
+            public tile_data(Vector2 pos, float rotation, int texture_slot) {
 
                 this.pos = pos;
                 this.rotation = rotation;
+                this.texture_slot = texture_slot;
             }
         }
 
         public void draw() {
 
-            //_core_sprite.draw(_shader);
+            for(int x = 0; x < _tile_data.Count; x++) 
+                _core_sprite.draw(_shader, _tile_modle_matrix[x], _tile_data[x].texture_slot);
+        }
 
-            for(int x = 0; x < _positions.Count; x++) {
+        public map generate_square(int width, int height) {
 
-                _core_sprite.set_position(_positions[x].pos * 100);
-                _core_sprite.set_rotation(_positions[x].rotation);
-                _core_sprite.draw(_shader);
+            Random random = new Random();
+            double missing_time_rate = 0f;
+
+            float offset_x = (((float)width - 1) / 2) * tile_size.X;
+            float offset_y = (((float)height - 1) / 2) * tile_size.Y;
+
+            // Loop through the tiles and add them to the _positions list
+            for(int x = 0; x < width; x++) {
+                for(int y = 0; y < height; y++) {
+
+                    if(random.NextDouble() < missing_time_rate)    // Skip adding tiles at certain positions (e.g., missing tiles)
+                        continue;
+
+                    float rotation = (float)utility.degree_to_radians(_rotations[random.Next(0,3)]);
+                    _tile_data.Add(new tile_data(new Vector2(x, y), rotation, random.Next(0, 5)));
+                    
+                    Matrix4 trans = Matrix4.CreateTranslation(x * tile_size.X - offset_x, y * tile_size.Y - offset_y, 0);
+                    Matrix4 sca = Matrix4.CreateScale(tile_size.X / 2, tile_size.Y / 2, 0);
+                    Matrix4 rot = Matrix4.CreateRotationZ(rotation);
+                    _tile_modle_matrix.Add(rot * sca * trans);
+                }
             }
 
+            return this;
         }
 
         // ========================================== private ==========================================
 
+        private sprite_square _core_sprite = new sprite_square(mobility.STATIC, Vector2.Zero, new Vector2(100), new Vector2(50, 50), 0);
+        private shader _shader;
+        private List<tile_data> _tile_data = new List<tile_data>{};
+        private List<Matrix4> _tile_modle_matrix = new List<Matrix4>();
+        private readonly float[] _rotations = { 0, 90, 180 ,270 };
+
         private void init() {
 
-            _core_sprite.add_texture("textures/floor_000.png");
 
-            Random random = new Random();
-            double missing_time_rate = 0.2f;
-            int width = 5;
-            int height = 3;
-
-            // Loop through the tiles and add them to the _positions list
-            for(int x = -width; x < width +1; x++) {
-                for(int y = -height; y < height +1; y++) {
-                    
-                    if(random.NextDouble() < missing_time_rate)    // Skip adding tiles at certain positions (e.g., missing tiles)
-                        continue; // Skip adding this tile
-
-                    float rotation = (float)utility.degree_to_radians(_rotations[random.Next(0,3)]);
-                    _positions.Add(new tile_translation(new Vector2(x, y), rotation)); // Adjust rotation as needed
-                }
-            }
+            resource_manager.instance.load_texture("textures/floor_tile_00.png");
+            resource_manager.instance.load_texture("textures/floor_tile_01.png");
+            resource_manager.instance.load_texture("textures/floor_tile_02.png");
+            resource_manager.instance.load_texture("textures/floor_tile_03.png");
+            resource_manager.instance.load_texture("textures/floor_tile_04.png");
         }
-
-        private List<tile_translation> _positions = new List<tile_translation>{};
-        private readonly float[] _rotations = { 0, 90, 180 ,270 };
 
     }
 }

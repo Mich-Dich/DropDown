@@ -44,9 +44,9 @@ namespace DropDown {
             _vertex_buffer = new vertex_buffer(_verticies);
             _vertex_buffer.bind();
 
-            buffer_layout layout = new buffer_layout();
-            layout.add<float>(2);   // vertex coordinates
-            layout.add<float>(2);   // UV coordinates
+            buffer_layout layout = new buffer_layout()
+                .add<float>(2)   // vertex coordinates
+                .add<float>(2);   // UV coordinates
 
             _vertex_array = new();
             _vertex_array.add_buffer(_vertex_buffer, layout);
