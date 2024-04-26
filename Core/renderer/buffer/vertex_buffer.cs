@@ -21,7 +21,7 @@ namespace Core.renderer {
 
         public void update_content(float[] vertices) {
 
-            id = GL.GenBuffer();
+            // id = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, id);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);

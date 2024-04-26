@@ -1,0 +1,80 @@
+trigger:
+  branches:
+    include:
+    - '*'
+name: $(date:yyyyMMdd)$(rev:.r)
+variables:
+- name: solution
+  value: '**/*.sln'
+- name: buildPlatform
+  value: 'Any CPU'
+- name: buildConfiguration
+  value: 'Release'
+stages:
+- stage: __default
+  jobs:
+  - job: Job
+    pool:
+      name: Agentpool-1
+    steps:
+    - task: NuGetToolInstaller@1
+      displayName: Use NuGet 6.3
+      inputs:
+        versionSpec: 6.3
+    - task: NuGetCommand@2
+      displayName: NuGet restore
+      inputs:
+        restoreSolution: '$(solution)'
+    - task: MSBuild@1
+      displayName: Build solution
+      inputs:
+        msbuildLocationMethod: location
+        msbuildLocation: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\amd64
+        platform: $(BuildPlatform)
+        configuration: $(BuildConfiguration)
+        clean: true
+        logProjectEvents: true
+    - task: DotNetCoreCLI@2
+      displayName: Run Tests
+      inputs:
+        command: test
+        projects: '**/*Test/*.csproj'
+        arguments: '--configuration $(buildConfiguration) --collect:"XPlat Code Coverage" -- RunConfiguration.DisableAppDomain=true'
+        workingDirectory: $(Build.SourcesDirectory)
+    - task: DotNetCoreCLI@2
+      displayName: Install ReportGenerator tool
+      inputs:
+        command: custom
+        custom: tool
+        arguments: install --tool-path . dotnet-reportgenerator-globaltool
+    - task: CmdLine@2
+      displayName: Create reports
+      inputs:
+        script: reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -reporttypes:"Cobertura"
+    - task: PublishCodeCoverageResults@1
+      displayName: Publish code coverage results
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: $(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml
+    - task: PublishSymbols@2
+      displayName: Publish symbols path
+      continueOnError: True
+      enabled: False
+      inputs:
+        SearchPattern: '**\bin\**\*.pdb'
+        PublishSymbols: false
+        SymbolServerType: TeamServices
+    - task: CopyFiles@2
+      displayName: Copy files
+      condition: succeededOrFailed()
+      inputs:
+        SourceFolder: $(system.defaultworkingdirectory)
+        Contents: '**\bin\$(BuildConfiguration)\**'
+        TargetFolder: $(build.artifactstagingdirectory)
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifact: drop'
+      condition: succeededOrFailed()
+      inputs:
+        PathtoPublish: $(build.artifactstagingdirectory)
+        TargetPath: '\\my\share\$(Build.DefinitionName)\$(Build.BuildNumber)'
+

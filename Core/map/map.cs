@@ -1,5 +1,4 @@
-﻿using Core.game_objects;
-using Core.visual;
+﻿using Core.visual;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +7,15 @@ using System.Threading.Tasks;
 using OpenTK.Mathematics;
 using Core.renderer;
 using Core.manager;
+using Core.game_objects;
+using Core.physics.material;
 
 namespace Core {
 
     public class map {
-    
+
+        public List<game_object> all_game_objects {  get; set; } = new List<game_object>();
+
         public map() {
 
             init();
@@ -24,7 +27,7 @@ namespace Core {
             init();
         }
 
-        public map(shader shader, List<tile_data> positions) {
+        public map(shader shader, List<tile_data> positions ) {
 
             _shader = shader;
             _tile_data = positions;
@@ -35,22 +38,27 @@ namespace Core {
 
         public struct tile_data {
 
-            public Vector2 pos;
-            public float rotation;
             public int texture_slot { get; set; }
+            public Matrix4 modle_matrix { get; set; }
 
-            public tile_data(Vector2 pos, float rotation, int texture_slot) {
+            public tile_data(Int32 texture_slot, Matrix4 modle_matrix) {
 
-                this.pos = pos;
-                this.rotation = rotation;
                 this.texture_slot = texture_slot;
+                this.modle_matrix = modle_matrix;
             }
         }
 
         public void draw() {
 
             for(int x = 0; x < _tile_data.Count; x++) 
-                _core_sprite.draw(_shader, _tile_modle_matrix[x], _tile_data[x].texture_slot);
+                _core_sprite.draw(_shader, _tile_data[x].modle_matrix, _tile_data[x].texture_slot);
+
+            //parameter_buffer _parameter_buffer = new parameter_buffer();
+            //_parameter_buffer.bind();
+
+            // write buffer to save [modle_matrix, texture_slot]
+
+            //_core_sprite.draw_instanced(_shader, _tile_data[0].modle_matrix, _tile_data[0].texture_slot, _tile_data.Count);
         }
 
         public map generate_square(int width, int height) {
@@ -69,28 +77,31 @@ namespace Core {
                         continue;
 
                     float rotation = (float)utility.degree_to_radians(_rotations[random.Next(0,3)]);
-                    _tile_data.Add(new tile_data(new Vector2(x, y), rotation, random.Next(0, 5)));
-                    
                     Matrix4 trans = Matrix4.CreateTranslation(x * tile_size.X - offset_x, y * tile_size.Y - offset_y, 0);
                     Matrix4 sca = Matrix4.CreateScale(tile_size.X / 2, tile_size.Y / 2, 0);
                     Matrix4 rot = Matrix4.CreateRotationZ(rotation);
-                    _tile_modle_matrix.Add(rot * sca * trans);
+
+                    _tile_data.Add(new tile_data(random.Next(5), rot * sca * trans));
                 }
             }
+
+            var test = _tile_data[random.Next(width)];
+            test.texture_slot = 4;
 
             return this;
         }
 
         // ========================================== private ==========================================
 
-        private sprite_square _core_sprite = new sprite_square(mobility.STATIC, Vector2.Zero, new Vector2(100), new Vector2(50, 50), 0);
+        private sprite_square _core_sprite = new sprite_square(Vector2.Zero, new Vector2(100), new Vector2(50, 50), 0, 0, Vector2.Zero, new physics_material(), mobility.STATIC);
         private shader _shader;
         private List<tile_data> _tile_data = new List<tile_data>{};
         private List<Matrix4> _tile_modle_matrix = new List<Matrix4>();
         private readonly float[] _rotations = { 0, 90, 180 ,270 };
 
-        private void init() {
+        //private List<float> 
 
+        private void init() {
 
             resource_manager.instance.load_texture("textures/floor_tile_00.png");
             resource_manager.instance.load_texture("textures/floor_tile_01.png");

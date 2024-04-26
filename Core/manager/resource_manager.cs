@@ -21,6 +21,8 @@ namespace Core.manager {
             }
         }
 
+        // =============================================== textures =============================================== 
+
         public texture_2d load_texture(string texture_name) {
 
             _texture_cache.TryGetValue(texture_name, out var value);
@@ -33,5 +35,9 @@ namespace Core.manager {
             return value;
         }
 
+        public int get_number_of_textures() {
+
+            return texture_manager.texture_cursor;
+        }
     }
 }

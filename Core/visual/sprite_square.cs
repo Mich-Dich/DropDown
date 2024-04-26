@@ -1,15 +1,19 @@
 ﻿using Core.game_objects;
 using Core.manager;
+using Core.physics.material;
 using Core.renderer;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System.Reflection;
 
-namespace Core.visual {
+namespace Core.visual
+{
 
     public class sprite_square : game_object {
 
-        public sprite_square(mobility mobility, Vector2 position, Vector2 size, Vector2 scale, Single rotation)
-            : base(mobility, position, size, scale, rotation) {
+
+        public sprite_square(Vector2 position, Vector2 size, Vector2 scale, Single rotation, Single mass, Vector2 velocity, physics_material physics_material, mobility mobility)
+            : base(position, size, scale, rotation, mass, velocity, physics_material, mobility) {
 
             _vertex_buffer = new vertex_buffer(_verticies);
             _vertex_buffer.bind();
@@ -19,9 +23,8 @@ namespace Core.visual {
 
             _index_buffer = new index_buffer(_indeices);
 
-            if (this.mobility == mobility.STATIC)
+            if(this.mobility == mobility.STATIC)
                 _model_matrix = calc_modle_matrix();
-           
         }
 
         // =============================================== functions =============================================== 
@@ -113,6 +116,16 @@ namespace Core.visual {
             GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
         }
 
+        public void draw_instanced(shader shader, Matrix4 model, int texture_slot, int count) {
+
+            _vertex_array.bind();
+            _index_buffer.bind();
+
+            use_texture_slot(texture_slot);
+            shader.set_matrix_4x4("model", model);
+            GL.DrawElementsInstanced(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0, count);
+        }
+
         public buffer_layout get_buffer_layout() {
 
             buffer_layout layout = new buffer_layout()
@@ -147,6 +160,21 @@ namespace Core.visual {
             -1f, -1f,  0f,   0f,  1f,
             -1f,  1f,  0f,   1f,  1f,
         };
+        private float[] _cooord_data = {
+        //   x    y
+             1f,  1f,
+             1f, -1f,
+            -1f, -1f,
+            -1f,  1f,
+        };
+        private float[] _UV_data = {
+            1f, 1f,
+            1f, 0f,
+            0f, 0f,
+            0f, 1f,
+        };
+        private int _texture_index = 0;
+
         private uint[] _indeices = {
             0, 1, 3,
             1, 2 ,3

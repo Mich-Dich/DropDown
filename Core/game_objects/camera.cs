@@ -1,7 +1,8 @@
 ﻿using OpenTK.Mathematics;
 using System.Numerics;
 
-namespace Core.game_objects {
+namespace Core.game_objects
+{
 
     public class camera : game_object{
 

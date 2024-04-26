@@ -6,7 +6,7 @@ namespace DropDown {
 
         public static void Main(string[] args) {
 
-            game game = new generate_map("Texture_test", 1800, 900);
+            game game = new generate_map("Texture_test", 700, 400);
             game.run();
         }
     }

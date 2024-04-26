@@ -4,15 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.game_objects {
+namespace Core.controllers.ai {
 
-    public class character : game_object {
+    public class ai_controller : controller {
 
-        public character() {
-
-
-
-        }
-    
     }
 }

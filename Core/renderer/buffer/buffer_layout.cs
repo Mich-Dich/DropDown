@@ -41,15 +41,3 @@ namespace Core.renderer {
     }
 
 }
-
-/*
-sizeof(byte)
-sizeof(sbyte)
-sizeof(short)
-sizeof(ushort)
-sizeof(int)
-sizeof(uint)
-sizeof(float)
-sizeof(double)
-sizeof(short)
-*/
