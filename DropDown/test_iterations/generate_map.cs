@@ -14,29 +14,11 @@ namespace DropDown {
         public generate_map(String title, Int32 inital_window_width, Int32 inital_window_height)
             : base(title, inital_window_width, inital_window_height) { }
 
-        private shader _shader;
-        private map _map;
-
         // ========================================================= functions =========================================================
         protected override void init() {
 
             this.player_controller = new PC_default();
             set_update_frequency(144.0f);
-            GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
-
-            _shader = new(shader.parse_shader("shaders/texture_vert.glsl", "shaders/texture_frag.glsl"), true);
-            _shader.use();
-
-            camera = new(Vector2.Zero, this.window.Size, 1);
-
-            _map = new map(_shader).generate_square(6,3);
-
-            // register all textures to "u_texture[0]"
-            var texture_sampler_uniform_location = _shader.get_uniform_location("u_texture[0]");
-            int[] samplers = new int[resource_manager.instance.get_number_of_textures()];
-            for(int x = 0; x < samplers.Length; x++)
-                samplers[x] = x;
-            GL.Uniform1(texture_sampler_uniform_location, samplers.Length, samplers);
         }
 
         protected override void shutdown() { }
@@ -45,11 +27,6 @@ namespace DropDown {
 
         protected override void render(game_time delta_time) {
 
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            _shader.set_matrix_4x4("projection", camera.get_projection_matrix());
-
-            _map.draw();
         }
 
     }

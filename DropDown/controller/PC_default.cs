@@ -49,7 +49,7 @@ namespace DropDown
 
         protected override void update(game_time delta_time) {
 
-            Console.WriteLine($"move: {move.get_value()}");
+            // Console.WriteLine($"move: {move.get_value()}");
 
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Core.controllers.player;
 using Core.game_objects;
 using Core.input;
+using Core.manager;
 using Core.physics;
 using Core.renderer;
 using Core.util;
@@ -53,11 +54,28 @@ namespace Core
 
             window.Load += () => {
 
-                window.IsVisible = true;
+                GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
 
                 active_map = new map();
 
+                // ----------------------------------- shader -----------------------------------
+                default_shader = new(shader.parse_shader("shaders/texture_vert.glsl", "shaders/texture_frag.glsl"), true);
+                default_shader.use();
+
+                // ----------------------------------- shader -----------------------------------
+                camera = new(Vector2.Zero, this.window.Size, 1);
+                default_map = new map(default_shader).generate_square(6, 3);
+
                 init();
+
+                // register all textures to "u_texture[0]"
+                var texture_sampler_uniform_location = default_shader.get_uniform_location("u_texture[0]");
+                int[] samplers = new int[resource_manager.instance.get_number_of_textures()];
+                for(int x = 0; x < samplers.Length; x++)
+                    samplers[x] = x;
+                GL.Uniform1(texture_sampler_uniform_location, samplers.Length, samplers);
+
+                window.IsVisible = true;
             };
 
             // internal game update
@@ -74,7 +92,7 @@ namespace Core
             window.RenderFrame += (FrameEventArgs eventArgs) => {
 
                 window.SwapBuffers();
-                render(game_time);
+                internal_render(game_time);
             };
 
             window.Resize += (ResizeEventArgs eventArgs) => {
@@ -84,7 +102,7 @@ namespace Core
 
                 GL.Viewport(0, 0, window.Size.X, window.Size.Y);
                 camera.set_view_size(window.Size);
-                render(this.game_time);
+                internal_render(this.game_time);
                 window.SwapBuffers();
             };
 
@@ -138,8 +156,12 @@ namespace Core
         protected game_time game_time { get; } = new();
         protected collision_engine collision_engine { get; } = new();
 
+        // default data
+        protected shader            default_shader { get; set; }
+        protected map               default_map { get; set; }
+
         // game mode
-        protected character plaer { get; set; }
+        protected character         plaer { get; set; }
         protected player_controller player_controller { get; set; }
         protected map active_map { get; set; }
         //protected List<map> active_maps { get; set; }     // TODO: add array of maps to enable DROP into new level
@@ -165,6 +187,19 @@ namespace Core
 
         //  ============================================================================== private ============================================================================== 
         private game _instance;
+
+        private void internal_render(game_time delta_time) {
+
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            default_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
+
+            default_map.draw();
+
+            // client side code
+            render(delta_time);
+        }
+
 
         private void update_game_time(double delta_time) {
 
