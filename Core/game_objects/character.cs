@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.physics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,9 @@ namespace Core.game_objects {
 
 
         }
-    
+
+        public override void hit(hit_data hit) {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -93,7 +93,7 @@ namespace Core {
 
         // ========================================== private ==========================================
 
-        private sprite_square _core_sprite = new sprite_square(Vector2.Zero, new Vector2(100), new Vector2(50, 50), 0, 0, Vector2.Zero, new physics_material(), mobility.STATIC);
+        private sprite _core_sprite = new sprite(Vector2.Zero, new Vector2(100), 0, mobility.STATIC);
         private shader _shader;
         private List<tile_data> _tile_data = new List<tile_data>{};
         private List<Matrix4> _tile_modle_matrix = new List<Matrix4>();

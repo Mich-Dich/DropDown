@@ -19,8 +19,17 @@ namespace Core
         public GameWindowSettings _game_window_settings = GameWindowSettings.Default;
         public NativeWindowSettings _native_window_settings = NativeWindowSettings.Default;
 
+        public static game instance { get; private set; }
+        public ResourceManager ResourceManager { get; private set; }
+
         // ============================================================================== public ============================================================================== 
         public game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
+
+            if(instance != null) 
+                throw new Exception("You can only create one instance of Game!");
+
+                instance = this;
+            this.ResourceManager = new ResourceManager();
 
             this.title = title;
             this.inital_window_width = inital_window_width;
@@ -63,8 +72,8 @@ namespace Core
                 default_shader.use();
 
                 // ----------------------------------- shader -----------------------------------
-                camera = new(Vector2.Zero, this.window.Size, 1);
-                default_map = new map(default_shader).generate_square(6, 3);
+                camera = new(Vector2.Zero, this.window.Size, 0.5f);
+                default_map = new map(default_shader).generate_square(40, 30);
 
                 init();
 
@@ -84,7 +93,7 @@ namespace Core
                 //Time.DeltaTime = e.Time;
                 update_game_time(eventArgs.Time);
                 this.player_controller.update_internal(_input_event);
-                collision_engine.update(active_map.all_game_objects);       // call collision after update to force 
+                //collision_engine.update(active_map.all_game_objects);       // call collision after update to force 
 
                 update();                
                 _input_event.Clear();
@@ -138,15 +147,6 @@ namespace Core
             window.Run();
         }
 
-        public static game instance {
-
-            get {
-                if(instance == null)
-                    throw new Exception($"Instance not Initaliced");
-
-                return instance;
-            }
-        }
 
         //  ============================================================================== protected ============================================================================== 
         protected string title { get; set; }

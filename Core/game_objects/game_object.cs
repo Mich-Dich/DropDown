@@ -1,21 +1,23 @@
 ﻿using Core.physics;
 using Core.physics.material;
+using Core.visual;
 using OpenTK.Mathematics;
 
 namespace Core.game_objects {
 
-    public class game_object {
+    public abstract class game_object : ICollidable {
 
-        public Vector2 position { get; set; }
-        public Vector2 size { get; set; }
-        public Vector2 scale { get; set; }
-        public float rotation { get; set; }
-        public float mass { get; set; }
-        public Vector2 velocity { get; set; }
-        public physics_material physics_material {  get; set; }
+        //public float mass { get; set; }
+        //public Vector2 velocity { get; set; }
+        //public physics_material physics_material {  get; set; }
 
-        public mobility mobility { get; set; }      // conserning update method
-        public primitive shape { get; set; }
+        public mobility mobility { get; set; } = mobility.DYNAMIC;    // conserning update method
+        public transform transform { get; set; } = new transform();
+
+        public sprite? sprite { get; set; }
+
+        public game_object? parent { get; private set; }
+        public List<game_object> children { get; } = new List<game_object>();
 
         //public List<game_object> childer {  get; set; }       // tODO: add capapility for children
 
@@ -23,22 +25,47 @@ namespace Core.game_objects {
 
         public game_object() { }
         
-        public game_object(Vector2 position, Vector2 size, Vector2 scale, Single rotation, Single mass, Vector2 velocity, physics_material physics_material, mobility mobility) {
+        public game_object(Vector2 position, Vector2 size, Single rotation, mobility mobility = mobility.DYNAMIC) {
 
-            this.position = position;
-            this.size = size;
-            this.scale = scale;
-            this.rotation = rotation;
-            this.mass = mass;
-            this.velocity = velocity;
-            this.physics_material = physics_material;
+            transform.position = position;
+            transform.size = size;
+            transform.rotation = rotation;
             this.mobility = mobility;
-            this.shape = primitive.SQUARE;
         }
 
-        public void hit(hit_data hit) { }
+        public abstract void hit(hit_data hit);
+
+        public void draw() {
+
+            if(sprite == null)
+                return;
+
+        }
+
+        public void add_child(game_object child) {
+         
+            this.children.Add(child);
+            child.parent = this;
+            child.transform.parent = this.transform;
+        }
+
+        public void remove_child(game_object child) {
+
+            this.children.Remove(child);
+            child.parent = null;
+            child.transform.parent = null;
+        }
+
+        public bool is_in_range(game_object other, float range) {
+
+            Vector2 distanceVector = this.transform.position - other.transform.position;
+            float distance = distanceVector.Length;
+            return distance <= range;
+        }
 
     }
+
+
 
     public enum mobility {
 

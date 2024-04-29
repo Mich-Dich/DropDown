@@ -5,6 +5,7 @@ using OpenTK;
 //using System.Numerics;
 
 using OpenTK.Mathematics;
+using Core.physics;
 
 namespace Core.physics {
 
@@ -24,6 +25,7 @@ namespace Core.physics {
 
         public collision_engine() { }
 
+        /*
         // --------------------------------------- static - static --------------------------------------- 
 
         // needed for pre-play calculations: e.g. level-generation
@@ -46,7 +48,7 @@ namespace Core.physics {
         public hit_data static_collision_circle_circle(game_object circle, game_object circle_2) {
 
             hit_data hit = new hit_data();
-            if (((circle.position - circle_2.position).Length) >= (circle.size.X + circle_2.size.X))
+            if(((circle.position - circle_2.position).Length) >= (circle.size.X + circle_2.size.X))
                 return hit;
 
             hit.is_hit = true;
@@ -73,25 +75,25 @@ namespace Core.physics {
 
         public void update(List<game_object> all_objects) {
 
-            /*
-            FOR ALL OBJECTS [x] {
-                FOR ALL OTHER OBJECTS [y] {
 
-                    1) call collision function based on mobility_type of [x] and [y] and save in hit variable
-            
-                    2) use hit var & (physics_material of [y] & [y]) to update position and velocity
+            // FOR ALL OBJECTS [x] {
+            //     FOR ALL OTHER OBJECTS [y] {
+            // 
+            //         1) call collision function based on mobility_type of [x] and [y] and save in hit variable
+            // 
+            //         2) use hit var & (physics_material of [y] & [y]) to update position and velocity
+            // 
+            //         3) adjust velocity besed on mobility (make new Velocity)
+            //              STATIC can never move
+            //              MOVABLE can move but is mosty static
+            //              DYNAMIC can move every frame
+            // 
+            //         4) update (position & velocity) of game_object [x]
+            // 
+            //         5) all_objects[x].hit(loc_hit);   // call hit on game_object (this is already real code)
+            //     }
+            // }
 
-                    3) adjust velocity besed on mobility (make new Velocity)
-                         STATIC can never move
-                         MOVABLE can move but is mosty static
-                         DYNAMIC can move every frame
-
-                    4) update (position & velocity) of game_object [x]
-
-                    5) all_objects[x].hit(loc_hit);   // call hit on game_object (this is already real code)
-                }
-            }
-            */
             hit_data curent = new hit_data();
 
             for(int x = 0; x < all_objects.Count; x++) {
@@ -101,10 +103,10 @@ namespace Core.physics {
                     if(all_objects[x] == all_objects[y] ||
                         (all_objects[x].mobility == mobility.STATIC && all_objects[y].mobility == mobility.STATIC))
                         break;
-                    
+
                     if(all_objects[x].shape == primitive.CIRCLE) {
 
-                        if(all_objects[y].shape == primitive.CIRCLE) 
+                        if(all_objects[y].shape == primitive.CIRCLE)
                             curent = collision_circle_circle(all_objects[x], all_objects[y]);
 
                         else if(all_objects[x].shape == primitive.SQUARE)
@@ -115,7 +117,7 @@ namespace Core.physics {
 
                         if(all_objects[y].shape == primitive.CIRCLE)
                             curent = collision_circle_AABB(all_objects[x], all_objects[y]);
-                        
+
                         else if(all_objects[x].shape == primitive.SQUARE)
                             curent = collision_AABB_AABB(all_objects[x], all_objects[y]);
                     }
@@ -129,10 +131,10 @@ namespace Core.physics {
                             all_objects[y].position = all_objects[y].position + (curent.hit_normal / 2); // velocity fehlt noch
                         }
 
-                        if((all_objects[x].mobility == mobility.DYNAMIC || all_objects[x].mobility == mobility.MOVABLE) && all_objects[y].mobility == mobility.STATIC)                            
+                        if((all_objects[x].mobility == mobility.DYNAMIC || all_objects[x].mobility == mobility.MOVABLE) && all_objects[y].mobility == mobility.STATIC)
                             all_objects[x].position = all_objects[x].position - curent.hit_normal; // velocity fehlt noch
 
-                        if(all_objects[x].mobility == mobility.STATIC && (all_objects[y].mobility == mobility.DYNAMIC || all_objects[y].mobility == mobility.MOVABLE))                            
+                        if(all_objects[x].mobility == mobility.STATIC && (all_objects[y].mobility == mobility.DYNAMIC || all_objects[y].mobility == mobility.MOVABLE))
                             all_objects[y].position = all_objects[y].position + curent.hit_normal; // velocity fehlt noch
 
                     }
@@ -206,7 +208,7 @@ namespace Core.physics {
 
             float distance = (new Vector2(closestX, closestY) - circle.position).Length;
 
-            if (distance <= circle.size.X){
+            if(distance <= circle.size.X) {
                 hit.is_hit = true;
                 return hit;
             }
@@ -215,25 +217,25 @@ namespace Core.physics {
         }
 
 
-        private static bool LineIntersectsLine(Vector2 line1Start, Vector2 line1End, Vector2 line2Start, Vector2 line2End){
+        private static bool LineIntersectsLine(Vector2 line1Start, Vector2 line1End, Vector2 line2Start, Vector2 line2End) {
 
             Vector2 direction1 = line1End - line1Start;
             Vector2 direction2 = line2End - line2Start;
 
             float distance = direction2.Y * direction1.X - direction2.X * direction1.Y;
 
-            if (distance == 0)
+            if(distance == 0)
                 return false;
 
             float distance1 = ((line2Start.X - line1Start.X) * direction2.Y - (line2Start.Y - line1Start.Y) * direction2.X) / distance;
             float distance2 = ((line2Start.X - line1Start.X) * direction1.Y - (line2Start.Y - line1Start.Y) * direction1.X) / distance;
 
- 
-            if (distance1 >= 0 && distance1 <= 1 && distance2 >= 0 && distance2 <= 1)
+
+            if(distance1 >= 0 && distance1 <= 1 && distance2 >= 0 && distance2 <= 1)
                 return true;
 
             return false;
         }
-
+        */
     }
 }
