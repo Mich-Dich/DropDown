@@ -23,9 +23,9 @@ namespace DropDown {
 
         protected override void shutdown() { }
 
-        protected override void update(game_time delta_time) { }
+        protected override void update() { }
 
-        protected override void render(game_time delta_time) {
+        protected override void render() {
 
         }
 

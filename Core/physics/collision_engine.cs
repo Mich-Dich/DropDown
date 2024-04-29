@@ -71,7 +71,7 @@ namespace Core.physics {
             return hit;
         }
 
-        public void update(List<game_object> all_objects, game_time delta_time) {
+        public void update(List<game_object> all_objects) {
 
             /*
             FOR ALL OBJECTS [x] {
@@ -105,19 +105,19 @@ namespace Core.physics {
                     if(all_objects[x].shape == primitive.CIRCLE) {
 
                         if(all_objects[y].shape == primitive.CIRCLE) 
-                            curent = collision_circle_circle(all_objects[x], all_objects[y], delta_time);
+                            curent = collision_circle_circle(all_objects[x], all_objects[y]);
 
                         else if(all_objects[x].shape == primitive.SQUARE)
-                            curent = collision_circle_AABB(all_objects[x], all_objects[y], delta_time);
+                            curent = collision_circle_AABB(all_objects[x], all_objects[y]);
                     }
 
                     else if(all_objects[x].shape == primitive.SQUARE) {
 
                         if(all_objects[y].shape == primitive.CIRCLE)
-                            curent = collision_circle_AABB(all_objects[x], all_objects[y], delta_time);
+                            curent = collision_circle_AABB(all_objects[x], all_objects[y]);
                         
                         else if(all_objects[x].shape == primitive.SQUARE)
-                            curent = collision_AABB_AABB(all_objects[x], all_objects[y], delta_time);
+                            curent = collision_AABB_AABB(all_objects[x], all_objects[y]);
                     }
 
 
@@ -145,7 +145,7 @@ namespace Core.physics {
         // ======================================= private =======================================
 
         // --------------------------------------- dynamic - dynamic --------------------------------------- 
-        private hit_data collision_AABB_AABB(game_object AABB, game_object AABB_2, game_time delta_time) {
+        private hit_data collision_AABB_AABB(game_object AABB, game_object AABB_2) {
 
             hit_data hit = new hit_data();
 
@@ -153,7 +153,7 @@ namespace Core.physics {
         }
 
 
-        private hit_data collision_circle_circle(game_object circle, game_object circle_2, game_time delta_time) {
+        private hit_data collision_circle_circle(game_object circle, game_object circle_2) {
 
             hit_data hit = new hit_data();
 
@@ -161,7 +161,7 @@ namespace Core.physics {
         }
 
 
-        private hit_data collision_circle_AABB(game_object circle, game_object AABB, game_time delta_time) {
+        private hit_data collision_circle_AABB(game_object circle, game_object AABB) {
 
             hit_data hit = new hit_data();
 
@@ -169,7 +169,7 @@ namespace Core.physics {
         }
 
 
-        private hit_data collision_AABB_circle(game_object AABB, game_object circle, game_time delta_time) {
+        private hit_data collision_AABB_circle(game_object AABB, game_object circle) {
 
             hit_data hit = new hit_data();
 
@@ -177,14 +177,14 @@ namespace Core.physics {
         }
 
         // --------------------------------------- static - dynamic --------------------------------------- 
-        private hit_data collision_static_AABB_dynamic_AABB(game_object AABB, game_object AABB_2, game_time delta_time) {
+        private hit_data collision_static_AABB_dynamic_AABB(game_object AABB, game_object AABB_2) {
 
             hit_data hit = new hit_data();
 
             return hit;
         }
 
-        private hit_data collision_static_circle_dynamic_circle(game_object circle, game_object circle_2, game_time delta_time) {
+        private hit_data collision_static_circle_dynamic_circle(game_object circle, game_object circle_2) {
 
             hit_data hit = new hit_data();
 
@@ -192,11 +192,11 @@ namespace Core.physics {
         }
 
 
-        private hit_data collision_static_circle_dynamic_AABB(game_object circle, game_object AABB, game_time delta_time) {
+        private hit_data collision_static_circle_dynamic_AABB(game_object circle, game_object AABB) {
 
             hit_data hit = new hit_data();
 
-            Vector2 nextRectanglePosition = AABB.position + AABB.velocity * delta_time.elapsed.Seconds;
+            Vector2 nextRectanglePosition = AABB.position + AABB.velocity * game_time.elapsed.Seconds;
 
             float distanceX = Math.Abs(circle.position.X - nextRectanglePosition.X);
             float distanceY = Math.Abs(circle.position.Y - nextRectanglePosition.Y);

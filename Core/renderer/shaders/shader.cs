@@ -9,9 +9,9 @@ namespace Core.renderer {
         //  ============================================================================== public ============================================================================== 
         public int programm_id { get; private set; }
 
-        public shader(shader_programm_source shader_programm_source, bool compile = false) {
-
-            _shader_programm_source = shader_programm_source;
+        public shader(string vert_shader_path, string frag_shader_path, bool compile = true) {
+                        
+            _shader_programm_source = shader.parse_shader(vert_shader_path, frag_shader_path);
 
             if(compile)
                 this.compile();

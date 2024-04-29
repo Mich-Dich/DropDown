@@ -26,7 +26,7 @@ namespace DropDown {
 
             GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
 
-            _shader = new(shader.parse_shader("shaders/default_vert.glsl", "shaders/default_frag.glsl"), true);
+            _shader = new shader("shaders/default_vert.glsl", "shaders/default_frag.glsl", true);
 
             _vertex_buffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertex_buffer);
@@ -58,9 +58,9 @@ namespace DropDown {
 
         }
 
-        protected override void update(game_time delta_time) { }
+        protected override void update() { }
 
-        protected override void render(game_time delta_time) {
+        protected override void render() {
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
             _shader.use();

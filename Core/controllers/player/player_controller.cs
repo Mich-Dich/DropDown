@@ -1,11 +1,4 @@
 ﻿using Core.util;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.controllers.player {
 
@@ -18,7 +11,7 @@ namespace Core.controllers.player {
             this.actions = actions;
         }
 
-        public void update_internal(game_time delta_time, List<input_event> input_event) {
+        public void update_internal(List<input_event> input_event) {
 
             for (int x = 0; x < input_event.Count; x++) {
                 input_event loc_event = input_event[x];
@@ -143,7 +136,7 @@ namespace Core.controllers.player {
 
             
             // call client side code befor resetting payload
-            update(delta_time);
+            update();
 
             // resetting payload if needed
             for(int x = 0; x < input_event.Count; x++) {
@@ -278,7 +271,7 @@ namespace Core.controllers.player {
         // ============================= protected  ============================= 
 
         protected List<action> actions { get; set; } = new List<action>();
-        protected abstract void update(game_time delta_time);
+        protected abstract void update();
 
     }
 }

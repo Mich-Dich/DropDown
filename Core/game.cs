@@ -59,7 +59,7 @@ namespace Core
                 active_map = new map();
 
                 // ----------------------------------- shader -----------------------------------
-                default_shader = new(shader.parse_shader("shaders/texture_vert.glsl", "shaders/texture_frag.glsl"), true);
+                default_shader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
                 default_shader.use();
 
                 // ----------------------------------- shader -----------------------------------
@@ -81,18 +81,19 @@ namespace Core
             // internal game update
             window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
+                //Time.DeltaTime = e.Time;
                 update_game_time(eventArgs.Time);
-                this.player_controller.update_internal(game_time, _input_event);
-                collision_engine.update(active_map.all_game_objects, game_time);       // call collision after update to force 
+                this.player_controller.update_internal(_input_event);
+                collision_engine.update(active_map.all_game_objects);       // call collision after update to force 
 
-                update(game_time);                
+                update();                
                 _input_event.Clear();
             };
 
             window.RenderFrame += (FrameEventArgs eventArgs) => {
 
                 window.SwapBuffers();
-                internal_render(game_time);
+                internal_render();
             };
 
             window.Resize += (ResizeEventArgs eventArgs) => {
@@ -102,7 +103,7 @@ namespace Core
 
                 GL.Viewport(0, 0, window.Size.X, window.Size.Y);
                 camera.set_view_size(window.Size);
-                internal_render(this.game_time);
+                internal_render();
                 window.SwapBuffers();
             };
 
@@ -153,7 +154,7 @@ namespace Core
         protected int inital_window_height { get; set; }
 
         protected GameWindow window { get; private set; }
-        protected game_time game_time { get; } = new();
+        //protected game_time game_time { get; } = new();
         protected collision_engine collision_engine { get; } = new();
 
         // default data
@@ -171,8 +172,8 @@ namespace Core
 
         protected abstract void init();
         protected abstract void shutdown();
-        protected abstract void update(game_time delta_time);
-        protected abstract void render(game_time delta_time);
+        protected abstract void update();
+        protected abstract void render();
 
         protected void set_update_frequency(double frequency) {
 
@@ -188,7 +189,7 @@ namespace Core
         //  ============================================================================== private ============================================================================== 
         private game _instance;
 
-        private void internal_render(game_time delta_time) {
+        private void internal_render() {
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
@@ -197,14 +198,14 @@ namespace Core
             default_map.draw();
 
             // client side code
-            render(delta_time);
+            render();
         }
 
 
         private void update_game_time(double delta_time) {
 
-            this.game_time.elapsed = TimeSpan.FromMilliseconds(delta_time);
-            this.game_time.total += TimeSpan.FromMilliseconds(delta_time);
+            game_time.elapsed = TimeSpan.FromMilliseconds(delta_time);
+            game_time.total += TimeSpan.FromMilliseconds(delta_time);
         }
     }
 }

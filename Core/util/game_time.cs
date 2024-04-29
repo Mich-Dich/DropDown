@@ -7,22 +7,22 @@ using System.Threading.Tasks;
 
 namespace Core.util {
 
-    public class game_time {
+    public static class game_time {
 
         // ======================================= public ======================================= 
-        public game_time() {
+        static game_time() {
 
             total = TimeSpan.Zero;
             elapsed = TimeSpan.Zero;
         }
 
-        public game_time(TimeSpan total_time, TimeSpan elapsed_time) {
+        //static game_time(TimeSpan total_time, TimeSpan elapsed_time) {
 
-            total = total_time;
-            elapsed = elapsed_time;
-        }
+        //    total = total_time;
+        //    elapsed = elapsed_time;
+        //}
 
-        public TimeSpan total { get; set; }
-        public TimeSpan elapsed { get; set; }
+        public static  TimeSpan total { get; set; }
+        public static TimeSpan elapsed { get; set; }
     }
 }

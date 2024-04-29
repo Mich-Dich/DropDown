@@ -3,11 +3,9 @@ using Core.input;
 using Core.util;
 using System;
 
-namespace DropDown
-{
+namespace DropDown {
 
     public class PC_default : player_controller {
-
 
         public action move { get; set; }
         public action look { get; set; }
@@ -47,7 +45,7 @@ namespace DropDown
 
         }
 
-        protected override void update(game_time delta_time) {
+        protected override void update() {
 
             // Console.WriteLine($"move: {move.get_value()}");
 
