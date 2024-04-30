@@ -72,8 +72,11 @@ namespace Core.input {
         CursorPositionX = 8,
         CursorPositionY = 9,
 
-        MouseWheelX= 10,
-        MouseWheelY= 11,
+        CursorPositionX_delta = 10,
+        CursorPositionY_delta = 11,
+
+        MouseWheelX= 12,
+        MouseWheelY= 13,
 
         // ======================================== keyboard ========================================
 

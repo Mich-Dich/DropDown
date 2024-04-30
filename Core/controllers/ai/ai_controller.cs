@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.controllers.ai {
 
-    public class ai_controller : controller {
+    public class ai_controller {
 
     }
 }

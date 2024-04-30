@@ -1,6 +1,6 @@
 ﻿using Core.input;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Numerics;
 
 namespace Core.controllers.player {
 

@@ -1,7 +1,8 @@
-namespace Projektarbeit
-{
-    public interface IState
-    {
+
+namespace Core {
+ 
+    public interface IState {
+    
         void Handle(IContext context);
     }
 }

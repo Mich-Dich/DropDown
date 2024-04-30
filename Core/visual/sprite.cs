@@ -22,6 +22,12 @@ namespace Core.visual {
             init();
         }
 
+        public sprite(Texture texture) {
+
+            this.texture = texture;
+            init();
+        }
+
         public sprite(transform transform, SpriteBatch SpriteBatch) {
 
             this.transform = transform;
@@ -216,7 +222,7 @@ namespace Core.visual {
         }
 
         private Matrix4 calc_modle_matrix() {
-
+            
             Matrix4 trans = Matrix4.CreateTranslation(this.transform.position.X, this.transform.position.Y, 0);
             Matrix4 sca = Matrix4.CreateScale(this.transform.size.X, this.transform.size.Y, 0);
             Matrix4 rot = Matrix4.CreateRotationZ(this.transform.rotation);

@@ -1,15 +1,6 @@
-﻿using Core.visual;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Core.game_objects;
+using Core.visual;
 using OpenTK.Mathematics;
-using Core.renderer;
-using Core.manager;
-using Core.game_objects;
-using Core.physics.material;
-using System.Drawing;
 
 namespace Core {
 
@@ -43,6 +34,11 @@ namespace Core {
         }
 
         public map generate_square(int width, int height) {
+
+            // ------------------------ SETUP ------------------------
+            SpriteBatch sprite_batch = game.instance.ResourceManager.GetSpriteBatch("assets/textures", false);
+            map_tiles.Add(new map_tile(game.instance.ResourceManager.GetTexture("assets/textures/floor_tile_00.png", false)));
+            map_tiles.Add(new map_tile(game.instance.ResourceManager.GetTexture("assets/textures/floor_tile_03.png", false)));
 
             Random random = new Random();
             double missing_time_rate = 0f;
@@ -84,19 +80,7 @@ namespace Core {
 
         private List<map_tile> map_tiles { get; set; } = new();
 
-        private void init() {
-
-            SpriteBatch sprite_batch = game.instance.ResourceManager.GetSpriteBatch("assets/textures", false);
-
-            map_tiles.Add(new map_tile(game.instance.ResourceManager.GetTexture("assets/textures/floor_tile_00.png", false)));
-            map_tiles.Add(new map_tile(game.instance.ResourceManager.GetTexture("assets/textures/floor_tile_03.png", false)));
-
-            //resource_manager.instance.load_texture("textures/floor_tile_00.png");
-            //resource_manager.instance.load_texture("textures/floor_tile_01.png");
-            //resource_manager.instance.load_texture("textures/floor_tile_02.png");
-            //resource_manager.instance.load_texture("textures/floor_tile_03.png");
-            //resource_manager.instance.load_texture("textures/floor_tile_04.png");
-        }
+        private void init() { }
 
     }
 

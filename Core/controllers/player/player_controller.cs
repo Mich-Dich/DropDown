@@ -1,8 +1,13 @@
-﻿using Core.util;
+﻿using Core.game_objects;
+using Core.util;
+using OpenTK.Mathematics;
+using System.ComponentModel.Design;
 
 namespace Core.controllers.player {
 
     public abstract class player_controller : controller {
+
+        public character player { get; set; }
 
         public player_controller() { }
 
@@ -90,9 +95,15 @@ namespace Core.controllers.player {
                         // proccess key_binding modefiers
                         int payload_buffer = is_key_active? 1 : 0;
 
+                        if (key_binding.key == input.key_code.CursorPositionX)
+                            payload_buffer = is_key_active ? loc_event.repeat_amout : 0;
+                        
+                        else if(key_binding.key == input.key_code.CursorPositionY)
+                            payload_buffer = is_key_active ? loc_event.repeat_amout : 0;
+
+
                         if((key_binding.modefier_flags & (uint)key_modefier_flags.negate) != 0)
                             payload_buffer *= -1;
-
 
                         // save value to apropead field
                         switch(loc_action.action_type) {
@@ -119,17 +130,49 @@ namespace Core.controllers.player {
 
                                 else
                                     loc_action.X = payload_buffer;
-                        }
-                            break;
+                            } break;
 
                         }
-
 
                     }
 
 
-                    // TODO: proccess action modefiers
 
+                    // proccess action modefiers
+
+                    if((loc_action.modefier_flags & (uint)action_modefier_flags.normalize_vec) != 0) {
+
+                        switch(loc_action.action_type) {
+
+                            case action_type.BOOL: break;
+                            case action_type.VEC_1D: break;
+
+                            case action_type.VEC_2D: {
+
+                                Vector2 buffer = (Vector2)loc_action.get_value();
+                                if(buffer.Length <= 1)
+                                    break;
+
+                                Console.WriteLine($"length: {buffer.Length}");
+
+                                buffer.Normalize();
+                                loc_action.X = buffer.X;
+                                loc_action.Y = buffer.Y;
+                            } break;
+
+                            case action_type.VEC_3D: {
+
+                                Vector3 buffer = (Vector3)loc_action.get_value();
+                                if(buffer.Length <= 1)
+                                    break;
+                            
+                                buffer.Normalize();
+                                loc_action.X = buffer.X;
+                                loc_action.Y = buffer.Y;
+                                loc_action.Z = buffer.Z;
+                            } break;
+                        }
+                    }
 
                 }
             }

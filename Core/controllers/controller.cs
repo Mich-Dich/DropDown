@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Core.controllers {
 
     public abstract class controller {
-    
+
+
     }
 }

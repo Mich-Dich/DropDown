@@ -5,6 +5,7 @@ using Core.manager;
 using Core.physics;
 using Core.renderer;
 using Core.util;
+using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -22,6 +23,7 @@ namespace Core
         public shader           default_sprite_shader { get; set; }
         public static game      instance { get; private set; }
         public ResourceManager  ResourceManager { get; private set; }
+        public bool             draw_debug { get; set; } = false;
 
         // ============================================================================== public ============================================================================== 
         public game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
@@ -52,16 +54,6 @@ namespace Core
             window = new GameWindow(_game_window_settings, _native_window_settings);
             window.CenterWindow();
 
-            window.Unload += () => {
-                
-                // kill OpenGL
-                GL.BindVertexArray(0);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.UseProgram(0);
-
-                shutdown();
-            };
-
             window.Load += () => {
 
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
@@ -74,18 +66,29 @@ namespace Core
 
                 // ----------------------------------- shader -----------------------------------
                 camera = new(Vector2.Zero, this.window.Size, 0.5f);
-                default_map = new map().generate_square(40, 30);
+                default_map = new map();
 
                 init();
 
-                // register all textures to "u_texture[0]"
-                var texture_sampler_uniform_location = default_sprite_shader.get_uniform_location("u_texture[0]");
-                int[] samplers = new int[resource_manager.instance.get_number_of_textures()];
-                for(int x = 0; x < samplers.Length; x++)
-                    samplers[x] = x;
-                GL.Uniform1(texture_sampler_uniform_location, samplers.Length, samplers);
+                if (player == null)
+                    player = new character();
+                
+                if (player_controller == null) 
+                    throw new ResourceNotAssignedException("player_controller musst be assigned in game class init() function");    
+                                
+                player_controller.player = player;
 
                 window.IsVisible = true;
+            };
+
+            window.Unload += () => {
+                
+                // kill OpenGL
+                GL.BindVertexArray(0);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.UseProgram(0);
+
+                shutdown();
             };
 
             // internal game update
@@ -137,10 +140,10 @@ namespace Core
             window.MouseMove += (MouseMoveEventArgs args) => {
 
                 if(args.DeltaX != 0)
-                    _input_event.Add(new input_event(key_code.CursorPositionX, (KeyModifiers)0, (int)args.DeltaX, key_state.Repeat));
+                    _input_event.Add(new input_event(key_code.CursorPositionX, (KeyModifiers)0, (int)args.X, key_state.Repeat));
 
                 if(args.DeltaY != 0)
-                    _input_event.Add(new input_event(key_code.CursorPositionY, (KeyModifiers)0, (int)args.DeltaY, key_state.Repeat));
+                    _input_event.Add(new input_event(key_code.CursorPositionY, (KeyModifiers)0, (int)args.Y, key_state.Repeat));
             };
 
             //collision_engine = new collision_engine();
@@ -154,21 +157,21 @@ namespace Core
         protected int inital_window_width { get; set; }
         protected int inital_window_height { get; set; }
 
-        protected GameWindow window { get; private set; }
-        //protected game_time game_time { get; } = new();
-        protected collision_engine collision_engine { get; } = new();
+        public GameWindow        window { get; private set; }
+        //protected game_time         game_time { get; } = new();
+        protected collision_engine  collision_engine { get; } = new();
+        public camera            camera { get; set; }
 
         // default data
         protected map               default_map { get; set; }
 
         // game mode
-        protected character         plaer { get; set; }
+        protected character         player { get; set; }
         protected player_controller player_controller { get; set; }
-        protected map active_map { get; set; }
+        protected map               active_map { get; set; }
         //protected List<map> active_maps { get; set; }     // TODO: add array of maps to enable DROP into new level
 
         // general
-        protected camera camera { get; set; }
 
         protected abstract void init();
         protected abstract void shutdown();
@@ -196,6 +199,7 @@ namespace Core
             default_sprite_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
 
             default_map.draw();
+            player.draw();
 
             // client side code
             render();

@@ -1,17 +1,9 @@
-﻿using Core;
-using Core.game_objects;
-using Core.manager;
-using Core.renderer;
-using Core.util;
-using Core.visual;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+﻿
+namespace Hell {
 
-namespace DropDown {
+    internal class Hell : Core.game {
 
-    internal class generate_map : Core.game {
-
-        public generate_map(String title, Int32 inital_window_width, Int32 inital_window_height)
+        public Hell(String title, Int32 inital_window_width, Int32 inital_window_height)
             : base(title, inital_window_width, inital_window_height) { }
 
         // ========================================================= functions =========================================================
@@ -19,6 +11,8 @@ namespace DropDown {
 
             this.player_controller = new PC_default();
             set_update_frequency(144.0f);
+
+            this.player = new player();
         }
 
         protected override void shutdown() { }

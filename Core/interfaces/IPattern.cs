@@ -1,7 +1,8 @@
-namespace Projektarbeit
-{
-    public interface IPattern
-    {
+
+namespace Core {
+
+    public interface IPattern {
+
         void Execute();
     }
 }

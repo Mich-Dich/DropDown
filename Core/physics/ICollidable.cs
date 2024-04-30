@@ -5,7 +5,11 @@ namespace Core.physics {
 
     public interface ICollidable {
 
-        transform transform { get; set; }
+        // transform transform { get; set; }
         // CollisionManager CollisionManager { get; set; }
+
+
     }
+
+
 }

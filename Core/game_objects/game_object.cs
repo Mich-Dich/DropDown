@@ -5,16 +5,20 @@ using OpenTK.Mathematics;
 
 namespace Core.game_objects {
 
-    public abstract class game_object : ICollidable {
+    public abstract class game_object {
 
         //public float mass { get; set; }
         //public Vector2 velocity { get; set; }
         //public physics_material physics_material {  get; set; }
 
+        // world data
         public transform            transform { get; set; } = new transform();
-        public sprite?              sprite { get; set; }
         public game_object?         parent { get; private set; }
         public List<game_object>    children { get; } = new List<game_object>();
+
+        // game_object data
+        public sprite?              sprite { get; private set; }
+        public collider?            collider { get; set; }
 
         // ======================= func =====================
 
@@ -31,6 +35,12 @@ namespace Core.game_objects {
             init();
         }
 
+        public void add_sprite(sprite sprite) {
+
+            this.sprite = sprite;
+            this.sprite.transform = transform;  // let sprite access main transform
+        }
+
         public abstract void hit(hit_data hit);
 
         public void draw() {
@@ -39,6 +49,9 @@ namespace Core.game_objects {
                 return;
 
             sprite.draw();
+
+            //if(game.instance.draw_debug && this.collider != null)
+            //    this.debugDrawer.DrawCollisionShape(this.Transform, this.CollisionManager, this.DebugColor);
 
         }
 

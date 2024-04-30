@@ -10,7 +10,10 @@ namespace Core.game_objects {
         public mobility     mobility { get; set; } = mobility.DYNAMIC;    // conserning update method
         public transform?   parent { get; set; }
 
-        public transform() { }
+        public transform() {
+        
+            this.position = new Vector2();
+        }
 
         public transform(Vector2 position, Vector2 size, Single rotation, mobility mobility, transform? parent = null) {
 
@@ -32,7 +35,7 @@ namespace Core.game_objects {
             }
 
             set {
-                this._position = this.parent == null ? value : value - this.parent.position;
+                this._position = (this.parent == null) ? value : value - this.parent.position;
             }
         }
 
