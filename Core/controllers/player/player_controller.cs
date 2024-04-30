@@ -1,7 +1,5 @@
 ﻿using Core.game_objects;
-using Core.util;
 using OpenTK.Mathematics;
-using System.ComponentModel.Design;
 
 namespace Core.controllers.player {
 

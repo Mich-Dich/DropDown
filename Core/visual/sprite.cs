@@ -1,7 +1,5 @@
 ﻿using Core.game_objects;
-using Core.manager;
 using Core.renderer;
-using Core.util;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -9,14 +7,14 @@ namespace Core.visual {
 
     public class sprite : IAnimatable {
 
-        public transform        transform { get; set; } = new();
-        public shader?          shader { get; set; }
-        public Texture?         texture { get; set; }
+        public transform transform { get; set; } = new();
+        public shader? shader { get; set; }
+        public Texture? texture { get; set; }
 
         // ------------------------------ animation ------------------------------
-        public animation?       Animation { get; set; }
-        public Int32            CurrentFrameIndex { get; set; }
-        
+        public animation? Animation { get; set; }
+        public Int32 CurrentFrameIndex { get; set; }
+
         // =============================================== constructors =============================================== 
 
         public sprite(shader shader) { this.shader = shader; init(); }
@@ -24,7 +22,7 @@ namespace Core.visual {
         public sprite(transform transform, Texture texture) {
             this.transform = transform;
             this.texture = texture;
-            init();
+            //init();
         }
 
         public sprite(Texture texture) {
@@ -39,7 +37,7 @@ namespace Core.visual {
 
         public sprite(Vector2? position = null, Vector2? size = null, Single rotation = 0.0f, mobility mobility = mobility.DYNAMIC) {
 
-            this.transform.position = position ?? new Vector2(0 ,0);
+            this.transform.position = position ?? new Vector2(0, 0);
             this.transform.size = size ?? new Vector2(100, 100);
             this.transform.rotation = rotation;
             this.transform.mobility = mobility;
@@ -103,7 +101,7 @@ namespace Core.visual {
         public sprite set_animation(string path_to_directory, bool is_pixel_art = false, bool start_playing = false, int fps = 30, bool loop = false) {
 
             this.Animation = new animation(this, fps, loop);
-            if (start_playing) {
+            if(start_playing) {
                 this.Animation.Play();
             }
             this.Animation.SpriteBatch = new SpriteBatch(path_to_directory, is_pixel_art);
@@ -116,7 +114,7 @@ namespace Core.visual {
             if(this.transform.mobility == mobility.STATIC)
                 _model_matrix = calc_modle_matrix();
         }
-        
+
         // =============================================== functions =============================================== 
 
         public void draw(Matrix4? model = null) {
@@ -169,14 +167,38 @@ namespace Core.visual {
             throw new NotImplementedException();
         }
 
-        // ============================================ private  ============================================ 
-        private index_buffer _index_buffer { get; set; }
-        private vertex_buffer _vertex_buffer { get; set; }
-        private vertex_array _vertex_array { get; set; }
-        private Matrix4 _model_matrix;
-        private bool needs_update { get; set; } = true;
+        public sprite select_texture_region(int number_of_columns = 1, int number_of_rows = 1, int column_index = 0, int row_index = 0) {
 
-        private float[] _verticies = {
+            float offset_y = 1.0f / ((float)number_of_rows * 50);
+            float offset_x = 1.0f / ((float)number_of_columns * 50);
+
+            // bottom - right
+            _verticies[3] = ((float)row_index / (float)number_of_rows) + offset_y;
+            _verticies[2] = ((float)column_index / (float)number_of_columns) + (1.0f / (float)number_of_columns) - offset_x;
+
+            // top - right
+            _verticies[8] = ((float)row_index / (float)number_of_rows) + (1.0f / (float)number_of_rows) - offset_y;
+            _verticies[7] = ((float)column_index / (float)number_of_columns) + (1.0f / (float)number_of_columns) - offset_x;
+
+            // top - left
+            _verticies[13] = ((float)row_index / (float)number_of_rows) + (1.0f / (float)number_of_rows) - offset_y;
+            _verticies[12] = ((float)column_index / (float)number_of_columns) + offset_x;
+
+            // bottom - left
+            _verticies[18] = ((float)row_index / (float)number_of_rows) + offset_y;
+            _verticies[17] = ((float)column_index / (float)number_of_columns) + offset_x;
+
+            return this;
+        }
+
+        // ============================================ private  ============================================ 
+        private index_buffer    _index_buffer { get; set; }
+        private vertex_buffer   _vertex_buffer { get; set; }
+        private vertex_array    _vertex_array { get; set; }
+        private Matrix4         _model_matrix;
+        private bool            needs_update { get; set; } = true;
+
+        private float[] _verticies { get; set; } = {
         //   x    y    UV.y  UV.x
              1f,  1f,  1f,   1f,  1f,
              1f, -1f,  1f,   0f,  1f,
@@ -203,7 +225,7 @@ namespace Core.visual {
             1, 2 ,3
         };
 
-        private void init() {
+        public sprite init() {
 
             if(this.shader == null)
                 this.shader = game.instance.default_sprite_shader;
@@ -216,6 +238,8 @@ namespace Core.visual {
 
             if(this.transform.mobility == mobility.STATIC)
                 _model_matrix = calc_modle_matrix();
+
+            return this;
         }
 
         private buffer_layout get_buffer_layout() {

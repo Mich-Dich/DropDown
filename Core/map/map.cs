@@ -37,8 +37,7 @@ namespace Core {
         public map generate_square(int width, int height) {
 
             // ------------------------ SETUP ------------------------
-            map_tiles.Add(new map_tile(ResourceManager.GetTexture("assets/textures/floor_tile_00.png", false)));
-            map_tiles.Add(new map_tile(ResourceManager.GetTexture("assets/textures/floor_tile_03.png", false)));
+            texture_atlas = ResourceManager.GetTexture("assets/textures/terrain.png", false);
             
             Random random = new Random();
             double missing_time_rate = 0f;
@@ -55,13 +54,18 @@ namespace Core {
 
                     transform loc_trans_buffer = new transform(new Vector2( x * tile_size.X - offset_x, y * tile_size.Y - offset_y),
                         new Vector2(tile_size.X / 2, tile_size.Y / 2),
-                        (float)utility.degree_to_radians(_rotations[random.Next(0, 3)]),
+                        0, //(float)utility.degree_to_radians(_rotations[random.Next(0, 3)]),
                         mobility.STATIC);
 
-                    if(random.NextDouble() < 0.5f)    // Skip adding tiles at certain positions (e.g., missing tiles)
-                        floor.Add(new sprite(loc_trans_buffer, map_tiles[0].Texture));
+                    // ============================ GRAS FILD ============================ 
+                    if(random.NextDouble() < 0.01f)
+                        floor.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 3, 30).init());
+                    else if(random.NextDouble() < 0.03f)
+                        floor.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 5, 26).init());
+                    else if(random.NextDouble() < 0.1f)
+                        floor.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 10, 5).init());
                     else
-                        floor.Add(new sprite(loc_trans_buffer, map_tiles[1].Texture));
+                        floor.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 4, 28).init());
                 }
             }
 
@@ -77,7 +81,7 @@ namespace Core {
         private readonly float[] _rotations = { 0, 90, 180 ,270 };
         private List<sprite> floor = new List<sprite>();
 
-        private List<map_tile> map_tiles { get; set; } = new();
+        private Texture texture_atlas { get; set; }
 
         private void init() { }
 

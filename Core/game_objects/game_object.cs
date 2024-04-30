@@ -1,5 +1,4 @@
 ﻿using Core.physics;
-using Core.physics.material;
 using Core.visual;
 using OpenTK.Mathematics;
 

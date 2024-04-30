@@ -17,7 +17,7 @@ namespace DropDown {
             this.player_controller = new PC_default();
             this.player = new player();
 
-            this.default_map.generate_square(4, 3);
+            this.default_map.generate_square(40, 30);
             
             animation_sprite = new sprite(new Vector2(600, 200)).set_animation("assets/textures/Explosion-2", false, true, 30, true);
         }
