@@ -9,18 +9,22 @@ namespace Core {
     public class Texture : IDisposable {
 
         private byte[] imageData;
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+        public bool IsPixelArt { get; set; }
+        public int Handle { get; private set; }
+
 
         public Texture(string path, bool isPixelArt = false) {
-            if(!File.Exists(path)) {
+
+            if(!File.Exists(path)) 
                 throw new FileNotFoundException($"The file at path {path} could not be found.");
-            }
+            
 
             this.IsPixelArt = isPixelArt;
-
             this.Handle = GL.GenTexture();
 
             StbImage.stbi_set_flip_vertically_on_load(1);
-
             ImageResult image = ImageResult.FromStream(File.OpenRead(path), ColorComponents.RedGreenBlueAlpha);
 
             GL.BindTexture(TextureTarget.Texture2D, this.Handle);
@@ -42,11 +46,11 @@ namespace Core {
 
             this.Width = image.Width;
             this.Height = image.Height;
-
             this.imageData = image.Data;
         }
 
         public Texture(Texture source, Vector2 min, Vector2 max) {
+            
             this.Width = (int)((max.X - min.X) * source.Width);
             this.Height = (int)((max.Y - min.Y) * source.Height);
             this.IsPixelArt = source.IsPixelArt;
@@ -70,29 +74,16 @@ namespace Core {
             }
         }
 
-        public int Width { get; private set; }
+        public void Dispose() { GL.DeleteTexture(this.Handle); }
 
-        public int Height { get; private set; }
+        public byte[] GetImageData() { return this.imageData; }
 
-        public bool IsPixelArt { get; set; }
-
-        public int Handle { get; private set; }
+        public void Unbind() { GL.BindTexture(TextureTarget.Texture2D, 0); }
 
         public void Use(TextureUnit unit = TextureUnit.Texture0) {
+        
             GL.ActiveTexture(unit);
             GL.BindTexture(TextureTarget.Texture2D, this.Handle);
-        }
-
-        public void Dispose() {
-            GL.DeleteTexture(this.Handle);
-        }
-
-        public byte[] GetImageData() {
-            return this.imageData;
-        }
-
-        public void Unbind() {
-            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
     }
 }

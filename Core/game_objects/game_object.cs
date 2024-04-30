@@ -11,26 +11,24 @@ namespace Core.game_objects {
         //public Vector2 velocity { get; set; }
         //public physics_material physics_material {  get; set; }
 
-        public mobility mobility { get; set; } = mobility.DYNAMIC;    // conserning update method
         public transform transform { get; set; } = new transform();
-
         public sprite? sprite { get; set; }
-
         public game_object? parent { get; private set; }
         public List<game_object> children { get; } = new List<game_object>();
 
-        //public List<game_object> childer {  get; set; }       // tODO: add capapility for children
-
         // ======================= func =====================
 
-        public game_object() { }
+        public game_object() { init(); }
+
+        public game_object(transform transform) { this.transform = transform; init(); }
         
         public game_object(Vector2 position, Vector2 size, Single rotation, mobility mobility = mobility.DYNAMIC) {
 
-            transform.position = position;
-            transform.size = size;
-            transform.rotation = rotation;
-            this.mobility = mobility;
+            this.transform.position = position;
+            this.transform.size = size;
+            this.transform.rotation = rotation;
+            this.transform.mobility = mobility;
+            init();
         }
 
         public abstract void hit(hit_data hit);
@@ -39,6 +37,8 @@ namespace Core.game_objects {
 
             if(sprite == null)
                 return;
+
+            sprite.draw();
 
         }
 
@@ -63,6 +63,15 @@ namespace Core.game_objects {
             return distance <= range;
         }
 
+        // =============================================== private ==============================================
+
+        //private DebugDrawer debugDrawer;
+        //private DebugColor DebugColor { get; set; } = DebugColor.Red;
+
+        private void init() {
+
+            //this.debugDrawer = new DebugDrawer();
+        }
     }
 
 

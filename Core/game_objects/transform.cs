@@ -7,7 +7,7 @@ namespace Core.game_objects {
 
         public Vector2      size { get; set; }
         public float        rotation { get; set; }
-        public mobility     mobility { get; set; } = mobility.DYNAMIC;
+        public mobility     mobility { get; set; } = mobility.DYNAMIC;    // conserning update method
         public transform?   parent { get; set; }
 
         public Vector2 position {

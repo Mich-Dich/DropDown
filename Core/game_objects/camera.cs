@@ -7,12 +7,10 @@ namespace Core.game_objects
 
     public class camera : game_object{
 
-        // game_object.position     => camera position
-        // game_object.scale        => camera zoom
+        public float scale { get; set; }    // camera zoom
 
-        public float scale { get; set; }
-
-        public camera(OpenTK.Mathematics.Vector2 position, OpenTK.Mathematics.Vector2 window_size, float zoom) {
+        public camera(OpenTK.Mathematics.Vector2 position, OpenTK.Mathematics.Vector2 window_size, float zoom)
+            :base(position, window_size, 0, mobility.DYNAMIC) {
 
             this.transform.position = position;
             this.transform.size = window_size;
@@ -37,8 +35,7 @@ namespace Core.game_objects
             return orthographic_matrix * zoom_matrix;
         }
 
-        public override void hit(hit_data hit) {
-            throw new NotImplementedException();
-        }
+        public override void hit(hit_data hit) { throw new NotImplementedException(); }
+    
     }
 }

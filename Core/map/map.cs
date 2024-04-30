@@ -51,7 +51,7 @@ namespace Core {
         public void draw() {
 
             for(int x = 0; x < _tile_data.Count; x++) 
-                _core_sprite.draw(_shader, _tile_data[x].modle_matrix, _tile_data[x].texture_slot);
+                _core_sprite.draw(_tile_data[x].modle_matrix, _tile_data[x].texture_slot);
 
             //parameter_buffer _parameter_buffer = new parameter_buffer();
             //_parameter_buffer.bind();

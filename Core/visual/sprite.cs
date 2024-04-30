@@ -8,9 +8,10 @@ using System.Reflection;
 
 namespace Core.visual {
 
-    public class sprite {
+    public class sprite : IAnimatable {
 
         public transform transform { get; set; } = new();
+        public shader shader { get; set; }
 
         public sprite(transform transform) { 
             
@@ -75,7 +76,7 @@ namespace Core.visual {
 
         }
 
-        public void draw(shader shader) {
+        public void draw() {
 
             _vertex_array.bind();
             _index_buffer.bind();
@@ -88,41 +89,41 @@ namespace Core.visual {
 
             // recalculate matrix every frame
             if (this.transform.mobility == mobility.DYNAMIC || needs_update)
-                shader.set_matrix_4x4("model", calc_modle_matrix());
+                this.shader.set_matrix_4x4("model", calc_modle_matrix());
             
             // else use precalculated matrix
             else if (this.transform.mobility == mobility.STATIC)
-                shader.set_matrix_4x4("model", _model_matrix);
+                this.shader.set_matrix_4x4("model", _model_matrix);
 
             GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
         }
 
-        public void draw(shader shader, Matrix4 model) {
+        public void draw(Matrix4 model) {
 
             _vertex_array.bind();
             _index_buffer.bind();
 
-            shader.set_matrix_4x4("model", model);
+            this.shader.set_matrix_4x4("model", model);
             GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
         }
 
-        public void draw(shader shader, Matrix4 model, int texture_slot) {
-
-            _vertex_array.bind();
-            _index_buffer.bind();
-
-            use_texture_slot(texture_slot);
-            shader.set_matrix_4x4("model", model);
-            GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
-        }
-
-        public void draw_instanced(shader shader, Matrix4 model, int texture_slot, int count) {
+        public void draw(Matrix4 model, int texture_slot) {
 
             _vertex_array.bind();
             _index_buffer.bind();
 
             use_texture_slot(texture_slot);
-            shader.set_matrix_4x4("model", model);
+            this.shader.set_matrix_4x4("model", model);
+            GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
+        }
+
+        public void draw_instanced(Matrix4 model, int texture_slot, int count) {
+
+            _vertex_array.bind();
+            _index_buffer.bind();
+
+            use_texture_slot(texture_slot);
+            this.shader.set_matrix_4x4("model", model);
             GL.DrawElementsInstanced(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0, count);
         }
 
@@ -147,12 +148,23 @@ namespace Core.visual {
             _vertex_array.add_buffer(_vertex_buffer, this.get_buffer_layout());
         }
 
+
+        // ------------------------------ animation ------------------------------
+        public SpriteBatch? SpriteBatch { get; set; }
+        public Animation? Animation { get; set; }
+        public Int32 CurrentFrameIndex { get; set; }
+
+        public void update_animation() {
+            throw new NotImplementedException();
+        }
+
         // ============================================ private  ============================================ 
         private index_buffer _index_buffer { get; set; }
         private vertex_buffer _vertex_buffer { get; set; }
         private vertex_array _vertex_array { get; set; }
         private Matrix4 _model_matrix;
         private bool needs_update { get; set; } = true;
+
         private float[] _verticies = {
         //   x    y    UV.y  UV.x
              1f,  1f,  1f,   1f,  1f,
@@ -186,6 +198,7 @@ namespace Core.visual {
 
         private void init() {
 
+            shader = game.instance.default_shader;
             _vertex_buffer = new vertex_buffer(_verticies);
             _vertex_buffer.bind();
             _vertex_array = new();

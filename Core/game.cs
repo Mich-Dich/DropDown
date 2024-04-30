@@ -19,8 +19,9 @@ namespace Core
         public GameWindowSettings _game_window_settings = GameWindowSettings.Default;
         public NativeWindowSettings _native_window_settings = NativeWindowSettings.Default;
 
-        public static game instance { get; private set; }
-        public ResourceManager ResourceManager { get; private set; }
+        public shader           default_shader { get; set; }
+        public static game      instance { get; private set; }
+        public ResourceManager  ResourceManager { get; private set; }
 
         // ============================================================================== public ============================================================================== 
         public game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
@@ -158,7 +159,6 @@ namespace Core
         protected collision_engine collision_engine { get; } = new();
 
         // default data
-        protected shader            default_shader { get; set; }
         protected map               default_map { get; set; }
 
         // game mode
