@@ -1,21 +1,31 @@
 ﻿using Core.game_objects;
 using Core.manager;
-using Core.physics.material;
 using Core.renderer;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Reflection;
 
 namespace Core.visual {
 
     public class sprite : IAnimatable {
 
-        public transform transform { get; set; } = new();
-        public shader shader { get; set; }
+        public transform        transform { get; set; } = new();
+        public shader?           shader { get; set; }
+        public Texture?         texture { get; set; }
+        public SpriteBatch?     spriteBatch { get; set; }
 
-        public sprite(transform transform) { 
-            
+        public sprite(shader shader) { this.shader = shader; }
+
+        public sprite(transform transform, Texture texture) {
+
             this.transform = transform;
+            this.texture = texture;
+            init();
+        }
+
+        public sprite(transform transform, SpriteBatch SpriteBatch) {
+
+            this.transform = transform;
+            this.SpriteBatch = SpriteBatch;
             init();
         }
 
@@ -24,49 +34,49 @@ namespace Core.visual {
             this.transform.position = position ?? new Vector2(0 ,0);
             this.transform.size = size ?? new Vector2(100, 100);
             this.transform.rotation = rotation;
-
+            this.transform.mobility = mobility;
             init();
         }
 
         // =============================================== functions =============================================== 
 
-        public void add_texture(string file_path) {
+        //public void add_texture(string file_path) {
 
-            resource_manager.instance.load_texture(file_path);
-        }
+        //    resource_manager.instance.load_texture(file_path);
+        //}
 
-        public void add_texture(List<string> file_paths) {
+        //public void add_texture(List<string> file_paths) {
 
-            foreach (string file_path in file_paths)
-                resource_manager.instance.load_texture(file_path);
-        }
+        //    foreach (string file_path in file_paths)
+        //        resource_manager.instance.load_texture(file_path);
+        //}
 
-        // set translation in world
-        public void set_position(Vector2 position) { 
+        //// set translation in world
+        //public void set_position(Vector2 position) { 
             
-            this.transform.position = position;
-            needs_update = true;
-        }
+        //    this.transform.position = position;
+        //    needs_update = true;
+        //}
         
-        public void set_size(Vector2 scale) { 
+        //public void set_size(Vector2 scale) { 
 
-            this.transform.size = scale;
-            needs_update = true;
-        }
+        //    this.transform.size = scale;
+        //    needs_update = true;
+        //}
         
-        public void set_rotation(float rotation) {
+        //public void set_rotation(float rotation) {
             
-            this.transform.rotation = rotation;
-            needs_update = true;
-        }
+        //    this.transform.rotation = rotation;
+        //    needs_update = true;
+        //}
 
-        public void set_translation(Vector2 position, Vector2 scale, float rotation) {
+        //public void set_translation(Vector2 position, Vector2 scale, float rotation) {
         
-            this.transform.position = position;
-            this.transform.size= scale;
-            this.transform.rotation = rotation;
-            needs_update = true;
-        }
+        //    this.transform.position = position;
+        //    this.transform.size= scale;
+        //    this.transform.rotation = rotation;
+        //    needs_update = true;
+        //}
 
         public void set_mobility(mobility mobility) {
 
@@ -77,54 +87,28 @@ namespace Core.visual {
         }
 
         public void draw() {
+            
+            setup_draw_call();
 
-            _vertex_array.bind();
-            _index_buffer.bind();
+            // recalculate matrix every frame
+            if(this.transform.mobility == mobility.DYNAMIC || needs_update) {
 
-            if(needs_update) {
-
-                _model_matrix = calc_modle_matrix();
+                this.shader.set_matrix_4x4("model", calc_modle_matrix());
                 needs_update = false;
             }
 
-            // recalculate matrix every frame
-            if (this.transform.mobility == mobility.DYNAMIC || needs_update)
-                this.shader.set_matrix_4x4("model", calc_modle_matrix());
-            
             // else use precalculated matrix
             else if (this.transform.mobility == mobility.STATIC)
                 this.shader.set_matrix_4x4("model", _model_matrix);
 
-            GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
+            draw_call();
         }
 
         public void draw(Matrix4 model) {
-
-            _vertex_array.bind();
-            _index_buffer.bind();
-
+            
+            setup_draw_call();
             this.shader.set_matrix_4x4("model", model);
-            GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
-        }
-
-        public void draw(Matrix4 model, int texture_slot) {
-
-            _vertex_array.bind();
-            _index_buffer.bind();
-
-            use_texture_slot(texture_slot);
-            this.shader.set_matrix_4x4("model", model);
-            GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
-        }
-
-        public void draw_instanced(Matrix4 model, int texture_slot, int count) {
-
-            _vertex_array.bind();
-            _index_buffer.bind();
-
-            use_texture_slot(texture_slot);
-            this.shader.set_matrix_4x4("model", model);
-            GL.DrawElementsInstanced(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0, count);
+            draw_call();
         }
 
         public buffer_layout get_buffer_layout() {
@@ -136,18 +120,6 @@ namespace Core.visual {
 
             return layout;
         }
-
-        public void use_texture_slot(int slot) {
-
-            _verticies[4] = (float)slot;
-            _verticies[9] = (float)slot;
-            _verticies[14] = (float)slot;
-            _verticies[19] = (float)slot;
-
-            _vertex_buffer.update_content(_verticies);
-            _vertex_array.add_buffer(_vertex_buffer, this.get_buffer_layout());
-        }
-
 
         // ------------------------------ animation ------------------------------
         public SpriteBatch? SpriteBatch { get; set; }
@@ -196,9 +168,43 @@ namespace Core.visual {
 
         }
 
+        private void setup_draw_call() {
+
+            if(this.shader == null || (this.texture == null && this.SpriteBatch == null))
+                throw new ResourceNotAssignedException("Shader or Texture not assigned");
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            shader.use();
+            _vertex_array.bind();
+            _index_buffer.bind();
+
+            // display correct format
+            if(this.texture != null)
+                this.texture.Use(TextureUnit.Texture0);
+
+            else if(this.Animation != null) {
+
+                Texture frame = this.Animation.GetCurrentFrame();
+                frame.Use(TextureUnit.Texture0);
+            }
+            else if(this.SpriteBatch != null) {
+
+                Texture frame = this.SpriteBatch.GetFrame(this.CurrentFrameIndex);
+                frame.Use(TextureUnit.Texture0);
+            }
+        }
+
+        private void draw_call() {
+
+            GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
+        }
+
         private void init() {
 
-            shader = game.instance.default_shader;
+            if (this.shader == null)
+                this.shader = game.instance.default_sprite_shader;
+
             _vertex_buffer = new vertex_buffer(_verticies);
             _vertex_buffer.bind();
             _vertex_array = new();

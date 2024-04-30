@@ -19,7 +19,7 @@ namespace Core
         public GameWindowSettings _game_window_settings = GameWindowSettings.Default;
         public NativeWindowSettings _native_window_settings = NativeWindowSettings.Default;
 
-        public shader           default_shader { get; set; }
+        public shader           default_sprite_shader { get; set; }
         public static game      instance { get; private set; }
         public ResourceManager  ResourceManager { get; private set; }
 
@@ -69,17 +69,17 @@ namespace Core
                 active_map = new map();
 
                 // ----------------------------------- shader -----------------------------------
-                default_shader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
-                default_shader.use();
+                default_sprite_shader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
+                default_sprite_shader.use();
 
                 // ----------------------------------- shader -----------------------------------
                 camera = new(Vector2.Zero, this.window.Size, 0.5f);
-                default_map = new map(default_shader).generate_square(40, 30);
+                default_map = new map().generate_square(40, 30);
 
                 init();
 
                 // register all textures to "u_texture[0]"
-                var texture_sampler_uniform_location = default_shader.get_uniform_location("u_texture[0]");
+                var texture_sampler_uniform_location = default_sprite_shader.get_uniform_location("u_texture[0]");
                 int[] samplers = new int[resource_manager.instance.get_number_of_textures()];
                 for(int x = 0; x < samplers.Length; x++)
                     samplers[x] = x;
@@ -193,7 +193,7 @@ namespace Core
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            default_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
+            default_sprite_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
 
             default_map.draw();
 

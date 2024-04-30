@@ -11,10 +11,10 @@ namespace Core.game_objects {
         //public Vector2 velocity { get; set; }
         //public physics_material physics_material {  get; set; }
 
-        public transform transform { get; set; } = new transform();
-        public sprite? sprite { get; set; }
-        public game_object? parent { get; private set; }
-        public List<game_object> children { get; } = new List<game_object>();
+        public transform            transform { get; set; } = new transform();
+        public sprite?              sprite { get; set; }
+        public game_object?         parent { get; private set; }
+        public List<game_object>    children { get; } = new List<game_object>();
 
         // ======================= func =====================
 

@@ -5,10 +5,21 @@ namespace Core.game_objects {
 
     public class transform {
 
-        public Vector2      size { get; set; }
-        public float        rotation { get; set; }
+        public Vector2      size { get; set; } = new Vector2(100, 100);
+        public float        rotation { get; set; } = 0;
         public mobility     mobility { get; set; } = mobility.DYNAMIC;    // conserning update method
         public transform?   parent { get; set; }
+
+        public transform() { }
+
+        public transform(Vector2 position, Vector2 size, Single rotation, mobility mobility, transform? parent = null) {
+
+            this._position = position;
+            this.size = size;
+            this.rotation = rotation;
+            this.mobility = mobility;
+            this.parent = parent;
+        }
 
         public Vector2 position {
             get {

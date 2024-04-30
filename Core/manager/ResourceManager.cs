@@ -19,6 +19,7 @@ namespace Core.manager {
         }
 
         public Texture GetTexture(string path, bool isPixelArt = false) {
+            
             if(!this.textures.ContainsKey(path)) 
                 this.textures[path] = new Texture(path, isPixelArt);
             
@@ -26,6 +27,7 @@ namespace Core.manager {
         }
 
         public SpriteBatch GetSpriteBatch(string directoryPath, bool isPixelArt = false) {
+
             if(!this.spriteBatches.ContainsKey(directoryPath)) 
                 this.spriteBatches[directoryPath] = new SpriteBatch(directoryPath, this, isPixelArt);
             

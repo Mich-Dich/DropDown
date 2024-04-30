@@ -9,6 +9,7 @@ using Core.renderer;
 using Core.manager;
 using Core.game_objects;
 using Core.physics.material;
+using System.Drawing;
 
 namespace Core {
 
@@ -18,19 +19,6 @@ namespace Core {
 
         public map() {
 
-            init();
-        }
-
-        public map(shader shader) {
-         
-            _shader = shader;
-            init();
-        }
-
-        public map(shader shader, List<tile_data> positions ) {
-
-            _shader = shader;
-            _tile_data = positions;
             init();
         }
 
@@ -50,15 +38,8 @@ namespace Core {
 
         public void draw() {
 
-            for(int x = 0; x < _tile_data.Count; x++) 
-                _core_sprite.draw(_tile_data[x].modle_matrix, _tile_data[x].texture_slot);
-
-            //parameter_buffer _parameter_buffer = new parameter_buffer();
-            //_parameter_buffer.bind();
-
-            // write buffer to save [modle_matrix, texture_slot]
-
-            //_core_sprite.draw_instanced(_shader, _tile_data[0].modle_matrix, _tile_data[0].texture_slot, _tile_data.Count);
+            for(int x = 0; x < floor.Count; x++)
+                floor[x].draw();
         }
 
         public map generate_square(int width, int height) {
@@ -76,39 +57,59 @@ namespace Core {
                     if(random.NextDouble() < missing_time_rate)    // Skip adding tiles at certain positions (e.g., missing tiles)
                         continue;
 
-                    float rotation = (float)utility.degree_to_radians(_rotations[random.Next(0,3)]);
-                    Matrix4 trans = Matrix4.CreateTranslation(x * tile_size.X - offset_x, y * tile_size.Y - offset_y, 0);
-                    Matrix4 sca = Matrix4.CreateScale(tile_size.X / 2, tile_size.Y / 2, 0);
-                    Matrix4 rot = Matrix4.CreateRotationZ(rotation);
+                    transform loc_trans_buffer = new transform(new Vector2( x * tile_size.X - offset_x, y * tile_size.Y - offset_y),
+                        new Vector2(tile_size.X / 2, tile_size.Y / 2),
+                        (float)utility.degree_to_radians(_rotations[random.Next(0, 3)]),
+                        mobility.STATIC);
 
-                    _tile_data.Add(new tile_data(random.Next(5), rot * sca * trans));
+                    if(random.NextDouble() < 0.5f)    // Skip adding tiles at certain positions (e.g., missing tiles)
+                        floor.Add(new sprite(loc_trans_buffer, map_tiles[0].Texture));
+                    else
+                        floor.Add(new sprite(loc_trans_buffer, map_tiles[1].Texture));
                 }
             }
-
-            var test = _tile_data[random.Next(width)];
-            test.texture_slot = 4;
 
             return this;
         }
 
         // ========================================== private ==========================================
 
-        private sprite _core_sprite = new sprite(Vector2.Zero, new Vector2(100), 0, mobility.STATIC);
-        private shader _shader;
-        private List<tile_data> _tile_data = new List<tile_data>{};
-        private List<Matrix4> _tile_modle_matrix = new List<Matrix4>();
-        private readonly float[] _rotations = { 0, 90, 180 ,270 };
+        //private sprite _core_sprite = new sprite(Vector2.Zero, new Vector2(100), 0, mobility.STATIC);
+        //private List<tile_data> _tile_data = new List<tile_data>{};
+        //private List<Matrix4> _tile_modle_matrix = new List<Matrix4>();
 
-        //private List<float> 
+        private readonly float[] _rotations = { 0, 90, 180 ,270 };
+        private List<sprite> floor = new List<sprite>();
+        private SpriteBatch sprite_batch { get; set; }
+
+        private List<map_tile> map_tiles { get; set; } = new();
 
         private void init() {
 
-            resource_manager.instance.load_texture("textures/floor_tile_00.png");
-            resource_manager.instance.load_texture("textures/floor_tile_01.png");
-            resource_manager.instance.load_texture("textures/floor_tile_02.png");
-            resource_manager.instance.load_texture("textures/floor_tile_03.png");
-            resource_manager.instance.load_texture("textures/floor_tile_04.png");
+            SpriteBatch sprite_batch = game.instance.ResourceManager.GetSpriteBatch("assets/textures", false);
+
+            map_tiles.Add(new map_tile(game.instance.ResourceManager.GetTexture("assets/textures/floor_tile_00.png", false)));
+            map_tiles.Add(new map_tile(game.instance.ResourceManager.GetTexture("assets/textures/floor_tile_03.png", false)));
+
+            //resource_manager.instance.load_texture("textures/floor_tile_00.png");
+            //resource_manager.instance.load_texture("textures/floor_tile_01.png");
+            //resource_manager.instance.load_texture("textures/floor_tile_02.png");
+            //resource_manager.instance.load_texture("textures/floor_tile_03.png");
+            //resource_manager.instance.load_texture("textures/floor_tile_04.png");
         }
 
     }
+
+    public struct map_tile {
+
+        public map_tile(Texture texture) {
+         
+            Texture = texture;
+        }
+
+        public Texture Texture { get; set; }
+        // TODO: add more data and ruls for map generation
+
+    }
+
 }
