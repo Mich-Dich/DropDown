@@ -2,13 +2,6 @@
 using Core.controllers.player;
 using Core.input;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-
-
-using OpenTK.Windowing.Common;
-using OpenTK.Mathematics;
-using Core.game_objects;
-
 
 namespace DropDown {
 

@@ -1,4 +1,5 @@
 ﻿using Core.game_objects;
+using Core.manager;
 using Core.visual;
 using OpenTK.Mathematics;
 
@@ -36,10 +37,9 @@ namespace Core {
         public map generate_square(int width, int height) {
 
             // ------------------------ SETUP ------------------------
-            SpriteBatch sprite_batch = game.instance.ResourceManager.GetSpriteBatch("assets/textures", false);
-            map_tiles.Add(new map_tile(game.instance.ResourceManager.GetTexture("assets/textures/floor_tile_00.png", false)));
-            map_tiles.Add(new map_tile(game.instance.ResourceManager.GetTexture("assets/textures/floor_tile_03.png", false)));
-
+            map_tiles.Add(new map_tile(ResourceManager.GetTexture("assets/textures/floor_tile_00.png", false)));
+            map_tiles.Add(new map_tile(ResourceManager.GetTexture("assets/textures/floor_tile_03.png", false)));
+            
             Random random = new Random();
             double missing_time_rate = 0f;
 
@@ -76,7 +76,6 @@ namespace Core {
 
         private readonly float[] _rotations = { 0, 90, 180 ,270 };
         private List<sprite> floor = new List<sprite>();
-        private SpriteBatch sprite_batch { get; set; }
 
         private List<map_tile> map_tiles { get; set; } = new();
 

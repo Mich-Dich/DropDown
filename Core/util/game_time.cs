@@ -9,20 +9,7 @@ namespace Core.util {
 
     public static class game_time {
 
-        // ======================================= public ======================================= 
-        static game_time() {
-
-            total = TimeSpan.Zero;
-            elapsed = TimeSpan.Zero;
-        }
-
-        //static game_time(TimeSpan total_time, TimeSpan elapsed_time) {
-
-        //    total = total_time;
-        //    elapsed = elapsed_time;
-        //}
-
-        public static  TimeSpan total { get; set; }
-        public static TimeSpan elapsed { get; set; }
+        public static float total { get; set; } = 0;
+        public static float elapsed { get; set; } = 0;
     }
 }

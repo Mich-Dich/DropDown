@@ -1,6 +1,4 @@
 ﻿
-
-
 using Core.manager;
 
 namespace Core {
@@ -9,15 +7,15 @@ namespace Core {
         
         private List<Texture> frames;
 
-        public SpriteBatch(string directoryPath, ResourceManager resourceManager, bool isPixelArt = false) {
+        public SpriteBatch(string directoryPath, bool isPixelArt = false) {
 
             string[] imagePaths = Directory.GetFiles(directoryPath, "*.png");
             Array.Sort(imagePaths);
 
             this.frames = new List<Texture>();
-            foreach(string imagePath in imagePaths) {
-                this.frames.Add(resourceManager.GetTexture(imagePath, isPixelArt));
-            }
+            foreach(string imagePath in imagePaths) 
+                this.frames.Add(ResourceManager.GetTexture(imagePath, isPixelArt));
+            
         }
 
         public Texture GetFrame(int index) {

@@ -1,5 +1,6 @@
 ﻿using Core;
 using Core.game_objects;
+using Core.manager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +15,7 @@ namespace Hell {
 
             this.transform.size = new OpenTK.Mathematics.Vector2(50);
             this.transform.rotation = float.Pi;
-            add_sprite(new Core.visual.sprite(game.instance.ResourceManager.GetTexture("assets/textures/Spaceship/Spaceship.png")));
-            
+            add_sprite(new Core.visual.sprite(ResourceManager.GetTexture("assets/textures/Spaceship/Spaceship.png")));
         }
 
     }

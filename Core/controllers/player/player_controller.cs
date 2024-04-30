@@ -18,6 +18,10 @@ namespace Core.controllers.player {
 
         public void update_internal(List<input_event> input_event) {
 
+            // TODO: make input event driven && make movement physics-based
+            //if(input_event.Count == 0)
+            //    return;
+
             for (int x = 0; x < input_event.Count; x++) {
                 input_event loc_event = input_event[x];
 

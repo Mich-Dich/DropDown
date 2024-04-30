@@ -1,6 +1,7 @@
 ﻿using Core.game_objects;
 using Core.manager;
 using Core.renderer;
+using Core.util;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -9,29 +10,30 @@ namespace Core.visual {
     public class sprite : IAnimatable {
 
         public transform        transform { get; set; } = new();
-        public shader?           shader { get; set; }
+        public shader?          shader { get; set; }
         public Texture?         texture { get; set; }
-        public SpriteBatch?     spriteBatch { get; set; }
 
-        public sprite(shader shader) { this.shader = shader; }
+        // ------------------------------ animation ------------------------------
+        public animation?       Animation { get; set; }
+        public Int32            CurrentFrameIndex { get; set; }
+        
+        // =============================================== constructors =============================================== 
+
+        public sprite(shader shader) { this.shader = shader; init(); }
 
         public sprite(transform transform, Texture texture) {
-
             this.transform = transform;
             this.texture = texture;
             init();
         }
 
         public sprite(Texture texture) {
-
             this.texture = texture;
             init();
         }
 
-        public sprite(transform transform, SpriteBatch SpriteBatch) {
-
-            this.transform = transform;
-            this.SpriteBatch = SpriteBatch;
+        public sprite(animation animation) {
+            this.Animation = animation;
             init();
         }
 
@@ -44,8 +46,8 @@ namespace Core.visual {
             init();
         }
 
-        // =============================================== functions =============================================== 
-
+        // =============================================== setters/getters =============================================== 
+        /*
         //public void add_texture(string file_path) {
 
         //    resource_manager.instance.load_texture(file_path);
@@ -83,54 +85,85 @@ namespace Core.visual {
         //    this.transform.rotation = rotation;
         //    needs_update = true;
         //}
+        */
+
+        public sprite set_animation(animation animation) {
+
+            this.Animation = animation;
+            return this;
+        }
+
+        public sprite set_animation(SpriteBatch sprite_batch, bool start_playing = false, int fps = 30, bool loop = false) {
+
+            this.Animation = new animation(this, fps, loop);
+            this.Animation.SpriteBatch = sprite_batch;
+            return this;
+        }
+
+        public sprite set_animation(string path_to_directory, bool is_pixel_art = false, bool start_playing = false, int fps = 30, bool loop = false) {
+
+            this.Animation = new animation(this, fps, loop);
+            if (start_playing) {
+                this.Animation.Play();
+            }
+            this.Animation.SpriteBatch = new SpriteBatch(path_to_directory, is_pixel_art);
+            return this;
+        }
 
         public void set_mobility(mobility mobility) {
 
             this.transform.mobility = mobility;
             if(this.transform.mobility == mobility.STATIC)
                 _model_matrix = calc_modle_matrix();
-
         }
+        
+        // =============================================== functions =============================================== 
 
-        public void draw() {
-            
-            setup_draw_call();
+        public void draw(Matrix4? model = null) {
+
+            if(this.shader == null || (this.texture == null && this.Animation == null))
+                throw new NotImplementedException("Neither a texture nor an animation is assigned to the sprite. The sprite cannot be rendered.");
+
+            // -------------------------------------- select display mode -------------------------------------- 
+            if(this.texture != null)
+                this.texture.Use(TextureUnit.Texture0);
+
+            else {
+                Texture frame = this.Animation.GetCurrentFrame();
+                frame.Use(TextureUnit.Texture0);
+                this.Animation.Update();
+            }
+
+            //else if(this.SpriteBatch != null) {
+            //    Texture frame = this.SpriteBatch.GetFrame(this.CurrentFrameIndex);
+            //    frame.Use(TextureUnit.Texture0);
+            //}
+
+            // -------------------------------------- bind data for draw -------------------------------------- 
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            shader.use();
+            _vertex_array.bind();
+            _index_buffer.bind();
+
+            // -------------------------------------- modle matrix -------------------------------------- 
+            if(model != null)
+                this.shader.set_matrix_4x4("model", model.Value);
+
+            // else use precalculated matrix
+            else if(this.transform.mobility == mobility.STATIC)
+                this.shader.set_matrix_4x4("model", _model_matrix);
 
             // recalculate matrix every frame
-            if(this.transform.mobility == mobility.DYNAMIC || needs_update) {
+            else if(this.transform.mobility == mobility.DYNAMIC || needs_update) {
 
                 this.shader.set_matrix_4x4("model", calc_modle_matrix());
                 needs_update = false;
             }
 
-            // else use precalculated matrix
-            else if (this.transform.mobility == mobility.STATIC)
-                this.shader.set_matrix_4x4("model", _model_matrix);
-
-            draw_call();
+            // -------------------------------------- draw call -------------------------------------- 
+            GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
         }
-
-        public void draw(Matrix4 model) {
-            
-            setup_draw_call();
-            this.shader.set_matrix_4x4("model", model);
-            draw_call();
-        }
-
-        public buffer_layout get_buffer_layout() {
-
-            buffer_layout layout = new buffer_layout()
-                .add<float>(2)      // vertex coordinates
-                .add<float>(2)      // UV coordinates
-                .add<float>(1);     // texture_slot
-
-            return layout;
-        }
-
-        // ------------------------------ animation ------------------------------
-        public SpriteBatch? SpriteBatch { get; set; }
-        public Animation? Animation { get; set; }
-        public Int32 CurrentFrameIndex { get; set; }
 
         public void update_animation() {
             throw new NotImplementedException();
@@ -170,45 +203,9 @@ namespace Core.visual {
             1, 2 ,3
         };
 
-        private void update_data() {
-
-        }
-
-        private void setup_draw_call() {
-
-            if(this.shader == null || (this.texture == null && this.SpriteBatch == null))
-                throw new ResourceNotAssignedException("Shader or Texture not assigned");
-
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            shader.use();
-            _vertex_array.bind();
-            _index_buffer.bind();
-
-            // display correct format
-            if(this.texture != null)
-                this.texture.Use(TextureUnit.Texture0);
-
-            else if(this.Animation != null) {
-
-                Texture frame = this.Animation.GetCurrentFrame();
-                frame.Use(TextureUnit.Texture0);
-            }
-            else if(this.SpriteBatch != null) {
-
-                Texture frame = this.SpriteBatch.GetFrame(this.CurrentFrameIndex);
-                frame.Use(TextureUnit.Texture0);
-            }
-        }
-
-        private void draw_call() {
-
-            GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
-        }
-
         private void init() {
 
-            if (this.shader == null)
+            if(this.shader == null)
                 this.shader = game.instance.default_sprite_shader;
 
             _vertex_buffer = new vertex_buffer(_verticies);
@@ -219,6 +216,16 @@ namespace Core.visual {
 
             if(this.transform.mobility == mobility.STATIC)
                 _model_matrix = calc_modle_matrix();
+        }
+
+        private buffer_layout get_buffer_layout() {
+
+            buffer_layout layout = new buffer_layout()
+                .add<float>(2)      // vertex coordinates
+                .add<float>(2)      // UV coordinates
+                .add<float>(1);     // texture_slot
+
+            return layout;
         }
 
         private Matrix4 calc_modle_matrix() {

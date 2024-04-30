@@ -22,7 +22,7 @@ namespace Core
 
         public shader           default_sprite_shader { get; set; }
         public static game      instance { get; private set; }
-        public ResourceManager  ResourceManager { get; private set; }
+        //public ResourceManager  ResourceManager { get; private set; }
         public bool             draw_debug { get; set; } = false;
 
         // ============================================================================== public ============================================================================== 
@@ -32,7 +32,7 @@ namespace Core
                 throw new Exception("You can only create one instance of Game!");
 
                 instance = this;
-            this.ResourceManager = new ResourceManager();
+            //this.ResourceManager = new ResourceManager();
 
             this.title = title;
             this.inital_window_width = inital_window_width;
@@ -95,7 +95,7 @@ namespace Core
             window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
                 //Time.DeltaTime = e.Time;
-                update_game_time(eventArgs.Time);
+                update_game_time((float)eventArgs.Time);
                 this.player_controller.update_internal(_input_event);
                 //collision_engine.update(active_map.all_game_objects);       // call collision after update to force 
 
@@ -111,7 +111,7 @@ namespace Core
 
             window.Resize += (ResizeEventArgs eventArgs) => {
 
-                update_game_time(window.TimeSinceLastUpdate());
+                update_game_time((float)window.TimeSinceLastUpdate());
                 window.ResetTimeSinceLastUpdate();
 
                 GL.Viewport(0, 0, window.Size.X, window.Size.Y);
@@ -206,10 +206,11 @@ namespace Core
         }
 
 
-        private void update_game_time(double delta_time) {
+        private void update_game_time(float delta_time) {
 
-            game_time.elapsed = TimeSpan.FromMilliseconds(delta_time);
-            game_time.total += TimeSpan.FromMilliseconds(delta_time);
+            game_time.elapsed = delta_time;
+            game_time.total += delta_time;
+
         }
     }
 }

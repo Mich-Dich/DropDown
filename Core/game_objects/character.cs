@@ -9,8 +9,10 @@ namespace Core.game_objects {
 
     public class character : game_object {
 
-        public float movement_speed { get; set; } = 1.0f;
-        public float movement_speed_max { get; set; } = 10.0f;
+        public float    movement_speed { get; set; } = 1.0f;
+        public float    movement_speed_max { get; set; } = 10.0f;
+        public int      health { get; set; } = 100;
+        public int      health_max { get; set; } = 100;
 
         public character() {
 
@@ -21,5 +23,6 @@ namespace Core.game_objects {
         public override void hit(hit_data hit) {
             throw new NotImplementedException();
         }
+
     }
 }

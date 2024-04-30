@@ -3,35 +3,47 @@ using Core.renderer;
 
 namespace Core.manager {
 
-    public class ResourceManager {
-        
-        private Dictionary<string, shader> shaders = new Dictionary<string, shader>();
-        private Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
-        private Dictionary<string, SpriteBatch> spriteBatches = new Dictionary<string, SpriteBatch>();
+    public static class ResourceManager {
 
-        public shader GetShader(string vertexPath, string fragmentPath) {
+        private static Dictionary<string, shader> shaders = new Dictionary<string, shader>();
+        private static Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
+        private static Dictionary<string, SpriteBatch> spriteBatches = new Dictionary<string, SpriteBatch>();
+
+        //public static ResourceManager instance {
+        //    get {
+        //        lock(_loc) {
+
+        //            if(_instance == null)
+        //                _instance = new resource_manager();
+
+        //            return _instance;
+        //        }
+        //    }
+        //}
+
+        static public shader GetShader(string vertexPath, string fragmentPath) {
 
             string key = vertexPath + fragmentPath;
-            if(!this.shaders.ContainsKey(key)) 
-                this.shaders[key] = new shader(vertexPath, fragmentPath);
+            if(!shaders.ContainsKey(key)) 
+                shaders[key] = new shader(vertexPath, fragmentPath);
             
-            return this.shaders[key];
+            return shaders[key];
         }
 
-        public Texture GetTexture(string path, bool isPixelArt = false) {
+        static public Texture GetTexture(string path, bool isPixelArt = false) {
             
-            if(!this.textures.ContainsKey(path)) 
-                this.textures[path] = new Texture(path, isPixelArt);
+            if(!textures.ContainsKey(path)) 
+                textures[path] = new Texture(path, isPixelArt);
             
-            return this.textures[path];
+            return textures[path];
         }
 
-        public SpriteBatch GetSpriteBatch(string directoryPath, bool isPixelArt = false) {
+        static public SpriteBatch GetSpriteBatch(string directoryPath, bool isPixelArt = false) {
 
-            if(!this.spriteBatches.ContainsKey(directoryPath)) 
-                this.spriteBatches[directoryPath] = new SpriteBatch(directoryPath, this, isPixelArt);
+            if(!spriteBatches.ContainsKey(directoryPath)) 
+                spriteBatches[directoryPath] = new SpriteBatch(directoryPath, isPixelArt);
             
-            return this.spriteBatches[directoryPath];
+            return spriteBatches[directoryPath];
         }
     }
 }

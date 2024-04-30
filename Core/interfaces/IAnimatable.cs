@@ -4,8 +4,8 @@ namespace Core {
 
     public interface IAnimatable {
         
-        SpriteBatch? SpriteBatch { get; set; }
-        Animation? Animation { get; set; }
+        //SpriteBatch? SpriteBatch { get; set; }
+        animation? Animation { get; set; }
         int CurrentFrameIndex { get; set; }
 
         void update_animation();

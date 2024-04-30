@@ -1,67 +1,69 @@
-﻿
-namespace Core.renderer {
+﻿using Core.util;
 
-    public class Animation {
+namespace Core {
 
-        private IAnimatable animatable;
-        private int currentFrameIndex;
-        private float frameTime;
-        private float timer;
-        private bool isPlaying;
-        public bool Loop { get; set; }
+    public class animation {
 
-        public Animation(IAnimatable animatable, int fps, bool loop = true) {
+        public bool         Loop { get; set; }
+        public SpriteBatch? SpriteBatch { get; set; }
+
+
+        public animation(IAnimatable animatable, int fps, bool loop = true) {
+
             this.animatable = animatable;
-            this.currentFrameIndex = 0;
             this.frameTime = 1.0f / fps;
-            this.timer = 0;
-            this.isPlaying = false;
             this.Loop = loop;
         }
 
-        public void Update(float deltaTime) {
-            if(!this.isPlaying) {
+        public void Update() {
+            
+            if(!this.isPlaying)
                 return;
-            }
-
-            this.timer += deltaTime;
-            if(this.timer >= this.frameTime) {
-                this.timer -= this.frameTime;
-                this.currentFrameIndex++;
-                if(this.currentFrameIndex >= this.animatable.SpriteBatch.FrameCount) {
-                    if(this.Loop) {
-                        this.currentFrameIndex = 0;
-                    }
-                    else {
-                        this.currentFrameIndex = this.animatable.SpriteBatch.FrameCount - 1;
-                        this.Stop();
-                    }
+            
+            this.timer += game_time.elapsed;
+            if(this.timer < this.frameTime)
+                return;
+                            
+            this.timer -= this.frameTime;
+            this.currentFrameIndex++;
+            if(this.currentFrameIndex >= this.SpriteBatch.FrameCount) {
+                if(this.Loop) {
+                    this.currentFrameIndex = 0;
                 }
-
-                this.animatable.CurrentFrameIndex = this.currentFrameIndex;
+                else {
+                    this.currentFrameIndex = this.SpriteBatch.FrameCount - 1;
+                    this.Stop();
+                }
             }
+
+            this.animatable.CurrentFrameIndex = this.currentFrameIndex;
         }
 
         public Texture GetCurrentFrame() {
-            Texture currentFrame = this.animatable.SpriteBatch.GetFrame(this.animatable.CurrentFrameIndex);
+            
+            Texture currentFrame = this.SpriteBatch.GetFrame(this.animatable.CurrentFrameIndex);
             return currentFrame;
         }
 
         public void Play() {
+            
             this.isPlaying = true;
             this.currentFrameIndex = 0;
         }
 
-        public void Continue() {
-            this.isPlaying = true;
-        }
+        public void Continue() { this.isPlaying = true;}
 
-        public void Stop() {
-            this.isPlaying = false;
-        }
+        public void Stop() { this.isPlaying = false;}
 
-        public void SetSpeed(int fps) {
-            this.frameTime = 1.0f / fps;
-        }
+        public void SetSpeed(int fps) { this.frameTime = 1.0f / fps; }
+
+        // ======================================= private ======================================= 
+
+        private IAnimatable animatable;
+        private int         currentFrameIndex = 0;
+        private float       frameTime;
+        private float       timer = 0;
+        private bool        isPlaying = false;
     }
+
 }
