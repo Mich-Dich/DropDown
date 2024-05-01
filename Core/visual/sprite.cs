@@ -6,7 +6,7 @@ using OpenTK.Mathematics;
 namespace Core.visual
 {
 
-    public class sprite : IAnimatable {
+    public class sprite : I_animatable {
 
         public transform transform { get; set; } = new();
         public shader? shader { get; set; }

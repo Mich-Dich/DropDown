@@ -1,8 +1,7 @@
 ﻿using Core.game_objects;
 using Core.util;
 
-namespace DropDown
-{
+namespace Core.defaults {
 
     public class player : character {
 

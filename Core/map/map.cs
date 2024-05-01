@@ -51,7 +51,7 @@ namespace Core
             switch(world_layer) {
                 case world_layer.None: break;
                 case world_layer.world:
-                    world.Add(new game_object().add_sprite(sprite));
+                    world.Add(new game_object().set_sprite(sprite));
                     break;
                         
                 case world_layer.backgound: 

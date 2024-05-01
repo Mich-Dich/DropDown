@@ -1,5 +1,5 @@
 
-namespace Core {
+namespace Core.visual {
 
     public interface IUIElement {
 

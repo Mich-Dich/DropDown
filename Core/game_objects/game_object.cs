@@ -39,21 +39,21 @@ namespace Core.game_objects {
             init();
         }
 
-        public game_object add_sprite(sprite sprite) {
+        public game_object set_sprite(sprite sprite) {
 
             this.sprite = sprite;
             this.sprite.transform = transform;  // let sprite access main transform
             return this;
         }
 
-        public game_object add_sprite(Texture Texture) {
+        public game_object set_sprite(Texture Texture) {
 
             this.sprite = new sprite(Texture);
             this.sprite.transform = transform;  // let sprite access main transform
             return this;
         }
 
-        public game_object add_collider(collider collider) {
+        public game_object set_collider(collider collider) {
 
             this.collider = collider;
             return this;
@@ -97,7 +97,7 @@ namespace Core.game_objects {
 
         //private DebugColor    DebugColor { get; set; } = DebugColor.Red;
         private debug_drawer?   debug_drawer { get; set; }
-        private sprite? sprite { get; set; }
+        private sprite? sprite; // { get; set; }
         private collider? collider { get; set; }
 
         private void init() {

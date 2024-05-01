@@ -1,13 +1,14 @@
-﻿using Core.util;
+﻿using Core.renderer;
+using Core.util;
 
 namespace Core.visual {
 
     public class animation {
 
-        public bool Loop { get; set; }
-        public SpriteBatch? SpriteBatch { get; set; }
+        public bool Loop;
+        public SpriteBatch? SpriteBatch;
 
-        public animation(IAnimatable animatable, int fps, bool loop = true) {
+        public animation(I_animatable animatable, int fps, bool loop = true) {
 
             this._animatable = animatable;
             _frame_time = 1.0f / fps;
@@ -55,7 +56,7 @@ namespace Core.visual {
 
         // ======================================= private ======================================= 
 
-        private IAnimatable     _animatable;
+        private I_animatable     _animatable;
         private int             _current_frame_index = 0;
         private float           _frame_time;
         private bool            _is_playing = false;

@@ -1,11 +1,11 @@
-using Core.renderer;
 using Core.visual;
 
-namespace Core
+namespace Core.renderer
 {
 
-    public interface IAnimatable {
-        
+    public interface I_animatable
+    {
+
         animation? animation { get; set; }
         float animation_timer { get; set; }
 
