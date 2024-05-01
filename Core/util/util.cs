@@ -51,4 +51,10 @@ namespace Core {
         public static double degree_to_radians(double angle) { return angle * (Math.PI / 180); }
 
     }
+
+    public class ResourceNotAssignedException : Exception {
+        public ResourceNotAssignedException(string message)
+            : base(message) {
+        }
+    }
 }

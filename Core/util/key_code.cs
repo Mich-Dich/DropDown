@@ -1,11 +1,4 @@
-﻿using OpenTK.Windowing.GraphicsLibraryFramework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
+﻿
 namespace Core.input {
 
     //
@@ -72,11 +65,8 @@ namespace Core.input {
         CursorPositionX = 8,
         CursorPositionY = 9,
 
-        CursorPositionX_delta = 10,
-        CursorPositionY_delta = 11,
-
-        MouseWheelX= 12,
-        MouseWheelY= 13,
+        MouseWheelX= 10,
+        MouseWheelY= 11,
 
         // ======================================== keyboard ========================================
 

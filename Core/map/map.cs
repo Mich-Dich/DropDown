@@ -1,18 +1,16 @@
 ﻿using Core.game_objects;
-using Core.manager;
+using Core.util;
 using Core.visual;
 using OpenTK.Mathematics;
 
-namespace Core {
+namespace Core
+{
 
     public class map {
 
-        public List<game_object> all_game_objects {  get; set; } = new List<game_object>();
+        //public List<game_object>    all_game_objects {  get; set; } = new List<game_object>();
 
-        public map() {
-
-            init();
-        }
+        public map() { }
 
         public Vector2 tile_size { get; set; } = new Vector2(100, 100);
 
@@ -30,14 +28,44 @@ namespace Core {
 
         public void draw() {
 
-            for(int x = 0; x < floor.Count; x++)
-                floor[x].draw();
+            for(int x = 0; x < backgound.Count; x++)
+                backgound[x].draw();
+
+            for(int x = 0; x < world.Count; x++)
+                world[x].draw();
         }
 
-        public map generate_square(int width, int height) {
+        public void add_game_object(game_object game_object) {
+
+            world.Add(game_object);
+            Console.WriteLine($"Adding game_object. world: {world.Count}");
+        }
+
+        public void add_sprite(sprite sprite) { backgound.Add(sprite); }
+
+        public void add_sprite(world_layer world_layer, sprite sprite) {
+            
+            if (sprite == null)
+                return;
+
+            switch(world_layer) {
+                case world_layer.None: break;
+                case world_layer.world:
+                    world.Add(new game_object().add_sprite(sprite));
+                    break;
+                        
+                case world_layer.backgound: 
+                    backgound.Add(sprite); 
+                    break;
+            }
+                
+        
+        }
+
+        public map generate_backgound_tile(int width, int height) {
 
             // ------------------------ SETUP ------------------------
-            texture_atlas = ResourceManager.GetTexture("assets/textures/terrain.png", false);
+            Texture texture_atlas = resource_manager.GetTexture("assets/textures/terrain.png", false);
             
             Random random = new Random();
             double missing_time_rate = 0f;
@@ -59,13 +87,13 @@ namespace Core {
 
                     // ============================ GRAS FILD ============================ 
                     if(random.NextDouble() < 0.01f)
-                        floor.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 3, 30).init());
+                        backgound.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 3, 30).init());
                     else if(random.NextDouble() < 0.03f)
-                        floor.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 5, 26).init());
+                        backgound.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 5, 26).init());
                     else if(random.NextDouble() < 0.1f)
-                        floor.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 10, 5).init());
+                        backgound.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 10, 5).init());
                     else
-                        floor.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 4, 28).init());
+                        backgound.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 4, 28).init());
                 }
             }
 
@@ -74,16 +102,8 @@ namespace Core {
 
         // ========================================== private ==========================================
 
-        //private sprite _core_sprite = new sprite(Vector2.Zero, new Vector2(100), 0, mobility.STATIC);
-        //private List<tile_data> _tile_data = new List<tile_data>{};
-        //private List<Matrix4> _tile_modle_matrix = new List<Matrix4>();
-
-        private readonly float[] _rotations = { 0, 90, 180 ,270 };
-        private List<sprite> floor = new List<sprite>();
-
-        private Texture texture_atlas { get; set; }
-
-        private void init() { }
+        private List<sprite> backgound { get; set; } = new List<sprite>();       // change to list of lists => to reduce drawcalls
+        private List<game_object> world { get; set; } = new List<game_object>();
 
     }
 
@@ -97,6 +117,13 @@ namespace Core {
         public Texture Texture { get; set; }
         // TODO: add more data and ruls for map generation
 
+    }
+
+    public enum world_layer {
+
+        None = 0,
+        backgound = 1,      // will only be drawn (no collision)    eg. background image
+        world = 2,          // can draw/interact/collide            eg. walls/chest
     }
 
 }

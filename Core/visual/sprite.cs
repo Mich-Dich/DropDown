@@ -3,7 +3,8 @@ using Core.renderer;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Core.visual {
+namespace Core.visual
+{
 
     public class sprite : IAnimatable {
 
@@ -12,8 +13,8 @@ namespace Core.visual {
         public Texture? texture { get; set; }
 
         // ------------------------------ animation ------------------------------
-        public animation? Animation { get; set; }
-        public Int32 CurrentFrameIndex { get; set; }
+        public animation? animation { get; set; }
+        public float animation_timer { get; set; } = 0;
 
         // =============================================== constructors =============================================== 
 
@@ -31,7 +32,7 @@ namespace Core.visual {
         }
 
         public sprite(animation animation) {
-            this.Animation = animation;
+            this.animation = animation;
             init();
         }
 
@@ -85,26 +86,26 @@ namespace Core.visual {
         //}
         */
 
-        public sprite set_animation(animation animation) {
+        public sprite add_animation(animation animation) {
 
-            this.Animation = animation;
+            this.animation = animation;
             return this;
         }
 
-        public sprite set_animation(SpriteBatch sprite_batch, bool start_playing = false, int fps = 30, bool loop = false) {
+        public sprite add_animation(SpriteBatch sprite_batch, bool start_playing = false, int fps = 30, bool loop = false) {
 
-            this.Animation = new animation(this, fps, loop);
-            this.Animation.SpriteBatch = sprite_batch;
+            this.animation = new animation(this, fps, loop);
+            this.animation.SpriteBatch = sprite_batch;
             return this;
         }
 
-        public sprite set_animation(string path_to_directory, bool is_pixel_art = false, bool start_playing = false, int fps = 30, bool loop = false) {
+        public sprite add_animation(string path_to_directory, bool is_pixel_art = false, bool start_playing = false, int fps = 30, bool loop = false) {
 
-            this.Animation = new animation(this, fps, loop);
+            this.animation = new animation(this, fps, loop);
             if(start_playing) {
-                this.Animation.Play();
+                this.animation.play();
             }
-            this.Animation.SpriteBatch = new SpriteBatch(path_to_directory, is_pixel_art);
+            this.animation.SpriteBatch = new SpriteBatch(path_to_directory, is_pixel_art);
             return this;
         }
 
@@ -119,7 +120,7 @@ namespace Core.visual {
 
         public void draw(Matrix4? model = null) {
 
-            if(this.shader == null || (this.texture == null && this.Animation == null))
+            if(this.shader == null || (this.texture == null && this.animation == null))
                 throw new NotImplementedException("Neither a texture nor an animation is assigned to the sprite. The sprite cannot be rendered.");
 
             // -------------------------------------- select display mode -------------------------------------- 
@@ -127,9 +128,9 @@ namespace Core.visual {
                 this.texture.Use(TextureUnit.Texture0);
 
             else {
-                Texture frame = this.Animation.GetCurrentFrame();
+                Texture frame = this.animation.get_current_frame();
                 frame.Use(TextureUnit.Texture0);
-                this.Animation.Update();
+                this.animation.update();
             }
 
             //else if(this.SpriteBatch != null) {

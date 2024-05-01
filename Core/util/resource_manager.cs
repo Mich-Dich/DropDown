@@ -1,9 +1,9 @@
 ﻿
 using Core.renderer;
 
-namespace Core.manager {
+namespace Core.util {
 
-    public static class ResourceManager {
+    public static class resource_manager {
 
         private static Dictionary<string, shader> shaders = new Dictionary<string, shader>();
         private static Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
@@ -21,7 +21,7 @@ namespace Core.manager {
         //    }
         //}
 
-        static public shader GetShader(string vertexPath, string fragmentPath) {
+        static public shader get_shader(string vertexPath, string fragmentPath) {
 
             string key = vertexPath + fragmentPath;
             if(!shaders.ContainsKey(key)) 

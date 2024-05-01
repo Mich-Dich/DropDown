@@ -1,7 +1,6 @@
 ﻿using Core.controllers.player;
 using Core.game_objects;
 using Core.input;
-using Core.manager;
 using Core.physics;
 using Core.renderer;
 using Core.util;
@@ -58,7 +57,6 @@ namespace Core
 
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
 
-                active_map = new map();
 
                 // ----------------------------------- shader -----------------------------------
                 default_sprite_shader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
@@ -69,6 +67,9 @@ namespace Core
                 default_map = new map();
 
                 init();
+
+                if(active_map == null)
+                    active_map = default_map;
 
                 if (player == null)
                     player = new character();
@@ -151,6 +152,7 @@ namespace Core
             window.Run();
         }
 
+        public void enable_debug_draw(bool enable) { this.draw_debug = enable; }
 
         //  ============================================================================== protected ============================================================================== 
         protected string title { get; set; }
@@ -198,7 +200,7 @@ namespace Core
 
             default_sprite_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
 
-            default_map.draw();
+            active_map.draw();
             player.draw();
 
             // client side code

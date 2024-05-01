@@ -1,7 +1,8 @@
 ﻿using Core.game_objects;
-using Core.manager;
+using Core.util;
 
-namespace DropDown {
+namespace DropDown
+{
 
     public class player : character {
 
@@ -9,7 +10,7 @@ namespace DropDown {
 
             this.transform.size = new OpenTK.Mathematics.Vector2(50);
             this.transform.rotation = float.Pi;
-            add_sprite(new Core.visual.sprite(ResourceManager.GetTexture("assets/textures/player/00.png")));
+            add_sprite(new Core.visual.sprite(resource_manager.GetTexture("assets/textures/player/00.png")));
             
             this.movement_speed = 5.0f;
         }

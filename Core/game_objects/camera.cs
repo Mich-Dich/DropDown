@@ -34,8 +34,6 @@ namespace Core.game_objects
 
             return orthographic_matrix * zoom_matrix;
         }
-
-        public override void hit(hit_data hit) { throw new NotImplementedException(); }
-    
+            
     }
 }

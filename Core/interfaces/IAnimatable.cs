@@ -1,12 +1,13 @@
 using Core.renderer;
+using Core.visual;
 
-namespace Core {
+namespace Core
+{
 
     public interface IAnimatable {
         
-        //SpriteBatch? SpriteBatch { get; set; }
-        animation? Animation { get; set; }
-        int CurrentFrameIndex { get; set; }
+        animation? animation { get; set; }
+        float animation_timer { get; set; }
 
         void update_animation();
     }

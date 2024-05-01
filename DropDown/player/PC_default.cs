@@ -42,7 +42,6 @@ namespace DropDown {
                     new key_binding_detail(key_code.CursorPositionY, reset_flags.none, trigger_flags.mouse_pos_and_neg, key_modefier_flags.axis_2),
                 });
             add_input_action(look);
-
         }
 
         protected override void update() {

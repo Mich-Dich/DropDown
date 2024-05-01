@@ -1,5 +1,4 @@
-﻿
-using Core.visual;
+﻿using Core.visual;
 using OpenTK.Mathematics;
 
 namespace Hell {
@@ -14,12 +13,14 @@ namespace Hell {
         // ========================================================= functions =========================================================
         protected override void init() {
 
-            this.player_controller = new PC_default();
             set_update_frequency(144.0f);
+            enable_debug_draw(true);
 
+            this.player_controller = new PC_default();
             this.player = new player();
-            
-            animation_sprite = new sprite(new Vector2(600, 200)).set_animation("assets/textures/Explosion-2", false, true, 30, true);
+            this.active_map = new base_map();
+
+            animation_sprite = new sprite(new Vector2(600, 200)).add_animation("assets/textures/Explosion-2", false, true, 30, true);
         }
 
         protected override void shutdown() { }

@@ -1,4 +1,5 @@
-﻿using Core.visual;
+﻿using Core;
+using Core.visual;
 using OpenTK.Mathematics;
 
 namespace DropDown {
@@ -16,10 +17,9 @@ namespace DropDown {
             set_update_frequency(144.0f);
             this.player_controller = new PC_default();
             this.player = new player();
-
-            this.default_map.generate_square(40, 30);
+            this.active_map = new map().generate_backgound_tile(50, 30);
             
-            animation_sprite = new sprite(new Vector2(600, 200)).set_animation("assets/textures/Explosion-2", false, true, 30, true);
+            animation_sprite = new sprite(new Vector2(600, 200), new Vector2(500, 500)).add_animation("assets/textures/explosion", false, true, 60, true);
         }
 
         protected override void shutdown() { }
