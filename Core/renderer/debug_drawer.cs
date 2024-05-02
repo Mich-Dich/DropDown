@@ -17,14 +17,19 @@ namespace Core.renderer {
 
     public class debug_drawer {
 
+        private shader debugShader;
+        private int vbo, vao, ebo;
+
         public DebugColor DebugColor { get; set; } = DebugColor.White;
 
         public debug_drawer() {
-        
             this.debugShader = resource_manager.get_shader("shaders/debug.vert", "shaders/debug.frag");
+            this.vbo = GL.GenBuffer();
+            this.vao = GL.GenVertexArray();
+            this.ebo = GL.GenBuffer();
         }
 
-        public void draw_collision_shape(transform transform, collider collider, DebugColor debugColor) {
+        public void draw_collision_shape(transform transform, collider collider, DebugColor debugColor, camera cam) {
 
             this.DebugColor = debugColor;
             this.debugShader.use();
@@ -48,7 +53,7 @@ namespace Core.renderer {
             this.debugShader.set_uniform("color", color);
 
             Matrix4 matrixTransform = transform.GetTransformationMatrix();
-            Matrix4 finalTransform = matrixTransform * game.instance.camera.get_projection_matrix();
+            Matrix4 finalTransform = matrixTransform * cam.get_projection_matrix();
             this.debugShader.set_matrix_4x4("projection", finalTransform);
 
             if(collider.shape == collision_shape.Circle) {
@@ -62,34 +67,29 @@ namespace Core.renderer {
             GL.UseProgram(0);
         }
 
-        public void Dispose() {
-            //this.debugShader.Dispose();
-        }
-
-        // ========================================================== private ==========================================================
-
-        private shader debugShader;
-
         private void draw_rectangle(Vector2 size) {
-            
-            float[] vertices = {
+            float[] vertices =
+            {
                 -0.5f * size.X,  0.5f * size.Y, 0.0f,
-                 0.5f * size.X,  0.5f * size.Y, 0.0f,
-                 0.5f * size.X, -0.5f * size.Y, 0.0f,
+                0.5f * size.X,  0.5f * size.Y, 0.0f,
+                0.5f * size.X, -0.5f * size.Y, 0.0f,
                 -0.5f * size.X, -0.5f * size.Y, 0.0f,
             };
 
-            uint[] indices = { 0, 1, 2, 3 };
+            uint[] indices =
+            {
+                0, 1, 2, 3,
+            };
 
             this.DrawShape(vertices, indices, PrimitiveType.LineLoop);
         }
 
         private void draw_circle(float radius, int sides) {
-
             List<float> vertices = new List<float>();
             List<uint> indices = new List<uint>();
 
-            for(int i = 0; i <= sides; i++) {
+            for (int i = 0; i <= sides; i++)
+            {
                 float theta = 2.0f * MathF.PI * i / sides;
                 float x = radius * MathF.Cos(theta);
                 float y = radius * MathF.Sin(theta);
@@ -103,30 +103,27 @@ namespace Core.renderer {
         }
 
         private void DrawShape(float[] vertices, uint[] indices, PrimitiveType primitiveType) {
-
-            //Console.WriteLine($"vertices: {vertices[0]}/{vertices[1]}");
-
-            int vbo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
 
-            int vao = GL.GenVertexArray();
             GL.BindVertexArray(vao);
 
-            int ebo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
-            int positionLocation = this.debugShader.GetAttribLocation("aPosition");
+            int positionLocation = debugShader.get_attrib_location("aPosition");
             GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(positionLocation);
 
             GL.BindVertexArray(vao);
             GL.DrawElements(primitiveType, indices.Length, DrawElementsType.UnsignedInt, 0);
+        }
 
+        public void Dispose() {
             GL.DeleteBuffer(vbo);
             GL.DeleteVertexArray(vao);
             GL.DeleteBuffer(ebo);
+            this.debugShader.Dispose();
         }
     }
 }
