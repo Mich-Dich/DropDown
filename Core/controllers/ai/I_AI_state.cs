@@ -3,7 +3,11 @@ namespace Core.controllers.ai {
 
     public interface I_AI_state {
 
-        // execute only logic, and return the next state to be in (eg. this, walk_state, ... )
-        I_AI_state execute_state(ai_controller ai_controller);
+        /// <summary>
+        /// Executes internal logic for the AI controller and returns the next state Type to transition to.
+        /// </summary>
+        /// <param name="ai_controller">The AI controller instance that manages the state execution.</param>
+        /// <returns>The Type of the next state to transition to (e.g., typeof(ThisState), typeof(WalkState), etc.).</returns>
+        Type execute_state(ai_controller ai_controller);
     }
 }

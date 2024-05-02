@@ -30,7 +30,7 @@ namespace Core.util {
             return shaders[key];
         }
 
-        static public Texture GetTexture(string path, bool isPixelArt = false) {
+        static public Texture get_texture(string path, bool isPixelArt = false) {
             
             if(!textures.ContainsKey(path)) 
                 textures[path] = new Texture(path, isPixelArt);

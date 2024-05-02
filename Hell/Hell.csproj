@@ -266,4 +266,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="enemy\" />
+  </ItemGroup>
+
 </Project>

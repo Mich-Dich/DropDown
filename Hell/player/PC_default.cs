@@ -34,9 +34,9 @@ namespace Hell {
 
         }
 
-        protected override void update() {
+        protected override void update(float delta_time) {
 
-            player.transform.position += ((Vector2)move.get_value() * 10);
+            character.transform.position += ((Vector2)move.get_value() * character.movement_speed) * delta_time;
         }
 
     }

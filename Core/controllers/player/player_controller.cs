@@ -3,9 +3,10 @@ using OpenTK.Mathematics;
 
 namespace Core.controllers.player {
 
-    public abstract class player_controller : controller {
+    public abstract class player_controller : I_controller {
 
-        public character player { get; set; }
+        public character character { get; set; }
+        //public character character { get; set; }
 
         public player_controller() { }
 
@@ -14,7 +15,7 @@ namespace Core.controllers.player {
             this.actions = actions;
         }
 
-        public void update_internal(List<input_event> input_event) {
+        public void update_internal(float delta_time, List<input_event> input_event) {
 
             // TODO: make input event driven && make movement physics-based
             //if(input_event.Count == 0)
@@ -181,7 +182,7 @@ namespace Core.controllers.player {
 
             
             // call client side code befor resetting payload
-            update();
+            update(delta_time);
 
             // resetting payload if needed
             for(int x = 0; x < input_event.Count; x++) {
@@ -316,7 +317,7 @@ namespace Core.controllers.player {
         // ============================= protected  ============================= 
 
         protected List<action> actions { get; set; } = new List<action>();
-        protected abstract void update();
+        protected abstract void update(float delta_time);
 
     }
 }

@@ -7,10 +7,6 @@ namespace Core.game_objects {
 
     public /*abstract*/ class game_object {
 
-        //public float mass { get; set; }
-        //public Vector2 velocity { get; set; }
-        //public physics_material physics_material {  get; set; }
-
         // world data
         public transform            transform { get; set; } = new transform();
         public game_object?         parent { get; private set; }
@@ -40,6 +36,9 @@ namespace Core.game_objects {
         }
 
         public game_object set_sprite(sprite sprite) {
+
+            //if (sprite != null)
+            //    sprite.Dispose();
 
             this.sprite = sprite;
             this.sprite.transform = transform;  // let sprite access main transform

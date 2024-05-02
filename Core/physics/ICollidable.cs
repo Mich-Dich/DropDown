@@ -1,5 +1,4 @@
-﻿
-using Core.game_objects;
+﻿using Core.game_objects;
 
 namespace Core.physics {
 
@@ -8,8 +7,6 @@ namespace Core.physics {
         // transform transform { get; set; }
         // CollisionManager CollisionManager { get; set; }
 
-
     }
-
 
 }

@@ -67,7 +67,7 @@ namespace Core.game_objects {
         public void Move(Vector2 direction, float speed) {
 
             direction = this.RotateVector(direction, this.rotation);
-            Vector2 velocity = direction * speed * game_time.elapsed;
+            Vector2 velocity = direction * speed * game_time.delta;
             this.position += velocity;
         }
 

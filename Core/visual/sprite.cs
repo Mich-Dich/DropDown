@@ -6,7 +6,7 @@ using OpenTK.Mathematics;
 namespace Core.visual
 {
 
-    public class sprite : I_animatable {
+    public class sprite : I_animatable, IDisposable {
 
         public transform transform { get; set; } = new();
         public shader? shader { get; set; }
@@ -19,7 +19,7 @@ namespace Core.visual
         // =============================================== constructors =============================================== 
 
         public sprite(shader shader) { this.shader = shader; init(); }
-
+        
         public sprite(transform transform, Texture texture) {
             this.transform = transform;
             this.texture = texture;
@@ -43,6 +43,11 @@ namespace Core.visual
             this.transform.rotation = rotation;
             this.transform.mobility = mobility;
             init();
+        }
+
+        public void Dispose() {
+
+            throw new NotImplementedException();
         }
 
         // =============================================== setters/getters =============================================== 

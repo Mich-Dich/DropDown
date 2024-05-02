@@ -65,7 +65,7 @@ namespace Core
         public map generate_backgound_tile(int width, int height) {
 
             // ------------------------ SETUP ------------------------
-            Texture texture_atlas = resource_manager.GetTexture("assets/textures/terrain.png", false);
+            Texture texture_atlas = resource_manager.get_texture("assets/textures/terrain.png", false);
             
             Random random = new Random();
             double missing_time_rate = 0f;

@@ -104,7 +104,7 @@ namespace Core.renderer {
 
         private void DrawShape(float[] vertices, uint[] indices, PrimitiveType primitiveType) {
 
-            Console.WriteLine($"vertices: {vertices[0]}/{vertices[1]}");
+            //Console.WriteLine($"vertices: {vertices[0]}/{vertices[1]}");
 
             int vbo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);

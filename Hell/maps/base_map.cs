@@ -10,10 +10,10 @@ namespace Hell {
 
         public base_map() {
 
-            Texture ateroid_texture = resource_manager.GetTexture("assets/textures/Astroids/Astroids.png");
+            //Texture ateroid_texture = resource_manager.get_texture("assets/textures/Astroids/Astroids.png");
             
-            this.add_game_object(new game_object(new Vector2(-500, -500), new Vector2(300, 200), 0).set_sprite(ateroid_texture));
-            this.add_game_object(new game_object(new Vector2(100, 500), new Vector2(300, 200), 0).set_sprite(ateroid_texture).set_collider(new collider()));
+            //this.add_game_object(new game_object(new Vector2(-500, -500), new Vector2(300, 200), 0).set_sprite(ateroid_texture));
+            //this.add_game_object(new game_object(new Vector2(100, 500), new Vector2(300, 200), 0).set_sprite(ateroid_texture).set_collider(new collider()));
         }
 
     }

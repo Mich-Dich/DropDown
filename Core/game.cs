@@ -19,10 +19,9 @@ namespace Core
         public GameWindowSettings _game_window_settings = GameWindowSettings.Default;
         public NativeWindowSettings _native_window_settings = NativeWindowSettings.Default;
 
-        public shader           default_sprite_shader { get; set; }
-        public static game      instance { get; private set; }
-        //public ResourceManager  ResourceManager { get; private set; }
-        public bool             draw_debug { get; set; } = false;
+        public shader           default_sprite_shader;
+        public static game      instance { get;  private set; }
+        public bool             draw_debug = false;
 
         // ============================================================================== public ============================================================================== 
         public game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
@@ -77,7 +76,7 @@ namespace Core
                 if (player_controller == null) 
                     throw new ResourceNotAssignedException("player_controller musst be assigned in game class init() function");    
                                 
-                player_controller.player = player;
+                player_controller.character = player;
 
                 window.IsVisible = true;
             };
@@ -97,10 +96,10 @@ namespace Core
 
                 //Time.DeltaTime = e.Time;
                 update_game_time((float)eventArgs.Time);
-                this.player_controller.update_internal(_input_event);
+                this.player_controller.update_internal(game_time.delta, _input_event);
                 //collision_engine.update(active_map.all_game_objects);       // call collision after update to force 
 
-                update();                
+                update(game_time.delta);                
                 _input_event.Clear();
             };
 
@@ -177,8 +176,8 @@ namespace Core
 
         protected abstract void init();
         protected abstract void shutdown();
-        protected abstract void update();
-        protected abstract void render();
+        protected abstract void update(float delta_time);
+        protected abstract void render(float delta_time);
 
         protected void set_update_frequency(double frequency) {
 
@@ -204,13 +203,13 @@ namespace Core
             player.draw();
 
             // client side code
-            render();
+            render(game_time.delta);
         }
 
 
         private void update_game_time(float delta_time) {
 
-            game_time.elapsed = delta_time;
+            game_time.delta = delta_time;
             game_time.total += delta_time;
 
         }

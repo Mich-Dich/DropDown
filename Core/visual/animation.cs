@@ -20,7 +20,7 @@ namespace Core.visual {
             if(!_is_playing)
                 return;
 
-            _animatable.animation_timer += game_time.elapsed;
+            _animatable.animation_timer += game_time.delta;
             _current_frame_index = (int)(_animatable.animation_timer / _frame_time);
 
             if(_current_frame_index >= SpriteBatch.FrameCount) {

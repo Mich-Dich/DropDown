@@ -32,9 +32,9 @@ namespace DropDown {
 
         protected override void shutdown() { }
 
-        protected override void update() { }
+        protected override void update(float delta_time) { }
 
-        protected override void render() {
+        protected override void render(float delta_time) {
 
             animation_sprite.draw();
         }

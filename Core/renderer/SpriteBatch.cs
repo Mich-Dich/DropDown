@@ -14,7 +14,7 @@ namespace Core
 
             this.frames = new List<Texture>();
             foreach(string imagePath in imagePaths) 
-                this.frames.Add(resource_manager.GetTexture(imagePath, isPixelArt));
+                this.frames.Add(resource_manager.get_texture(imagePath, isPixelArt));
             
         }
 
