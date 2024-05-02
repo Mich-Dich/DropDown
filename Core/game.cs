@@ -11,6 +11,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Runtime.InteropServices;
 
 namespace Core
 {
@@ -45,8 +46,7 @@ namespace Core
             _native_window_settings.Vsync = VSyncMode.On;
             _native_window_settings.API = ContextAPI.OpenGL;
             _native_window_settings.Profile = ContextProfile.Core;
-            _native_window_settings.Flags = ContextFlags.Default;
-
+            _native_window_settings.Flags = ContextFlags.ForwardCompatible;
         }
 
         public void run() {
@@ -57,6 +57,8 @@ namespace Core
             window.Load += () => {
 
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
+
+                Console.WriteLine("OpenGL Version: " + GL.GetString(StringName.Version));
 
                 active_map = new map();
 
@@ -109,16 +111,19 @@ namespace Core
                 internal_render();
             };
 
-            window.Resize += (ResizeEventArgs eventArgs) => {
+            
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+                window.Resize += (ResizeEventArgs eventArgs) => {
+                    update_game_time((float)window.TimeSinceLastUpdate());
+                    window.ResetTimeSinceLastUpdate();
 
-                update_game_time((float)window.TimeSinceLastUpdate());
-                window.ResetTimeSinceLastUpdate();
-
-                GL.Viewport(0, 0, window.Size.X, window.Size.Y);
-                camera.set_view_size(window.Size);
-                internal_render();
-                window.SwapBuffers();
-            };
+                    GL.Viewport(0, 0, window.Size.X, window.Size.Y);
+                    camera.set_view_size(window.Size);
+                    internal_render();
+                    window.SwapBuffers();
+                };
+            }
+            
 
             // ============================ input ============================ 
             window.KeyDown += (KeyboardKeyEventArgs args) => {      _input_event.Add(new input_event((key_code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Pressed)); };
