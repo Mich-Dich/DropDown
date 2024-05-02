@@ -36,7 +36,7 @@ namespace Core.physics {
 
         public collider(Vector2 velocity, physics_material physics_material) : this() {
             this.velocity = velocity;
-            this.physics_material = physics_material;
+            this.material = physics_material;
         }
     }
 

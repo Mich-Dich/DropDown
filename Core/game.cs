@@ -97,7 +97,7 @@ namespace Core
                 //Time.DeltaTime = e.Time;
                 update_game_time((float)eventArgs.Time);
                 this.player_controller.update_internal(game_time.delta, _input_event);
-                //collision_engine.update(active_map.all_game_objects);       // call collision after update to force 
+                collision_engine.update(active_map.all_game_objects);
 
                 update(game_time.delta);                
                 _input_event.Clear();

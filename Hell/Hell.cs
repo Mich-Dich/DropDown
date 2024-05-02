@@ -20,6 +20,8 @@ namespace Hell {
             this.player = new player();
             this.active_map = new base_map();
 
+            this.active_map.add_game_object(player);
+
             animation_sprite = new sprite(new Vector2(600, 200)).add_animation("assets/textures/Explosion-2", false, true, 30, true);
         }
 

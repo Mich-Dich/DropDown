@@ -53,8 +53,7 @@ namespace Core.game_objects {
         }
 
         public game_object set_collider(collider collider) {
-
-            this.collider = collider;
+            this.Collider = collider;
             return this;
         }
 
@@ -67,8 +66,8 @@ namespace Core.game_objects {
 
             sprite.draw();
 
-            if (game.instance.draw_debug && this.collider != null)
-                this.debug_drawer.draw_collision_shape(this.transform, this.collider.Value, DebugColor.Red);
+            if (game.instance.draw_debug && this.Collider != null)
+                this.debug_drawer.draw_collision_shape(this.transform, this.Collider.Value, DebugColor.Red);
         }
 
         public void add_child(game_object child) {
@@ -97,7 +96,7 @@ namespace Core.game_objects {
         //private DebugColor    DebugColor { get; set; } = DebugColor.Red;
         private debug_drawer?   debug_drawer { get; set; }
         private sprite? sprite; // { get; set; }
-        private collider? collider { get; set; }
+        public collider? Collider { get; set; }
 
         private void init() {
 

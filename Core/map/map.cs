@@ -8,7 +8,7 @@ namespace Core
 
     public class map {
 
-        //public List<game_object>    all_game_objects {  get; set; } = new List<game_object>();
+        public List<game_object> all_game_objects { get; set; } = new List<game_object>();
 
         public map() { }
 
@@ -36,8 +36,8 @@ namespace Core
         }
 
         public void add_game_object(game_object game_object) {
-
             world.Add(game_object);
+            all_game_objects.Add(game_object);
             Console.WriteLine($"Adding game_object. world: {world.Count}");
         }
 
