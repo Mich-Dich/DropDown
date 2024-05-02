@@ -132,6 +132,10 @@ namespace Core.renderer {
             return new shader_programm_source(vert_shader, frag_shader );
         }
 
+        public void Dispose() {
+            GL.DeleteProgram(programm_id);
+        }
+
         public int get_uniform_location(string name) => _uniforms[name];
 
         //  ============================================================================== private ============================================================================== 

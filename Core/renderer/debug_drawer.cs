@@ -29,7 +29,7 @@ namespace Core.renderer {
             this.ebo = GL.GenBuffer();
         }
 
-        public void draw_collision_shape(transform transform, collider collider, DebugColor debugColor, camera cam) {
+        public void draw_collision_shape(transform transform, collider collider, DebugColor debugColor) {
 
             this.DebugColor = debugColor;
             this.debugShader.use();
@@ -53,7 +53,7 @@ namespace Core.renderer {
             this.debugShader.set_uniform("color", color);
 
             Matrix4 matrixTransform = transform.GetTransformationMatrix();
-            Matrix4 finalTransform = matrixTransform * cam.get_projection_matrix();
+            Matrix4 finalTransform = matrixTransform * game.instance.camera.get_projection_matrix();
             this.debugShader.set_matrix_4x4("projection", finalTransform);
 
             if(collider.shape == collision_shape.Circle) {
@@ -111,7 +111,7 @@ namespace Core.renderer {
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
-            int positionLocation = debugShader.get_attrib_location("aPosition");
+            int positionLocation = debugShader.GetAttribLocation("aPosition");
             GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(positionLocation);
 
