@@ -26,6 +26,8 @@ namespace Core
         public GameWindow       window { get; private set; }
         public camera           camera { get; set; }
 
+        public ImGuiController imguiController;
+
         // ============================================================================== public ============================================================================== 
         public game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
 
@@ -82,6 +84,8 @@ namespace Core
                 this.active_map.add_game_object(player);
 
                 window.IsVisible = true;
+
+                imguiController = new ImGuiController(window.ClientSize.X, window.ClientSize.Y);
             };
 
             window.Unload += () => {
@@ -107,9 +111,25 @@ namespace Core
             };
 
             window.RenderFrame += (FrameEventArgs eventArgs) => {
+                imguiController.Update(window, (float)eventArgs.Time);
+
+                GL.ClearColor(new Color4(0, 32, 48, 255));
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+
+                internal_render();
+
+                ImGuiNET.ImGui.NewFrame();
+
+                ImGui.DockSpaceOverViewport();
+
+                ImGui.ShowDemoWindow();
+
+                ImGui.Render();
+                imguiController.Render();
+
+                ImGuiController.CheckGLError("End of frame");
 
                 window.SwapBuffers();
-                internal_render();
             };
 
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
@@ -120,9 +140,22 @@ namespace Core
                     GL.Viewport(0, 0, window.Size.X, window.Size.Y);
                     camera.set_view_size(window.Size);
                     internal_render();
+                    imguiController.WindowResized(window.ClientSize.X, window.ClientSize.Y);
                     window.SwapBuffers();
                 };
             }
+
+            // Handle text input for ImGui
+            window.TextInput += (TextInputEventArgs e) =>
+            {
+                imguiController.PressChar((char)e.Unicode);
+            };
+
+            // Handle mouse wheel for ImGui
+            window.MouseWheel += (MouseWheelEventArgs e) =>
+            {
+                imguiController.MouseScroll(new Vector2(e.OffsetX, e.OffsetY));
+            };
 
             // ============================ input ============================ 
             window.KeyDown += (KeyboardKeyEventArgs args) => {      _input_event.Add(new input_event((key_code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Pressed)); };
