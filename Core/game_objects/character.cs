@@ -14,7 +14,6 @@ namespace Core.game_objects {
         public character() {
 
             //this.set_sprite(new visual.sprite(resource_manager.get_texture("./assets/textures/Spaceship/Spaceship.png")));
-
         }
 
         public void set_controller(I_controller controller) {
@@ -24,7 +23,8 @@ namespace Core.game_objects {
         }
 
         public override void hit(hit_data hit) {
-            throw new NotImplementedException();
+
+            Console.WriteLine($"character [{this}] was hit");
         }
 
         // ================================================== private ==================================================

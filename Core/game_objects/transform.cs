@@ -11,8 +11,18 @@ namespace Core.game_objects {
         public transform?   parent { get; set; }
 
         public transform() {
-        
+
             this.position = new Vector2();
+        }
+
+        public transform(transform transform) {
+
+            this.position = transform.position;
+            this.size = transform.size;
+            this.rotation = transform.rotation;
+            this.mobility = transform.mobility;
+            this.parent = transform.parent;
+
         }
 
         public transform(Vector2 position, Vector2 size, Single rotation, mobility mobility, transform? parent = null) {

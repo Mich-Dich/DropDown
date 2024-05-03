@@ -12,13 +12,13 @@ namespace Hell {
             this.transform.size = new Vector2(50);
             this.transform.rotation = float.Pi;
             set_sprite(new sprite(resource_manager.get_texture("assets/textures/Spaceship/Spaceship.png", true)));
-            set_collider(new collider(collision_shape.Circle));
+            add_collider(new collider(collision_shape.Circle));
 
-            this.movement_speed = 800.0f;
+            this.movement_speed = 500.0f;
         }
 
         public override void hit(hit_data hit) {
-            //Console.WriteLine("Player collided with an object");
+            Console.WriteLine("Player collided with an object");
         }
 
     }

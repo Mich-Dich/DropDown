@@ -39,7 +39,7 @@ namespace Core.game_objects {
             return this;
         }
 
-        public game_object set_collider(collider collider) {
+        public game_object add_collider(collider collider) {
             
             this.collider = collider;
             return this;
@@ -47,7 +47,9 @@ namespace Core.game_objects {
 
         public virtual void hit(hit_data hit) { }
 
-        public void draw() {
+        public virtual void update() { }
+
+        public virtual void draw() {
             
             if(sprite == null)
                 return;

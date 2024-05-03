@@ -6,13 +6,16 @@ using OpenTK.Mathematics;
 
 namespace Hell {
 
-    public class enemy : game_object {
+    public class enemy : character {
 
-        public enemy() {
-            this.transform.size = new Vector2(50);
-            this.transform.rotation = float.Pi;
+        public enemy(Vector2? position = null, Vector2? size = null, Single rotation = 0) {
+
+            this.transform.position = position ?? new Vector2();
+            this.transform.size = size?? new Vector2(50);
+            this.transform.rotation = rotation;
+
             set_sprite(new sprite(resource_manager.get_texture("assets/textures/Enemy/Enemy.png", true)));
-            set_collider(new collider());
+            add_collider(new collider(collision_shape.Circle));
         }
 
         public override void hit(hit_data hit) {

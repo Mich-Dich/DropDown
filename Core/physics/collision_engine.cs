@@ -52,6 +52,10 @@ namespace Core.physics {
                         (all_objects[x].transform.mobility == mobility.STATIC && all_objects[y].transform.mobility == mobility.STATIC))
                         continue;
 
+                    if(all_objects[x].collider == null || all_objects[y].collider == null)
+                        continue;
+
+
                     if(all_objects[x].collider.Value.shape == collision_shape.Circle) {
                         if(all_objects[y].collider.Value.shape == collision_shape.Circle)
                             current = collision_circle_circle(all_objects[x], all_objects[y]);

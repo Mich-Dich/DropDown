@@ -54,29 +54,32 @@ namespace Core.renderer {
 
             this.debugShader.set_uniform("color", color);
 
-            Matrix4 matrixTransform = transform.GetTransformationMatrix();
+            transform buffer = new transform(transform);
+            buffer.size = new Vector2(1, 1);
+
+            Matrix4 matrixTransform = buffer.GetTransformationMatrix();
             Matrix4 finalTransform = matrixTransform * game.instance.camera.get_projection_matrix();
             this.debugShader.set_matrix_4x4("transform", finalTransform);
 
             if(collider.shape == collision_shape.Circle) {
-                this.draw_circle(1.0f, 100);
+                this.draw_circle(transform.size.X, 30);
             }
             else if(collider.shape == collision_shape.Square) {
-                this.draw_rectangle(2.0f);
+                this.draw_rectangle(transform.size);
             }
 
             GL.BindVertexArray(0);
             this.debugShader.unbind();
         }
 
-        private void draw_rectangle(float size) {
+        private void draw_rectangle(Vector2 size) {
 
             //Console.WriteLine("Drawing rectangle");
             float[] vertices = {
-                -0.5f * size,  0.5f * size, 0.0f,
-                0.5f * size,  0.5f * size, 0.0f,
-                0.5f * size, -0.5f * size, 0.0f,
-                -0.5f * size, -0.5f * size, 0.0f,
+                -0.5f * size.X,  0.5f * size.Y, 0.0f,
+                 0.5f * size.X,  0.5f * size.Y, 0.0f,
+                 0.5f * size.X, -0.5f * size.Y, 0.0f,
+                -0.5f * size.X, -0.5f * size.Y, 0.0f,
             };
 
             uint[] indices = { 0, 1, 2, 3 };

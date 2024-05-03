@@ -3,8 +3,7 @@ using Core.util;
 using Core.visual;
 using OpenTK.Mathematics;
 
-namespace Core
-{
+namespace Core {
 
     public class map {
 
@@ -36,9 +35,17 @@ namespace Core
         }
 
         public void add_game_object(game_object game_object) {
+
             world.Add(game_object);
             all_game_objects.Add(game_object);
-            Console.WriteLine($"Adding game_object. world: {world.Count}");
+            Console.WriteLine($"Adding game_object [{game_object}] to world. Current count: {world.Count} ");
+        }
+
+        public void add_character(character character) {
+
+            world.Add(character);
+            all_game_objects.Add(character);
+            Console.WriteLine($"Adding character [{character}] to world. Current count: {world.Count} ");
         }
 
         public void add_sprite(sprite sprite) { backgound.Add(sprite); }
@@ -51,7 +58,8 @@ namespace Core
             switch(world_layer) {
                 case world_layer.None: break;
                 case world_layer.world:
-                    world.Add(new game_object().set_sprite(sprite));
+                    Console.WriteLine($"add_sprite() with argument [world_layer = world_layer.world] is not implemented yet");
+                    //world.Add(new game_object().set_sprite(sprite));
                     break;
                         
                 case world_layer.backgound: 
