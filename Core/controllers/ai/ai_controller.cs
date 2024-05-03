@@ -20,7 +20,15 @@ namespace Core.controllers.ai {
 
         public void update() {
 
-            current_state = select_state_to_execute(_all_states[current_state].execute_state(this));
+            string new_state = select_state_to_execute(_all_states[current_state].execute(this));
+
+            // call exit/enter method if switching state
+            if(current_state != new_state) {
+
+                _all_states[current_state].exit(this);
+                _all_states[new_state].enter(this);
+            }
+            current_state = new_state;      // use updated state in next update
         }
 
         // ------------------------------------------ private ------------------------------------------

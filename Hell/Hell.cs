@@ -14,7 +14,7 @@ namespace Hell {
         protected override void init() {
 
             set_update_frequency(144.0f);
-            //enable_debug_draw(true);
+            enable_debug_draw(true);
 
             this.player_controller = new PC_default();
             this.player = new player();

@@ -1,5 +1,4 @@
 ﻿using Core;
-using Core.controllers.ai;
 using Core.defaults.AI;
 using Core.visual;
 using OpenTK.Mathematics;
@@ -11,7 +10,6 @@ namespace DropDown {
         public drop_down(String title, Int32 inital_window_width, Int32 inital_window_height)
             : base(title, inital_window_width, inital_window_height) { }
 
-        public sprite animation_sprite { get; set; }
 
         // ========================================================= functions =========================================================
         protected override void init() {
@@ -27,7 +25,8 @@ namespace DropDown {
             ai_controller.register_state(new List<Type> { typeof(default_waling_state) });
 
 
-            animation_sprite = new sprite(new Vector2(600, 200), new Vector2(500, 500)).add_animation("assets/textures/explosion", false, true, 60, true);
+            this.active_map.add_sprite(new sprite(new Vector2(600, 200), new Vector2(500, 500)).add_animation("assets/textures/explosion", true, false, 60, true));
+            this.active_map.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).add_animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
         }
 
         protected override void shutdown() { }
@@ -36,7 +35,6 @@ namespace DropDown {
 
         protected override void render(float delta_time) {
 
-            animation_sprite.draw();
         }
 
     }

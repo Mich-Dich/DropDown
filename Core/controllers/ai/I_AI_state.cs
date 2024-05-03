@@ -8,6 +8,10 @@ namespace Core.controllers.ai {
         /// </summary>
         /// <param name="ai_controller">The AI controller instance that manages the state execution.</param>
         /// <returns>The Type of the next state to transition to (e.g., typeof(ThisState), typeof(WalkState), etc.).</returns>
-        Type execute_state(ai_controller ai_controller);
+        Type execute(ai_controller ai_controller);
+
+        Type exit(ai_controller ai_controller);
+
+        Type enter(ai_controller ai_controller);
     }
 }

@@ -12,6 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="assets\defaults\default_grid.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\shaders\debug.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
