@@ -22,7 +22,7 @@ namespace Core
 
         public shader           default_sprite_shader;
         public static game      instance { get;  private set; }
-        public bool             draw_debug = false;
+        public bool             draw_debug = true;
 
         // ============================================================================== public ============================================================================== 
         public game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
