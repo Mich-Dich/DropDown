@@ -60,7 +60,9 @@ namespace Core.game_objects {
             sprite.draw();
 
             if (game.instance.draw_debug && this.Collider != null)
+            {
                 this.debug_drawer?.draw_collision_shape(this.transform, this.Collider.Value, DebugColor.Red);
+            }
         }
 
         public void add_child(game_object child) {
