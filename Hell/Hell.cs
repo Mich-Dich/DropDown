@@ -18,16 +18,14 @@ namespace Hell {
             this.player = new player();
 
             this.active_map = new base_map();
-            this.active_map.add_sprite(new sprite(new Vector2(600, 200)).add_animation("assets/textures/Explosion-2", false, true, 30, true));
+            this.active_map.add_sprite(new sprite(new Vector2(600, 200)).add_animation("assets/textures/Explosion-2", true, false, 30, true));
         }
 
         protected override void shutdown() { }
 
         protected override void update(float delta_time) { }
 
-        protected override void render(float delta_time) {
-
-        }
+        protected override void render(float delta_time) { }
 
     }
 }

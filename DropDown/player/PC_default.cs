@@ -47,15 +47,15 @@ namespace DropDown {
         protected override void update(float delta_time) {
 
             // simple movement
-            character.transform.position += ((Vector2)move.get_value() * character.movement_speed * delta_time);
-            
+            player.add_velocity((Vector2)move.get_value() * player.movement_speed * delta_time);
+
             // camera follows player
-            game.instance.camera.transform.position = character.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
+            game.instance.camera.transform.position = player.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
 
             // look at mouse
             Vector2 screen_look = game.instance.get_mouse_relative_pos();
             float angleRadians = (float)Math.Atan2(screen_look.X, screen_look.Y);
-            character.transform.rotation = -angleRadians + float.Pi/2;
+            player.transform.rotation = -angleRadians + float.Pi/2;
         }
     }
 }

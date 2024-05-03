@@ -1,6 +1,7 @@
 ﻿using Core.controllers;
 using Core.physics;
 using Core.util;
+using OpenTK.Mathematics;
 
 namespace Core.game_objects {
 
@@ -19,8 +20,21 @@ namespace Core.game_objects {
         public void set_controller(I_controller controller) {
 
             this.controller = controller;
-            controller.character = this;
+            controller.player = this;
         }
+
+        public void set_velocity(Vector2 new_velocity) {
+
+            if(this.collider != null)
+                this.collider.velocity = new_velocity;
+        }
+
+        public void add_velocity(Vector2 new_velocity) {
+
+            if(this.collider != null)
+                this.collider.velocity += new_velocity;
+        }
+
 
         public override void hit(hit_data hit) {
 

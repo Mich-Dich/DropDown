@@ -159,9 +159,9 @@ namespace Core.visual {
         }
 
         // ============================================ private  ============================================ 
-        private index_buffer _index_buffer { get; set; }
-        private vertex_buffer _vertex_buffer { get; set; }
-        private vertex_array _vertex_array { get; set; }
+        private index_buffer    _index_buffer;
+        private vertex_buffer   _vertex_buffer;
+        private vertex_array    _vertex_array;
         private Matrix4         _model_matrix;
         private bool needs_update { get; set; } = true;
 

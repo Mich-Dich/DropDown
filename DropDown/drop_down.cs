@@ -1,7 +1,4 @@
 ﻿using Core;
-using Core.defaults.AI;
-using Core.visual;
-using OpenTK.Mathematics;
 
 namespace DropDown {
 
@@ -19,10 +16,11 @@ namespace DropDown {
 
             this.player_controller = new PC_default();
             this.player = new player();
+
             this.active_map = new map().generate_backgound_tile(50, 30);
            
-            var ai_controller = new AI_default();
-            // ai_controller.register_state(new List<Type> { typeof(default_waling_state) });
+            //var ai_controller = new AI_default();
+            //ai_controller.register_state(new List<Type> { typeof(default_waling_state) });
 
             //this.active_map.add_sprite(new sprite(new Vector2(600, 200), new Vector2(100, 100)).add_animation("assets/textures/explosion", true, false, 200, true));
             //this.active_map.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).add_animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
@@ -32,9 +30,7 @@ namespace DropDown {
 
         protected override void update(float delta_time) { }
 
-        protected override void render(float delta_time) {
-
-        }
+        protected override void render(float delta_time) { }
 
     }
 }

@@ -5,12 +5,12 @@ using OpenTK.Mathematics;
 
 namespace Core.game_objects {
 
-    public /*abstract*/ class game_object {
+    public class game_object {
 
-        public transform transform { get; set; } = new transform();
-        public game_object? parent { get; private set; }
-        public List<game_object> children { get; } = new List<game_object>();
-        public collider? collider { get; set; }
+        public transform            transform { get; set; } = new transform();
+        public game_object?         parent { get; private set; }
+        public List<game_object>    children { get; } = new List<game_object>();
+        public collider?            collider { get; set; }
 
         public game_object(transform transform) { this.transform = transform; init(); }
 
@@ -61,7 +61,7 @@ namespace Core.game_objects {
         public void draw_debug() {
 
             if(this.collider != null)
-                this.debug_drawer?.draw_collision_shape(this.transform, this.collider.Value, DebugColor.Red);
+                this.debug_drawer?.draw_collision_shape(this.transform, this.collider, DebugColor.Red);
         }
 
         public void add_child(game_object child) {

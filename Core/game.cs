@@ -78,7 +78,7 @@ namespace Core
                 if (player_controller == null) 
                     throw new ResourceNotAssignedException("player_controller musst be assigned in game class init() function");    
                                 
-                player_controller.character = player;
+                player_controller.player = player;
                 this.active_map.add_game_object(player);
 
                 window.IsVisible = true;
@@ -100,7 +100,7 @@ namespace Core
                 //Time.DeltaTime = e.Time;
                 update_game_time((float)eventArgs.Time);
                 this.player_controller.update_internal(game_time.delta, _input_event);
-                collision_engine.update(active_map.all_game_objects);
+                collision_engine.update(active_map.all_game_objects, game_time.delta);
 
                 update(game_time.delta);                
                 _input_event.Clear();

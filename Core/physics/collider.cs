@@ -5,7 +5,7 @@ using OpenTK.Mathematics;
 
 namespace Core.physics {
 
-    public struct collider {
+    public class collider {
 
         public collision_shape  shape;
         public collision_type   type;
@@ -14,7 +14,7 @@ namespace Core.physics {
         public hit_data         hit_data;
 
         public float            mass;
-        public Vector2          velocity;
+        public Vector2          velocity {  get; set; }
 
         public collider() {
 
@@ -38,6 +38,12 @@ namespace Core.physics {
         public collider set_mass(float mass) {
 
             this.mass = mass;
+            return this;
+        }
+
+        public collider set_physics_material(physics_material material) {
+
+            this.material = material;
             return this;
         }
 

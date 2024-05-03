@@ -6,6 +6,7 @@ using OpenTK;
 
 using OpenTK.Mathematics;
 using Core.physics;
+using System.Runtime;
 
 namespace Core.physics {
 
@@ -25,12 +26,17 @@ namespace Core.physics {
 
         public collision_engine() { }
 
-        public void update(List<game_object> all_objects) {
+        public void update(List<game_object> all_objects, float delta_time) {
 
             hit_data current = new hit_data();
 
-            for(int x = 0; x < all_objects.Count; x++) {
+            for (int x = 0; x < all_objects.Count; x++) {
                 for(int y = 0; y < all_objects.Count; y++) {
+
+                    // update position befor hand
+
+                    all_objects[x].collider.velocity /= 1 + all_objects[x].collider.material.dynamicFriction;
+                    all_objects[x].transform.position += all_objects[x].collider.velocity * delta_time;
 
                     // Skip unneeded
                     if(all_objects[x] == all_objects[y] ||
@@ -41,16 +47,17 @@ namespace Core.physics {
                         continue;
 
 
-                    if(all_objects[x].collider.Value.shape == collision_shape.Circle) {
-                        if(all_objects[y].collider.Value.shape == collision_shape.Circle)
+
+                    if(all_objects[x].collider.shape == collision_shape.Circle) {
+                        if(all_objects[y].collider.shape == collision_shape.Circle)
                             current = collision_circle_circle(all_objects[x], all_objects[y]);
-                        else if(all_objects[y].collider.Value.shape == collision_shape.Square)
+                        else if(all_objects[y].collider.shape == collision_shape.Square)
                             current = collision_circle_AABB(all_objects[x], all_objects[y]);
                     }
-                    else if(all_objects[x].collider.Value.shape == collision_shape.Square) {
-                        if(all_objects[y].collider.Value.shape == collision_shape.Circle)
+                    else if(all_objects[x].collider.shape == collision_shape.Square) {
+                        if(all_objects[y].collider.shape == collision_shape.Circle)
                             current = collision_circle_AABB(all_objects[y], all_objects[x]);
-                        else if(all_objects[y].collider.Value.shape == collision_shape.Square)
+                        else if(all_objects[y].collider.shape == collision_shape.Square)
                             current = collision_AABB_AABB(all_objects[x], all_objects[y]);
                     }
 
@@ -59,11 +66,16 @@ namespace Core.physics {
                         continue;
 
 
+
                     // proccess hit => change position, velocity ...
-                    float total_mass = all_objects[x].collider.Value.mass + all_objects[y].collider.Value.mass;
-                    all_objects[x].transform.position -= (current.hit_direction * (all_objects[y].collider.Value.mass / total_mass));
-                    all_objects[y].transform.position += (current.hit_direction * (all_objects[x].collider.Value.mass / total_mass));
-                    
+                    float total_mass = all_objects[x].collider.mass + all_objects[y].collider.mass;
+                    all_objects[x].transform.position -= current.hit_direction * (all_objects[y].collider.mass / total_mass) * all_objects[y].collider.material.bounciness;
+                    all_objects[y].transform.position += current.hit_direction * (all_objects[x].collider.mass / total_mass) * all_objects[x].collider.material.bounciness;
+
+                    all_objects[x].collider.velocity -= current.hit_direction * (all_objects[y].collider.mass / total_mass);// * all_objects[y].collider.material.bounciness;
+                    all_objects[y].collider.velocity += current.hit_direction * (all_objects[x].collider.mass / total_mass);// * all_objects[x].collider.material.bounciness;
+
+
                     // Call hit on game_object
                     all_objects[x].hit(current);
                     all_objects[y].hit(current);
@@ -112,11 +124,18 @@ namespace Core.physics {
             if (collision_distance.X > (AABB.transform.size.X/2 + circle.transform.size.X)) { return hit; }
             if (collision_distance.Y > (AABB.transform.size.Y/2 + circle.transform.size.Y)) { return hit; }
 
-            if (collision_distance.X <= (AABB.transform.size.X/2) 
-                || collision_distance.Y <= (AABB.transform.size.Y/2)) {
+            if (collision_distance.X <= (AABB.transform.size.X/2)) {
 
-                Console.WriteLine($"Colliding on edge");
+                hit.hit_direction = new Vector2(0, (collision_distance.X - AABB.transform.size.X - circle.transform.size.X) * 0.2f);
+                hit.is_hit = true;
+                hit.hit_position = circle.transform.position;
+                hit.hit_object = AABB;
+                return hit;
+            }
 
+            if(collision_distance.Y <= (AABB.transform.size.Y / 2)) {
+                
+                hit.hit_direction = new Vector2((collision_distance.Y - AABB.transform.size.Y - circle.transform.size.X) * 0.2f, 0);
                 hit.is_hit = true;
                 hit.hit_position = circle.transform.position;
                 hit.hit_object = AABB;
@@ -124,10 +143,12 @@ namespace Core.physics {
             }
 
             float cornerDistance_sq = (float)(Math.Pow(collision_distance.X - AABB.transform.size.X/2, 2) +
-                                  Math.Pow(collision_distance.Y - AABB.transform.size.Y/2, 2));
+                                Math.Pow(collision_distance.Y - AABB.transform.size.Y/2, 2));
 
             if (cornerDistance_sq <= Math.Pow(circle.transform.size.X, 2)) {
-                
+
+                Console.WriteLine($"asdrtgsdefgsdfgsdf");
+
                 hit.is_hit = true;
                 hit.hit_position = circle.transform.position;
                 hit.hit_object = AABB;

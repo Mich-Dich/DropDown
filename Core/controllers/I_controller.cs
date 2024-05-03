@@ -4,7 +4,7 @@ namespace Core.controllers {
 
     public interface I_controller {
 
-        character character { get; set; }
+        character player { get; set; }
 
     }
 }
