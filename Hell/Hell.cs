@@ -8,8 +8,6 @@ namespace Hell {
         public Hell(String title, Int32 inital_window_width, Int32 inital_window_height)
             : base(title, inital_window_width, inital_window_height) { }
 
-        public sprite animation_sprite { get; set; }
-
         // ========================================================= functions =========================================================
         protected override void init() {
 
@@ -18,11 +16,9 @@ namespace Hell {
 
             this.player_controller = new PC_default();
             this.player = new player();
+
             this.active_map = new base_map();
-
-            this.active_map.add_game_object(player);
-
-            animation_sprite = new sprite(new Vector2(600, 200)).add_animation("assets/textures/Explosion-2", false, true, 30, true);
+            this.active_map.add_sprite(new sprite(new Vector2(600, 200)).add_animation("assets/textures/Explosion-2", false, true, 30, true));
         }
 
         protected override void shutdown() { }
@@ -31,7 +27,6 @@ namespace Hell {
 
         protected override void render(float delta_time) {
 
-            animation_sprite.draw();
         }
 
     }

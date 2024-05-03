@@ -16,8 +16,9 @@ namespace Hell {
         }
 
         public override void hit(hit_data hit) {
+
             base.hit(hit);
-            Console.WriteLine("Enemy collided with an object");
+            //Console.WriteLine("Enemy collided with an object");
         }
 
     }

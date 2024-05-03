@@ -52,16 +52,16 @@ namespace Core.physics {
                         (all_objects[x].transform.mobility == mobility.STATIC && all_objects[y].transform.mobility == mobility.STATIC))
                         continue;
 
-                    if(all_objects[x].Collider.Value.shape == collision_shape.Circle) {
-                        if(all_objects[y].Collider.Value.shape == collision_shape.Circle)
+                    if(all_objects[x].collider.Value.shape == collision_shape.Circle) {
+                        if(all_objects[y].collider.Value.shape == collision_shape.Circle)
                             current = collision_circle_circle(all_objects[x], all_objects[y]);
-                        else if(all_objects[y].Collider.Value.shape == collision_shape.Square)
+                        else if(all_objects[y].collider.Value.shape == collision_shape.Square)
                             current = collision_circle_AABB(all_objects[x], all_objects[y]);
                     }
-                    else if(all_objects[x].Collider.Value.shape == collision_shape.Square) {
-                        if(all_objects[y].Collider.Value.shape == collision_shape.Circle)
+                    else if(all_objects[x].collider.Value.shape == collision_shape.Square) {
+                        if(all_objects[y].collider.Value.shape == collision_shape.Circle)
                             current = collision_AABB_circle(all_objects[x], all_objects[y]);
-                        else if(all_objects[y].Collider.Value.shape == collision_shape.Square)
+                        else if(all_objects[y].collider.Value.shape == collision_shape.Square)
                             current = collision_AABB_AABB(all_objects[x], all_objects[y]);
                     }
 

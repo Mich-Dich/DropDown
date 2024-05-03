@@ -11,7 +11,8 @@ namespace Core.physics {
         public collision_type   type { get; set; }
         public transform        offset { get; set; }
         public physics_material material { get; set; }
-        
+        public hit_data         hit_data {  get; set; }
+
         public float            mass { get; set; }
         public Vector2          velocity { get; set; }
 

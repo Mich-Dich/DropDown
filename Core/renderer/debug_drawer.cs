@@ -32,14 +32,12 @@ namespace Core.renderer {
         }
 
         public void draw_collision_shape(transform transform, collider collider, DebugColor debugColor) {
-            Console.WriteLine("Drawing collision shape");
 
+            //Console.WriteLine("Drawing collision shape");
             this.DebugColor = debugColor;
             this.debugShader.use();
-
             Vector4 color;
-            switch (this.DebugColor)
-            {
+            switch(this.DebugColor) {
                 case DebugColor.Red:
                     color = new Vector4(1.0f, 0.0f, 0.0f, 0.5f);
                     break;
@@ -72,30 +70,27 @@ namespace Core.renderer {
         }
 
         private void draw_rectangle(float size) {
-            Console.WriteLine("Drawing rectangle");
-            float[] vertices =
-            {
+
+            //Console.WriteLine("Drawing rectangle");
+            float[] vertices = {
                 -0.5f * size,  0.5f * size, 0.0f,
                 0.5f * size,  0.5f * size, 0.0f,
                 0.5f * size, -0.5f * size, 0.0f,
                 -0.5f * size, -0.5f * size, 0.0f,
             };
 
-            uint[] indices =
-            {
-                0, 1, 2, 3,
-            };
+            uint[] indices = { 0, 1, 2, 3 };
 
             this.DrawShape(vertices, indices, PrimitiveType.LineLoop);
         }
 
         private void draw_circle(float radius, int sides) {
-            Console.WriteLine("Drawing circle");
+
+            //Console.WriteLine("Drawing circle");
             List<float> vertices = new List<float>();
             List<uint> indices = new List<uint>();
 
-            for (int i = 0; i <= sides; i++)
-            {
+            for(int i = 0; i <= sides; i++) {
                 float theta = 2.0f * MathF.PI * i / sides;
                 float x = radius * MathF.Cos(theta);
                 float y = radius * MathF.Sin(theta);
