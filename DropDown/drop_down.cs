@@ -15,6 +15,7 @@ namespace DropDown {
         protected override void init() {
 
             set_update_frequency(144.0f);
+            enable_debug_draw(true);
 
             this.player_controller = new PC_default();
             this.player = new player();
@@ -23,8 +24,8 @@ namespace DropDown {
             var ai_controller = new AI_default();
             // ai_controller.register_state(new List<Type> { typeof(default_waling_state) });
 
-            this.active_map.add_sprite(new sprite(new Vector2(600, 200), new Vector2(100, 100)).add_animation("assets/textures/explosion", true, false, 200, true));
-            this.active_map.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).add_animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
+            //this.active_map.add_sprite(new sprite(new Vector2(600, 200), new Vector2(100, 100)).add_animation("assets/textures/explosion", true, false, 200, true));
+            //this.active_map.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).add_animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
         }
 
         protected override void shutdown() { }

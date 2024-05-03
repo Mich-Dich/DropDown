@@ -62,7 +62,7 @@ namespace Core.renderer {
             this.debugShader.set_matrix_4x4("transform", finalTransform);
 
             if(collider.shape == collision_shape.Circle) {
-                this.draw_circle(transform.size.X, 30);
+                this.draw_circle(transform.size.X, 20);
             }
             else if(collider.shape == collision_shape.Square) {
                 this.draw_rectangle(transform.size);
@@ -107,6 +107,7 @@ namespace Core.renderer {
         }
 
         private void DrawShape(float[] vertices, uint[] indices, PrimitiveType primitiveType) {
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, this.vbo);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
 

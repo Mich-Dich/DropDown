@@ -140,16 +140,16 @@ namespace Core.visual {
             _verticies[2] = ((float)column_index / (float)number_of_columns) + (1.0f / (float)number_of_columns) - offset_x;
 
             // top - right
-            _verticies[8] = ((float)row_index / (float)number_of_rows) + (1.0f / (float)number_of_rows) - offset_y;
-            _verticies[7] = ((float)column_index / (float)number_of_columns) + (1.0f / (float)number_of_columns) - offset_x;
+            _verticies[7] = ((float)row_index / (float)number_of_rows) + (1.0f / (float)number_of_rows) - offset_y;
+            _verticies[6] = ((float)column_index / (float)number_of_columns) + (1.0f / (float)number_of_columns) - offset_x;
 
             // top - left
-            _verticies[13] = ((float)row_index / (float)number_of_rows) + (1.0f / (float)number_of_rows) - offset_y;
-            _verticies[12] = ((float)column_index / (float)number_of_columns) + offset_x;
+            _verticies[11] = ((float)row_index / (float)number_of_rows) + (1.0f / (float)number_of_rows) - offset_y;
+            _verticies[10] = ((float)column_index / (float)number_of_columns) + offset_x;
 
             // bottom - left
-            _verticies[18] = ((float)row_index / (float)number_of_rows) + offset_y;
-            _verticies[17] = ((float)column_index / (float)number_of_columns) + offset_x;
+            _verticies[15] = ((float)row_index / (float)number_of_rows) + offset_y;
+            _verticies[14] = ((float)column_index / (float)number_of_columns) + offset_x;
 
 
             _vertex_buffer.update_content(_verticies);
@@ -167,10 +167,10 @@ namespace Core.visual {
 
         private float[] _verticies { get; set; } = {
         //   x    y    UV.y  UV.x
-             1f,  1f,  1f,   1f,  1f,
-             1f, -1f,  1f,   0f,  1f,
-            -1f, -1f,  0f,   0f,  1f,
-            -1f,  1f,  0f,   1f,  1f,
+             1f,  1f,  1f,   1f,
+             1f, -1f,  1f,   0f,
+            -1f, -1f,  0f,   0f,
+            -1f,  1f,  0f,   1f,
         };
         private float[] _cooord_data = {
         //   x    y
@@ -185,7 +185,6 @@ namespace Core.visual {
             0f, 0f,
             0f, 1f,
         };
-        private int _texture_index = 0;
 
         private uint[] _indeices = {
             0, 1, 3,
@@ -217,8 +216,8 @@ namespace Core.visual {
 
             buffer_layout layout = new buffer_layout()
                 .add<float>(2)      // vertex coordinates
-                .add<float>(2)      // UV coordinates
-                .add<float>(1);     // texture_slot
+                .add<float>(2);      // UV coordinates
+                //.add<float>(1);     // texture_slot
 
             return layout;
         }

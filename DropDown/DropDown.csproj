@@ -257,6 +257,9 @@
     <None Update="assets\textures\FX_explosion\munber_test.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\textures\muzzle_flash.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\textures\player\00.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

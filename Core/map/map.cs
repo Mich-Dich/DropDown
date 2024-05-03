@@ -32,6 +32,14 @@ namespace Core {
 
             for(int x = 0; x < world.Count; x++)
                 world[x].draw();
+            
+
+            if (game.instance.draw_debug) {
+
+                for(int x = 0; x < world.Count; x++)
+                    world[x].draw_debug();
+            }
+
         }
 
         public void add_game_object(game_object game_object) {

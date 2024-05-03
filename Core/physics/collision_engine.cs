@@ -25,28 +25,13 @@ namespace Core.physics {
 
         public collision_engine() { }
 
-        private hit_data collision_AABB_AABB(game_object AABB, game_object AABB_2) {
-            hit_data hit = new hit_data();
-
-            // Check for collision
-            if (AABB.transform.position.X < AABB_2.transform.position.X + AABB_2.transform.size.X &&
-                AABB.transform.position.X + AABB.transform.size.X > AABB_2.transform.position.X &&
-                AABB.transform.position.Y < AABB_2.transform.position.Y + AABB_2.transform.size.Y &&
-                AABB.transform.position.Y + AABB.transform.size.Y > AABB_2.transform.position.Y) {
-                
-                hit.is_hit = true;
-                hit.hit_position = AABB.transform.position;
-                hit.hit_object = AABB_2;
-            }
-
-            return hit;
-        }
-
         public void update(List<game_object> all_objects) {
+
             hit_data current = new hit_data();
 
             for(int x = 0; x < all_objects.Count; x++) {
                 for(int y = 0; y < all_objects.Count; y++) {
+
                     // Skip unneeded
                     if(all_objects[x] == all_objects[y] ||
                         (all_objects[x].transform.mobility == mobility.STATIC && all_objects[y].transform.mobility == mobility.STATIC))
@@ -64,24 +49,53 @@ namespace Core.physics {
                     }
                     else if(all_objects[x].collider.Value.shape == collision_shape.Square) {
                         if(all_objects[y].collider.Value.shape == collision_shape.Circle)
-                            current = collision_AABB_circle(all_objects[x], all_objects[y]);
+                            current = collision_circle_AABB(all_objects[y], all_objects[x]);
                         else if(all_objects[y].collider.Value.shape == collision_shape.Square)
                             current = collision_AABB_AABB(all_objects[x], all_objects[y]);
                     }
 
-                    if(current.is_hit) {
-                        // Call hit on game_object
-                        all_objects[x].hit(current);
-                    }
+                    // early exit
+                    if(!current.is_hit)
+                        continue;
+
+
+                    // proccess hit => change position, velocity ...
+                    float total_mass = all_objects[x].collider.Value.mass + all_objects[y].collider.Value.mass;
+                    all_objects[x].transform.position -= (current.hit_direction * (all_objects[y].collider.Value.mass / total_mass));
+                    all_objects[y].transform.position += (current.hit_direction * (all_objects[x].collider.Value.mass / total_mass));
+                    
+                    // Call hit on game_object
+                    all_objects[x].hit(current);
+                    all_objects[y].hit(current);
                 }
             }
         }
 
-        private hit_data collision_circle_circle(game_object circle1, game_object circle2) {
-            hit_data hit = new hit_data();
+        private hit_data collision_AABB_AABB(game_object AABB, game_object AABB_2) {
 
-            float distance = (circle1.transform.position - circle2.transform.position).Length;
-            if (distance < circle1.transform.size.X + circle2.transform.size.X) {
+            hit_data hit = new hit_data();
+            if(AABB.transform.position.X < AABB_2.transform.position.X + AABB_2.transform.size.X 
+                && AABB.transform.position.X + AABB.transform.size.X > AABB_2.transform.position.X
+                && AABB.transform.position.Y < AABB_2.transform.position.Y + AABB_2.transform.size.Y
+                && AABB.transform.position.Y + AABB.transform.size.Y > AABB_2.transform.position.Y) {
+
+                hit.is_hit = true;
+                hit.hit_position = AABB.transform.position;
+                hit.hit_object = AABB_2;
+            }
+
+            return hit;
+        }
+
+        private hit_data collision_circle_circle(game_object circle1, game_object circle2) {
+
+            hit_data hit = new hit_data();
+            Vector2 insection_direction = circle1.transform.position - circle2.transform.position;
+            if (insection_direction.Length < circle1.transform.size.X + circle2.transform.size.X) {
+
+                float intersect_distance = insection_direction.Length -(circle1.transform.size.X + circle2.transform.size.X);
+
+                hit.hit_direction = insection_direction * (intersect_distance * 0.002f);
                 hit.is_hit = true;
                 hit.hit_position = circle1.transform.position;
                 hit.hit_object = circle2;
@@ -91,30 +105,29 @@ namespace Core.physics {
         }
 
         private hit_data collision_circle_AABB(game_object circle, game_object AABB) {
+
             hit_data hit = new hit_data();
+            Vector2 collision_distance = new Vector2(Math.Abs(circle.transform.position.X - AABB.transform.position.X), Math.Abs(circle.transform.position.Y - AABB.transform.position.Y));
 
-            Vector2 circleDistance = new Vector2(Math.Abs(circle.transform.position.X - AABB.transform.position.X), Math.Abs(circle.transform.position.Y - AABB.transform.position.Y));
+            if (collision_distance.X > (AABB.transform.size.X/2 + circle.transform.size.X)) { return hit; }
+            if (collision_distance.Y > (AABB.transform.size.Y/2 + circle.transform.size.Y)) { return hit; }
 
-            if (circleDistance.X > (AABB.transform.size.X/2 + circle.transform.size.X)) { return hit; }
-            if (circleDistance.Y > (AABB.transform.size.Y/2 + circle.transform.size.Y)) { return hit; }
+            if (collision_distance.X <= (AABB.transform.size.X/2) 
+                || collision_distance.Y <= (AABB.transform.size.Y/2)) {
 
-            if (circleDistance.X <= (AABB.transform.size.X/2)) {
-                hit.is_hit = true;
-                hit.hit_position = circle.transform.position;
-                hit.hit_object = AABB;
-                return hit;
-            } 
-            if (circleDistance.Y <= (AABB.transform.size.Y/2)) {
+                Console.WriteLine($"Colliding on edge");
+
                 hit.is_hit = true;
                 hit.hit_position = circle.transform.position;
                 hit.hit_object = AABB;
                 return hit;
             }
 
-            float cornerDistance_sq = (float)(Math.Pow(circleDistance.X - AABB.transform.size.X/2, 2) +
-                                  Math.Pow(circleDistance.Y - AABB.transform.size.Y/2, 2));
+            float cornerDistance_sq = (float)(Math.Pow(collision_distance.X - AABB.transform.size.X/2, 2) +
+                                  Math.Pow(collision_distance.Y - AABB.transform.size.Y/2, 2));
 
             if (cornerDistance_sq <= Math.Pow(circle.transform.size.X, 2)) {
+                
                 hit.is_hit = true;
                 hit.hit_position = circle.transform.position;
                 hit.hit_object = AABB;
@@ -123,9 +136,6 @@ namespace Core.physics {
             return hit;
         }
 
-        private hit_data collision_AABB_circle(game_object AABB, game_object circle) {
-            return collision_circle_AABB(circle, AABB);
-        }
 
         /*
         // --------------------------------------- static - static --------------------------------------- 

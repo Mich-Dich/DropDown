@@ -55,10 +55,13 @@ namespace Core.game_objects {
                 return;
 
             sprite.draw();
+        }
 
-            if(game.instance.draw_debug && this.collider != null)
+        // make into seperate function to draw debug always on top
+        public void draw_debug() {
+
+            if(this.collider != null)
                 this.debug_drawer?.draw_collision_shape(this.transform, this.collider.Value, DebugColor.Red);
-            
         }
 
         public void add_child(game_object child) {

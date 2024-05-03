@@ -7,14 +7,14 @@ namespace Core.physics {
 
     public struct collider {
 
-        public collision_shape  shape { get; set; }    
-        public collision_type   type { get; set; }
-        public transform        offset { get; set; }
-        public physics_material material { get; set; }
-        public hit_data         hit_data {  get; set; }
+        public collision_shape  shape;
+        public collision_type   type;
+        public transform        offset;
+        public physics_material material;
+        public hit_data         hit_data;
 
-        public float            mass { get; set; }
-        public Vector2          velocity { get; set; }
+        public float            mass;
+        public Vector2          velocity;
 
         public collider() {
 
@@ -24,7 +24,7 @@ namespace Core.physics {
             this.material = new physics_material();
         }
 
-        public collider(collision_shape shape = collision_shape.Circle, collision_type type = collision_type.world, transform? offset = null, physics_material? material = null, float mass = 0.0f, Vector2? velocity = null) {
+        public collider(collision_shape shape = collision_shape.Circle, collision_type type = collision_type.world, transform? offset = null, physics_material? material = null, float mass = 100.0f, Vector2? velocity = null) {
 
             this.shape = shape;
             this.type = type;
@@ -35,10 +35,16 @@ namespace Core.physics {
 
         }
 
-        public collider(Vector2 velocity, physics_material physics_material) : this() {
-            this.velocity = velocity;
-            this.material = physics_material;
+        public collider set_mass(float mass) {
+
+            this.mass = mass;
+            return this;
         }
+
+        //public collider(Vector2 velocity, physics_material physics_material) : this() {
+        //    this.velocity = velocity;
+        //    this.material = physics_material;
+        //}
     }
 
     public enum collision_shape {

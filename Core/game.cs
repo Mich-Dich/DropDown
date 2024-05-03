@@ -23,6 +23,8 @@ namespace Core
         public shader           default_sprite_shader;
         public static game      instance { get;  private set; }
         public bool             draw_debug = true;
+        public GameWindow       window { get; private set; }
+        public camera           camera { get; set; }
 
         // ============================================================================== public ============================================================================== 
         public game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
@@ -154,21 +156,15 @@ namespace Core
         }
 
         public void enable_debug_draw(bool enable) { this.draw_debug = enable; }
+        public Vector2 get_mouse_relative_pos() { return window.MousePosition - (window.Size / 2) + cursor_pos_offset; }
 
         //  ============================================================================== protected ============================================================================== 
         protected string title { get; set; }
         protected int inital_window_width { get; set; }
         protected int inital_window_height { get; set; }
 
-        public GameWindow        window { get; private set; }
-        //protected game_time         game_time { get; } = new();
         protected collision_engine  collision_engine { get; } = new();
-        public camera            camera { get; set; }
-
-        // default data
         protected map               default_map { get; set; }
-
-        // game mode
         protected character         player { get; set; }
         protected player_controller player_controller { get; set; }
         protected map               active_map { get; set; }
@@ -194,6 +190,7 @@ namespace Core
 
         //  ============================================================================== private ============================================================================== 
         private game _instance;
+        private readonly Vector2 cursor_pos_offset = new Vector2(0,20);
 
         private void internal_render() {
 
