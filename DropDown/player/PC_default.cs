@@ -3,7 +3,7 @@ using Core.controllers.player;
 using Core.input;
 using OpenTK.Mathematics;
 
-namespace DropDown {
+namespace DropDown.player {
 
     public class PC_default : player_controller {
 
@@ -12,7 +12,7 @@ namespace DropDown {
 
         public PC_default() {
 
-            this.actions.Clear();
+            actions.Clear();
 
             move = new action(
                 "move",
@@ -34,12 +34,11 @@ namespace DropDown {
                 "look",
                 (uint)action_modefier_flags.none,
                 false,
-                action_type.VEC_2D,
+                action_type.VEC_1D,
                 0f,
                 new List<key_binding_detail> {
 
-                    new key_binding_detail(key_code.CursorPositionX, reset_flags.none, trigger_flags.mouse_pos_and_neg, key_modefier_flags.axis_1),
-                    new key_binding_detail(key_code.CursorPositionY, reset_flags.none, trigger_flags.mouse_pos_and_neg, key_modefier_flags.axis_2),
+                    new key_binding_detail(key_code.MouseWheelY, reset_flags.reset_on_key_move_up, trigger_flags.mouse_pos_and_neg),
                 });
             add_input_action(look);
         }
@@ -52,10 +51,13 @@ namespace DropDown {
             // camera follows player
             game.instance.camera.transform.position = player.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
 
+            game.instance.camera.add_zoom((float)look.get_value() / 50);
+
+
             // look at mouse
             Vector2 screen_look = game.instance.get_mouse_relative_pos();
             float angleRadians = (float)Math.Atan2(screen_look.X, screen_look.Y);
-            player.transform.rotation = -angleRadians + float.Pi/2;
+            player.transform.rotation = -angleRadians + float.Pi / 2;
         }
     }
 }

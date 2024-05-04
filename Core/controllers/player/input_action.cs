@@ -89,7 +89,7 @@ namespace Core.controllers.player {
         public uint modefier_flags  { get; set; } = 0;
         public MouseButton button   { get; set; } = 0;
 
-        public key_binding_detail(key_code key, reset_flags reset_flags, trigger_flags triggerFlags, key_modefier_flags modifierFlags) {
+        public key_binding_detail(key_code key, reset_flags reset_flags, trigger_flags triggerFlags, key_modefier_flags modifierFlags = key_modefier_flags.axis_1) {
 
             this.key = key;
             this.reset_flags = (uint)reset_flags;

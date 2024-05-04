@@ -4,16 +4,13 @@ using Core.input;
 using Core.physics;
 using Core.renderer;
 using Core.util;
-using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Runtime.InteropServices;
 
-namespace Core
-{
+namespace Core {
 
     public abstract class game {
         
@@ -22,7 +19,7 @@ namespace Core
 
         public shader           default_sprite_shader;
         public static game      instance { get;  private set; }
-        public bool             draw_debug = true;
+        public bool             show_debug = true;
         public GameWindow       window { get; private set; }
         public camera           camera { get; set; }
 
@@ -59,7 +56,6 @@ namespace Core
             window.Load += () => {
 
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
-
 
                 // ----------------------------------- shader -----------------------------------
                 default_sprite_shader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
@@ -101,9 +97,11 @@ namespace Core
             // internal game update
             window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
-                //Time.DeltaTime = e.Time;
                 update_game_time((float)eventArgs.Time);
                 this.player_controller.update_internal(game_time.delta, _input_event);
+
+                for (int x = 0; x < active_map.all_game_objects.Count; x++)
+                    active_map.all_game_objects[x].update(game_time.delta);
                 collision_engine.update(active_map.all_game_objects, game_time.delta);
 
                 update(game_time.delta);                
@@ -111,51 +109,21 @@ namespace Core
             };
 
             window.RenderFrame += (FrameEventArgs eventArgs) => {
-                imguiController.Update(window, (float)eventArgs.Time);
 
-                GL.ClearColor(new Color4(0, 32, 48, 255));
-                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-
+                window.SwapBuffers();
                 internal_render();
+            };
 
-                ImGuiNET.ImGui.NewFrame();
+            window.Resize += (ResizeEventArgs eventArgs) => {
+                update_game_time((float)window.TimeSinceLastUpdate());
+                window.ResetTimeSinceLastUpdate();
 
-                ImGui.DockSpaceOverViewport();
-
-                ImGui.ShowDemoWindow();
-
-                ImGui.Render();
-                imguiController.Render();
-
-                ImGuiController.CheckGLError("End of frame");
-
+                GL.Viewport(0, 0, window.Size.X, window.Size.Y);
+                camera.set_view_size(window.Size);
+                internal_render();
                 window.SwapBuffers();
             };
 
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
-                window.Resize += (ResizeEventArgs eventArgs) => {
-                    update_game_time((float)window.TimeSinceLastUpdate());
-                    window.ResetTimeSinceLastUpdate();
-
-                    GL.Viewport(0, 0, window.Size.X, window.Size.Y);
-                    camera.set_view_size(window.Size);
-                    internal_render();
-                    imguiController.WindowResized(window.ClientSize.X, window.ClientSize.Y);
-                    window.SwapBuffers();
-                };
-            }
-
-            // Handle text input for ImGui
-            window.TextInput += (TextInputEventArgs e) =>
-            {
-                imguiController.PressChar((char)e.Unicode);
-            };
-
-            // Handle mouse wheel for ImGui
-            window.MouseWheel += (MouseWheelEventArgs e) =>
-            {
-                imguiController.MouseScroll(new Vector2(e.OffsetX, e.OffsetY));
-            };
 
             // ============================ input ============================ 
             window.KeyDown += (KeyboardKeyEventArgs args) => {      _input_event.Add(new input_event((key_code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Pressed)); };
@@ -167,12 +135,12 @@ namespace Core
             window.MouseWheel += (MouseWheelEventArgs args) => {
 
                 if(args.OffsetX != 0)
-                    _input_event.Add(new input_event(key_code.MouseWheelX, (KeyModifiers)0, (int)args.OffsetX, key_state.Repeat));
+                    _input_event.Add(new input_event(key_code.MouseWheelX, (KeyModifiers)0, (int)args.Offset.X, key_state.Repeat));
 
                 if(args.OffsetY != 0)
-                    _input_event.Add(new input_event(key_code.MouseWheelY, (KeyModifiers)0, (int)args.OffsetY, key_state.Repeat));
+                    _input_event.Add(new input_event(key_code.MouseWheelY, (KeyModifiers)0, (int)args.Offset.Y, key_state.Repeat));
             };
-            
+
             // make two events for X/Y of mouse movement
             window.MouseMove += (MouseMoveEventArgs args) => {
 
@@ -188,7 +156,7 @@ namespace Core
             window.Run();
         }
 
-        public void enable_debug_draw(bool enable) { this.draw_debug = enable; }
+        public void shoe_debug_data(bool enable) { this.show_debug = enable; }
         public Vector2 get_mouse_relative_pos() { return window.MousePosition - (window.Size / 2) + cursor_pos_offset; }
 
         //  ============================================================================== protected ============================================================================== 
@@ -233,6 +201,12 @@ namespace Core
 
             active_map.draw();
             player.draw();
+
+            if(show_debug) {
+
+                default_sprite_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
+                active_map.draw_denug();
+            }
 
             // client side code
             render(game_time.delta);

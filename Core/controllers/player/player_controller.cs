@@ -98,10 +98,10 @@ namespace Core.controllers.player {
                         // proccess key_binding modefiers
                         int payload_buffer = is_key_active? 1 : 0;
 
-                        if (key_binding.key == input.key_code.CursorPositionX)
-                            payload_buffer = is_key_active ? loc_event.repeat_amout : 0;
-                        
-                        else if(key_binding.key == input.key_code.CursorPositionY)
+                        if (key_binding.key == input.key_code.CursorPositionX
+                            || key_binding.key == input.key_code.CursorPositionY
+                            || key_binding.key == input.key_code.MouseWheelX
+                            || key_binding.key == input.key_code.MouseWheelY)
                             payload_buffer = is_key_active ? loc_event.repeat_amout : 0;
 
 

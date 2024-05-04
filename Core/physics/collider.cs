@@ -29,10 +29,15 @@ namespace Core.physics {
             this.shape = shape;
             this.type = type;
             this.mass = mass;
-            this.offset = offset == null? new transform() : offset;
+            this.offset = offset == null? new transform(Vector2.Zero, Vector2.Zero) : offset;
             this.material = material == null ? new physics_material(): material.Value;
             this.velocity = velocity == null ? new Vector2() : velocity.Value;
+        }
 
+        public collider set_offset(transform offset) {
+
+            this.offset = offset;
+            return this;
         }
 
         public collider set_mass(float mass) {

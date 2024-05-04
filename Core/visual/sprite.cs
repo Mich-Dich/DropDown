@@ -166,18 +166,18 @@ namespace Core.visual {
         private bool needs_update { get; set; } = true;
 
         private float[] _verticies { get; set; } = {
-        //   x    y    UV.y  UV.x
-             1f,  1f,  1f,   1f,
-             1f, -1f,  1f,   0f,
-            -1f, -1f,  0f,   0f,
-            -1f,  1f,  0f,   1f,
+        //   x      y      UV.y  UV.x
+             0.5f,  0.5f,  1f,   0f,
+             0.5f, -0.5f,  1f,   1f,
+            -0.5f, -0.5f,  0f,   1f,
+            -0.5f,  0.5f,  0f,   0f,
         };
         private float[] _cooord_data = {
-        //   x    y
-             1f,  1f,
-             1f, -1f,
-            -1f, -1f,
-            -1f,  1f,
+        //   x      y
+             0.5f,  0.5f,
+             0.5f, -0.5f,
+            -0.5f, -0.5f,
+            -0.5f,  0.5f,
         };
         private float[] _UV_data = {
             1f, 1f,
@@ -216,8 +216,7 @@ namespace Core.visual {
 
             buffer_layout layout = new buffer_layout()
                 .add<float>(2)      // vertex coordinates
-                .add<float>(2);      // UV coordinates
-                //.add<float>(1);     // texture_slot
+                .add<float>(2);     // UV coordinates
 
             return layout;
         }

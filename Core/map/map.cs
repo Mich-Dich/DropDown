@@ -32,14 +32,12 @@ namespace Core {
 
             for(int x = 0; x < world.Count; x++)
                 world[x].draw();
-            
+        }
 
-            if (game.instance.draw_debug) {
+        public void draw_denug() {
 
-                for(int x = 0; x < world.Count; x++)
-                    world[x].draw_debug();
-            }
-
+            for(int x = 0; x < world.Count; x++)
+                world[x].draw_debug();
         }
 
         public void add_game_object(game_object game_object) {
@@ -97,7 +95,7 @@ namespace Core {
                         continue;
 
                     transform loc_trans_buffer = new transform(new Vector2( x * tile_size.X - offset_x, y * tile_size.Y - offset_y),
-                        new Vector2(tile_size.X / 2, tile_size.Y / 2),
+                        new Vector2(tile_size.X, tile_size.Y),
                         0, //(float)utility.degree_to_radians(_rotations[random.Next(0, 3)]),
                         mobility.STATIC);
 

@@ -46,6 +46,9 @@
     <None Update="assets\shaders\ui.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\textures\Astroids\astroid.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\textures\Astroids\Astroids.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

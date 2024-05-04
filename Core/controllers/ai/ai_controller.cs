@@ -18,6 +18,17 @@ namespace Core.controllers.ai {
                 create_state_instance(state_type);
         }
 
+        public void set_statup_state(I_AI_state state) {
+
+            string className = state.GetType().Name;
+            Console.WriteLine($"setting startup state: {className}"); // This will print the class name as a string
+
+            if(!_all_states.ContainsKey(className))       // create new states when they are needed
+                create_state_instance(state.GetType());
+                        
+            current_state = select_state_to_execute(_all_states[className].GetType());
+        }
+
         public void update() {
 
             string new_state = select_state_to_execute(_all_states[current_state].execute(this));

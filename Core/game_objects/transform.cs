@@ -25,10 +25,10 @@ namespace Core.game_objects {
 
         }
 
-        public transform(Vector2 position, Vector2 size, Single rotation, mobility mobility, transform? parent = null) {
+        public transform(Vector2? position = null, Vector2? size = null, Single rotation = 0, mobility mobility = mobility.DYNAMIC, transform? parent = null) {
 
-            this._position = position;
-            this.size = size;
+            this._position = position?? new Vector2();
+            this.size = size?? new Vector2();
             this.rotation = rotation;
             this.mobility = mobility;
             this.parent = parent;

@@ -51,21 +51,19 @@ namespace Core.renderer {
                     color = new Vector4(1.0f, 1.0f, 1.0f, 0.5f);
                     break;
             }
-
             this.debugShader.set_uniform("color", color);
 
             transform buffer = new transform(transform);
-            buffer.size = new Vector2(1, 1);
-
+            buffer.size = Vector2.One;
             Matrix4 matrixTransform = buffer.GetTransformationMatrix();
             Matrix4 finalTransform = matrixTransform * game.instance.camera.get_projection_matrix();
             this.debugShader.set_matrix_4x4("transform", finalTransform);
 
             if(collider.shape == collision_shape.Circle) {
-                this.draw_circle(transform.size.X, 20);
+                this.draw_circle(transform.size.X/2 + collider.offset.size.X/2, 20);
             }
             else if(collider.shape == collision_shape.Square) {
-                this.draw_rectangle(transform.size);
+                this.draw_rectangle(transform.size + collider.offset.size);
             }
 
             GL.BindVertexArray(0);

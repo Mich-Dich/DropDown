@@ -1,10 +1,5 @@
 ﻿using Core.game_objects;
 using Core.visual;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DropDown.weapon {
 
@@ -32,7 +27,7 @@ namespace DropDown.weapon {
 
         }
 
-        public override void update() {
+        public override void update(float delta_time) {
         
         }
 
@@ -49,7 +44,6 @@ namespace DropDown.weapon {
 
         private sprite      weapon_sprite;
         private sprite?     muzzle_flash;
-
 
 
     }

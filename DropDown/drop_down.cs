@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using DropDown.player;
+using Hell;
 
 namespace DropDown {
 
@@ -12,17 +13,19 @@ namespace DropDown {
         protected override void init() {
 
             set_update_frequency(144.0f);
-            enable_debug_draw(true);
+            shoe_debug_data(true);
 
             this.player_controller = new PC_default();
-            this.player = new player();
+            this.player = new CH_player();
 
-            this.active_map = new map().generate_backgound_tile(50, 30);
-           
+
+            this.active_map = new base_map();
+            this.camera.set_main_min_zoom(0.35f, 0.9f);
+
             //var ai_controller = new AI_default();
             //ai_controller.register_state(new List<Type> { typeof(default_waling_state) });
 
-            //this.active_map.add_sprite(new sprite(new Vector2(600, 200), new Vector2(100, 100)).add_animation("assets/textures/explosion", true, false, 200, true));
+            //this.active_map.add_sprite(new sprite(new Vector2(600, 200), new Vector2(500, 500)).add_animation("assets/textures/explosion", true, false, 60, true));
             //this.active_map.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).add_animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
         }
 

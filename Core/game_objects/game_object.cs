@@ -26,28 +26,32 @@ namespace Core.game_objects {
         // ======================= func =====================
 
         public game_object set_sprite(sprite sprite) {
-            
             this.sprite = sprite;
             this.sprite.transform = transform;  // let sprite access main transform
             return this;
         }
 
         public game_object set_sprite(Texture Texture) {
-            
             this.sprite = new sprite(Texture);
             this.sprite.transform = transform;  // let sprite access main transform
             return this;
         }
 
         public game_object add_collider(collider collider) {
-            
             this.collider = collider;
+            return this;
+        }
+
+        public game_object set_mobility(mobility mobility) {
+            this.transform.mobility = mobility;
+            if (this.sprite != null)
+                this.sprite.set_mobility(mobility);
             return this;
         }
 
         public virtual void hit(hit_data hit) { }
 
-        public virtual void update() { }
+        public virtual void update(float delta_time) { }
 
         public virtual void draw() {
             
