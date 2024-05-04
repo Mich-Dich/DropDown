@@ -1,17 +1,33 @@
 ﻿using Core.controllers.ai;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DropDown.enemy
-{
-    public class base_ai_controller : ai_controller
-    {
+namespace DropDown.enemy {
 
-        public base_ai_controller() { }
+    public class base_ai_controller : ai_controller {
+
+        public base_ai_controller() {
+        
+            
+
+        }
 
 
     }
+
+
+    public class idle : I_AI_state {
+    
+        public Type enter(ai_controller ai_controller) {
+            throw new NotImplementedException();
+        }
+
+        public Type execute(ai_controller ai_controller) {
+            throw new NotImplementedException();
+        }
+
+        public Type exit(ai_controller ai_controller) {
+            throw new NotImplementedException();
+        }
+    }
+
+
 }

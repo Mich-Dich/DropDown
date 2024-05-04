@@ -4,7 +4,8 @@ using Core.util;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Core.visual {
+namespace Core.visual
+{
 
     public class sprite : I_animatable, IDisposable {
 

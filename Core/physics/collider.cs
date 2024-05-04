@@ -1,9 +1,9 @@
-﻿
-using Core.game_objects;
-using Core.physics.material;
+﻿using Core.physics.material;
+using Core.util;
 using OpenTK.Mathematics;
 
-namespace Core.physics {
+namespace Core.physics
+{
 
     public class collider {
 

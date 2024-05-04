@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Core.game_objects;
 using Core.physics;
 using Core.util;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Core.renderer {
+namespace Core.renderer
+{
 
     public enum DebugColor {
 

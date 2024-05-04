@@ -1,5 +1,4 @@
-﻿
-using Core.game_objects;
+﻿using Core.game_objects;
 
 namespace Core.controllers.ai {
 
