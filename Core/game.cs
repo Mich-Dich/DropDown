@@ -9,6 +9,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Runtime.InteropServices;
 
 namespace Core {
 
@@ -114,15 +115,17 @@ namespace Core {
                 internal_render();
             };
 
-            window.Resize += (ResizeEventArgs eventArgs) => {
-                update_game_time((float)window.TimeSinceLastUpdate());
-                window.ResetTimeSinceLastUpdate();
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+                window.Resize += (ResizeEventArgs eventArgs) => {
+                    update_game_time((float)window.TimeSinceLastUpdate());
+                    window.ResetTimeSinceLastUpdate();
 
-                GL.Viewport(0, 0, window.Size.X, window.Size.Y);
-                camera.set_view_size(window.Size);
-                internal_render();
-                window.SwapBuffers();
-            };
+                    GL.Viewport(0, 0, window.Size.X, window.Size.Y);
+                    camera.set_view_size(window.Size);
+                    internal_render();
+                    window.SwapBuffers();
+                };
+            }
 
 
             // ============================ input ============================ 
