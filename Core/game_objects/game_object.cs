@@ -1,9 +1,11 @@
 ﻿using Core.physics;
 using Core.renderer;
+using Core.util;
 using Core.visual;
 using OpenTK.Mathematics;
 
-namespace Core.game_objects {
+namespace Core.game_objects
+{
 
     public class game_object {
 

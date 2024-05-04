@@ -3,7 +3,8 @@ using Core.util;
 using Core.visual;
 using OpenTK.Mathematics;
 
-namespace Core {
+namespace Core
+{
 
     public class map {
 
