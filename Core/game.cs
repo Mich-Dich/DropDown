@@ -118,9 +118,24 @@ namespace Core {
 
                 imguiController.Update(this.window, (float)eventArgs.Time);
 
-                //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-
                 ImGui.Begin("Demo Window");
+
+                ImGui.Text("Hello, world!");
+
+                if (ImGui.Button("Click me"))
+                {
+                    Console.WriteLine("Button clicked!");
+                }
+
+                float sliderFloatValue = 0.0f;
+                ImGui.SliderFloat("float", ref sliderFloatValue, 0.0f, 1.0f);
+
+                byte[] inputTextValue = new byte[100];
+                ImGui.InputText("string", inputTextValue, 100);
+
+                bool checkboxValue = false;
+                ImGui.Checkbox("Check me", ref checkboxValue);
+
                 ImGui.End();
 
                 imguiController.Render();
@@ -128,17 +143,21 @@ namespace Core {
                 ImGuiController.CheckGLError("End of frame");
             };
 
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
-                window.Resize += (ResizeEventArgs eventArgs) => {
-                    update_game_time((float)window.TimeSinceLastUpdate());
-                    window.ResetTimeSinceLastUpdate();
+            window.Resize += (ResizeEventArgs eventArgs) => {
+                update_game_time((float)window.TimeSinceLastUpdate());
+                window.ResetTimeSinceLastUpdate();
 
-                    GL.Viewport(0, 0, window.Size.X, window.Size.Y);
-                    camera.set_view_size(window.Size);
-                    internal_render();
-                    window.SwapBuffers();
-                };
-            }
+                // Update the opengl viewport
+                Vector2i fb = this.window.FramebufferSize;
+                GL.Viewport(0, 0, fb.X, fb.Y);
+
+                imguiController.WindowResized(this.window.ClientSize.X, this.window.ClientSize.Y);
+                
+                camera.set_view_size(window.Size);
+                internal_render();
+                window.SwapBuffers();
+            };
+            
 
 
             // ============================ input ============================ 
