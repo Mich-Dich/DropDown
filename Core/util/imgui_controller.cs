@@ -21,8 +21,6 @@ namespace Core.util
         private int _indexBuffer;
         private int _indexBufferSize;
 
-        //private Texture _fontTexture;
-
         private int _fontTexture;
 
         private int _shader;
@@ -38,10 +36,17 @@ namespace Core.util
 
         private int GLVersion;
         private bool CompatibilityProfile;
-        public ImGuiController(int width, int height)
+
+        /// <summary>
+        /// Constructs a new ImGuiController.
+        /// </summary>
+        public ImGuiController(int width, int height, float scaleFactorX = 1, float scaleFactorY = 1)
         {
             _windowWidth = width;
             _windowHeight = height;
+
+            _scaleFactor.X *= scaleFactorX;
+            _scaleFactor.Y *= scaleFactorY;
 
             int major = GL.GetInteger(GetPName.MajorVersion);
             int minor = GL.GetInteger(GetPName.MinorVersion);
@@ -71,8 +76,8 @@ namespace Core.util
 
         public void WindowResized(int width, int height)
         {
-            _windowWidth = width;
-            _windowHeight = height;
+            _windowWidth = (int) (width * _scaleFactor.X);
+            _windowHeight = (int) (height * _scaleFactor.Y);
         }
 
         public void DestroyDeviceObjects()
@@ -154,6 +159,9 @@ void main()
             CheckGLError("End of ImGui setup");
         }
 
+        /// <summary>
+        /// Recreates the device texture used to render text.
+        /// </summary>
         public void RecreateFontDeviceTexture()
         {
             ImGuiIOPtr io = ImGui.GetIO();
@@ -191,6 +199,9 @@ void main()
             io.Fonts.ClearTexData();
         }
 
+        /// <summary>
+        /// Renders the ImGui draw list data.
+        /// </summary>
         public void Render()
         {
             if (_frameBegun)
@@ -201,6 +212,9 @@ void main()
             }
         }
 
+        /// <summary>
+        /// Updates ImGui input and IO configuration state.
+        /// </summary>
         public void Update(GameWindow wnd, float deltaSeconds)
         {
             if (_frameBegun)
@@ -215,6 +229,10 @@ void main()
             ImGui.NewFrame();
         }
 
+        /// <summary>
+        /// Sets per-frame data based on the associated window.
+        /// This is called by Update(float).
+        /// </summary>
         private void SetPerFrameImGuiData(float deltaSeconds)
         {
             ImGuiIOPtr io = ImGui.GetIO();
@@ -222,7 +240,7 @@ void main()
                 _windowWidth / _scaleFactor.X,
                 _windowHeight / _scaleFactor.Y);
             io.DisplayFramebufferScale = _scaleFactor;
-            io.DeltaTime = deltaSeconds;
+            io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
         }
 
         readonly List<char> PressedChars = new List<char>();
@@ -241,7 +259,7 @@ void main()
             io.MouseDown[4] = MouseState[MouseButton.Button5];
 
             var screenPoint = new Vector2i((int)MouseState.X, (int)MouseState.Y);
-            var point = screenPoint;
+            var point = screenPoint;//wnd.PointToClient(screenPoint);
             io.MousePos = new System.Numerics.Vector2(point.X, point.Y);
 
             foreach (Keys key in Enum.GetValues(typeof(Keys)))

@@ -4,6 +4,8 @@ using Core.input;
 using Core.physics;
 using Core.renderer;
 using Core.util;
+using ImGuiNET;
+using System;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -82,7 +84,7 @@ namespace Core {
 
                 window.IsVisible = true;
 
-                imguiController = new ImGuiController(window.ClientSize.X, window.ClientSize.Y);
+                initImGuiController();
             };
 
             window.Unload += () => {
@@ -113,6 +115,17 @@ namespace Core {
 
                 window.SwapBuffers();
                 internal_render();
+
+                imguiController.Update(this.window, (float)eventArgs.Time);
+
+                //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+
+                ImGui.Begin("Demo Window");
+                ImGui.End();
+
+                imguiController.Render();
+
+                ImGuiController.CheckGLError("End of frame");
             };
 
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
@@ -221,6 +234,17 @@ namespace Core {
             game_time.delta = delta_time;
             game_time.total += delta_time;
 
+        }
+
+        private void initImGuiController()
+        {
+            // Get the FrameBuffer size and compute the scale factor for ImGuiController
+            Vector2i fb = this.window.FramebufferSize;
+            int scaleFactorX = fb.X / this.window.ClientSize.X;
+            int scaleFactorY = fb.Y / this.window.ClientSize.Y;
+
+            // Instanciate the ImGuiController with the right Scale Factor
+            imguiController = new ImGuiController(this.window.ClientSize.X, this.window.ClientSize.Y, scaleFactorX, scaleFactorY);
         }
     }
 }
