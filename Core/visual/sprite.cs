@@ -164,6 +164,10 @@ namespace Core.visual
         }
 
        public sprite select_texture_regionNew(int number_of_columns, int number_of_rows, int column_index, int row_index, int tileID, int textureWidth, int textureHeight) {
+
+            float offset_y = 1.0f / ((float)number_of_rows * 50);
+            float offset_x = 1.0f / ((float)number_of_columns * 50);
+
             float uvWidth = 1f / number_of_columns;
             float uvHeight = 1f / number_of_rows;
 
@@ -171,17 +175,17 @@ namespace Core.visual
             float v = (number_of_rows - row_index - 1) * uvHeight;
 
             // Bottom-left
-            _verticies[2] = u;
-            _verticies[3] = v;
+            _verticies[14] = u + offset_x;
+            _verticies[15] = v + offset_y;
             // Bottom-right
-            _verticies[6] = u + uvWidth;
-            _verticies[7] = v;
+            _verticies[2] = u + uvWidth - offset_x;
+            _verticies[3] = v + offset_y;
             // Top-right
-            _verticies[10] = u + uvWidth;
-            _verticies[11] = v + uvHeight;
+            _verticies[6] = u + uvWidth - offset_x;
+            _verticies[7] = v + uvHeight - offset_y;
             // Top-left
-            _verticies[14] = u;
-            _verticies[15] = v + uvHeight;
+            _verticies[10] = u + offset_x;
+            _verticies[11] = v + uvHeight - offset_y;
 
             _vertex_buffer.update_content(_verticies);
             _vertex_array.add_buffer(_vertex_buffer, this.get_buffer_layout());
@@ -218,10 +222,10 @@ namespace Core.visual
             -0.5f,  0.5f,
         };
         private float[] _UV_data = {
-            1f, 1f,
             1f, 0f,
-            0f, 0f,
+            1f, 1f,
             0f, 1f,
+            0f, 0f,
         };
 
         private uint[] _indeices = {
