@@ -1,4 +1,5 @@
 ﻿using Core.game_objects;
+using ImGuiNET;
 using OpenTK.Mathematics;
 
 namespace Core.physics {
@@ -20,14 +21,15 @@ namespace Core.physics {
 
         public void update(List<game_object> all_objects, float delta_time) {
 
+            if(game.instance.show_debug)
+                game.instance.debug_data.colidable_objects = all_objects.Count;
+
+            List<game_object> finished_objects = new List<game_object>();
+
             hit_data current = new hit_data();
 
             for (int x = 0; x < all_objects.Count; x++) {
                 for(int y = 0; y < all_objects.Count; y++) {
-
-
-                    if(game.instance.show_debug)
-                        game.instance.debug_data.collision_checks_num++;
 
 
                     // update position
@@ -41,9 +43,12 @@ namespace Core.physics {
                         (all_objects[x].transform.mobility == mobility.STATIC && all_objects[y].transform.mobility == mobility.STATIC))
                         continue;
 
-                    if(all_objects[x].collider == null || all_objects[y].collider == null)
+                    if(all_objects[x].collider == null || all_objects[y].collider == null || finished_objects.Contains(all_objects[y]))
                         continue;
 
+
+                    if(game.instance.show_debug)
+                        game.instance.debug_data.collision_checks_num++;
 
                     if(all_objects[x].collider.shape == collision_shape.Circle) {
                         if(all_objects[y].collider.shape == collision_shape.Circle)
@@ -57,6 +62,8 @@ namespace Core.physics {
                         else if(all_objects[y].collider.shape == collision_shape.Square)
                             current = collision_AABB_AABB(all_objects[x], all_objects[y]);
                     }
+
+                    finished_objects.Add(all_objects[x]);
 
                     // early exit
                     if(!current.is_hit)

@@ -41,6 +41,10 @@ namespace Core
                 world[x].draw_debug();
         }
 
+        public virtual void draw_imgui() {
+
+        }
+
         public void add_game_object(game_object game_object) {
 
             world.Add(game_object);
@@ -48,10 +52,14 @@ namespace Core
             Console.WriteLine($"Adding game_object [{game_object}] to world. Current count: {world.Count} ");
         }
 
-        public void add_character(character character) {
+        public void add_character(character character, Vector2? position = null) {
 
             world.Add(character);
             all_game_objects.Add(character);
+
+            if(position != null)
+                character.transform.position = position.Value;
+
             Console.WriteLine($"Adding character [{character}] to world. Current count: {world.Count} ");
         }
 

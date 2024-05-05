@@ -13,6 +13,8 @@ namespace Core.imgui {
 
         public void draw(debug_data debug_data) {
 
+			ImGuiIOPtr io = ImGui.GetIO();
+
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration 
 				| ImGuiWindowFlags.NoDocking 
 				| ImGuiWindowFlags.AlwaysAutoResize 
@@ -29,9 +31,15 @@ namespace Core.imgui {
             ImGui.Separator();
 
             imgui_util.begin_default_table("general_debug_data");
-            imgui_util.add_table_row_string("draw calls", $"{debug_data.draw_calls_num}");
-            imgui_util.add_table_row_string("collision checks", $"{debug_data.collision_checks_num}");
-            imgui_util.add_table_row_string("chunks displayed", $"{debug_data.chuncks_displayed}");
+            imgui_util.add_table_row("update time", $"{io.Framerate:F1} FPS ({(1000.0f/ io.Framerate):F2} ms)");
+            imgui_util.add_table_spacing();
+
+            imgui_util.add_table_row("chunks displayed", $"{debug_data.chuncks_displayed}");
+            imgui_util.add_table_row("sprite draw calls", $"{debug_data.sprite_draw_calls_num}");
+			imgui_util.add_table_spacing();
+
+            imgui_util.add_table_row("collision checks", $"{debug_data.collision_checks_num}");
+            imgui_util.add_table_row("colidable objects", $"{debug_data.colidable_objects}");
             imgui_util.end_default_table();
 
 
@@ -52,6 +60,8 @@ namespace Core.imgui {
 
 /*
  
+		"%d vertices, %d indices (%d triangles)", io.MetricsRenderVertices, io.MetricsRenderIndices, io.MetricsRenderIndices / 3
+
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		ImVec2 current_item_spacing = style.ItemSpacing;

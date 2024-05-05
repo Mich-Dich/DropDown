@@ -27,7 +27,7 @@ namespace Core.game_objects
 
         // ======================= func =====================
 
-        public game_object set_sprite(sprite sprite) {
+        public virtual game_object set_sprite(sprite sprite) {
             this.sprite = sprite;
             this.sprite.transform = transform;  // let sprite access main transform
             return this;

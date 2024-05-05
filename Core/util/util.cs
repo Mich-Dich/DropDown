@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using ImGuiNET;
+using OpenTK.Graphics.OpenGL4;
 
 namespace Core {
 
@@ -55,6 +56,27 @@ namespace Core {
     public class ResourceNotAssignedException : Exception {
         public ResourceNotAssignedException(string message)
             : base(message) {
+        }
+    }
+
+    public static class imgui_fonts {
+
+        public static Dictionary<string, ImFontPtr> fonts = new Dictionary<string, ImFontPtr>();
+
+    }
+
+    public class RefWrapper<T> {
+        private List<T> list;
+        private int index;
+
+        public RefWrapper(List<T> list, int index) {
+            this.list = list;
+            this.index = index;
+        }
+
+        public T Value {
+            get { return list[index]; }
+            set { list[index] = value; }
         }
     }
 }

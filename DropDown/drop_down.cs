@@ -34,6 +34,8 @@ namespace DropDown {
         protected override void update(float delta_time) { }
 
         protected override void render(float delta_time) { }
+        
+        protected override void render_imgui(float delta_time) { }
 
     }
 }

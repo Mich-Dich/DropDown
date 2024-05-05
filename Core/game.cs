@@ -62,18 +62,16 @@ namespace Core {
 
             window.Load += () => {
 
+                // ----------------------------------- defaults -----------------------------------
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
-
-                // ----------------------------------- shader -----------------------------------
                 default_sprite_shader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
                 default_sprite_shader.use();
-
-                // ----------------------------------- shader -----------------------------------
                 camera = new(Vector2.Zero, this.window.Size, 0.5f);
                 default_map = new map();
 
                 init();
 
+                // ----------------------------------- check for null values -----------------------------------
                 if(active_map == null)
                     active_map = default_map;
 
@@ -83,12 +81,11 @@ namespace Core {
                 if(player_controller == null)
                     throw new ResourceNotAssignedException("player_controller musst be assigned in game class init() function");
 
+                // ----------------------------------- finish setup -----------------------------------
                 player_controller.player = player;
                 this.active_map.add_game_object(player);
-
-                window.IsVisible = true;
-
                 initImGuiController();
+                window.IsVisible = true;
             };
 
             window.Unload += () => {
@@ -119,7 +116,7 @@ namespace Core {
 
                 window.SwapBuffers();
                 internal_render();
-                imgui_render();
+                imgui_render(game_time.delta);
             };
 
             window.Resize += (ResizeEventArgs eventArgs) => {
@@ -134,7 +131,7 @@ namespace Core {
 
                 camera.set_view_size(window.Size);
                 internal_render();
-                imgui_render();
+                imgui_render(game_time.delta);
                 window.SwapBuffers();
             };
 
@@ -192,6 +189,7 @@ namespace Core {
         protected abstract void shutdown();
         protected abstract void update(float delta_time);
         protected abstract void render(float delta_time);
+        protected abstract void render_imgui(float delta_time);
 
         protected void set_update_frequency(double frequency) {
 
@@ -244,13 +242,17 @@ namespace Core {
 
         // ============================================ IMGUI ============================================
 
-        private void imgui_render() {
+        private void imgui_render(float delta_time) {
 
             imguiController.Update(this.window, (float)game_time.delta);
 
             if(show_debug)
                 debug_data_viualizer.draw(debug_data);
-            
+
+            active_map.draw_imgui();
+            render_imgui(delta_time);     // client side imgui code
+            //ImGui.ShowDemoWindow();
+
             imguiController.Render();
             ImGuiController.CheckGLError("End of frame");
 
@@ -271,9 +273,11 @@ namespace Core {
 
     public class debug_data {
 
-        public int draw_calls_num = 0;
-        public int collision_checks_num = 0;
+        public int sprite_draw_calls_num = 0;
         public int chuncks_displayed = 0;
+
+        public int collision_checks_num = 0;
+        public int colidable_objects = 0;
 
         public debug_data() {}
     }
