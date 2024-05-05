@@ -164,37 +164,38 @@ namespace Core.visual
         }
 
        public sprite select_texture_regionNew(int number_of_columns, int number_of_rows, int column_index, int row_index, int tileID, int textureWidth, int textureHeight) {
-            float uvWidth = 1f / number_of_columns;
-            float uvHeight = 1f / number_of_rows;
+    float uvWidth = 1f / number_of_columns;
+    float uvHeight = 1f / number_of_rows;
 
-            float u = column_index * uvWidth;
-            float v = (number_of_rows - row_index - 1) * uvHeight;
+    float u = column_index * uvWidth;
+    float v = (number_of_rows - row_index - 1) * uvHeight;
 
-            // Bottom-left
-            _verticies[2] = u;
-            _verticies[3] = v;
-            // Bottom-right
-            _verticies[6] = u + uvWidth;
-            _verticies[7] = v;
-            // Top-right
-            _verticies[10] = u + uvWidth;
-            _verticies[11] = v + uvHeight;
-            // Top-left
-            _verticies[14] = u;
-            _verticies[15] = v + uvHeight;
+    // Adjust UV mapping to correct the orientation for the desired 90-degree rotation
+    // Bottom-left
+    _verticies[2] = u + uvWidth;
+    _verticies[3] = v;
+    // Bottom-right
+    _verticies[6] = u + uvWidth;
+    _verticies[7] = v + uvHeight;
+    // Top-right
+    _verticies[10] = u;
+    _verticies[11] = v + uvHeight;
+    // Top-left
+    _verticies[14] = u;
+    _verticies[15] = v;
 
-            _vertex_buffer.update_content(_verticies);
-            _vertex_array.add_buffer(_vertex_buffer, this.get_buffer_layout());
+    _vertex_buffer.update_content(_verticies);
+    _vertex_array.add_buffer(_vertex_buffer, this.get_buffer_layout());
 
-            int pixelX = (int)(u * textureWidth);
-            int pixelY = textureHeight - (int)((v + uvHeight) * textureHeight);
-            int pixelWidth = (int)(uvWidth * textureWidth);
-            int pixelHeight = (int)(uvHeight * textureHeight);
+    int pixelX = (int)(u * textureWidth);
+    int pixelY = textureHeight - (int)((v + uvHeight) * textureHeight);
+    int pixelWidth = (int)(uvWidth * textureWidth);
+    int pixelHeight = (int)(uvHeight * textureHeight);
 
-            Console.WriteLine($"Tile ID: {tileID}, Pixel Position - x: {pixelX}, y: {pixelY}, Size - width: {pixelWidth}, height: {pixelHeight}");
+    Console.WriteLine($"Tile ID: {tileID}, Pixel Position - x: {pixelX}, y: {pixelY}, Size - width: {pixelWidth}, height: {pixelHeight}");
 
-            return this;
-        }
+    return this;
+}
 
         // ============================================ private  ============================================ 
         private index_buffer    _index_buffer;
