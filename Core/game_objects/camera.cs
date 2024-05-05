@@ -1,6 +1,5 @@
 ﻿using Core.physics;
 using OpenTK.Mathematics;
-using System.Numerics;
 
 namespace Core.game_objects
 {
@@ -22,7 +21,7 @@ namespace Core.game_objects
             this.transform.size = window_size;
         }
 
-        public void set_main_min_zoom(float min, float max) {
+        public void set_min_max_zoom(float min, float max) {
 
             this.min_zoom = min;
             this.max_zoom = max;
@@ -32,6 +31,17 @@ namespace Core.game_objects
 
             this.scale += zoom;
             this.scale = Math.Clamp(this.scale, min_zoom, max_zoom);
+        }
+
+        public void set_zoom(float zoom) {
+
+            this.scale = zoom;
+            this.scale = Math.Clamp(this.scale, min_zoom, max_zoom);
+        }
+
+        public void set_position(Vector2 position) {
+
+            this.transform.position = position;
         }
 
         public Matrix4 get_projection_matrix() {

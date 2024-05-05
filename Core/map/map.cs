@@ -124,6 +124,7 @@ namespace Core
         }
 
         public void LoadLevel(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath) {
+
             LevelData levelData = level_parser.ParseLevel(tmxFilePath, tsxFilePath);
             MapData mapData = levelData.Map;
             TilesetData tilesetData = levelData.Tileset;

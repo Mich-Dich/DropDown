@@ -20,7 +20,7 @@ namespace DropDown {
 
 
             this.active_map = new base_map();
-            this.camera.set_main_min_zoom(0.35f, 0.9f);
+            this.camera.set_min_max_zoom(0.35f, 0.9f);
 
             //var ai_controller = new AI_default();
             //ai_controller.register_state(new List<Type> { typeof(default_waling_state) });

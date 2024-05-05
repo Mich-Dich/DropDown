@@ -17,6 +17,10 @@ namespace Hell {
             this.player_controller = new PC_default();
             this.player = new player();
 
+            this.camera.set_min_max_zoom(0.5f, 3.0f);
+            this.camera.set_zoom(1.2f);
+            this.camera.set_position(new Vector2(450,350));
+
             this.active_map = new base_map();
             this.active_map.add_sprite(new sprite(new Vector2(600, 200)).add_animation("assets/textures/Explosion-2", true, false, 30, true));
         }
@@ -27,5 +31,6 @@ namespace Hell {
 
         protected override void render(float delta_time) { }
 
+        protected override void render_imgui(float delta_time) { }
     }
 }

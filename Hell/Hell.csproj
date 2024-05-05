@@ -16,6 +16,15 @@
     <None Update="assets\defaults\default_grid.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\levels\TestMap.tmx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\levels\Tileset.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\levels\Tileset.tsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\shaders\debug.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

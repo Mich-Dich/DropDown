@@ -49,7 +49,7 @@ namespace Hell {
             imgui_util.add_table_row("Iterations count", () => { 
                 ImGui.Text($"{iterations.Length}");
                 ImGui.SameLine();
-                if(ImGui.Button("+##add to iterations", new System.Numerics.Vector2(15, 15))) {
+                if(ImGui.Button("+##add to iterations")) {
 
                     int[] buffer = new int[iterations.Length + 1];
                     Array.Copy(iterations, buffer, iterations.Length);
