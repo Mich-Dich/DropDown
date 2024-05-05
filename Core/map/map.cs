@@ -123,10 +123,9 @@ namespace Core
             Texture tilesetTexture = resource_manager.get_texture(tilesetImageFilePath, false);
 
             int tilesetColumns = tilesetData.Columns;
-            // Calculate tilesetRows based on the total tile count and the number of columns
             int tilesetRows = tilesetData.TileCount / tilesetColumns;
-            int textureWidth = tilesetData.ImageWidth; // Assuming you add ImageWidth property to TilesetData
-            int textureHeight = tilesetData.ImageHeight; // Assuming you add ImageHeight property to TilesetData
+            int textureWidth = tilesetData.ImageWidth;
+            int textureHeight = tilesetData.ImageHeight;
 
             for (int layerIndex = 0; layerIndex < mapData.Layers.Count; layerIndex++) {
                 LayerData layer = mapData.Layers[layerIndex];
@@ -149,7 +148,7 @@ namespace Core
                                 );
 
                                 sprite tileSprite = new sprite(tileTransform, tilesetTexture)
-                                    .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight); // Pass textureWidth and textureHeight here
+                                    .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
 
                                 if (layerIndex == 0) {
                                     backgound.Add(tileSprite);
