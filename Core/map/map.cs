@@ -14,6 +14,9 @@ namespace Core
 
         public Vector2 tile_size { get; set; } = new Vector2(100, 100);
 
+        public int levelWidth { get; set; }
+        public int levelHeight { get; set; }
+
         public struct tile_data {
 
             public int texture_slot { get; set; }
@@ -136,6 +139,9 @@ namespace Core
             int textureWidth = tilesetData.ImageWidth;
             int textureHeight = tilesetData.ImageHeight;
 
+            this.levelWidth = mapData.LevelPixelWidth;
+            this.levelHeight = mapData.LevelPixelHeight;
+
             for (int layerIndex = 0; layerIndex < mapData.Layers.Count; layerIndex++) {
                 LayerData layer = mapData.Layers[layerIndex];
                 for (int y = 0; y < mapData.Height; y++) {
@@ -146,8 +152,6 @@ namespace Core
                             if (tileIndex >= 0) {
                                 int tileRow = tileIndex / tilesetColumns;
                                 int tileColumn = tileIndex % tilesetColumns;
-
-                                Console.WriteLine($"Tile GID: {tileGID}, Index: {tileIndex}, Row: {tileRow + 1}, Column: {tileColumn + 1}");
 
                                 transform tileTransform = new transform(
                                     new Vector2(x * mapData.TileWidth, y * mapData.TileHeight),
