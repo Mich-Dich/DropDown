@@ -115,6 +115,54 @@ namespace Core
             return this;
         }
 
+        public void LoadLevel(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath) {
+            LevelData levelData = level_parser.ParseLevel(tmxFilePath, tsxFilePath);
+            MapData mapData = levelData.Map;
+            TilesetData tilesetData = levelData.Tileset;
+
+            Texture tilesetTexture = resource_manager.get_texture(tilesetImageFilePath, false);
+
+            int tilesetColumns = tilesetData.Columns;
+            // Calculate tilesetRows based on the total tile count and the number of columns
+            int tilesetRows = tilesetData.TileCount / tilesetColumns;
+            int textureWidth = tilesetData.ImageWidth; // Assuming you add ImageWidth property to TilesetData
+            int textureHeight = tilesetData.ImageHeight; // Assuming you add ImageHeight property to TilesetData
+
+            for (int layerIndex = 0; layerIndex < mapData.Layers.Count; layerIndex++) {
+                LayerData layer = mapData.Layers[layerIndex];
+                for (int y = 0; y < mapData.Height; y++) {
+                    for (int x = 0; x < mapData.Width; x++) {
+                        int tileGID = layer.Tiles[x, y];
+                        if (tileGID > 0) {
+                            int tileIndex = tileGID - tilesetData.FirstGid;
+                            if (tileIndex >= 0) {
+                                int tileRow = tileIndex / tilesetColumns;
+                                int tileColumn = tileIndex % tilesetColumns;
+
+                                Console.WriteLine($"Tile GID: {tileGID}, Index: {tileIndex}, Row: {tileRow + 1}, Column: {tileColumn + 1}");
+
+                                transform tileTransform = new transform(
+                                    new Vector2(x * mapData.TileWidth, y * mapData.TileHeight),
+                                    new Vector2(mapData.TileWidth, mapData.TileHeight),
+                                    0,
+                                    mobility.STATIC
+                                );
+
+                                sprite tileSprite = new sprite(tileTransform, tilesetTexture)
+                                    .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight); // Pass textureWidth and textureHeight here
+
+                                if (layerIndex == 0) {
+                                    backgound.Add(tileSprite);
+                                } else {
+                                    world.Add(new game_object(tileTransform).set_sprite(tileSprite));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // ========================================== private ==========================================
 
         private List<sprite> backgound { get; set; } = new List<sprite>();       // change to list of lists => to reduce drawcalls
