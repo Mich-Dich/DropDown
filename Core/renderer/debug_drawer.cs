@@ -53,7 +53,7 @@ namespace Core.renderer
             }
             this.debugShader.set_uniform("color", color);
 
-            transform buffer = new transform(transform);
+            transform buffer = new transform(transform + collider.offset);
             buffer.size = Vector2.One;
             Matrix4 matrixTransform = buffer.GetTransformationMatrix();
             Matrix4 finalTransform = matrixTransform * game.instance.camera.get_projection_matrix();

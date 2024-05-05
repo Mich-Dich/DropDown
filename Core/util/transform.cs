@@ -1,25 +1,21 @@
 ﻿using Core.game_objects;
 using OpenTK.Mathematics;
 
-namespace Core.util
-{
+namespace Core.util {
 
-    public class transform
-    {
+    public class transform {
 
         public Vector2 size { get; set; } = new Vector2(100, 100);
         public float rotation { get; set; } = 0;
         public mobility mobility { get; set; } = mobility.DYNAMIC;    // conserning update method
         public transform? parent { get; set; }
 
-        public transform()
-        {
+        public transform() {
 
             position = new Vector2();
         }
 
-        public transform(transform transform)
-        {
+        public transform(transform transform) {
 
             position = transform.position;
             size = transform.size;
@@ -29,8 +25,7 @@ namespace Core.util
 
         }
 
-        public transform(Vector2? position = null, Vector2? size = null, float rotation = 0, mobility mobility = mobility.DYNAMIC, transform? parent = null)
-        {
+        public transform(Vector2? position = null, Vector2? size = null, float rotation = 0, mobility mobility = mobility.DYNAMIC, transform? parent = null) {
 
             _position = position ?? new Vector2();
             this.size = size ?? new Vector2();
@@ -39,28 +34,33 @@ namespace Core.util
             this.parent = parent;
         }
 
-        public Vector2 position
-        {
-            get
-            {
-                if (parent == null)
-                {
+        public Vector2 position {
+            get {
+                if(parent == null) {
                     return _position;
                 }
-                else
-                {
+                else {
                     return parent.position + _position;
                 }
             }
 
-            set
-            {
+            set {
                 _position = parent == null ? value : value - parent.position;
             }
         }
+        
+        public static transform operator +(transform t1, transform t2) {
 
-        public Matrix4 GetTransformationMatrix()
-        {
+            return new transform {
+                _position = t1.position + t2.position,
+                size = t1.size + t2.size,
+                rotation = t1.rotation + t2.rotation,
+                mobility = (mobility)Math.Max((int)t2.mobility, (int)t1.mobility),
+                parent = null // When adding two transforms, the result should not have a parent
+            };
+        }
+
+        public Matrix4 GetTransformationMatrix() {
 
             Vector2 position = this.position;
             Matrix4 translation = Matrix4.CreateTranslation(new Vector3(position.X, position.Y, 0));
@@ -70,16 +70,14 @@ namespace Core.util
             return scale * rotation * translation;
         }
 
-        public Vector2 TransformPoint(Vector2 point)
-        {
+        public Vector2 TransformPoint(Vector2 point) {
 
             Vector4 homogenousPoint = new Vector4(point.X, point.Y, 0, 1);
             Vector4 transformedPoint = GetTransformationMatrix() * homogenousPoint;
             return new Vector2(transformedPoint.X, transformedPoint.Y);
         }
 
-        public Vector2 InverseTransformPoint(Vector2 point)
-        {
+        public Vector2 InverseTransformPoint(Vector2 point) {
 
             Matrix4 inverseTransform = Matrix4.Invert(GetTransformationMatrix());
             Vector4 homogenousPoint = new Vector4(point.X, point.Y, 0, 1);
@@ -87,8 +85,7 @@ namespace Core.util
             return new Vector2(transformedPoint.X, transformedPoint.Y);
         }
 
-        public void Move(Vector2 direction, float speed)
-        {
+        public void Move(Vector2 direction, float speed) {
 
             direction = RotateVector(direction, rotation);
             Vector2 velocity = direction * speed * game_time.delta;
@@ -99,8 +96,7 @@ namespace Core.util
 
         private Vector2 _position;
 
-        private Vector2 RotateVector(Vector2 vector, float degrees)
-        {
+        private Vector2 RotateVector(Vector2 vector, float degrees) {
 
             float radians = MathHelper.DegreesToRadians(degrees);
             float x = vector.X * MathF.Cos(radians) - vector.Y * MathF.Sin(radians);

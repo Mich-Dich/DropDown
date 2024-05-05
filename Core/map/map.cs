@@ -208,10 +208,19 @@ namespace Core {
 
                         if (tilesetData.CollidableTiles.ContainsKey(tileIndex) && tilesetData.CollidableTiles[tileIndex]) {
 
-                            Console.WriteLine($"Creating collider for tile at ({x}, {y}) pos: {tileTransform.position} size: {tileTransform.size}");
+                            transform buffer = ((tileColumn == 0 && tileRow == 5) 
+                                                || (tileColumn == 1 && tileRow == 5)
+                                                || (tileColumn == 6 && tileRow == 8)
+                                                || (tileColumn == 8 && tileRow == 6)
+                                                || (tileColumn == 3 && tileRow == 5))
+                                ? new transform(new Vector2(0, -10), new Vector2(0, -23), 0, mobility.STATIC)
+                                : new transform(Vector2.Zero, Vector2.Zero, 0, mobility.STATIC);
+
+                            Console.WriteLine($"Creating collider for tile at ({x}, {y}) pos: {tileTransform.position} size: {tileTransform.size}            tile {tileColumn}/{tileRow}");
                             add_game_object(new game_object(tileTransform)
                                 .set_sprite(tileSprite)
-                                .add_collider(new collider(collision_shape.Square)).set_mobility(mobility.STATIC));
+                                .add_collider(new collider(collision_shape.Square).set_offset(buffer))
+                                .set_mobility(mobility.STATIC));
 
                             if(layerIndex == 0)
                                 backgound.Add(tileSprite);
