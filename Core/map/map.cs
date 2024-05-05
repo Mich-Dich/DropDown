@@ -207,20 +207,21 @@ namespace Core {
                                             .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
 
                         if (tilesetData.CollidableTiles.ContainsKey(tileIndex) && tilesetData.CollidableTiles[tileIndex]) {
-                            Console.WriteLine($"Creating collider for tile at ({x}, {y})");
-                            game_object tileGameObject = new game_object(tileTransform)
+
+                            Console.WriteLine($"Creating collider for tile at ({x}, {y}) pos: {tileTransform.position} size: {tileTransform.size}");
+                            add_game_object(new game_object(tileTransform)
                                 .set_sprite(tileSprite)
-                                .add_collider(new collider(collision_shape.Square));
+                                .add_collider(new collider(collision_shape.Square)).set_mobility(mobility.STATIC));
+
+                            if(layerIndex == 0)
+                                backgound.Add(tileSprite);
+
+                        } else {
 
                             if (layerIndex == 0)
                                 backgound.Add(tileSprite);
                             else
-                                world.Add(tileGameObject);
-                        } else {
-                            if (layerIndex == 0)
-                                backgound.Add(tileSprite);
-                            else
-                                world.Add(new game_object(tileTransform).set_sprite(tileSprite));
+                                all_game_objects.Add(new game_object(tileTransform).set_sprite(tileSprite));
                         }
                     }
                 }

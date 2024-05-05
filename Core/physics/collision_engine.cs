@@ -33,7 +33,7 @@ namespace Core.physics {
 
 
                     // update position
-                    if(all_objects[x].collider != null && all_objects[x].transform.mobility != mobility.STATIC) {
+                    if((all_objects[x].collider != null) && (all_objects[x].transform.mobility != mobility.STATIC) && (!finished_objects.Contains(all_objects[y]))) {
                         all_objects[x].collider.velocity /= 1 + all_objects[x].collider.material.dynamicFriction;
                         all_objects[x].transform.position += all_objects[x].collider.velocity * delta_time;
                     }

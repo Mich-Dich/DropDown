@@ -19,6 +19,7 @@ namespace Hell {
             this.active_map = new base_map();
             
             this.camera.set_position(new Vector2(500, 275));
+            this.camera.set_min_max_zoom(0.001f, 1000f);
         }
 
         protected override void shutdown() { }
