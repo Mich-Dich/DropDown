@@ -93,6 +93,10 @@ namespace Core.visual
 
             // -------------------------------------- select display mode -------------------------------------- 
             
+            if(game.instance.show_debug) 
+                game.instance.debug_data.draw_calls_num++;
+            
+
             if (this.animation != null)
                 update_animation();
 

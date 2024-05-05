@@ -12,29 +12,33 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Runtime.InteropServices;
+using Core.imgui;
+using System.Diagnostics.Tracing;
 
 namespace Core {
 
     public abstract class game {
-        
+
         public GameWindowSettings _game_window_settings = GameWindowSettings.Default;
         public NativeWindowSettings _native_window_settings = NativeWindowSettings.Default;
 
-        public shader           default_sprite_shader;
-        public static game      instance { get;  private set; }
-        public bool             show_debug = true;
-        public GameWindow       window { get; private set; }
-        public camera           camera { get; set; }
+        public shader               default_sprite_shader;
+        public static game          instance { get; private set; }
+        public bool                 show_debug = true;
+        public GameWindow           window { get; private set; }
+        public camera               camera { get; set; }
 
-        public ImGuiController imguiController;
+        public debug_data    debug_data { get; set; } = new debug_data();
+
+        public ImGuiController      imguiController;
 
         // ============================================================================== public ============================================================================== 
         public game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
 
-            if(instance != null) 
+            if(instance != null)
                 throw new Exception("You can only create one instance of Game!");
 
-                instance = this;
+            instance = this;
             //this.ResourceManager = new ResourceManager();
 
             this.title = title;
@@ -52,7 +56,7 @@ namespace Core {
         }
 
         public void run() {
-            
+
             window = new GameWindow(_game_window_settings, _native_window_settings);
             window.CenterWindow();
 
@@ -73,12 +77,12 @@ namespace Core {
                 if(active_map == null)
                     active_map = default_map;
 
-                if (player == null)
+                if(player == null)
                     player = new character();
-                
-                if (player_controller == null) 
-                    throw new ResourceNotAssignedException("player_controller musst be assigned in game class init() function");    
-                                
+
+                if(player_controller == null)
+                    throw new ResourceNotAssignedException("player_controller musst be assigned in game class init() function");
+
                 player_controller.player = player;
                 this.active_map.add_game_object(player);
 
@@ -88,7 +92,7 @@ namespace Core {
             };
 
             window.Unload += () => {
-                
+
                 // kill OpenGL
                 GL.BindVertexArray(0);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -103,11 +107,11 @@ namespace Core {
                 update_game_time((float)eventArgs.Time);
                 this.player_controller.update_internal(game_time.delta, _input_event);
 
-                for (int x = 0; x < active_map.all_game_objects.Count; x++)
+                for(int x = 0; x < active_map.all_game_objects.Count; x++)
                     active_map.all_game_objects[x].update(game_time.delta);
                 collision_engine.update(active_map.all_game_objects, game_time.delta);
 
-                update(game_time.delta);                
+                update(game_time.delta);
                 _input_event.Clear();
             };
 
@@ -115,32 +119,7 @@ namespace Core {
 
                 window.SwapBuffers();
                 internal_render();
-
-                imguiController.Update(this.window, (float)eventArgs.Time);
-
-                ImGui.Begin("Demo Window");
-
-                ImGui.Text("Hello, world!");
-
-                if (ImGui.Button("Click me"))
-                {
-                    Console.WriteLine("Button clicked!");
-                }
-
-                float sliderFloatValue = 0.0f;
-                ImGui.SliderFloat("float", ref sliderFloatValue, 0.0f, 1.0f);
-
-                byte[] inputTextValue = new byte[100];
-                ImGui.InputText("string", inputTextValue, 100);
-
-                bool checkboxValue = false;
-                ImGui.Checkbox("Check me", ref checkboxValue);
-
-                ImGui.End();
-
-                imguiController.Render();
-
-                ImGuiController.CheckGLError("End of frame");
+                imgui_render();
             };
 
             window.Resize += (ResizeEventArgs eventArgs) => {
@@ -152,19 +131,20 @@ namespace Core {
                 GL.Viewport(0, 0, fb.X, fb.Y);
 
                 imguiController.WindowResized(this.window.ClientSize.X, this.window.ClientSize.Y);
-                
+
                 camera.set_view_size(window.Size);
                 internal_render();
+                imgui_render();
                 window.SwapBuffers();
             };
-            
+
 
 
             // ============================ input ============================ 
-            window.KeyDown += (KeyboardKeyEventArgs args) => {      _input_event.Add(new input_event((key_code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Pressed)); };
-            window.KeyUp += (KeyboardKeyEventArgs args) => {        _input_event.Add(new input_event((key_code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Release)); };
-            window.MouseDown += (MouseButtonEventArgs args) => {    _input_event.Add(new input_event((key_code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (key_state)args.Action)); };
-            window.MouseUp += (MouseButtonEventArgs args) => {      _input_event.Add(new input_event((key_code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (key_state)args.Action)); };
+            window.KeyDown += (KeyboardKeyEventArgs args) => { _input_event.Add(new input_event((key_code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Pressed)); };
+            window.KeyUp += (KeyboardKeyEventArgs args) => { _input_event.Add(new input_event((key_code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Release)); };
+            window.MouseDown += (MouseButtonEventArgs args) => { _input_event.Add(new input_event((key_code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (key_state)args.Action)); };
+            window.MouseUp += (MouseButtonEventArgs args) => { _input_event.Add(new input_event((key_code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (key_state)args.Action)); };
 
             // make two events for X/Y of mouse wheel movement
             window.MouseWheel += (MouseWheelEventArgs args) => {
@@ -199,11 +179,11 @@ namespace Core {
         protected int inital_window_width { get; set; }
         protected int inital_window_height { get; set; }
 
-        protected collision_engine  collision_engine { get; } = new();
-        protected map               default_map { get; set; }
-        protected character         player { get; set; }
+        protected collision_engine collision_engine { get; } = new();
+        protected map default_map { get; set; }
+        protected character player { get; set; }
         protected player_controller player_controller { get; set; }
-        protected map               active_map { get; set; }
+        protected map active_map { get; set; }
         //protected List<map> active_maps { get; set; }     // TODO: add array of maps to enable DROP into new level
 
         // general
@@ -220,13 +200,21 @@ namespace Core {
         }
 
         // input system
-        protected List<input_event> _input_event { get; }  = new List<input_event>();
+        protected List<input_event> _input_event { get; } = new List<input_event>();
 
         protected void reset_input_event_list() { _input_event.Clear(); }
 
         //  ============================================================================== private ============================================================================== 
         private game _instance;
         private readonly Vector2 cursor_pos_offset = new Vector2(0,20);
+
+
+        // ================ IMGUI TEST ================ 
+        private float sliderFloatValue = 0.0f;
+        private debug_data_viualizer debug_data_viualizer = new debug_data_viualizer();
+        
+        // ================ IMGUI TEST ================ 
+
 
         private void internal_render() {
 
@@ -247,7 +235,6 @@ namespace Core {
             render(game_time.delta);
         }
 
-
         private void update_game_time(float delta_time) {
 
             game_time.delta = delta_time;
@@ -255,8 +242,23 @@ namespace Core {
 
         }
 
-        private void initImGuiController()
-        {
+        // ============================================ IMGUI ============================================
+
+        private void imgui_render() {
+
+            imguiController.Update(this.window, (float)game_time.delta);
+
+            if(show_debug)
+                debug_data_viualizer.draw(debug_data);
+            
+            imguiController.Render();
+            ImGuiController.CheckGLError("End of frame");
+
+            debug_data = new debug_data();  // reset debug infos
+        }
+
+        private void initImGuiController() {
+
             // Get the FrameBuffer size and compute the scale factor for ImGuiController
             Vector2i fb = this.window.FramebufferSize;
             int scaleFactorX = fb.X / this.window.ClientSize.X;
@@ -266,4 +268,17 @@ namespace Core {
             imguiController = new ImGuiController(this.window.ClientSize.X, this.window.ClientSize.Y, scaleFactorX, scaleFactorY);
         }
     }
+
+    public class debug_data {
+
+        public int draw_calls_num = 0;
+        public int collision_checks_num = 0;
+
+        public debug_data() {
+            this.draw_calls_num = 0;
+            this.collision_checks_num = 0;
+        }
+    }
+
+
 }

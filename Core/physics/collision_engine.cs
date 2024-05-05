@@ -25,6 +25,11 @@ namespace Core.physics {
             for (int x = 0; x < all_objects.Count; x++) {
                 for(int y = 0; y < all_objects.Count; y++) {
 
+
+                    if(game.instance.show_debug)
+                        game.instance.debug_data.collision_checks_num++;
+
+
                     // update position
                     if(all_objects[x].collider != null && all_objects[x].transform.mobility != mobility.STATIC) {
                         all_objects[x].collider.velocity /= 1 + all_objects[x].collider.material.dynamicFriction;

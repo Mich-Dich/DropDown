@@ -29,8 +29,11 @@ namespace Hell {
 
             
             generate_random_64x64_bit_map();
-            for(int x = 0; x < 5; x++)
+            for(int x = 0; x < 4; x++) {
+
+                Console.WriteLine($"ITERATION: {x}");
                 iterate_over_bit_map();
+            }
 
 
         }
@@ -40,7 +43,7 @@ namespace Hell {
 
             for(int x = 0; x < 64; x++) {
 
-                float density = 0.32f;
+                float density = 0.333333f;
                 floor_layout[x] = generate_random_UInt64_with_density(density);
                 log_u64(floor_layout[x]);
             }
@@ -92,12 +95,12 @@ namespace Hell {
                 }
                 //Console.WriteLine();
             }
-            Console.WriteLine();
 
 
             for(int x = 0; x < 64; x++)
                 log_u64(bit_map_buffer[x]);
-        
+
+            Console.WriteLine();
             floor_layout = bit_map_buffer;
         }
 
