@@ -12,7 +12,7 @@ namespace Core
 
         public map() { }
 
-        public Vector2 tile_size { get; set; } = new Vector2(100, 100);
+        public Vector2 loc_tile_size { get; set; } = new Vector2(100, 100);
 
         public struct tile_data {
 
@@ -28,7 +28,14 @@ namespace Core
 
         public void draw() {
 
-            for(int x = 0; x < backgound.Count; x++)
+            foreach (var tile in map_tiles.Values) {
+
+                foreach(var sprite in tile.background) {
+                    sprite.draw();
+                }
+            }
+
+            for (int x = 0; x < backgound.Count; x++)
                 backgound[x].draw();
 
             for(int x = 0; x < world.Count; x++)
@@ -36,6 +43,8 @@ namespace Core
         }
 
         public void draw_denug() {
+
+            debug_data.num_of_tiels_displayed = map_tiles.Count;
 
             for(int x = 0; x < world.Count; x++)
                 world[x].draw_debug();
@@ -81,9 +90,45 @@ namespace Core
                     backgound.Add(sprite); 
                     break;
             }
-                
         
         }
+
+
+
+
+
+        // ===============================================================================================================================================================
+        // CURRENTLY IN DEV
+        // ===============================================================================================================================================================
+
+        public void add_background_sprite(sprite sprite, Vector2 position) {
+
+            Vector2i key = new Vector2i((int)(position.X / tile_size), (int)(position.Y / tile_size));
+            //Console.WriteLine($"tile key: {key}");
+            if (!map_tiles.ContainsKey(key)) {
+
+                map_tiles.Add(key, new map_tile());
+                debug_data.num_of_tiels++;
+            }
+
+            map_tiles.TryGetValue(key, out map_tile current_tile);
+            sprite.transform.position = position;
+            current_tile.background.Add(sprite);
+        }
+
+        public void force_clear_map_tiles() {
+            map_tiles.Clear();
+        }
+
+        // ===============================================================================================================================================================
+        // CURRENTLY IN DEV
+        // ===============================================================================================================================================================
+
+
+
+
+
+
 
         public map generate_backgound_tile(int width, int height) {
 
@@ -93,8 +138,8 @@ namespace Core
             Random random = new Random();
             double missing_time_rate = 0f;
 
-            float offset_x = (((float)width - 1) / 2) * tile_size.X;
-            float offset_y = (((float)height - 1) / 2) * tile_size.Y;
+            float offset_x = (((float)width - 1) / 2) * loc_tile_size.X;
+            float offset_y = (((float)height - 1) / 2) * loc_tile_size.Y;
 
             // Loop through the tiles and add them to the _positions list
             for(int x = 0; x < width; x++) {
@@ -103,8 +148,8 @@ namespace Core
                     if(random.NextDouble() < missing_time_rate)    // Skip adding tiles at certain positions (e.g., missing tiles)
                         continue;
 
-                    transform loc_trans_buffer = new transform(new Vector2( x * tile_size.X - offset_x, y * tile_size.Y - offset_y),
-                        new Vector2(tile_size.X, tile_size.Y),
+                    transform loc_trans_buffer = new transform(new Vector2( x * loc_tile_size.X - offset_x, y * loc_tile_size.Y - offset_y),
+                        new Vector2(loc_tile_size.X, loc_tile_size.Y),
                         0, //(float)utility.degree_to_radians(_rotations[random.Next(0, 3)]),
                         mobility.STATIC);
 
@@ -128,7 +173,6 @@ namespace Core
             LevelData levelData = level_parser.ParseLevel(tmxFilePath, tsxFilePath);
             MapData mapData = levelData.Map;
             TilesetData tilesetData = levelData.Tileset;
-
             Texture tilesetTexture = resource_manager.get_texture(tilesetImageFilePath, false);
 
             int tilesetColumns = tilesetData.Columns;
@@ -136,36 +180,38 @@ namespace Core
             int textureWidth = tilesetData.ImageWidth;
             int textureHeight = tilesetData.ImageHeight;
 
-            for (int layerIndex = 0; layerIndex < mapData.Layers.Count; layerIndex++) {
-                LayerData layer = mapData.Layers[layerIndex];
-                for (int y = 0; y < mapData.Height; y++) {
-                    for (int x = 0; x < mapData.Width; x++) {
-                        int tileGID = layer.Tiles[x, y];
-                        if (tileGID > 0) {
-                            int tileIndex = tileGID - tilesetData.FirstGid;
-                            if (tileIndex >= 0) {
-                                int tileRow = tileIndex / tilesetColumns;
-                                int tileColumn = tileIndex % tilesetColumns;
+            for(int layerIndex = 0; layerIndex < mapData.Layers.Count; layerIndex++) {
+                for(int y = 0; y < mapData.Height; y++) {
+                    for(int x = 0; x < mapData.Width; x++) {
 
-                                Console.WriteLine($"Tile GID: {tileGID}, Index: {tileIndex}, Row: {tileRow + 1}, Column: {tileColumn + 1}");
+                        int tileGID = mapData.Layers[layerIndex].Tiles[x, y];
+                        if(tileGID <= 0)
+                            continue;
 
-                                transform tileTransform = new transform(
-                                    new Vector2(x * mapData.TileWidth, y * mapData.TileHeight),
-                                    new Vector2(mapData.TileWidth, mapData.TileHeight),
-                                    0,
-                                    mobility.STATIC
-                                );
+                        int tileIndex = tileGID - tilesetData.FirstGid;
+                        if(tileIndex < 0)
+                            continue;
 
-                                sprite tileSprite = new sprite(tileTransform, tilesetTexture)
-                                    .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
+                        int tileRow = tileIndex / tilesetColumns;
+                        int tileColumn = tileIndex % tilesetColumns;
 
-                                if (layerIndex == 0) {
-                                    backgound.Add(tileSprite);
-                                } else {
-                                    world.Add(new game_object(tileTransform).set_sprite(tileSprite));
-                                }
-                            }
-                        }
+                        Console.WriteLine($"Tile GID: {tileGID}, Index: {tileIndex}, Row: {tileRow + 1}, Column: {tileColumn + 1}");
+
+                        transform tileTransform = new transform(
+                            new Vector2(x * mapData.TileWidth, y * mapData.TileHeight),
+                            new Vector2(mapData.TileWidth, mapData.TileHeight),
+                            0,
+                            mobility.STATIC);
+
+                        sprite tileSprite = new sprite(tileTransform, tilesetTexture)
+                            .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
+
+                        if(layerIndex == 0)
+                            backgound.Add(tileSprite);
+                        else
+                            world.Add(new game_object(tileTransform).set_sprite(tileSprite));
+
+
                     }
                 }
             }
@@ -176,17 +222,21 @@ namespace Core
         private List<sprite> backgound { get; set; } = new List<sprite>();       // change to list of lists => to reduce drawcalls
         private List<game_object> world { get; set; } = new List<game_object>();
 
+
+        // ------------------------------------------ tiles ------------------------------------------
+        private readonly int tile_size = 800;     // 8 default_sprites fit in one tile
+        private Dictionary<Vector2i, map_tile> map_tiles { get; set; } = new Dictionary<Vector2i, map_tile>();
+
     }
 
     public struct map_tile {
 
-        public map_tile(Texture texture) {
-         
-            Texture = texture;
-        }
+        public Vector2              position = new Vector2();
 
-        public Texture Texture { get; set; }
-        // TODO: add more data and ruls for map generation
+        public List<sprite>         background = new List<sprite>();
+        public List<game_object>    static_colliders = new List<game_object>();
+
+        public map_tile() { }
 
     }
 

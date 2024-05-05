@@ -11,7 +11,7 @@ namespace Core.imgui {
 
         }
 
-        public void draw(debug_data debug_data) {
+        public void draw() {
 
 			ImGuiIOPtr io = ImGui.GetIO();
 
@@ -34,7 +34,7 @@ namespace Core.imgui {
             imgui_util.add_table_row("update time", $"{io.Framerate:F1} FPS ({(1000.0f/ io.Framerate):F2} ms)");
             imgui_util.add_table_spacing();
 
-            imgui_util.add_table_row("chunks displayed", $"{debug_data.chuncks_displayed}");
+            imgui_util.add_table_row("chunks displayed", $"{debug_data.num_of_tiels_displayed}/{debug_data.num_of_tiels}");
             imgui_util.add_table_row("sprite draw calls", $"{debug_data.sprite_draw_calls_num}");
 			imgui_util.add_table_spacing();
 

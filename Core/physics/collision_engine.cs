@@ -22,7 +22,7 @@ namespace Core.physics {
         public void update(List<game_object> all_objects, float delta_time) {
 
             if(game.instance.show_debug)
-                game.instance.debug_data.colidable_objects = all_objects.Count;
+                debug_data.colidable_objects = all_objects.Count;
 
             List<game_object> finished_objects = new List<game_object>();
 
@@ -48,7 +48,7 @@ namespace Core.physics {
 
 
                     if(game.instance.show_debug)
-                        game.instance.debug_data.collision_checks_num++;
+                        debug_data.collision_checks_num++;
 
                     if(all_objects[x].collider.shape == collision_shape.Circle) {
                         if(all_objects[y].collider.shape == collision_shape.Circle)
@@ -146,7 +146,7 @@ namespace Core.physics {
             if (overlap < 0)    // not hit
                 return hit;
 
-            hit.hit_direction = centerToNearest.Normalized() * overlap;
+            hit.hit_direction = centerToNearest.Normalized() * -overlap;
             hit.is_hit = true;
             hit.hit_position = circle.transform.position;
             hit.hit_object = AABB;

@@ -28,25 +28,12 @@ namespace Core.util {
             ImGui.EndTable();
         }
 
-        public static void title(string label, bool giant = false) {
-
-            if (giant)
-                ImGui.PushFont(imgui_fonts.fonts["giant"]);
-            else
-                ImGui.PushFont(imgui_fonts.fonts["regular_big"]);
-            ImGui.Text(label);
-            ImGui.PopFont();
-        }
-
         public static void add_table_row(string label, string value) {
 
             ImGui.TableNextRow();
             ImGui.TableSetColumnIndex(0);
-
             ImGui.Text(label);
-
             ImGui.TableSetColumnIndex(1);
-
             ImGui.Text(value);
         }
 
@@ -54,11 +41,8 @@ namespace Core.util {
 
             ImGui.TableNextRow();
             ImGui.TableSetColumnIndex(0);
-
             ImGui.Text(label);
-
             ImGui.TableSetColumnIndex(1);
-
             ImGui.DragFloat($"##{label}", ref value, speed, min, max);
         }
 
@@ -66,11 +50,8 @@ namespace Core.util {
 
             ImGui.TableNextRow();
             ImGui.TableSetColumnIndex(0);
-
             ImGui.Text(label);
-
             ImGui.TableSetColumnIndex(1);
-
             ImGui.DragInt($"##{label}", ref value, speed, min, max);
         }
 
@@ -78,29 +59,36 @@ namespace Core.util {
 
             ImGui.TableNextRow();
             ImGui.TableSetColumnIndex(0);
-
             ImGui.Text(label);
-
             ImGui.TableSetColumnIndex(1);
-
             lamda();
         }
 
-        public static void add_table_spacing() {
+        public static void add_table_spacing(int amout = 1) {
 
             ImGui.TableNextRow();
             ImGui.TableSetColumnIndex(0);
-            ImGui.Spacing();
-            ImGui.Spacing();
+            for (int x = 0; x < amout; x++)
+                ImGui.Spacing();
             ImGui.TableSetColumnIndex(1);
-            ImGui.Spacing();
-            ImGui.Spacing();
+            for (int x = 0; x < amout; x++)
+                ImGui.Spacing();
         }
 
         public static void shift_cursor_pos(float shift_x = 0, float shift_y = 0) {
 
             var current_pos = ImGui.GetCursorPos();
             ImGui.SetCursorPos(current_pos + new System.Numerics.Vector2(shift_x, shift_y));
+        }
+
+        public static void title(string label, bool giant = false) {
+
+            if(giant)
+                ImGui.PushFont(imgui_fonts.fonts["giant"]);
+            else
+                ImGui.PushFont(imgui_fonts.fonts["regular_big"]);
+            ImGui.Text(label);
+            ImGui.PopFont();
         }
 
     }

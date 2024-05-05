@@ -28,7 +28,7 @@ namespace Core {
         public GameWindow           window { get; private set; }
         public camera               camera { get; set; }
 
-        public debug_data    debug_data { get; set; } = new debug_data();
+        //public debug_data    debug_data { get; set; } = new debug_data();
 
         public ImGuiController      imguiController;
 
@@ -168,7 +168,7 @@ namespace Core {
             window.Run();
         }
 
-        public void shoe_debug_data(bool enable) { this.show_debug = enable; }
+        public void show_debug_data(bool enable) { this.show_debug = enable; }
         public Vector2 get_mouse_relative_pos() { return window.MousePosition - (window.Size / 2) + cursor_pos_offset; }
 
         //  ============================================================================== protected ============================================================================== 
@@ -221,7 +221,7 @@ namespace Core {
             default_sprite_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
 
             active_map.draw();
-            player.draw();
+            //player.draw();
 
             if(show_debug) {
 
@@ -247,7 +247,7 @@ namespace Core {
             imguiController.Update(this.window, (float)game_time.delta);
 
             if(show_debug)
-                debug_data_viualizer.draw(debug_data);
+                debug_data_viualizer.draw();
 
             active_map.draw_imgui();
             render_imgui(delta_time);     // client side imgui code
@@ -256,7 +256,8 @@ namespace Core {
             imguiController.Render();
             ImGuiController.CheckGLError("End of frame");
 
-            debug_data = new debug_data();  // reset debug infos
+            debug_data.reset();
+            //debug_data = new debug_data();  // reset debug infos
         }
 
         private void initImGuiController() {
@@ -271,15 +272,25 @@ namespace Core {
         }
     }
 
-    public class debug_data {
+    public static class debug_data {
 
-        public int sprite_draw_calls_num = 0;
-        public int chuncks_displayed = 0;
+        public static int sprite_draw_calls_num = 0;
+        public static int num_of_tiels = 0;
+        public static int num_of_tiels_displayed = 0;
+               
+        public static int collision_checks_num = 0;
+        public static int colidable_objects = 0;
 
-        public int collision_checks_num = 0;
-        public int colidable_objects = 0;
+        //public debug_data() {}
 
-        public debug_data() {}
+        public static void reset() {
+            
+            sprite_draw_calls_num = 0;
+            num_of_tiels_displayed = 0;
+            collision_checks_num = 0;
+            colidable_objects = 0;
+        }
+
     }
 
 

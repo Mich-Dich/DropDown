@@ -46,7 +46,8 @@ namespace DropDown.player {
         protected override void update(float delta_time) {
 
             // simple movement
-            player.add_velocity((Vector2)move.get_value() * player.movement_speed * delta_time);
+            if(move.X != 0 || move.Y != 0)
+                player.add_velocity(Vector2.NormalizeFast((Vector2)move.get_value()) * player.movement_speed * delta_time);
 
             // camera follows player
             game.instance.camera.transform.position = player.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);

@@ -4,8 +4,7 @@ using Core.util;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Core.visual
-{
+namespace Core.visual {
 
     public class sprite : I_animatable, IDisposable {
 
@@ -64,7 +63,7 @@ namespace Core.visual
             this.animation = new animation(this, new SpriteBatch(path_to_directory, is_pixel_art), fps, loop);
             if(start_playing)
                 this.animation.play();
-            
+
             return this;
         }
 
@@ -73,7 +72,7 @@ namespace Core.visual
             this.animation = new animation(this, resource_manager.get_texture(path_to_texture_atlas, is_pixel_art), num_of_rows, num_of_columns, fps, loop);
             if(start_playing)
                 this.animation.play();
-            
+
             return this;
         }
 
@@ -92,12 +91,12 @@ namespace Core.visual
                 throw new NotImplementedException("Neither a texture nor an animation is assigned to the sprite. The sprite cannot be rendered.");
 
             // -------------------------------------- select display mode -------------------------------------- 
-            
-            if(game.instance.show_debug) 
-                game.instance.debug_data.sprite_draw_calls_num++;
-            
 
-            if (this.animation != null)
+            if(game.instance.show_debug)
+                debug_data.sprite_draw_calls_num++;
+
+
+            if(this.animation != null)
                 update_animation();
 
             this.texture.Use(TextureUnit.Texture0);
@@ -163,7 +162,7 @@ namespace Core.visual
             return this;
         }
 
-       public sprite select_texture_regionNew(int number_of_columns, int number_of_rows, int column_index, int row_index, int tileID, int textureWidth, int textureHeight) {
+        public sprite select_texture_regionNew(int number_of_columns, int number_of_rows, int column_index, int row_index, int tileID, int textureWidth, int textureHeight) {
 
             float offset_y = 1.0f / ((float)number_of_rows * 50);
             float offset_x = 1.0f / ((float)number_of_columns * 50);
@@ -196,9 +195,8 @@ namespace Core.visual
             int pixelHeight = (int)(uvHeight * textureHeight);
 
             //Console.WriteLine($"Tile ID: {tileID}, Pixel Position - x: {pixelX}, y: {pixelY}, Size - width: {pixelWidth}, height: {pixelHeight}");
-
-    return this;
-}
+            return this;
+        }
 
         // ============================================ private  ============================================ 
         private index_buffer    _index_buffer;

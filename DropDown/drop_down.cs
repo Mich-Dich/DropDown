@@ -1,5 +1,7 @@
 ﻿using DropDown.player;
 using Hell;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace DropDown {
 
@@ -11,9 +13,10 @@ namespace DropDown {
 
         // ========================================================= functions =========================================================
         protected override void init() {
-
-            set_update_frequency(144.0f);
-            shoe_debug_data(true);
+            
+            GL.ClearColor(new Color4(.7f, .7f, .7f, 1f));
+            set_update_frequency(60.0f);
+            show_debug_data(true);
 
             this.player_controller = new PC_default();
             this.player = new CH_player();
