@@ -12,11 +12,8 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Runtime.InteropServices;
-<<<<<<< HEAD
-=======
 using Core.imgui;
 using System.Diagnostics.Tracing;
->>>>>>> dev
 
 namespace Core {
 
@@ -67,13 +64,6 @@ namespace Core {
 
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
 
-<<<<<<< HEAD
-                Console.WriteLine("OpenGL Version: " + GL.GetString(StringName.Version));
-
-                active_map = new map();
-
-=======
->>>>>>> dev
                 // ----------------------------------- shader -----------------------------------
                 default_sprite_shader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
                 default_sprite_shader.use();
@@ -132,21 +122,6 @@ namespace Core {
                 imgui_render();
             };
 
-<<<<<<< HEAD
-            
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
-                window.Resize += (ResizeEventArgs eventArgs) => {
-                    update_game_time((float)window.TimeSinceLastUpdate());
-                    window.ResetTimeSinceLastUpdate();
-
-                    GL.Viewport(0, 0, window.Size.X, window.Size.Y);
-                    camera.set_view_size(window.Size);
-                    internal_render();
-                    window.SwapBuffers();
-                };
-            }
-            
-=======
             window.Resize += (ResizeEventArgs eventArgs) => {
                 update_game_time((float)window.TimeSinceLastUpdate());
                 window.ResetTimeSinceLastUpdate();
@@ -162,7 +137,6 @@ namespace Core {
                 imgui_render();
                 window.SwapBuffers();
             };
->>>>>>> dev
 
 
 
