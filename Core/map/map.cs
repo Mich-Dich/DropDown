@@ -227,7 +227,7 @@ namespace Core {
 
 
         // ------------------------------------------ tiles ------------------------------------------
-        protected int cell_size = 50;
+        protected int cell_size = 200;
         protected int tile_size = 8;     // 8 default_sprites fit in one tile
         private Dictionary<Vector2i, map_tile> map_tiles { get; set; } = new Dictionary<Vector2i, map_tile>();
 

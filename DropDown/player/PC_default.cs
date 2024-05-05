@@ -52,6 +52,7 @@ namespace DropDown.player {
             // camera follows player
             game.instance.camera.transform.position = player.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
 
+            
             game.instance.camera.add_zoom((float)look.get_value() / 50);
 
 

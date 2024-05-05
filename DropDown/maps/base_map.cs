@@ -177,7 +177,7 @@ namespace Hell {
 
         private void iterate_over_bit_map(int threshhold = 4) {
 
-            UInt64[] bit_map_buffer = new UInt64[64];
+            floor_layout_buffer = new UInt64[64];
 
             // Determine the number of bits in UInt64 (64 bits)
             const int totalBits = sizeof(UInt64) * 8;
@@ -212,7 +212,7 @@ namespace Hell {
                     if(count >= threshhold) {
 
                         UInt64 mask = (UInt64)1 << y; // Calculate the mask based on MSB index (63 - bitIndex)
-                        bit_map_buffer[x] |= mask;
+                        floor_layout_buffer[x] |= mask;
                     }
 
                     //Console.Write($"{count} ");
@@ -226,7 +226,7 @@ namespace Hell {
             //    log_u64(bit_map_buffer[x]);
 
             //Console.WriteLine();
-            floor_layout = bit_map_buffer;
+            floor_layout = floor_layout_buffer;
         }
 
         // imgui Window
@@ -237,6 +237,7 @@ namespace Hell {
         private float inital_density = 0.37f;
         private int[] iterations = new int[] {4,4,4,4,4};
         private static Random random = new Random();
+        private UInt64[] floor_layout_buffer = new UInt64[64];
         private UInt64[] floor_layout = new UInt64[64];
         private readonly UInt64 map_bit_mask = 0xEFFFFFFFFFFFFFFE; // Binary: 01111111 11111111 11111111 11111111 11111111 11111111 11111111 11111110
 
