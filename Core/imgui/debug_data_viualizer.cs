@@ -36,6 +36,7 @@ namespace Core.imgui {
 
             imgui_util.add_table_row("chunks displayed", $"{debug_data.num_of_tiels_displayed}/{debug_data.num_of_tiels}");
             imgui_util.add_table_row("sprite draw calls", $"{debug_data.sprite_draw_calls_num}");
+            imgui_util.add_table_row("playing animations", $"{debug_data.playing_animation_num}");
 			imgui_util.add_table_spacing();
 
             imgui_util.add_table_row("collision checks", $"{debug_data.collision_checks_num}");

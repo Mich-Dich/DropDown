@@ -26,6 +26,9 @@ namespace Core.visual {
             if(!_is_playing)
                 return;
 
+            if(game.instance.show_debug)
+                debug_data.playing_animation_num++;
+
             _sprite.animation_timer += game_time.delta;
             int _current_frame_index = (int)(_sprite.animation_timer / _frame_time);
 

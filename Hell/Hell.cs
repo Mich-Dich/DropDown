@@ -29,10 +29,10 @@ namespace Hell {
                 requiredZoom = inital_window_width / levelDimensions.X;
             }
 
-            requiredZoom *= manualZoomAdjustment;
+            //requiredZoom *= manualZoomAdjustment;
 
-            Console.WriteLine($"Setting zoom to: {requiredZoom} (after manual adjustment)");
-            this.camera.set_zoom(requiredZoom);
+            //Console.WriteLine($"Setting zoom to: {requiredZoom} (after manual adjustment)");
+            //this.camera.set_zoom(requiredZoom);
             Vector2 levelCenter = new Vector2(levelDimensions.X / 2, levelDimensions.Y / 2);
             this.camera.set_position(levelCenter);
         }
@@ -40,6 +40,11 @@ namespace Hell {
         protected override void shutdown() { }
 
         protected override void update(float delta_time) { }
+
+        protected override void window_resize() {
+
+            this.camera.set_zoom((float)this.window.Size.X / 2000.0f);
+        }
 
         protected override void render(float delta_time) { }
 

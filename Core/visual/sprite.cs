@@ -126,6 +126,7 @@ namespace Core.visual {
 
             // -------------------------------------- draw call -------------------------------------- 
             GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
+
         }
 
         // ======================================== animation ======================================== 
@@ -237,7 +238,7 @@ namespace Core.visual {
                 this.shader = game.instance.default_sprite_shader;
 
             _vertex_buffer = new vertex_buffer(_verticies);
-            _vertex_buffer.bind();
+            //_vertex_buffer.bind();
             _vertex_array = new();
             _vertex_array.add_buffer(_vertex_buffer, this.get_buffer_layout());
             _index_buffer = new index_buffer(_indeices);
@@ -245,10 +246,9 @@ namespace Core.visual {
             if(this.transform.mobility == mobility.STATIC)
                 _model_matrix = calc_modle_matrix();
 
-            if(texture == null) {
+            if(texture == null) 
                 this.texture = resource_manager.get_texture("assets/defaults/default_grid.png");
-            }
-
+            
             return this;
         }
 

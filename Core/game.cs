@@ -120,12 +120,14 @@ namespace Core {
             };
 
             window.Resize += (ResizeEventArgs eventArgs) => {
+                
                 update_game_time((float)window.TimeSinceLastUpdate());
                 window.ResetTimeSinceLastUpdate();
 
                 // Update the opengl viewport
                 Vector2i fb = this.window.FramebufferSize;
                 GL.Viewport(0, 0, fb.X, fb.Y);
+                window_resize();
 
                 imguiController.WindowResized(this.window.ClientSize.X, this.window.ClientSize.Y);
 
@@ -190,6 +192,7 @@ namespace Core {
         protected abstract void update(float delta_time);
         protected abstract void render(float delta_time);
         protected abstract void render_imgui(float delta_time);
+        protected virtual void window_resize() { }
 
         protected void set_update_frequency(double frequency) {
 
@@ -218,6 +221,7 @@ namespace Core {
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
+            default_sprite_shader.use();
             default_sprite_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
 
             active_map.draw();
@@ -225,7 +229,7 @@ namespace Core {
 
             if(show_debug) {
 
-                default_sprite_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
+                //default_sprite_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
                 active_map.draw_denug();
             }
 
@@ -277,7 +281,8 @@ namespace Core {
         public static int sprite_draw_calls_num = 0;
         public static int num_of_tiels = 0;
         public static int num_of_tiels_displayed = 0;
-               
+        public static int playing_animation_num = 0;
+        
         public static int collision_checks_num = 0;
         public static int colidable_objects = 0;
 
@@ -287,6 +292,7 @@ namespace Core {
             
             sprite_draw_calls_num = 0;
             num_of_tiels_displayed = 0;
+            playing_animation_num = 0;
             collision_checks_num = 0;
             colidable_objects = 0;
         }

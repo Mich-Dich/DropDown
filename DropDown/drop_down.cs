@@ -1,4 +1,5 @@
-﻿using DropDown.player;
+﻿using Core.visual;
+using DropDown.player;
 using Hell;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -23,7 +24,9 @@ namespace DropDown {
 
 
             this.active_map = new base_map();
-            this.camera.set_min_max_zoom(0.35f, 0.9f);
+            this.camera.set_min_max_zoom(0f, 10.9f);
+
+            //sprite garbage_test = new sprite();
 
             //var ai_controller = new AI_default();
             //ai_controller.register_state(new List<Type> { typeof(default_waling_state) });
@@ -35,6 +38,11 @@ namespace DropDown {
         protected override void shutdown() { }
 
         protected override void update(float delta_time) { }
+
+        protected override void window_resize() {
+
+            this.camera.set_zoom((float)this.window.Size.X / 3500.0f);
+        }
 
         protected override void render(float delta_time) { }
         

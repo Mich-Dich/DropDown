@@ -15,7 +15,7 @@ namespace Core.renderer {
         }
 
         ~vertex_buffer() {
-
+            
             GL.DeleteBuffer(id);
         }
 

@@ -18,8 +18,8 @@ namespace Core.util {
 
             ImGuiTableFlags flags = ImGuiTableFlags.Resizable;
             ImGui.BeginTable(label, 2, flags);
-            ImGui.TableSetupColumn("##one", ImGuiTableColumnFlags.NoHeaderLabel);
-            ImGui.TableSetupColumn("##two", ImGuiTableColumnFlags.NoHeaderLabel | ImGuiTableColumnFlags.NoResize);
+            ImGui.TableSetupColumn($"##one{label}", ImGuiTableColumnFlags.NoHeaderLabel);
+            ImGui.TableSetupColumn($"##two{label}", ImGuiTableColumnFlags.NoHeaderLabel | ImGuiTableColumnFlags.NoResize);
 
         }
 

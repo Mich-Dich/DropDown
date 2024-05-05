@@ -111,7 +111,40 @@ namespace Hell {
             imgui_util.add_table_row("Total duration", $"{bit_map_generation_duration + map_generation_duration} ms");
             imgui_util.end_default_table();
 
+            if(map_generation_duration != 0)
+                ImGui.BeginDisabled();
+
+            if(ImGui.Button("Generate actual map from bit-map"))
+                generate_actual_map();
+
+            if(map_generation_duration != 0)
+                ImGui.EndDisabled();
+
             ImGui.End();
+        }
+
+        private void generate_actual_map() {
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            force_clear_map_tiles();
+            const int totalBits = sizeof(UInt64) * 8;
+            for(int x = 0; x < totalBits; x++) {
+                for(int y = totalBits - 1; y >= 0; y--) {
+
+                    // Extract bits of current X
+                    UInt64 currentBit = (floor_layout[x] >> y) & 1;
+
+                    this.add_background_sprite(
+                        new sprite(resource_manager.get_texture("assets/textures/terrain.png")).select_texture_region(32, 64, (currentBit == 0) ? 1 : 15, (currentBit == 0) ? 60 : 26),
+                        new Vector2(y * this.cell_size, x * this.cell_size));
+
+                }
+            }
+
+            stopwatch.Stop();
+            map_generation_duration = stopwatch.Elapsed.TotalMilliseconds;
         }
 
         private void generate_bit_map() {
@@ -129,25 +162,7 @@ namespace Hell {
 
             stopwatch.Stop();
             bit_map_generation_duration = stopwatch.Elapsed.TotalMilliseconds;
-            stopwatch.Start();
-
-            force_clear_map_tiles();
-            const int totalBits = sizeof(UInt64) * 8;
-            for(int x = 0; x < totalBits; x++) {
-                for(int y = totalBits - 1; y >= 0; y--) {
-
-                    // Extract bits of current X
-                    UInt64 currentBit = (floor_layout[x] >> y) & 1;
-
-                    this.add_background_sprite(
-                        new sprite(resource_manager.get_texture("assets/textures/terrain.png")).select_texture_region(32, 64, (currentBit == 0) ? 1 : 15, (currentBit == 0) ? 60 : 26),
-                        new Vector2(x * 100, y * 100));
-
-                }
-            }
-
-            stopwatch.Stop();
-            map_generation_duration = stopwatch.Elapsed.TotalMilliseconds;
+            
         }
 
         private void generate_random_64x64_bit_map() {

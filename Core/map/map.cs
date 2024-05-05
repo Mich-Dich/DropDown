@@ -11,7 +11,7 @@ namespace Core {
 
         public map() { }
 
-        public Vector2 loc_tile_size { get; set; } = new Vector2(100, 100);
+        //public Vector2 loc_tile_size { get; set; } = new Vector2(100, 100);
 
         public int levelWidth { get; set; }
         public int levelHeight { get; set; }
@@ -105,7 +105,7 @@ namespace Core {
 
         public void add_background_sprite(sprite sprite, Vector2 position) {
 
-            Vector2i key = new Vector2i((int)(position.X / tile_size), (int)(position.Y / tile_size));
+            Vector2i key = new Vector2i((int)(position.X / (tile_size * cell_size)), (int)(position.Y / (tile_size * cell_size)));
             //Console.WriteLine($"tile key: {key}");
             if(!map_tiles.ContainsKey(key)) {
 
@@ -115,6 +115,7 @@ namespace Core {
 
             map_tiles.TryGetValue(key, out map_tile current_tile);
             sprite.transform.position = position;
+            sprite.transform.size = new Vector2(cell_size);
             current_tile.background.Add(sprite);
         }
 
@@ -140,8 +141,8 @@ namespace Core {
             Random random = new Random();
             double missing_time_rate = 0f;
 
-            float offset_x = (((float)width - 1) / 2) * loc_tile_size.X;
-            float offset_y = (((float)height - 1) / 2) * loc_tile_size.Y;
+            float offset_x = (((float)width - 1) / 2) * cell_size;
+            float offset_y = (((float)height - 1) / 2) * cell_size;
 
             // Loop through the tiles and add them to the _positions list
             for(int x = 0; x < width; x++) {
@@ -150,8 +151,8 @@ namespace Core {
                     if(random.NextDouble() < missing_time_rate)    // Skip adding tiles at certain positions (e.g., missing tiles)
                         continue;
 
-                    transform loc_trans_buffer = new transform(new Vector2( x * loc_tile_size.X - offset_x, y * loc_tile_size.Y - offset_y),
-                        new Vector2(loc_tile_size.X, loc_tile_size.Y),
+                    transform loc_trans_buffer = new transform(new Vector2( x * cell_size - offset_x, y * cell_size - offset_y),
+                        new Vector2(cell_size),
                         0, //(float)utility.degree_to_radians(_rotations[random.Next(0, 3)]),
                         mobility.STATIC);
 
@@ -226,7 +227,8 @@ namespace Core {
 
 
         // ------------------------------------------ tiles ------------------------------------------
-        private readonly int tile_size = 800;     // 8 default_sprites fit in one tile
+        protected int cell_size = 50;
+        protected int tile_size = 8;     // 8 default_sprites fit in one tile
         private Dictionary<Vector2i, map_tile> map_tiles { get; set; } = new Dictionary<Vector2i, map_tile>();
 
     }
