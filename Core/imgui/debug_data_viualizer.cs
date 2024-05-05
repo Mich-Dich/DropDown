@@ -25,13 +25,13 @@ namespace Core.imgui {
 			ImGui.SetNextWindowPos(new Vector2(20, 20));
 			ImGui.Begin("debug_data_viualizer", window_flags);
 
-			ImGui.Text("Game general-debugger");
-			ImGui.Separator();
+            ImGui.Text("Game general-debugger");
+            ImGui.Separator();
 
-			imgui_util.begin_default_table("debug_data");
-			imgui_util.add_table_row_string("draw calls", $"{debug_data.draw_calls_num}");
-			imgui_util.add_table_row_string("collision checks", $"{debug_data.collision_checks_num}");
-
+            imgui_util.begin_default_table("general_debug_data");
+            imgui_util.add_table_row_string("draw calls", $"{debug_data.draw_calls_num}");
+            imgui_util.add_table_row_string("collision checks", $"{debug_data.collision_checks_num}");
+            imgui_util.add_table_row_string("chunks displayed", $"{debug_data.chuncks_displayed}");
             imgui_util.end_default_table();
 
 
@@ -39,12 +39,6 @@ namespace Core.imgui {
 
 
 
-			ImGui.SetNextWindowPos(new Vector2(665,350));
-			ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(0));
-			ImGui.Begin("test_helth_bar", window_flags);
-			ImGui.ProgressBar(0.8f, new Vector2(60, 5), "");
-			ImGui.End();
-			ImGui.PopStyleVar();
 
 
 		}

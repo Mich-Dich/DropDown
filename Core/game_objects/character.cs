@@ -1,6 +1,7 @@
 ﻿using Core.controllers;
 using Core.physics;
 using Core.util;
+using ImGuiNET;
 using OpenTK.Mathematics;
 
 namespace Core.game_objects {
@@ -39,6 +40,25 @@ namespace Core.game_objects {
         public override void hit(hit_data hit) {
 
             Console.WriteLine($"character [{this}] was hit");
+        }
+
+        public void display_helthbar() {
+
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
+                | ImGuiWindowFlags.NoDocking
+                | ImGuiWindowFlags.AlwaysAutoResize
+                | ImGuiWindowFlags.NoSavedSettings
+                | ImGuiWindowFlags.NoFocusOnAppearing
+                | ImGuiWindowFlags.NoNav
+                | ImGuiWindowFlags.NoMove;
+
+            ImGui.SetNextWindowPos(new System.Numerics.Vector2(665, 350));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(0));
+            ImGui.Begin("test_helth_bar", window_flags);
+            ImGui.ProgressBar(0.8f, new System.Numerics.Vector2(60, 5), "");
+            ImGui.End();
+            ImGui.PopStyleVar();
+            
         }
 
         // ================================================== private ==================================================

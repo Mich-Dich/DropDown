@@ -273,11 +273,9 @@ namespace Core {
 
         public int draw_calls_num = 0;
         public int collision_checks_num = 0;
+        public int chuncks_displayed = 0;
 
-        public debug_data() {
-            this.draw_calls_num = 0;
-            this.collision_checks_num = 0;
-        }
+        public debug_data() {}
     }
 
 
