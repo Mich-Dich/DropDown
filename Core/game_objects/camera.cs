@@ -60,6 +60,6 @@ namespace Core.game_objects
         // ========================================== private ========================================== 
 
         private float min_zoom = 0.3f;
-        private float max_zoom = 1.0f;
+        private float max_zoom = 2.0f;
     }
 }

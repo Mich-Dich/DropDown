@@ -3,8 +3,7 @@ using Core.util;
 using Core.visual;
 using OpenTK.Mathematics;
 
-namespace Core
-{
+namespace Core {
 
     public class map {
 
@@ -13,6 +12,9 @@ namespace Core
         public map() { }
 
         public Vector2 loc_tile_size { get; set; } = new Vector2(100, 100);
+
+        public int levelWidth { get; set; }
+        public int levelHeight { get; set; }
 
         public struct tile_data {
 
@@ -28,14 +30,14 @@ namespace Core
 
         public void draw() {
 
-            foreach (var tile in map_tiles.Values) {
+            foreach(var tile in map_tiles.Values) {
 
                 foreach(var sprite in tile.background) {
                     sprite.draw();
                 }
             }
 
-            for (int x = 0; x < backgound.Count; x++)
+            for(int x = 0; x < backgound.Count; x++)
                 backgound[x].draw();
 
             for(int x = 0; x < world.Count; x++)
@@ -75,22 +77,22 @@ namespace Core
         public void add_sprite(sprite sprite) { backgound.Add(sprite); }
 
         public void add_sprite(world_layer world_layer, sprite sprite) {
-            
-            if (sprite == null)
+
+            if(sprite == null)
                 return;
 
             switch(world_layer) {
-                case world_layer.None: break;
-                case world_layer.world:
-                    Console.WriteLine($"add_sprite() with argument [world_layer = world_layer.world] is not implemented yet");
-                    //world.Add(new game_object().set_sprite(sprite));
-                    break;
-                        
-                case world_layer.backgound: 
-                    backgound.Add(sprite); 
-                    break;
+            case world_layer.None: break;
+            case world_layer.world:
+            Console.WriteLine($"add_sprite() with argument [world_layer = world_layer.world] is not implemented yet");
+            //world.Add(new game_object().set_sprite(sprite));
+            break;
+
+            case world_layer.backgound:
+            backgound.Add(sprite);
+            break;
             }
-        
+
         }
 
 
@@ -105,7 +107,7 @@ namespace Core
 
             Vector2i key = new Vector2i((int)(position.X / tile_size), (int)(position.Y / tile_size));
             //Console.WriteLine($"tile key: {key}");
-            if (!map_tiles.ContainsKey(key)) {
+            if(!map_tiles.ContainsKey(key)) {
 
                 map_tiles.Add(key, new map_tile());
                 debug_data.num_of_tiels++;
@@ -134,7 +136,7 @@ namespace Core
 
             // ------------------------ SETUP ------------------------
             Texture texture_atlas = resource_manager.get_texture("assets/textures/terrain.png", false);
-            
+
             Random random = new Random();
             double missing_time_rate = 0f;
 
@@ -204,18 +206,18 @@ namespace Core
                             mobility.STATIC);
 
                         sprite tileSprite = new sprite(tileTransform, tilesetTexture)
-                            .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
+                                        .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
 
                         if(layerIndex == 0)
                             backgound.Add(tileSprite);
                         else
                             world.Add(new game_object(tileTransform).set_sprite(tileSprite));
-
-
                     }
                 }
+
             }
         }
+
 
         // ========================================== private ==========================================
 

@@ -109,6 +109,10 @@ namespace Core.util {
         public int TileHeight { get; set; }
         public List<TilesetData> Tilesets { get; set; }
         public List<LayerData> Layers { get; set; }
+
+        // New properties for actual level dimensions in pixels
+        public int LevelPixelWidth => Width * TileWidth;
+        public int LevelPixelHeight => Height * TileHeight;
     }
 
     public class LayerData {
