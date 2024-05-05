@@ -1,6 +1,7 @@
 ﻿using Core.game_objects;
 using Core.util;
 using Core.visual;
+using Core.physics;
 using OpenTK.Mathematics;
 
 namespace Core {
@@ -172,7 +173,6 @@ namespace Core {
         }
 
         public void LoadLevel(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath) {
-
             LevelData levelData = level_parser.ParseLevel(tmxFilePath, tsxFilePath);
             MapData mapData = levelData.Map;
             TilesetData tilesetData = levelData.Tileset;
@@ -183,22 +183,19 @@ namespace Core {
             int textureWidth = tilesetData.ImageWidth;
             int textureHeight = tilesetData.ImageHeight;
 
-            for(int layerIndex = 0; layerIndex < mapData.Layers.Count; layerIndex++) {
-                for(int y = 0; y < mapData.Height; y++) {
-                    for(int x = 0; x < mapData.Width; x++) {
-
+            for (int layerIndex = 0; layerIndex < mapData.Layers.Count; layerIndex++) {
+                for (int y = 0; y < mapData.Height; y++) {
+                    for (int x = 0; x < mapData.Width; x++) {
                         int tileGID = mapData.Layers[layerIndex].Tiles[x, y];
-                        if(tileGID <= 0)
+                        if (tileGID <= 0)
                             continue;
 
                         int tileIndex = tileGID - tilesetData.FirstGid;
-                        if(tileIndex < 0)
+                        if (tileIndex < 0)
                             continue;
 
                         int tileRow = tileIndex / tilesetColumns;
                         int tileColumn = tileIndex % tilesetColumns;
-
-                        Console.WriteLine($"Tile GID: {tileGID}, Index: {tileIndex}, Row: {tileRow + 1}, Column: {tileColumn + 1}");
 
                         transform tileTransform = new transform(
                             new Vector2(x * mapData.TileWidth, y * mapData.TileHeight),
@@ -207,15 +204,26 @@ namespace Core {
                             mobility.STATIC);
 
                         sprite tileSprite = new sprite(tileTransform, tilesetTexture)
-                                        .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
+                                            .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
 
-                        if(layerIndex == 0)
-                            backgound.Add(tileSprite);
-                        else
-                            world.Add(new game_object(tileTransform).set_sprite(tileSprite));
+                        if (tilesetData.CollidableTiles.ContainsKey(tileIndex) && tilesetData.CollidableTiles[tileIndex]) {
+                            Console.WriteLine($"Creating collider for tile at ({x}, {y})");
+                            game_object tileGameObject = new game_object(tileTransform)
+                                .set_sprite(tileSprite)
+                                .add_collider(new collider(collision_shape.Square));
+
+                            if (layerIndex == 0)
+                                backgound.Add(tileSprite);
+                            else
+                                world.Add(tileGameObject);
+                        } else {
+                            if (layerIndex == 0)
+                                backgound.Add(tileSprite);
+                            else
+                                world.Add(new game_object(tileTransform).set_sprite(tileSprite));
+                        }
                     }
                 }
-
             }
         }
 
