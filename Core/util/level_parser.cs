@@ -41,7 +41,8 @@ namespace Core.util {
                 for (int y = 0; y < height; y++) {
                     for (int x = 0; x < width; x++) {
                         int gid = Convert.ToInt32(gidStrings[y * width + x]);
-                        layerData.Tiles[x, y] = gid;
+                        // Automatically adjust the tile ID by subtracting 1 from each non-zero ID
+                        layerData.Tiles[x, y] = gid > 0 ? gid - 1 : gid;
                     }
                 }
                 layers.Add(layerData);

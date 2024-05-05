@@ -163,8 +163,7 @@ namespace Core.visual
             return this;
         }
 
-       public sprite select_texture_regionNew(int number_of_columns, int number_of_rows, int column_index, int row_index, int tileID, int textureWidth, int textureHeight) { // Added textureWidth and textureHeight parameters
-
+       public sprite select_texture_regionNew(int number_of_columns, int number_of_rows, int column_index, int row_index, int tileID, int textureWidth, int textureHeight) {
             float uvWidth = 1f / number_of_columns;
             float uvHeight = 1f / number_of_rows;
 
@@ -172,17 +171,17 @@ namespace Core.visual
             float v = (number_of_rows - row_index - 1) * uvHeight;
 
             // Bottom-left
-            _verticies[6] = u;
-            _verticies[7] = v + uvHeight;
-            // Bottom-right
-            _verticies[10] = u + uvWidth;
-            _verticies[11] = v + uvHeight;
-            // Top-right
-            _verticies[14] = u + uvWidth;
-            _verticies[15] = v;
-            // Top-left
             _verticies[2] = u;
             _verticies[3] = v;
+            // Bottom-right
+            _verticies[6] = u + uvWidth;
+            _verticies[7] = v;
+            // Top-right
+            _verticies[10] = u + uvWidth;
+            _verticies[11] = v + uvHeight;
+            // Top-left
+            _verticies[14] = u;
+            _verticies[15] = v + uvHeight;
 
             _vertex_buffer.update_content(_verticies);
             _vertex_array.add_buffer(_vertex_buffer, this.get_buffer_layout());
@@ -191,7 +190,6 @@ namespace Core.visual
             int pixelY = textureHeight - (int)((v + uvHeight) * textureHeight);
             int pixelWidth = (int)(uvWidth * textureWidth);
             int pixelHeight = (int)(uvHeight * textureHeight);
-
 
             Console.WriteLine($"Tile ID: {tileID}, Pixel Position - x: {pixelX}, y: {pixelY}, Size - width: {pixelWidth}, height: {pixelHeight}");
 
