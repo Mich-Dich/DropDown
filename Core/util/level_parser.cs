@@ -71,6 +71,20 @@ namespace Core.util {
             int imageWidth = Convert.ToInt32(tilesetElement.Element("image").Attribute("width").Value);
             int imageHeight = Convert.ToInt32(tilesetElement.Element("image").Attribute("height").Value);
 
+            // New: Parse custom properties for each tile
+            Dictionary<int, bool> collidableTiles = new Dictionary<int, bool>();
+            foreach (XElement tileElement in tilesetElement.Elements("tile")) {
+                int id = Convert.ToInt32(tileElement.Attribute("id").Value);
+                XElement propertiesElement = tileElement.Element("properties");
+                if (propertiesElement != null) {
+                    foreach (XElement property in propertiesElement.Elements("property")) {
+                        if (property.Attribute("name").Value == "collidable" && property.Attribute("value").Value == "true") {
+                            collidableTiles[id] = true;
+                        }
+                    }
+                }
+            }
+
             return new TilesetData {
                 Name = name,
                 TileWidth = tileWidth,
@@ -79,7 +93,8 @@ namespace Core.util {
                 Columns = columns,
                 ImageSource = imageSource,
                 ImageWidth = imageWidth,
-                ImageHeight = imageHeight
+                ImageHeight = imageHeight,
+                CollidableTiles = collidableTiles // Add this property to your TilesetData class
             };
         }
     }
@@ -98,8 +113,10 @@ namespace Core.util {
         public int TileCount { get; set; }
         public int Columns { get; set; }
         public string ImageSource { get; set; }
-        public int ImageWidth { get; set; } // Added property
-        public int ImageHeight { get; set; } // Added property
+        public int ImageWidth { get; set; }
+        public int ImageHeight { get; set; }
+        // New property to store collidable tile IDs
+        public Dictionary<int, bool> CollidableTiles { get; set; } = new Dictionary<int, bool>();
     }
 
     public class MapData {
