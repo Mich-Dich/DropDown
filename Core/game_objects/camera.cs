@@ -22,6 +22,18 @@ namespace Core.game_objects
             this.transform.size = window_size;
         }
 
+        public void set_main_min_zoom(float min, float max) {
+
+            this.min_zoom = min;
+            this.max_zoom = max;
+        }
+
+        public void add_zoom(float zoom) {
+
+            this.scale += zoom;
+            this.scale = Math.Clamp(this.scale, min_zoom, max_zoom);
+        }
+
         public Matrix4 get_projection_matrix() {
 
             float left = this.transform.position.X - (transform.size.X / 2f);
@@ -35,7 +47,9 @@ namespace Core.game_objects
             return orthographic_matrix * zoom_matrix;
         }
 
-        public override void hit(hit_data hit) { throw new NotImplementedException(); }
-    
+        // ========================================== private ========================================== 
+
+        private float min_zoom = 0.3f;
+        private float max_zoom = 1.0f;
     }
 }

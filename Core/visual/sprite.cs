@@ -1,19 +1,21 @@
 ﻿using Core.game_objects;
 using Core.renderer;
+using Core.util;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Core.visual {
+namespace Core.visual
+{
 
-    public class sprite : IAnimatable {
+    public class sprite : I_animatable, IDisposable {
 
         public transform transform { get; set; } = new();
         public shader? shader { get; set; }
-        public Texture? texture { get; set; }
+        public Texture texture { get; set; }
 
         // ------------------------------ animation ------------------------------
-        public animation? Animation { get; set; }
-        public Int32 CurrentFrameIndex { get; set; }
+        public animation? animation { get; set; }
+        public float animation_timer { get; set; } = 0;
 
         // =============================================== constructors =============================================== 
 
@@ -22,7 +24,7 @@ namespace Core.visual {
         public sprite(transform transform, Texture texture) {
             this.transform = transform;
             this.texture = texture;
-            //init();
+            init();
         }
 
         public sprite(Texture texture) {
@@ -31,7 +33,7 @@ namespace Core.visual {
         }
 
         public sprite(animation animation) {
-            this.Animation = animation;
+            this.animation = animation;
             init();
         }
 
@@ -44,67 +46,34 @@ namespace Core.visual {
             init();
         }
 
+        public void Dispose() {
+
+            throw new NotImplementedException();
+        }
+
         // =============================================== setters/getters =============================================== 
-        /*
-        //public void add_texture(string file_path) {
 
-        //    resource_manager.instance.load_texture(file_path);
-        //}
+        public sprite add_animation(animation animation) {
 
-        //public void add_texture(List<string> file_paths) {
-
-        //    foreach (string file_path in file_paths)
-        //        resource_manager.instance.load_texture(file_path);
-        //}
-
-        //// set translation in world
-        //public void set_position(Vector2 position) { 
-            
-        //    this.transform.position = position;
-        //    needs_update = true;
-        //}
-        
-        //public void set_size(Vector2 scale) { 
-
-        //    this.transform.size = scale;
-        //    needs_update = true;
-        //}
-        
-        //public void set_rotation(float rotation) {
-            
-        //    this.transform.rotation = rotation;
-        //    needs_update = true;
-        //}
-
-        //public void set_translation(Vector2 position, Vector2 scale, float rotation) {
-        
-        //    this.transform.position = position;
-        //    this.transform.size= scale;
-        //    this.transform.rotation = rotation;
-        //    needs_update = true;
-        //}
-        */
-
-        public sprite set_animation(animation animation) {
-
-            this.Animation = animation;
+            this.animation = animation;
             return this;
         }
 
-        public sprite set_animation(SpriteBatch sprite_batch, bool start_playing = false, int fps = 30, bool loop = false) {
+        public sprite add_animation(string path_to_directory, bool start_playing = false, bool is_pixel_art = false, int fps = 30, bool loop = false) {
 
-            this.Animation = new animation(this, fps, loop);
-            this.Animation.SpriteBatch = sprite_batch;
+            this.animation = new animation(this, new SpriteBatch(path_to_directory, is_pixel_art), fps, loop);
+            if(start_playing)
+                this.animation.play();
+            
             return this;
         }
 
-        public sprite set_animation(string path_to_directory, bool is_pixel_art = false, bool start_playing = false, int fps = 30, bool loop = false) {
+        public sprite add_animation(string path_to_texture_atlas, int num_of_rows, int num_of_columns, bool start_playing = false, bool is_pixel_art = false, int fps = 30, bool loop = false) {
 
-            this.Animation = new animation(this, fps, loop);
-            if(start_playing) {
-                this.Animation.Play();
-            }
-            this.Animation.SpriteBatch = new SpriteBatch(path_to_directory, is_pixel_art);
+            this.animation = new animation(this, resource_manager.get_texture(path_to_texture_atlas, is_pixel_art), num_of_rows, num_of_columns, fps, loop);
+            if(start_playing)
+                this.animation.play();
+            
             return this;
         }
 
@@ -119,23 +88,20 @@ namespace Core.visual {
 
         public void draw(Matrix4? model = null) {
 
-            if(this.shader == null || (this.texture == null && this.Animation == null))
+            if(this.shader == null || (this.texture == null && this.animation == null))
                 throw new NotImplementedException("Neither a texture nor an animation is assigned to the sprite. The sprite cannot be rendered.");
 
             // -------------------------------------- select display mode -------------------------------------- 
-            if(this.texture != null)
-                this.texture.Use(TextureUnit.Texture0);
+            
+            if(game.instance.show_debug) 
+                game.instance.debug_data.draw_calls_num++;
+            
 
-            else {
-                Texture frame = this.Animation.GetCurrentFrame();
-                frame.Use(TextureUnit.Texture0);
-                this.Animation.Update();
-            }
+            if (this.animation != null)
+                update_animation();
 
-            //else if(this.SpriteBatch != null) {
-            //    Texture frame = this.SpriteBatch.GetFrame(this.CurrentFrameIndex);
-            //    frame.Use(TextureUnit.Texture0);
-            //}
+            this.texture.Use(TextureUnit.Texture0);
+
 
             // -------------------------------------- bind data for draw -------------------------------------- 
             GL.Enable(EnableCap.Blend);
@@ -163,8 +129,10 @@ namespace Core.visual {
             GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
         }
 
+        // ======================================== animation ======================================== 
+
         public void update_animation() {
-            throw new NotImplementedException();
+            this.animation.update();
         }
 
         public sprite select_texture_region(int number_of_columns = 1, int number_of_rows = 1, int column_index = 0, int row_index = 0) {
@@ -177,40 +145,44 @@ namespace Core.visual {
             _verticies[2] = ((float)column_index / (float)number_of_columns) + (1.0f / (float)number_of_columns) - offset_x;
 
             // top - right
-            _verticies[8] = ((float)row_index / (float)number_of_rows) + (1.0f / (float)number_of_rows) - offset_y;
-            _verticies[7] = ((float)column_index / (float)number_of_columns) + (1.0f / (float)number_of_columns) - offset_x;
+            _verticies[7] = ((float)row_index / (float)number_of_rows) + (1.0f / (float)number_of_rows) - offset_y;
+            _verticies[6] = ((float)column_index / (float)number_of_columns) + (1.0f / (float)number_of_columns) - offset_x;
 
             // top - left
-            _verticies[13] = ((float)row_index / (float)number_of_rows) + (1.0f / (float)number_of_rows) - offset_y;
-            _verticies[12] = ((float)column_index / (float)number_of_columns) + offset_x;
+            _verticies[11] = ((float)row_index / (float)number_of_rows) + (1.0f / (float)number_of_rows) - offset_y;
+            _verticies[10] = ((float)column_index / (float)number_of_columns) + offset_x;
 
             // bottom - left
-            _verticies[18] = ((float)row_index / (float)number_of_rows) + offset_y;
-            _verticies[17] = ((float)column_index / (float)number_of_columns) + offset_x;
+            _verticies[15] = ((float)row_index / (float)number_of_rows) + offset_y;
+            _verticies[14] = ((float)column_index / (float)number_of_columns) + offset_x;
+
+
+            _vertex_buffer.update_content(_verticies);
+            _vertex_array.add_buffer(_vertex_buffer, this.get_buffer_layout());
 
             return this;
         }
 
         // ============================================ private  ============================================ 
-        private index_buffer    _index_buffer { get; set; }
-        private vertex_buffer   _vertex_buffer { get; set; }
-        private vertex_array    _vertex_array { get; set; }
+        private index_buffer    _index_buffer;
+        private vertex_buffer   _vertex_buffer;
+        private vertex_array    _vertex_array;
         private Matrix4         _model_matrix;
-        private bool            needs_update { get; set; } = true;
+        private bool needs_update { get; set; } = true;
 
         private float[] _verticies { get; set; } = {
-        //   x    y    UV.y  UV.x
-             1f,  1f,  1f,   1f,  1f,
-             1f, -1f,  1f,   0f,  1f,
-            -1f, -1f,  0f,   0f,  1f,
-            -1f,  1f,  0f,   1f,  1f,
+        //   x      y      UV.y  UV.x
+             0.5f,  0.5f,  1f,   0f,
+             0.5f, -0.5f,  1f,   1f,
+            -0.5f, -0.5f,  0f,   1f,
+            -0.5f,  0.5f,  0f,   0f,
         };
         private float[] _cooord_data = {
-        //   x    y
-             1f,  1f,
-             1f, -1f,
-            -1f, -1f,
-            -1f,  1f,
+        //   x      y
+             0.5f,  0.5f,
+             0.5f, -0.5f,
+            -0.5f, -0.5f,
+            -0.5f,  0.5f,
         };
         private float[] _UV_data = {
             1f, 1f,
@@ -218,7 +190,6 @@ namespace Core.visual {
             0f, 0f,
             0f, 1f,
         };
-        private int _texture_index = 0;
 
         private uint[] _indeices = {
             0, 1, 3,
@@ -239,6 +210,10 @@ namespace Core.visual {
             if(this.transform.mobility == mobility.STATIC)
                 _model_matrix = calc_modle_matrix();
 
+            if(texture == null) {
+                this.texture = resource_manager.get_texture("assets/defaults/default_grid.png");
+            }
+
             return this;
         }
 
@@ -246,14 +221,13 @@ namespace Core.visual {
 
             buffer_layout layout = new buffer_layout()
                 .add<float>(2)      // vertex coordinates
-                .add<float>(2)      // UV coordinates
-                .add<float>(1);     // texture_slot
+                .add<float>(2);     // UV coordinates
 
             return layout;
         }
 
         private Matrix4 calc_modle_matrix() {
-            
+
             Matrix4 trans = Matrix4.CreateTranslation(this.transform.position.X, this.transform.position.Y, 0);
             Matrix4 sca = Matrix4.CreateScale(this.transform.size.X, this.transform.size.Y, 0);
             Matrix4 rot = Matrix4.CreateRotationZ(this.transform.rotation);

@@ -1,11 +1,5 @@
 ﻿using Core.game_objects;
-using Core.util;
-using System.Drawing;
-using OpenTK;
-//using System.Numerics;
-
 using OpenTK.Mathematics;
-using Core.physics;
 
 namespace Core.physics {
 
@@ -20,10 +14,138 @@ namespace Core.physics {
     }
 
     // first game_object is the main object to consider, the second is the compare and will be set as the hit_object
-
     public class collision_engine {
 
         public collision_engine() { }
+
+        public void update(List<game_object> all_objects, float delta_time) {
+
+            hit_data current = new hit_data();
+
+            for (int x = 0; x < all_objects.Count; x++) {
+                for(int y = 0; y < all_objects.Count; y++) {
+
+
+                    if(game.instance.show_debug)
+                        game.instance.debug_data.collision_checks_num++;
+
+
+                    // update position
+                    if(all_objects[x].collider != null && all_objects[x].transform.mobility != mobility.STATIC) {
+                        all_objects[x].collider.velocity /= 1 + all_objects[x].collider.material.dynamicFriction;
+                        all_objects[x].transform.position += all_objects[x].collider.velocity * delta_time;
+                    }
+
+                    // Skip unneeded
+                    if(all_objects[x] == all_objects[y] ||
+                        (all_objects[x].transform.mobility == mobility.STATIC && all_objects[y].transform.mobility == mobility.STATIC))
+                        continue;
+
+                    if(all_objects[x].collider == null || all_objects[y].collider == null)
+                        continue;
+
+
+                    if(all_objects[x].collider.shape == collision_shape.Circle) {
+                        if(all_objects[y].collider.shape == collision_shape.Circle)
+                            current = collision_circle_circle(all_objects[x], all_objects[y]);
+                        else if(all_objects[y].collider.shape == collision_shape.Square)
+                            current = collision_circle_AABB(all_objects[x], all_objects[y]);
+                    }
+                    else if(all_objects[x].collider.shape == collision_shape.Square) {
+                        if(all_objects[y].collider.shape == collision_shape.Circle)
+                            current = collision_circle_AABB(all_objects[y], all_objects[x]);
+                        else if(all_objects[y].collider.shape == collision_shape.Square)
+                            current = collision_AABB_AABB(all_objects[x], all_objects[y]);
+                    }
+
+                    // early exit
+                    if(!current.is_hit)
+                        continue;
+
+
+                    // proccess hit => change position, velocity ...
+                    float total_mass = all_objects[x].collider.mass + all_objects[y].collider.mass;
+                    if(all_objects[x].transform.mobility != mobility.STATIC) {
+
+                        all_objects[x].transform.position -= current.hit_direction; // * (all_objects[y].collider.mass / total_mass) * all_objects[y].collider.material.bounciness;
+                        all_objects[x].collider.velocity -= current.hit_direction * (all_objects[y].collider.mass / total_mass);// * all_objects[y].collider.material.bounciness;
+                        all_objects[x].hit(current);
+                    }
+
+                    if(all_objects[y].transform.mobility != mobility.STATIC) {
+
+                        all_objects[y].transform.position += current.hit_direction;// * (all_objects[x].collider.mass / total_mass) * all_objects[x].collider.material.bounciness;
+                        all_objects[y].collider.velocity += current.hit_direction * (all_objects[x].collider.mass / total_mass);// * all_objects[x].collider.material.bounciness;
+                        all_objects[y].hit(current);
+                    }
+                }
+            }
+        }
+
+        private hit_data collision_AABB_AABB(game_object AABB, game_object AABB_2) {
+
+            hit_data hit = new hit_data();
+            if(AABB.transform.position.X < AABB_2.transform.position.X + AABB_2.transform.size.X 
+                && AABB.transform.position.X + AABB.transform.size.X > AABB_2.transform.position.X
+                && AABB.transform.position.Y < AABB_2.transform.position.Y + AABB_2.transform.size.Y
+                && AABB.transform.position.Y + AABB.transform.size.Y > AABB_2.transform.position.Y) {
+
+                hit.is_hit = true;
+                hit.hit_position = AABB.transform.position;
+                hit.hit_object = AABB_2;
+            }
+
+            return hit;
+        }
+
+        private hit_data collision_circle_circle(game_object circle1, game_object circle2) {
+
+            hit_data hit = new hit_data();
+            Vector2 insection_direction = circle1.transform.position - circle2.transform.position;
+            if (insection_direction.Length <
+                ((circle1.transform.size.X / 2) + (circle1.collider.offset.size.X / 2))
+                + ((circle2.transform.size.X / 2) + (circle2.collider.offset.size.X / 2))) {
+
+                float intersect_distance = insection_direction.Length -((circle1.transform.size.X / 2) + (circle2.transform.size.X / 2));
+
+                hit.hit_direction = insection_direction * (intersect_distance * 0.002f);
+                hit.is_hit = true;
+                hit.hit_position = circle1.transform.position;
+                hit.hit_object = circle2;
+            }
+
+            return hit;
+        }
+
+        private hit_data collision_circle_AABB(game_object circle, game_object AABB) {
+
+            hit_data hit = new hit_data();
+
+            float nearest_point_x = Math.Clamp(circle.transform.position.X,
+                AABB.transform.position.X - (AABB.transform.size.X / 2),
+                AABB.transform.position.X + (AABB.transform.size.X / 2));
+
+            float nearest_point_y = Math.Clamp(circle.transform.position.Y,
+                AABB.transform.position.Y - (AABB.transform.size.Y / 2),
+                AABB.transform.position.Y + (AABB.transform.size.Y / 2));
+
+            Vector2 nearestPoint = new Vector2(nearest_point_x, nearest_point_y);
+            Vector2 centerToNearest = nearestPoint - circle.transform.position;
+
+            float overlap = ((circle.transform.size.X / 2) + (circle.collider.offset.size.X/2));
+            if (nearestPoint != circle.transform.position)
+                overlap -= centerToNearest.Length;
+            
+            if (overlap < 0)    // not hit
+                return hit;
+
+            hit.hit_direction = centerToNearest.Normalized() * overlap;
+            hit.is_hit = true;
+            hit.hit_position = circle.transform.position;
+            hit.hit_object = AABB;
+            return hit;
+        }
+
 
         /*
         // --------------------------------------- static - static --------------------------------------- 

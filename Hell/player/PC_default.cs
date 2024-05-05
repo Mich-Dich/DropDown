@@ -1,11 +1,6 @@
 ﻿using Core.controllers.player;
 using Core.input;
 using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hell {
 
@@ -34,9 +29,9 @@ namespace Hell {
 
         }
 
-        protected override void update() {
+        protected override void update(float delta_time) {
 
-            player.transform.position += ((Vector2)move.get_value() * 10);
+            player.add_velocity(((Vector2)move.get_value() * player.movement_speed) * delta_time);
         }
 
     }

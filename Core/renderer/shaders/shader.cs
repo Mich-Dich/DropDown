@@ -1,6 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Numerics;
 
 namespace Core.renderer {
 
@@ -87,12 +86,24 @@ namespace Core.renderer {
 
             GL.UseProgram(programm_id);
         }
+        
+        public void SetUniform(string name, Vector3 value) {
+            int location = GL.GetUniformLocation(programm_id, name);
+            GL.Uniform3(location, value);
+        }
+
+        public void set_uniform(string name, Vector4 value) {
+            int location = GL.GetUniformLocation(programm_id, name);
+            GL.Uniform4(location, value);
+        }
 
         public void set_matrix_4x4(string uniform_name, Matrix4 mat) {
-
             int location = GL.GetUniformLocation(programm_id, uniform_name);
             GL.UniformMatrix4(location, 1, false, get_matrix4_values(mat));
+        }
 
+        public int GetAttribLocation(string attribName) {
+            return GL.GetAttribLocation(programm_id, attribName);
         }
 
         public float[] get_matrix4_values(Matrix4 mat) {
@@ -109,16 +120,25 @@ namespace Core.renderer {
 
             string vert_path = "assets/" + vertex_shader_path;
             if(!File.Exists(vert_path))
-                Console.WriteLine("Error - path not valid: [{0}]", vert_path);
+                throw new FileNotFoundException(vert_path);
 
             string frag_path = "assets/" + fragment_shader_path;
             if(!File.Exists(frag_path))
-                Console.WriteLine("Error - path not valid: [{0}]", frag_path);
+                throw new FileNotFoundException(frag_path);
 
             string vert_shader = File.ReadAllText(vert_path );
             string frag_shader = File.ReadAllText(frag_path);
 
             return new shader_programm_source(vert_shader, frag_shader );
+        }
+
+        public void dispose() {
+            GL.DeleteProgram(programm_id);
+        }
+
+        public void unbind()
+        {
+            GL.UseProgram(0);
         }
 
         public int get_uniform_location(string name) => _uniforms[name];

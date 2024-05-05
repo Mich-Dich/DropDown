@@ -1,15 +1,24 @@
 ﻿using Core.game_objects;
-using Core.manager;
+using Core.util;
+using Core.visual;
+using Core.physics;
+using OpenTK.Mathematics;
+using Core.physics.material;
 
 namespace Hell {
 
     public class player : character {
 
         public player() {
+            this.transform.size = new Vector2(100);
+            set_sprite(new sprite(resource_manager.get_texture("assets/textures/Spaceship/Spaceship.png", true)));
+            add_collider(new collider(collision_shape.Circle));
+            
+            this.movement_speed = 100.0f;
+        }
 
-            this.transform.size = new OpenTK.Mathematics.Vector2(50);
-            this.transform.rotation = float.Pi;
-            add_sprite(new Core.visual.sprite(ResourceManager.GetTexture("assets/textures/Spaceship/Spaceship.png")));
+        public override void hit(hit_data hit) {
+            //Console.WriteLine("Player collided with an object");
         }
 
     }

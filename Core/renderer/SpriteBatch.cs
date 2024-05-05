@@ -1,8 +1,8 @@
-﻿
-using Core.manager;
+﻿using Core.util;
 
-namespace Core {
-    
+namespace Core
+{
+
     public class SpriteBatch {
         
         private List<Texture> frames;
@@ -14,7 +14,7 @@ namespace Core {
 
             this.frames = new List<Texture>();
             foreach(string imagePath in imagePaths) 
-                this.frames.Add(ResourceManager.GetTexture(imagePath, isPixelArt));
+                this.frames.Add(resource_manager.get_texture(imagePath, isPixelArt));
             
         }
 
