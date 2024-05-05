@@ -195,10 +195,10 @@ namespace Core.visual
             int pixelWidth = (int)(uvWidth * textureWidth);
             int pixelHeight = (int)(uvHeight * textureHeight);
 
-            Console.WriteLine($"Tile ID: {tileID}, Pixel Position - x: {pixelX}, y: {pixelY}, Size - width: {pixelWidth}, height: {pixelHeight}");
+            //Console.WriteLine($"Tile ID: {tileID}, Pixel Position - x: {pixelX}, y: {pixelY}, Size - width: {pixelWidth}, height: {pixelHeight}");
 
-            return this;
-        }
+    return this;
+}
 
         // ============================================ private  ============================================ 
         private index_buffer    _index_buffer;
