@@ -33,22 +33,35 @@ namespace Core.physics {
 
 
                     // update position
-                    if((all_objects[x].collider != null) && (all_objects[x].transform.mobility != mobility.STATIC) && (!finished_objects.Contains(all_objects[y]))) {
+                    if((all_objects[x].collider != null) 
+                        && (all_objects[x].transform.mobility != mobility.STATIC) 
+                        && (!finished_objects.Contains(all_objects[y]))) {
+                        
                         all_objects[x].collider.velocity /= 1 + all_objects[x].collider.material.friction;
                         all_objects[x].transform.position += all_objects[x].collider.velocity * delta_time;
                     }
 
                     // Skip unneeded
-                    if(all_objects[x] == all_objects[y] ||
-                        (all_objects[x].transform.mobility == mobility.STATIC && all_objects[y].transform.mobility == mobility.STATIC))
+                    if(all_objects[x] == all_objects[y] 
+                        || (all_objects[x].transform.mobility == mobility.STATIC && all_objects[y].transform.mobility == mobility.STATIC))
                         continue;
 
-                    if(all_objects[x].collider == null || all_objects[y].collider == null || finished_objects.Contains(all_objects[y]))
+                    if(all_objects[x].collider == null 
+                        || all_objects[y].collider == null 
+                        || finished_objects.Contains(all_objects[y]))
                         continue;
 
 
-                    if(game.instance.show_debug)
+                    if(game.instance.show_debug) {
+
                         debug_data.collision_checks_num++;
+
+                        if(all_objects[x].transform.mobility == mobility.STATIC)
+                            debug_data.colidable_objects_static++;
+                        else
+                            debug_data.colidable_objects_dynamic++;
+                    }
+
 
                     if(all_objects[x].collider.shape == collision_shape.Circle) {
                         if(all_objects[y].collider.shape == collision_shape.Circle)
@@ -72,14 +85,14 @@ namespace Core.physics {
 
                     // proccess hit => change position, velocity ...
                     float total_mass = all_objects[x].collider.mass + all_objects[y].collider.mass;
-                    if(all_objects[x].transform.mobility != mobility.STATIC) {
+                    if(all_objects[x].transform.mobility != mobility.STATIC || all_objects[x].collider.offset.mobility != mobility.STATIC) {
 
                         all_objects[x].transform.position -= current.hit_direction; // * (all_objects[y].collider.mass / total_mass) * all_objects[y].collider.material.bounciness;
                         all_objects[x].collider.velocity -= current.hit_direction * (all_objects[y].collider.mass / total_mass);// * all_objects[y].collider.material.bounciness;
                         all_objects[x].hit(current);
                     }
 
-                    if(all_objects[y].transform.mobility != mobility.STATIC) {
+                    if(all_objects[y].transform.mobility != mobility.STATIC || all_objects[y].collider.offset.mobility != mobility.STATIC) {
 
                         all_objects[y].transform.position += current.hit_direction;// * (all_objects[x].collider.mass / total_mass) * all_objects[x].collider.material.bounciness;
                         all_objects[y].collider.velocity += current.hit_direction * (all_objects[x].collider.mass / total_mass);// * all_objects[x].collider.material.bounciness;
@@ -111,7 +124,7 @@ namespace Core.physics {
 
                 AABB.transform.position += hit.hit_direction;
 
-                Vector2 moveDirection = AABB.transform.position - prevPosition;
+                Vector2 moveDirection = prevPosition - AABB.transform.position;
 
                 if (Vector2.Dot(moveDirection, hit.hit_direction) < 0) {
                     hit.hit_direction = -hit.hit_direction;

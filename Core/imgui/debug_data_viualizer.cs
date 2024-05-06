@@ -41,7 +41,10 @@ namespace Core.imgui {
 
             imgui_util.add_table_row("collision checks", $"{debug_data.collision_checks_num}");
             imgui_util.add_table_row("colidable objects", $"{debug_data.colidable_objects}");
-            imgui_util.end_default_table();
+            imgui_util.add_table_row("colliders static", $"{debug_data.colidable_objects_static}");
+            imgui_util.add_table_row("colliders dynamic", $"{debug_data.colidable_objects_dynamic}");
+
+        imgui_util.end_default_table();
 
 
             ImGui.End();

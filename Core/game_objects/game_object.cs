@@ -41,13 +41,17 @@ namespace Core.game_objects
 
         public game_object add_collider(collider collider) {
             this.collider = collider;
+            this.collider.offset.mobility = this.transform.mobility;
             return this;
         }
 
         public game_object set_mobility(mobility mobility) {
+            
             this.transform.mobility = mobility;
             if (this.sprite != null)
                 this.sprite.set_mobility(mobility);
+            if(this.collider != null)
+                this.collider.offset.mobility = mobility;
             return this;
         }
 
