@@ -44,7 +44,9 @@ namespace Core.visual {
             this.transform.mobility = mobility;
             init();
         }
-
+        ~sprite() {
+            Console.WriteLine($"DESTUCTOR");
+        }
         public void Dispose() {
 
             throw new NotImplementedException();
@@ -238,7 +240,7 @@ namespace Core.visual {
                 this.shader = game.instance.default_sprite_shader;
 
             _vertex_buffer = new vertex_buffer(_verticies);
-            //_vertex_buffer.bind();
+            _vertex_buffer.bind();
             _vertex_array = new();
             _vertex_array.add_buffer(_vertex_buffer, this.get_buffer_layout());
             _index_buffer = new index_buffer(_indeices);

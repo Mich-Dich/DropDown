@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Core.renderer {
 
-    public class vertex_array : i_buffer {
+    public class vertex_array : i_buffer, IDisposable {
 
         public int id { get; private set; }
 
@@ -12,13 +12,13 @@ namespace Core.renderer {
             id = GL.GenVertexArray();
         }
 
-        ~vertex_array() {
+        private bool disposed = false;
+        public void Dispose() {
 
-            if(id == 0)
-                return;
-
-            GL.DeleteVertexArray(id);
-            id = 0;
+            if(disposed)
+                GL.DeleteVertexArray(id);
+            
+            disposed = true;
         }
 
         public void add_buffer(vertex_buffer buffer, buffer_layout layout) {
@@ -46,5 +46,6 @@ namespace Core.renderer {
 
             GL.BindVertexArray(0);
         }
+
     }
 }

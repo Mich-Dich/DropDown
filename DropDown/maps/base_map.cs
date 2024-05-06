@@ -111,14 +111,14 @@ namespace Hell {
             imgui_util.add_table_row("Total duration", $"{bit_map_generation_duration + map_generation_duration} ms");
             imgui_util.end_default_table();
 
-            if(map_generation_duration != 0)
-                ImGui.BeginDisabled();
+            //if(map_generation_duration != 0)
+            //    ImGui.BeginDisabled();
 
             if(ImGui.Button("Generate actual map from bit-map"))
                 generate_actual_map();
 
-            if(map_generation_duration != 0)
-                ImGui.EndDisabled();
+            //if(map_generation_duration != 0)
+            //    ImGui.EndDisabled();
 
             ImGui.End();
         }

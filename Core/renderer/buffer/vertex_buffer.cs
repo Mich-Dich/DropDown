@@ -2,7 +2,7 @@
 
 namespace Core.renderer {
 
-    public class vertex_buffer : i_buffer {
+    public class vertex_buffer : i_buffer, IDisposable {
 
         public int id { get; private set; }
 
@@ -14,9 +14,13 @@ namespace Core.renderer {
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        ~vertex_buffer() {
+        private bool _disposed = false;
+        public void Dispose() {
+
+            if(!_disposed) 
+                GL.DeleteBuffer(id);
             
-            GL.DeleteBuffer(id);
+            _disposed = true;
         }
 
         public void update_content(float[] vertices) {
@@ -36,5 +40,6 @@ namespace Core.renderer {
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
+
     }
 }

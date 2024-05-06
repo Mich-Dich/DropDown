@@ -25,7 +25,16 @@ namespace DropDown {
             this.active_map = new base_map();
             this.camera.set_min_max_zoom(0f, 10.9f);
 
-            //sprite garbage_test = new sprite();
+            float[] vertices = [0f, 0f, 0f, 0f];
+
+            int id = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, id);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.DeleteBuffer(id);
+
+
+            sprite garbage_test = new sprite();
 
             //var ai_controller = new AI_default();
             //ai_controller.register_state(new List<Type> { typeof(default_waling_state) });
