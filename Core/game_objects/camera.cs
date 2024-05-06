@@ -1,4 +1,5 @@
 ﻿using Core.physics;
+using Core.util;
 using OpenTK.Mathematics;
 using System.Drawing;
 
@@ -66,6 +67,19 @@ namespace Core.game_objects
             Matrix4 zoom_matrix = Matrix4.CreateScale(scale, scale, 1);
 
             return orthographic_matrix * zoom_matrix;
+        }
+
+        public bool IsInView(transform transform)
+        {
+            Vector2 position = transform.position;
+            Vector2 size = transform.size;
+            Vector2 cameraPosition = this.transform.position;
+            Vector2 cameraSize = this.transform.size;
+
+            return position.X < cameraPosition.X + cameraSize.X / 2 &&
+                position.X + size.X > cameraPosition.X - cameraSize.X / 2 &&
+                position.Y < cameraPosition.Y + cameraSize.Y / 2 &&
+                position.Y + size.Y > cameraPosition.Y - cameraSize.Y / 2;
         }
 
         //Vector2 convertScreenToWorldCoords(float x, float y) {
