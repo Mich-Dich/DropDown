@@ -93,7 +93,7 @@ namespace Hell {
 
             // display bit map
             for(int x = 0; x < 64; x++) {
-                for(int y = 0; y < 64; y++) {
+                for(int y = 63; y >= 0 ; y--) {
 
                     UInt64 currentBit = (floor_layout[x] >> y) & 1;
 
@@ -103,12 +103,31 @@ namespace Hell {
                         (currentBit == 0) ? col_black : col_white);
                 }
             }
-            
+
+            // display bit map
+            uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
+            for(int x = 1; x < 8; x++) {
+
+                // draw X-Axis Line
+                draw_list.AddLine(
+                    wondopw_pos + new System.Numerics.Vector2(0, x * tile_display_size * 8),
+                    wondopw_pos + new System.Numerics.Vector2(64 * tile_display_size, x * tile_display_size * 8),
+                    col_red);
+
+                // draw Y-Axis Line
+                draw_list.AddLine(
+                    wondopw_pos + new System.Numerics.Vector2(x * tile_display_size * 8, 0),
+                    wondopw_pos + new System.Numerics.Vector2(x * tile_display_size * 8, 64 * tile_display_size),
+                    col_red);
+
+            }
+
+
             // show player position
             draw_list.AddRectFilled(
-                        wondopw_pos + new System.Numerics.Vector2(32 * tile_display_size, 32 * tile_display_size),
-                        wondopw_pos + new System.Numerics.Vector2((32 + 1) * tile_display_size, (32 + 1) * tile_display_size),
-                        ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.9f, 0.2f, 1)));
+                wondopw_pos + new System.Numerics.Vector2(32 * tile_display_size, 32 * tile_display_size),
+                wondopw_pos + new System.Numerics.Vector2((32 + 1) * tile_display_size, (32 + 1) * tile_display_size),
+                ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.9f, 0.2f, 1)));
 
             imgui_util.shift_cursor_pos(0,64 * tile_display_size + 5);
 
@@ -116,7 +135,7 @@ namespace Hell {
             imgui_util.add_table_row("Bit-map generation duration", $"{bit_map_generation_duration} ms");
             imgui_util.add_table_row("convert to actual map duration", $"{map_generation_duration} ms");
             imgui_util.add_table_row("collision generation", $"{collision_generation_duration} ms");
-            imgui_util.add_table_row("Total duration", $"{bit_map_generation_duration + map_generation_duration} ms");
+            imgui_util.add_table_row("Total duration", $"{bit_map_generation_duration + map_generation_duration + collision_generation_duration} ms");
             imgui_util.end_default_table();
 
             if(ImGui.Button("Generate actual map from bit-map"))
@@ -130,70 +149,185 @@ namespace Hell {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
+            // --------------------------- spawn sprites --------------------------- 
             force_clear_map_tiles();
             const int totalBits = sizeof(UInt64) * 8;
             for(int x = 0; x < totalBits; x++) {
-                for(int y = totalBits - 1; y >= 0; y--) {
+                for(int y = 0; y < totalBits; y++) {
 
                     // Extract bits of current X
                     UInt64 currentBit = (floor_layout[x] >> y) & 1;
 
-                    if(currentBit == 1) {
+                    if(currentBit == 1)
+                        continue;
 
-                        this.add_game_object(
-                            new game_object(
-                                new Vector2((y - totalBits / 2) * this.cell_size, (x - totalBits / 2) * this.cell_size),
-                                new Vector2(this.cell_size),
-                                0,
-                                mobility.STATIC)
-                            .add_collider(new collider(collision_shape.Square)));
-                    }
-
-                    else {
-
-                        this.add_background_sprite(
-                            new sprite(resource_manager.get_texture("assets/textures/terrain.png")).select_texture_region(32, 64, 1, 60 ),
-                            new Vector2((y - totalBits/2) * this.cell_size, (x - totalBits/2) * this.cell_size));
-                    }
+                    this.add_background_sprite(
+                        new sprite(texture_buffer).select_texture_region(32, 64, 1, 60 ),
+                        new Vector2((y - totalBits/2) * this.cell_size, (x - totalBits/2) * this.cell_size));
 
                 }
             }
 
             stopwatch.Stop();
             map_generation_duration = stopwatch.Elapsed.TotalMilliseconds;
+            stopwatch.Reset();
             stopwatch.Start();
 
-            UInt64[] loc_buffer = floor_layout;
-            
+            // --------------------------- generate collision --------------------------- 
+
+            for(int x = 0; x < totalBits / tile_size; x++) {
+                for(int y = 0; y < totalBits / tile_size; y++) {
+
+                    Vector2 tile_offset = new Vector2(
+                        ((x- ((totalBits / tile_size)/2)) * (this.tile_size * this.cell_size)),
+                        ((y- ((totalBits / tile_size)/2)) * (this.tile_size * this.cell_size)));
+                    Console.WriteLine($"---------------------------- tile_offset: {tile_offset}");
+
+
+                    // Display each byte in the array as a binary string
+                    byte[] current_tile = get8x8_block(x, y);
+                    for(int z = 0; z < current_tile.Length; z++) {
+
+                        //if(current_tile[z] == 0)
+                        //    continue;
+
+                        // repeat untill all bit are 0 in this byte (auto skips empty bytes)
+                        while(current_tile[z] != 0) {
+
+                            // --------------- find block of ones --------------- 
+                            byte buffer = current_tile[z];
+                            int firstOneIndex = -1;
+                            int target_count = 0;                               // used as X value of size
+                            int row_counter = 1;                                // used as Y value of size
+
+                            // --------------- calc max size.X of collider --------------- 
+                            for(int i = 0; i < 8; i++) {
+                                if((buffer & (1 << i)) == 0)
+                                    continue;
+
+                                firstOneIndex = i;
+                                target_count = count_number_of_following_ones(buffer, firstOneIndex);
+                                break;
+                            }
+                            Console.WriteLine($"firstOneIndex: {firstOneIndex}   subsequentOnesCount: {target_count}");
+                            
+                            // --------------- calc max size.Y of collider --------------- 
+                            int questionable_count = 0;
+                            do {
+
+                                if(z + 1 > 7)
+                                    break;
+                                
+                                questionable_count = count_number_of_following_ones(current_tile[z + row_counter], firstOneIndex);
+                                if(questionable_count < target_count)
+                                    break;
+
+                                row_counter++;
+
+                            } while((z + row_counter) < current_tile.Length && questionable_count >= target_count);
+                            Console.WriteLine($"loop ended       size of collider: {target_count}/{row_counter}");
+
+                            Vector2 collider_tile_offset = new Vector2(
+                                (this.cell_size * -0.5f) + firstOneIndex * this.cell_size,
+                                (this.cell_size * -0.5f) + z * this.cell_size
+                                );
+
+                            // --------------- add collider --------------- 
+                            this.add_game_object(
+                                new game_object(
+                                    tile_offset + collider_tile_offset + new Vector2((target_count * this.cell_size) / 2, (row_counter * this.cell_size) / 2),
+                                    new Vector2(target_count * this.cell_size, row_counter * this.cell_size),
+                                    0,
+                                    mobility.STATIC)
+                                .add_collider(new collider(collision_shape.Square)));
+
+                            // --------------- set used values to 0 --------------- 
+                            byte reset_mask = SetBits(firstOneIndex, target_count);
+                            for(int i = 0; i < row_counter; i++) 
+                                current_tile[z + i] = (byte)(current_tile[z + i] & ~reset_mask);
+
+                        }
+
+                    }
+                }
+            }
+
+
 
             stopwatch.Stop();
             collision_generation_duration = stopwatch.Elapsed.TotalMilliseconds;
         }
 
-        public UInt64[,] Get8x8Block(int startRow, int startCol) {
+        private static byte SetBits(int start_index, int count) {
 
+            // Create an empty byte (all bits set to 0)
+            byte result = 0;
+
+            byte mask = (byte)((1 << count) - 1);   // Creates a sequence of 'count' ones
+            mask <<= start_index;                   // Shift the mask to the left by 'start_index' positions
+
+            result |= mask;
+
+
+
+            return result;
+        }
+
+        private int count_number_of_leading_ones(byte target) {
+
+            int count = 0;
+            byte buffer = target;
+            byte mask = 0x01; // Start with the least significant bit (LSB) mask
+
+            // Iterate over each bit of the byte value
+            while((buffer & mask) != 0) {
+                count++; // Increment the count for each '1' encountered
+                mask <<= 1; // Shift the mask to the left to check the next bit
+            }
+            return count;
+        }
+
+        private int count_number_of_following_ones(byte target, int index_of_first_one) {
+
+            int count = 0;
+            byte buffer = target;
+            byte mask = 0x01; // Start with the least significant bit (LSB) mask
+            mask <<= index_of_first_one;
+            int buffer_index = index_of_first_one;
+
+            // Iterate over each bit of the byte value
+            while((buffer & mask) != 0 && buffer_index < 8) {
+                count++; // Increment the count for each '1' encountered
+                mask <<= 1; // Shift the mask to the left to check the next bit
+            }
+            return count;
+        }
+
+        private byte[] get8x8_block(int tile_index_x, int tile_index_y) {
+
+            const int loc_tile_size = 8;
             const int totalBits = sizeof(UInt64) * 8;
-            if(startRow < 0 || startRow > totalBits - 8 || startCol < 0 || startCol > totalBits - 8) 
+            if(tile_index_x < 0 || tile_index_x > (totalBits/loc_tile_size) || tile_index_y < 0 || tile_index_y > (totalBits/loc_tile_size)) 
                 throw new ArgumentException("Invalid startRow or startCol for extracting 8x8 block.");
-            
 
-            UInt64[,] block = new UInt64[8, 8];
 
             // Iterate over the rows of the 8x8 block
-            for(int i = 0; i < 8; i++) {
-                // Get the corresponding UInt64 element from floor_layout
-                UInt64 rowElement = floor_layout[startRow + i];
+            UInt64 int_buffer = 0;
+            byte[] block = new byte[8];
+            for(int x = 0; x < 8; x++) {
 
-                // Iterate over the columns of the 8x8 block
-                for(int j = 0; j < 8; j++) {
-                    // Extract the bit at the specific position within the UInt64 element
-                    int bitPosition = startCol + j;
-                    bool isCellSet = ((rowElement >> bitPosition) & 1) == 1;
-
-                    // Set the corresponding value in the block array
-                    block[i, j] = isCellSet ? 1UL : 0UL;
-                }
+                int_buffer = floor_layout[(tile_index_y*loc_tile_size) + x];
+                block[x] = (byte)((int_buffer >> (tile_index_x * 8)) & 0xFF);
             }
+
+            //// Display each byte in the array as a binary string
+            //for(int i = 0; i < block.Length; i++) {
+                
+            //    string binaryString = Convert.ToString(block[i], 2).PadLeft(8, '0');
+            //    string displayString = binaryString.Replace('0', ' ').Replace('1', 'X');
+            //    Console.WriteLine(displayString);
+            //}
+            //Console.WriteLine();
 
             return block;
         }
@@ -214,7 +348,7 @@ namespace Hell {
 
             stopwatch.Stop();
             bit_map_generation_duration = stopwatch.Elapsed.TotalMilliseconds;
-            
+
         }
 
         private void generate_random_64x64_bit_map() {
@@ -222,7 +356,6 @@ namespace Hell {
             for(int x = 0; x < 64; x++) {
 
                 floor_layout[x] = generate_random_UInt64_with_density(inital_density);
-                //log_u64(floor_layout[x]);
             }
 
         }
@@ -293,6 +426,7 @@ namespace Hell {
         private UInt64[] floor_layout_buffer = new UInt64[64];
         private UInt64[] floor_layout = new UInt64[64];
         private readonly UInt64 map_bit_mask = 0xEFFFFFFFFFFFFFFE; // Binary: 01111111 11111111 11111111 11111111 11111111 11111111 11111111 11111110
+        private Texture texture_buffer = resource_manager.get_texture("assets/textures/terrain.png");
 
         private void log_u64(UInt64 number) {
 
