@@ -6,6 +6,7 @@ using OpenTK.Mathematics;
 namespace Core.util {
     public class level_parser {
         public static LevelData ParseLevel(string tmxFilePath, string tsxFilePath) {
+
             MapData mapData = ParseTMX(tmxFilePath);
             TilesetData tilesetData = ParseTSX(tsxFilePath);
 
@@ -16,6 +17,7 @@ namespace Core.util {
         }
 
         private static MapData ParseTMX(string tmxFilePath) {
+
             XDocument doc = XDocument.Load(tmxFilePath);
             XElement mapElement = doc.Element("map");
 
@@ -49,6 +51,7 @@ namespace Core.util {
             }
 
             return new MapData {
+                
                 Width = width,
                 Height = height,
                 TileWidth = tileWidth,
@@ -59,6 +62,7 @@ namespace Core.util {
         }
 
         private static TilesetData ParseTSX(string tsxFilePath) {
+
             XDocument doc = XDocument.Load(tsxFilePath);
             XElement tilesetElement = doc.Element("tileset");
 
@@ -74,18 +78,21 @@ namespace Core.util {
             // New: Parse custom properties for each tile
             Dictionary<int, bool> collidableTiles = new Dictionary<int, bool>();
             foreach (XElement tileElement in tilesetElement.Elements("tile")) {
+
                 int id = Convert.ToInt32(tileElement.Attribute("id").Value);
                 XElement propertiesElement = tileElement.Element("properties");
-                if (propertiesElement != null) {
-                    foreach (XElement property in propertiesElement.Elements("property")) {
-                        if (property.Attribute("name").Value == "collidable" && property.Attribute("value").Value == "true") {
-                            collidableTiles[id] = true;
-                        }
-                    }
+                if (propertiesElement == null)
+                    continue;
+                
+                foreach(XElement property in propertiesElement.Elements("property")) {
+                    if(property.Attribute("name").Value == "collidable" && property.Attribute("value").Value == "true")
+                        collidableTiles[id] = true;
+                    
                 }
             }
 
             return new TilesetData {
+
                 Name = name,
                 TileWidth = tileWidth,
                 TileHeight = tileHeight,
@@ -100,11 +107,13 @@ namespace Core.util {
     }
 
     public class LevelData {
+
         public MapData Map { get; set; }
         public TilesetData Tileset { get; set; }
     }
 
     public class TilesetData {
+
         public string Source { get; set; }
         public int FirstGid { get; set; }
         public string Name { get; set; }
@@ -120,6 +129,7 @@ namespace Core.util {
     }
 
     public class MapData {
+
         public int Width { get; set; }
         public int Height { get; set; }
         public int TileWidth { get; set; }
@@ -133,6 +143,7 @@ namespace Core.util {
     }
 
     public class LayerData {
+
         public string Name { get; set; }
         public int[,] Tiles { get; set; }
     }

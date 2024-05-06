@@ -6,14 +6,15 @@ namespace Core.game_objects
 
     public class camera : game_object{
 
-        public float scale { get; set; }    // camera zoom
+        public float    scale { get; set; }    // camera zoom
+        public float    zoom_offset { get; set; } = 0;
 
         public camera(OpenTK.Mathematics.Vector2 position, OpenTK.Mathematics.Vector2 window_size, float zoom)
             :base(position, window_size, 0, mobility.DYNAMIC) {
 
             this.transform.position = position;
             this.transform.size = window_size;
-            this.scale = zoom;
+            this.scale = zoom + zoom_offset;
         }
 
         public void set_view_size(OpenTK.Mathematics.Vector2 window_size) {
@@ -29,13 +30,13 @@ namespace Core.game_objects
 
         public void add_zoom(float zoom) {
 
-            this.scale += zoom;
+            this.scale += (zoom + zoom_offset);
             this.scale = Math.Clamp(this.scale, min_zoom, max_zoom);
         }
 
         public void set_zoom(float zoom) {
 
-            this.scale = zoom;
+            this.scale = zoom + zoom_offset;
             this.scale = Math.Clamp(this.scale, min_zoom, max_zoom);
         }
 

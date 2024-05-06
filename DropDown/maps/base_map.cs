@@ -17,7 +17,7 @@ namespace Hell {
 
             //this.generate_backgound_tile(50, 30);
 
-            physics_material ateroid_phys_mat = new physics_material(0.0f, 0.0f, 0.1f);
+            physics_material ateroid_phys_mat = new physics_material(0.0f, 0.1f);
             Texture ateroid_texture = resource_manager.get_texture("assets/textures/muzzle_flash.jpg");
             this.add_game_object(
                 new game_object(new Vector2(550, -350), new Vector2(300, 100))
@@ -50,7 +50,7 @@ namespace Hell {
 
             imgui_util.begin_default_table("bit_map_generation_data");
             imgui_util.add_table_row("inital density", ref inital_density, 0.0002f, 0f, 1f);
-            imgui_util.add_table_row("tile display size", ref tile_display_size, 1, 1, 10);
+            imgui_util.add_table_row("tile display size", ref tile_display_size, 0.1f, 3, 10);
             imgui_util.end_default_table();
 
             imgui_util.begin_default_table("bit_map_generation_data");
@@ -230,7 +230,7 @@ namespace Hell {
         }
 
         // imgui Window
-        private int tile_display_size = 7;
+        private float tile_display_size = 7;
         private double bit_map_generation_duration = 0;
         private double map_generation_duration = 0;
 

@@ -19,7 +19,7 @@ namespace Core {
 
     public abstract class game {
 
-        public GameWindowSettings _game_window_settings = GameWindowSettings.Default;
+        public GameWindowSettings   _game_window_settings = GameWindowSettings.Default;
         public NativeWindowSettings _native_window_settings = NativeWindowSettings.Default;
 
         public shader               default_sprite_shader;

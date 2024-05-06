@@ -173,6 +173,7 @@ namespace Core {
         }
 
         public void LoadLevel(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath) {
+
             LevelData levelData = level_parser.ParseLevel(tmxFilePath, tsxFilePath);
             MapData mapData = levelData.Map;
             TilesetData tilesetData = levelData.Tileset;
@@ -208,11 +209,7 @@ namespace Core {
 
                         if (tilesetData.CollidableTiles.ContainsKey(tileIndex) && tilesetData.CollidableTiles[tileIndex]) {
 
-                            transform buffer = ((tileColumn == 0 && tileRow == 5) 
-                                                || (tileColumn == 1 && tileRow == 5)
-                                                || (tileColumn == 6 && tileRow == 8)
-                                                || (tileColumn == 8 && tileRow == 6)
-                                                || (tileColumn == 3 && tileRow == 5))
+                            transform buffer = ((tileColumn == 0 && tileRow == 5))
                                 ? new transform(new Vector2(0, -10), new Vector2(0, -23), 0, mobility.STATIC)
                                 : new transform(Vector2.Zero, Vector2.Zero, 0, mobility.STATIC);
 

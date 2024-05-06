@@ -1,9 +1,8 @@
 ﻿using Core.game_objects;
+using Core.physics;
 using Core.util;
 using Core.visual;
-using Core.physics;
 using OpenTK.Mathematics;
-using Core.physics.material;
 
 namespace Hell {
 

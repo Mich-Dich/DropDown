@@ -34,7 +34,7 @@ namespace Core.physics {
 
                     // update position
                     if((all_objects[x].collider != null) && (all_objects[x].transform.mobility != mobility.STATIC) && (!finished_objects.Contains(all_objects[y]))) {
-                        all_objects[x].collider.velocity /= 1 + all_objects[x].collider.material.dynamicFriction;
+                        all_objects[x].collider.velocity /= 1 + all_objects[x].collider.material.friction;
                         all_objects[x].transform.position += all_objects[x].collider.velocity * delta_time;
                     }
 
@@ -146,7 +146,7 @@ namespace Core.physics {
             if (overlap < 0)    // not hit
                 return hit;
 
-            hit.hit_direction = centerToNearest.Normalized() * -overlap;
+            hit.hit_direction = centerToNearest.Normalized() * overlap;
             hit.is_hit = true;
             hit.hit_position = circle.transform.position;
             hit.hit_object = AABB;

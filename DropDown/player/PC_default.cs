@@ -52,9 +52,9 @@ namespace DropDown.player {
             // camera follows player
             game.instance.camera.transform.position = player.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
 
-            
-            game.instance.camera.add_zoom((float)look.get_value() / 50);
 
+            game.instance.camera.zoom_offset += (float)look.get_value() / 10;
+            Console.WriteLine($"offset: {game.instance.camera.zoom_offset}");
 
             // look at mouse
             Vector2 screen_look = game.instance.get_mouse_relative_pos();
