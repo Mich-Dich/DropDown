@@ -82,7 +82,7 @@ namespace Core {
                     throw new ResourceNotAssignedException("player_controller musst be assigned in game class init() function");
 
                 // ----------------------------------- finish setup -----------------------------------
-                player_controller.player = player;
+                player_controller.character = player;
                 this.active_map.add_game_object(player);
                 initImGuiController();
                 window.IsVisible = true;

@@ -21,7 +21,7 @@ namespace Core.game_objects {
         public void set_controller(I_controller controller) {
 
             this.controller = controller;
-            controller.player = this;
+            controller.character = this;
         }
 
         public void set_velocity(Vector2 new_velocity) {

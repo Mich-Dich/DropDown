@@ -47,19 +47,19 @@ namespace DropDown.player {
 
             // simple movement
             if(move.X != 0 || move.Y != 0)
-                player.add_velocity(Vector2.NormalizeFast((Vector2)move.get_value()) * player.movement_speed * delta_time);
+                character.add_velocity(Vector2.NormalizeFast((Vector2)move.get_value()) * character.movement_speed * delta_time);
 
             // camera follows player
-            game.instance.camera.transform.position = player.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
+            game.instance.camera.transform.position = character.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
 
 
-            game.instance.camera.zoom_offset += (float)look.get_value() / 10;
-            Console.WriteLine($"offset: {game.instance.camera.zoom_offset}");
+            game.instance.camera.add_zoom_offset((float)look.get_value() / 50);
+            //Console.WriteLine($"camera offset: {game.instance.camera.scale}");
 
             // look at mouse
             Vector2 screen_look = game.instance.get_mouse_relative_pos();
             float angleRadians = (float)Math.Atan2(screen_look.X, screen_look.Y);
-            player.transform.rotation = -angleRadians + float.Pi / 2;
+            character.transform.rotation = -angleRadians + float.Pi / 2;
         }
     }
 }

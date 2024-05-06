@@ -61,7 +61,7 @@ namespace Core {
 
             world.Add(game_object);
             all_game_objects.Add(game_object);
-            Console.WriteLine($"Adding game_object [{game_object}] to world. Current count: {world.Count} ");
+            //Console.WriteLine($"Adding game_object [{game_object}] to world. Current count: {world.Count} ");
         }
 
         public void add_character(character character, Vector2? position = null) {
@@ -122,6 +122,7 @@ namespace Core {
 
         public void force_clear_map_tiles() {
             map_tiles.Clear();
+            debug_data.num_of_tiels = 0;
         }
 
         // ===============================================================================================================================================================

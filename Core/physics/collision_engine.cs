@@ -31,10 +31,6 @@ namespace Core.physics {
             for (int x = 0; x < all_objects.Count; x++) {
                 for(int y = 0; y < all_objects.Count; y++) {
 
-                    if(x == 93) {
-                        Console.WriteLine("Test");
-                    }
-
                     // update position
                     if((all_objects[x].collider != null) 
                         && (all_objects[x].transform.mobility != mobility.STATIC) 

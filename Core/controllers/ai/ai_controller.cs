@@ -4,7 +4,7 @@ namespace Core.controllers.ai {
 
     public abstract class ai_controller : I_controller {
 
-        public character player { get; set; }
+        public character character { get; set; }
 
         /// <summary>
         /// This function creates the state-mashines inital states. Should be used when state creation ist costly. Cheap states can be created on the fly

@@ -5,7 +5,7 @@ namespace Core.controllers.player {
 
     public abstract class player_controller : I_controller {
 
-        public character player { get; set; }
+        public character character { get; set; }
         //public character character { get; set; }
 
         public player_controller() { }

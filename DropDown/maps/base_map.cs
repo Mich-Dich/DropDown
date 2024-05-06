@@ -17,13 +17,13 @@ namespace Hell {
 
             //this.generate_backgound_tile(50, 30);
 
-            physics_material ateroid_phys_mat = new physics_material(0.0f, 0.1f);
-            Texture ateroid_texture = resource_manager.get_texture("assets/textures/muzzle_flash.jpg");
-            this.add_game_object(
-                new game_object(new Vector2(550, -350), new Vector2(300, 100))
-                    .set_sprite(ateroid_texture)
-                    .set_mobility(mobility.STATIC)
-                    .add_collider(new collider(collision_shape.Square)));
+            //physics_material ateroid_phys_mat = new physics_material(0.0f, 0.1f);
+            //Texture ateroid_texture = resource_manager.get_texture("assets/textures/muzzle_flash.jpg");
+            //this.add_game_object(
+            //    new game_object(new Vector2(550, -350), new Vector2(300, 100))
+            //        .set_sprite(ateroid_texture)
+            //        .set_mobility(mobility.STATIC)
+            //        .add_collider(new collider(collision_shape.Square)));
 
 
             //this.add_character(new character().add_collider(new collider()), new Vector2(-300));
@@ -91,7 +91,7 @@ namespace Hell {
             uint col_white = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.2f, 1));
             uint col_black = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.9f, 0.9f, 1));
 
-
+            // display bit map
             for(int x = 0; x < 64; x++) {
                 for(int y = 0; y < 64; y++) {
 
@@ -103,22 +103,24 @@ namespace Hell {
                         (currentBit == 0) ? col_black : col_white);
                 }
             }
+            
+            // show player position
+            draw_list.AddRectFilled(
+                        wondopw_pos + new System.Numerics.Vector2(32 * tile_display_size, 32 * tile_display_size),
+                        wondopw_pos + new System.Numerics.Vector2((32 + 1) * tile_display_size, (32 + 1) * tile_display_size),
+                        ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.9f, 0.2f, 1)));
+
             imgui_util.shift_cursor_pos(0,64 * tile_display_size + 5);
 
             imgui_util.begin_default_table("map_generation_result");
             imgui_util.add_table_row("Bit-map generation duration", $"{bit_map_generation_duration} ms");
             imgui_util.add_table_row("convert to actual map duration", $"{map_generation_duration} ms");
+            imgui_util.add_table_row("collision generation", $"{collision_generation_duration} ms");
             imgui_util.add_table_row("Total duration", $"{bit_map_generation_duration + map_generation_duration} ms");
             imgui_util.end_default_table();
 
-            //if(map_generation_duration != 0)
-            //    ImGui.BeginDisabled();
-
             if(ImGui.Button("Generate actual map from bit-map"))
                 generate_actual_map();
-
-            //if(map_generation_duration != 0)
-            //    ImGui.EndDisabled();
 
             ImGui.End();
         }
@@ -136,16 +138,66 @@ namespace Hell {
                     // Extract bits of current X
                     UInt64 currentBit = (floor_layout[x] >> y) & 1;
 
-                    this.add_background_sprite(
-                        new sprite(resource_manager.get_texture("assets/textures/terrain.png")).select_texture_region(32, 64, (currentBit == 0) ? 1 : 15, (currentBit == 0) ? 60 : 26),
-                        new Vector2(y * this.cell_size, x * this.cell_size));
+                    if(currentBit == 1) {
+
+                        this.add_game_object(
+                            new game_object(
+                                new Vector2((y - totalBits / 2) * this.cell_size, (x - totalBits / 2) * this.cell_size),
+                                new Vector2(this.cell_size),
+                                0,
+                                mobility.STATIC)
+                            .add_collider(new collider(collision_shape.Square)));
+                    }
+
+                    else {
+
+                        this.add_background_sprite(
+                            new sprite(resource_manager.get_texture("assets/textures/terrain.png")).select_texture_region(32, 64, 1, 60 ),
+                            new Vector2((y - totalBits/2) * this.cell_size, (x - totalBits/2) * this.cell_size));
+                    }
 
                 }
             }
 
             stopwatch.Stop();
             map_generation_duration = stopwatch.Elapsed.TotalMilliseconds;
+            stopwatch.Start();
+
+            UInt64[] loc_buffer = floor_layout;
+            
+
+            stopwatch.Stop();
+            collision_generation_duration = stopwatch.Elapsed.TotalMilliseconds;
         }
+
+        public UInt64[,] Get8x8Block(int startRow, int startCol) {
+
+            const int totalBits = sizeof(UInt64) * 8;
+            if(startRow < 0 || startRow > totalBits - 8 || startCol < 0 || startCol > totalBits - 8) 
+                throw new ArgumentException("Invalid startRow or startCol for extracting 8x8 block.");
+            
+
+            UInt64[,] block = new UInt64[8, 8];
+
+            // Iterate over the rows of the 8x8 block
+            for(int i = 0; i < 8; i++) {
+                // Get the corresponding UInt64 element from floor_layout
+                UInt64 rowElement = floor_layout[startRow + i];
+
+                // Iterate over the columns of the 8x8 block
+                for(int j = 0; j < 8; j++) {
+                    // Extract the bit at the specific position within the UInt64 element
+                    int bitPosition = startCol + j;
+                    bool isCellSet = ((rowElement >> bitPosition) & 1) == 1;
+
+                    // Set the corresponding value in the block array
+                    block[i, j] = isCellSet ? 1UL : 0UL;
+                }
+            }
+
+            return block;
+        }
+
 
         private void generate_bit_map() {
 
@@ -233,6 +285,7 @@ namespace Hell {
         private float tile_display_size = 7;
         private double bit_map_generation_duration = 0;
         private double map_generation_duration = 0;
+        private double collision_generation_duration = 0;
 
         private float inital_density = 0.37f;
         private int[] iterations = new int[] {4,4,4,4,4};
