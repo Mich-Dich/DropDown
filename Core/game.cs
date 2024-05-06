@@ -287,6 +287,7 @@ namespace Core {
         public static int colidable_objects = 0;
         public static int colidable_objects_static = 0;
         public static int colidable_objects_dynamic = 0;
+        public static int collision_num = 0;
 
         //public debug_data() {}
 
@@ -299,7 +300,8 @@ namespace Core {
             colidable_objects = 0;
             colidable_objects_static = 0;
             colidable_objects_dynamic = 0;
-    }
+            collision_num = 0;
+        }
 
     }
 

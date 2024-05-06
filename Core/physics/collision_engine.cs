@@ -31,11 +31,14 @@ namespace Core.physics {
             for (int x = 0; x < all_objects.Count; x++) {
                 for(int y = 0; y < all_objects.Count; y++) {
 
+                    if(x == 93) {
+                        Console.WriteLine("Test");
+                    }
 
                     // update position
                     if((all_objects[x].collider != null) 
                         && (all_objects[x].transform.mobility != mobility.STATIC) 
-                        && (!finished_objects.Contains(all_objects[y]))) {
+                        && (!finished_objects.Contains(all_objects[x]))) {
                         
                         all_objects[x].collider.velocity /= 1 + all_objects[x].collider.material.friction;
                         all_objects[x].transform.position += all_objects[x].collider.velocity * delta_time;
@@ -48,7 +51,7 @@ namespace Core.physics {
 
                     if(all_objects[x].collider == null 
                         || all_objects[y].collider == null 
-                        || finished_objects.Contains(all_objects[y]))
+                        || finished_objects.Contains(all_objects[x]))
                         continue;
 
 
@@ -82,6 +85,8 @@ namespace Core.physics {
                     if(!current.is_hit)
                         continue;
 
+                    if(game.instance.show_debug)
+                        debug_data.collision_num++;
 
                     // proccess hit => change position, velocity ...
                     float total_mass = all_objects[x].collider.mass + all_objects[y].collider.mass;
@@ -103,21 +108,29 @@ namespace Core.physics {
         }
 
         private hit_data collision_AABB_AABB(game_object AABB, game_object AABB_2) {
-            hit_data hit = new hit_data();
 
-            float overlapX = (AABB.transform.size.X / 2 + AABB_2.transform.size.X / 2) - Math.Abs(AABB.transform.position.X - AABB_2.transform.position.X);
-            float overlapY = (AABB.transform.size.Y / 2 + AABB_2.transform.size.Y / 2) - Math.Abs(AABB.transform.position.Y - AABB_2.transform.position.Y);
+            hit_data hit = new hit_data();
+            Vector2 size_buffer     = AABB.transform.size + AABB.collider.offset.size;
+            Vector2 size_buffer_2   = AABB_2.transform.size + AABB_2.collider.offset.size;
+            Vector2 pos_buffer      = AABB.transform.position + AABB.collider.offset.position;
+            Vector2 pos_buffer_2    = AABB_2.transform.position + AABB_2.collider.offset.position;
+
+            float overlapX = (size_buffer.X / 2 + size_buffer_2.X / 2) - Math.Abs(pos_buffer.X - pos_buffer_2.X);
+            float overlapY = (size_buffer.Y / 2 + size_buffer_2.Y / 2) - Math.Abs(pos_buffer.Y - pos_buffer_2.Y);
 
             if (overlapX > 0 && overlapY > 0) {
+
                 hit.is_hit = true;
-                hit.hit_position = AABB.transform.position;
+                hit.hit_position = pos_buffer_2;
                 hit.hit_object = AABB_2;
 
-                if (overlapX < overlapY) {
-                    hit.hit_direction = new Vector2(Math.Sign(AABB_2.transform.position.X - AABB.transform.position.X) * overlapX, 0);
-                } else {
-                    hit.hit_direction = new Vector2(0, Math.Sign(AABB_2.transform.position.Y - AABB.transform.position.Y) * overlapY);
-                }
+                //if(overlapX < overlapY)
+                //    hit.hit_direction = new Vector2(Math.Sign(pos_buffer_2.X - pos_buffer.X) * overlapX, 0);
+                //else
+                //    hit.hit_direction = new Vector2(0, Math.Sign(pos_buffer_2.Y - pos_buffer.Y) * overlapY);
+
+                if(pos_buffer != pos_buffer_2)
+                    hit.hit_direction = Vector2.NormalizeFast(pos_buffer_2 - pos_buffer) * new Vector2(overlapY, overlapX);
             }
 
             return hit;
