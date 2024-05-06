@@ -90,20 +90,37 @@ namespace Core.physics {
         }
 
         private hit_data collision_AABB_AABB(game_object AABB, game_object AABB_2) {
-
             hit_data hit = new hit_data();
-            if(AABB.transform.position.X < AABB_2.transform.position.X + AABB_2.transform.size.X 
-                && AABB.transform.position.X + AABB.transform.size.X > AABB_2.transform.position.X
-                && AABB.transform.position.Y < AABB_2.transform.position.Y + AABB_2.transform.size.Y
-                && AABB.transform.position.Y + AABB.transform.size.Y > AABB_2.transform.position.Y) {
+            Vector2 direction = AABB.transform.position - AABB_2.transform.position;
 
+            float overlapX = AABB.transform.size.X / 2 + AABB_2.transform.size.X / 2 - Math.Abs(direction.X);
+            float overlapY = AABB.transform.size.Y / 2 + AABB_2.transform.size.Y / 2 - Math.Abs(direction.Y);
+
+            if (overlapX > 0 && overlapY > 0) {
                 hit.is_hit = true;
                 hit.hit_position = AABB.transform.position;
                 hit.hit_object = AABB_2;
+
+                Vector2 prevPosition = AABB.transform.position;
+
+                if (overlapX < overlapY) {
+                    hit.hit_direction = new Vector2(Math.Sign(direction.X), 0) * overlapX;
+                } else {
+                    hit.hit_direction = new Vector2(0, Math.Sign(direction.Y)) * overlapY;
+                }
+
+                AABB.transform.position += hit.hit_direction;
+
+                Vector2 moveDirection = AABB.transform.position - prevPosition;
+
+                if (Vector2.Dot(moveDirection, hit.hit_direction) < 0) {
+                    hit.hit_direction = -hit.hit_direction;
+                }
             }
 
             return hit;
         }
+
 
         private hit_data collision_circle_circle(game_object circle1, game_object circle2) {
 
