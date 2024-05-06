@@ -104,9 +104,9 @@ namespace Core {
                 update_game_time((float)eventArgs.Time);
                 this.player_controller.update_internal(game_time.delta, _input_event);
 
-                for(int x = 0; x < active_map.all_game_objects.Count; x++)
-                    active_map.all_game_objects[x].update(game_time.delta);
-                collision_engine.update(active_map.all_game_objects, game_time.delta);
+                for(int x = 0; x < active_map.all_dynamic_game_objects.Count; x++)
+                    active_map.all_dynamic_game_objects[x].update(game_time.delta);
+                collision_engine.update(active_map.all_dynamic_game_objects, game_time.delta);
 
                 update(game_time.delta);
                 _input_event.Clear();

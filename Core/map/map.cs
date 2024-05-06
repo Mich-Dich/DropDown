@@ -8,22 +8,14 @@ namespace Core {
 
     public class map {
 
-        public List<game_object> all_game_objects { get; set; } = new List<game_object>();
+        public List<game_object> all_dynamic_game_objects { get; set; } = new List<game_object>();
 
-        public map(int tilesOnScreenWidth = 0, int tilesOnScreenHeight = 0, camera camera = null) {
-            this.TilesOnScreenWidth = tilesOnScreenWidth;
-            this.TilesOnScreenHeight = tilesOnScreenHeight;
-            Camera = camera;
-        }
+        public map() { }
 
         //public Vector2 loc_tile_size { get; set; } = new Vector2(100, 100);
 
         public int levelWidth { get; set; }
         public int levelHeight { get; set; }
-        public int tileHeight { get; set; }
-        public int tileWidth { get; set; }
-        public int TilesOnScreenWidth { get; set; }
-        public int TilesOnScreenHeight { get; set; }
 
         public struct tile_data {
 
@@ -38,19 +30,19 @@ namespace Core {
         }
 
         public void draw() {
-            if (Camera != null) {
-                foreach (var gameObject in all_game_objects) {
-                    if (Camera.IsInView(gameObject.transform)) {
-                        gameObject.draw();
-                    }
-                }
-            } else {
-                for (int x = 0; x < backgound.Count; x++)
-                    backgound[x].draw();
 
-                for (int x = 0; x < world.Count; x++)
-                    world[x].draw();
+            foreach(var tile in map_tiles.Values) {
+
+                foreach(var sprite in tile.background) {
+                    sprite.draw();
+                }
             }
+
+            for(int x = 0; x < backgound.Count; x++)
+                backgound[x].draw();
+
+            for(int x = 0; x < world.Count; x++)
+                world[x].draw();
         }
 
         public void draw_denug() {
@@ -59,6 +51,15 @@ namespace Core {
 
             for(int x = 0; x < world.Count; x++)
                 world[x].draw_debug();
+
+
+            foreach(var tile in map_tiles.Values) {
+
+                foreach(var game_object in tile.static_game_object) {
+                    game_object.draw_debug();
+                }
+            }
+
         }
 
         public virtual void draw_imgui() {
@@ -68,14 +69,14 @@ namespace Core {
         public void add_game_object(game_object game_object) {
 
             world.Add(game_object);
-            all_game_objects.Add(game_object);
+            all_dynamic_game_objects.Add(game_object);
             //Console.WriteLine($"Adding game_object [{game_object}] to world. Current count: {world.Count} ");
         }
 
         public void add_character(character character, Vector2? position = null) {
 
             world.Add(character);
-            all_game_objects.Add(character);
+            all_dynamic_game_objects.Add(character);
 
             if(position != null)
                 character.transform.position = position.Value;
@@ -115,7 +116,6 @@ namespace Core {
         public void add_background_sprite(sprite sprite, Vector2 position) {
 
             Vector2i key = new Vector2i((int)(position.X / (tile_size * cell_size)), (int)(position.Y / (tile_size * cell_size)));
-            //Console.WriteLine($"tile key: {key}");
             if(!map_tiles.ContainsKey(key)) {
 
                 map_tiles.Add(key, new map_tile());
@@ -126,6 +126,26 @@ namespace Core {
             sprite.transform.position = position;
             sprite.transform.size = new Vector2(cell_size);
             current_tile.background.Add(sprite);
+        }
+
+        public void add_static_game_object(game_object new_game_object, Vector2 position, bool use_cell_size = true) {
+
+            Vector2i key = new Vector2i((int)(position.X / (tile_size * cell_size)), (int)(position.Y / (tile_size * cell_size)));
+            if(!map_tiles.ContainsKey(key)) {
+
+                map_tiles.Add(key, new map_tile());
+                debug_data.num_of_tiels++;
+            }
+
+            map_tiles.TryGetValue(key, out map_tile current_tile);
+            new_game_object.transform.position = position;
+            new_game_object.transform.mobility = mobility.STATIC;
+            if(use_cell_size)
+                new_game_object.transform.size = new Vector2(cell_size);
+            if(new_game_object.collider != null)
+                new_game_object.collider.offset.mobility = mobility.STATIC;
+
+            current_tile.static_game_object.Add(new_game_object);
         }
 
         public void force_clear_map_tiles() {
@@ -182,12 +202,9 @@ namespace Core {
         }
 
         public void LoadLevel(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath) {
+
             LevelData levelData = level_parser.ParseLevel(tmxFilePath, tsxFilePath);
             MapData mapData = levelData.Map;
-            this.levelWidth = mapData.LevelPixelWidth;
-            this.levelHeight = mapData.LevelPixelHeight;
-            this.tileWidth = mapData.TileWidth;
-            this.tileHeight = mapData.TileHeight;
             TilesetData tilesetData = levelData.Tileset;
             Texture tilesetTexture = resource_manager.get_texture(tilesetImageFilePath, false);
 
@@ -220,35 +237,38 @@ namespace Core {
                                             .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
 
                         if (tilesetData.CollidableTiles.ContainsKey(tileIndex) && tilesetData.CollidableTiles[tileIndex]) {
+
                             transform buffer = ((tileColumn == 0 && tileRow == 5))
                                 ? new transform(new Vector2(0, -10), new Vector2(0, -23), 0, mobility.STATIC)
                                 : new transform(Vector2.Zero, Vector2.Zero, 0, mobility.STATIC);
 
-                            Console.WriteLine($"Creating collider for tile at ({x}, {y}) pos: {tileTransform.position} size: {tileTransform.size} tile {tileColumn}/{tileRow}");
+                            Console.WriteLine($"Creating collider for tile at ({x}, {y}) pos: {tileTransform.position} size: {tileTransform.size}            tile {tileColumn}/{tileRow}");
                             add_game_object(new game_object(tileTransform)
                                 .set_sprite(tileSprite)
-                                .add_collider(new collider(collision_shape.Square, collision_type.world) { Blocking = true }.set_offset(buffer))
+                                .add_collider(new collider(collision_shape.Square) { Blocking = true }.set_offset(buffer))
                                 .set_mobility(mobility.STATIC));
 
                             if(layerIndex == 0)
                                 backgound.Add(tileSprite);
 
                         } else {
-                            all_game_objects.Add(new game_object(tileTransform).set_sprite(tileSprite));
+
                             if (layerIndex == 0)
                                 backgound.Add(tileSprite);
+                            else
+                                all_dynamic_game_objects.Add(new game_object(tileTransform).set_sprite(tileSprite));
                         }
                     }
                 }
             }
         }
 
+
         // ========================================== private ==========================================
 
         private List<sprite> backgound { get; set; } = new List<sprite>();       // change to list of lists => to reduce drawcalls
         private List<game_object> world { get; set; } = new List<game_object>();
 
-        private camera Camera;
 
         // ------------------------------------------ tiles ------------------------------------------
         protected int cell_size = 200;
@@ -262,7 +282,7 @@ namespace Core {
         public Vector2              position = new Vector2();
 
         public List<sprite>         background = new List<sprite>();
-        public List<game_object>    static_colliders = new List<game_object>();
+        public List<game_object>    static_game_object = new List<game_object>();
 
         public map_tile() { }
 

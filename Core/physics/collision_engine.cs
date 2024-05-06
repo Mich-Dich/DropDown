@@ -19,7 +19,7 @@ namespace Core.physics {
 
         public collision_engine() { }
 
-        public void update(List<game_object> all_objects, float delta_time) {
+        public void update(List<game_object> all_objects, float delta_time, float min_distanc_for_collision = 1600) {
 
             if(game.instance.show_debug)
                 debug_data.colidable_objects = all_objects.Count;
@@ -44,6 +44,9 @@ namespace Core.physics {
                     // Skip unneeded
                     if(all_objects[x] == all_objects[y] 
                         || (all_objects[x].transform.mobility == mobility.STATIC && all_objects[y].transform.mobility == mobility.STATIC))
+                        continue;
+
+                    if((all_objects[x].transform.position - all_objects[y].transform.position).LengthFast > min_distanc_for_collision)
                         continue;
 
                     if(all_objects[x].collider == null 

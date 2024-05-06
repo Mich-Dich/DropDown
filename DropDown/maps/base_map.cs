@@ -181,15 +181,10 @@ namespace Hell {
                     Vector2 tile_offset = new Vector2(
                         ((x- ((totalBits / tile_size)/2)) * (this.tile_size * this.cell_size)),
                         ((y- ((totalBits / tile_size)/2)) * (this.tile_size * this.cell_size)));
-                    Console.WriteLine($"---------------------------- tile_offset: {tile_offset}");
-
 
                     // Display each byte in the array as a binary string
                     byte[] current_tile = get8x8_block(x, y);
                     for(int z = 0; z < current_tile.Length; z++) {
-
-                        //if(current_tile[z] == 0)
-                        //    continue;
 
                         // repeat untill all bit are 0 in this byte (auto skips empty bytes)
                         while(current_tile[z] != 0) {
@@ -209,7 +204,6 @@ namespace Hell {
                                 target_count = count_number_of_following_ones(buffer, firstOneIndex);
                                 break;
                             }
-                            Console.WriteLine($"firstOneIndex: {firstOneIndex}   subsequentOnesCount: {target_count}");
                             
                             // --------------- calc max size.Y of collider --------------- 
                             int questionable_count = 0;
@@ -225,7 +219,7 @@ namespace Hell {
                                 row_counter++;
 
                             } while((z + row_counter) < current_tile.Length && questionable_count >= target_count);
-                            Console.WriteLine($"loop ended       size of collider: {target_count}/{row_counter}");
+                            //Console.WriteLine($"size of collider: {target_count}/{row_counter}");
 
                             Vector2 collider_tile_offset = new Vector2(
                                 (this.cell_size * -0.5f) + firstOneIndex * this.cell_size,
@@ -233,13 +227,14 @@ namespace Hell {
                                 );
 
                             // --------------- add collider --------------- 
-                            this.add_game_object(
+
+                            this.add_static_game_object(
                                 new game_object(
-                                    tile_offset + collider_tile_offset + new Vector2((target_count * this.cell_size) / 2, (row_counter * this.cell_size) / 2),
-                                    new Vector2(target_count * this.cell_size, row_counter * this.cell_size),
-                                    0,
-                                    mobility.STATIC)
-                                .add_collider(new collider(collision_shape.Square)));
+                                    null,
+                                    new Vector2(target_count * this.cell_size, row_counter * this.cell_size))
+                                        .add_collider(new collider(collision_shape.Square)),
+                                new Vector2((target_count * this.cell_size) / 2, (row_counter * this.cell_size) / 2) + tile_offset + collider_tile_offset,
+                                false);
 
                             // --------------- set used values to 0 --------------- 
                             byte reset_mask = SetBits(firstOneIndex, target_count);
@@ -247,12 +242,9 @@ namespace Hell {
                                 current_tile[z + i] = (byte)(current_tile[z + i] & ~reset_mask);
 
                         }
-
                     }
                 }
             }
-
-
 
             stopwatch.Stop();
             collision_generation_duration = stopwatch.Elapsed.TotalMilliseconds;
@@ -260,31 +252,12 @@ namespace Hell {
 
         private static byte SetBits(int start_index, int count) {
 
-            // Create an empty byte (all bits set to 0)
             byte result = 0;
-
             byte mask = (byte)((1 << count) - 1);   // Creates a sequence of 'count' ones
             mask <<= start_index;                   // Shift the mask to the left by 'start_index' positions
-
             result |= mask;
 
-
-
             return result;
-        }
-
-        private int count_number_of_leading_ones(byte target) {
-
-            int count = 0;
-            byte buffer = target;
-            byte mask = 0x01; // Start with the least significant bit (LSB) mask
-
-            // Iterate over each bit of the byte value
-            while((buffer & mask) != 0) {
-                count++; // Increment the count for each '1' encountered
-                mask <<= 1; // Shift the mask to the left to check the next bit
-            }
-            return count;
         }
 
         private int count_number_of_following_ones(byte target, int index_of_first_one) {

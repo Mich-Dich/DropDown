@@ -30,7 +30,8 @@ namespace Hell {
         }
 
         protected override void update(float delta_time) {
-            //player.add_velocity((Vector2)move.get_value() * player.character.movement_speed * delta_time);
+
+            character.add_velocity(((Vector2)move.get_value() * character.movement_speed) * delta_time);
         }
 
     }
