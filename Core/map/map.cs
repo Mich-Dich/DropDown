@@ -216,7 +216,7 @@ namespace Core {
                             Console.WriteLine($"Creating collider for tile at ({x}, {y}) pos: {tileTransform.position} size: {tileTransform.size}            tile {tileColumn}/{tileRow}");
                             add_game_object(new game_object(tileTransform)
                                 .set_sprite(tileSprite)
-                                .add_collider(new collider(collision_shape.Square).set_offset(buffer))
+                                .add_collider(new collider(collision_shape.Square) { Blocking = true }.set_offset(buffer))
                                 .set_mobility(mobility.STATIC));
 
                             if(layerIndex == 0)

@@ -15,6 +15,7 @@ namespace Core.physics
 
         public float            mass;
         public Vector2          velocity {  get; set; }
+        public bool Blocking { get; set; } = true;
 
         public collider() {
 

@@ -12,7 +12,7 @@ namespace Hell {
             this.transform.size = new Vector2(100);
             this.transform.position = new Vector2(300,100);
             set_sprite(new sprite(resource_manager.get_texture("assets/textures/Spaceship/Spaceship.png", true)));
-            add_collider(new collider(collision_shape.Square));
+            add_collider(new collider(collision_shape.Square)).set_mobility(mobility.DYNAMIC);
             
             this.movement_speed = 100.0f;
         }
