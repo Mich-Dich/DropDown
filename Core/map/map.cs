@@ -35,26 +35,19 @@ namespace Core {
         public void draw() {
 
             Vector2 camera_pos = game.instance.camera.transform.position;
-            Vector2 camera_size = game.instance.camera.get_view_size_in_world_coord();
+            Vector2 camera_size = game.instance.camera.get_view_size_in_world_coord() + new Vector2(300);
 
-            camera_size /= 4;
+            float tiel_size = tile_size * cell_size;
 
-            new game_object(camera_pos, camera_size)
-                .add_collider(new collider(collision_shape.Square))
-                .draw_debug();
+            foreach (var tile in map_tiles) {
 
+                float overlapX = (camera_size.X / 2 + tiel_size / 2) - Math.Abs(camera_pos.X - tile.Key.X);
+                float overlapY = (camera_size.Y / 2 + tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
 
-            Vector2 tiel_size = new Vector2(tile_size * cell_size);
-
-            foreach (var tile in map_tiles.Values) {
-                
-                if(camera_pos.X                         < tile.position.X + tiel_size.X
-                    && camera_pos.X + camera_size.X     > tile.position.X
-                    && camera_pos.Y                     < tile.position.Y + tiel_size.Y
-                    && camera_pos.Y + camera_size.Y     > tile.position.Y) {
+                if(overlapX > 0 && overlapY > 0) {
 
                     debug_data.num_of_tiels_displayed++;
-                    foreach(var sprite in tile.background) {
+                    foreach(var sprite in tile.Value.background) {
                         sprite.draw();
                     }
                 }
@@ -161,9 +154,9 @@ namespace Core {
         private map_tile get_correct_map_tile(Vector2 position) {
 
             int final_tile_size = (tile_size * cell_size);
-            Vector2i key = new Vector2i((int)(position.X / final_tile_size), (int)(position.Y / final_tile_size));
+            Vector2i key = new Vector2i((int)Math.Floor(position.X / final_tile_size), (int)Math.Floor(position.Y / final_tile_size));
             key *= final_tile_size;
-            key -= new Vector2i(final_tile_size/2);
+            key += new Vector2i(final_tile_size / 2, (final_tile_size / 3));
 
             Console.WriteLine($"position => key      {position} => {key}");
 
