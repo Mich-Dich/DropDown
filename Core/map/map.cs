@@ -86,7 +86,7 @@ namespace Core {
             if(position != null)
                 character.transform.position = position.Value;
 
-            Console.WriteLine($"Adding character [{character}] to world. Current count: {world.Count} ");
+            //Console.WriteLine($"Adding character [{character}] to world. Current count: {world.Count} ");
         }
 
         public void add_sprite(sprite sprite) { backgound.Add(sprite); }
@@ -99,7 +99,7 @@ namespace Core {
             switch(world_layer) {
             case world_layer.None: break;
             case world_layer.world:
-            Console.WriteLine($"add_sprite() with argument [world_layer = world_layer.world] is not implemented yet");
+            //Console.WriteLine($"add_sprite() with argument [world_layer = world_layer.world] is not implemented yet");
             //world.Add(new game_object().set_sprite(sprite));
             break;
 
@@ -251,7 +251,7 @@ namespace Core {
                                 ? new transform(new Vector2(0, -10), new Vector2(0, -23), 0, mobility.STATIC)
                                 : new transform(Vector2.Zero, Vector2.Zero, 0, mobility.STATIC);
 
-                            Console.WriteLine($"Creating collider for tile at ({x}, {y}) pos: {tileTransform.position} size: {tileTransform.size}            tile {tileColumn}/{tileRow}");
+                            //Console.WriteLine($"Creating collider for tile at ({x}, {y}) pos: {tileTransform.position} size: {tileTransform.size}            tile {tileColumn}/{tileRow}");
                             add_game_object(new game_object(tileTransform)
                                 .set_sprite(tileSprite)
                                 .add_collider(new collider(collision_shape.Square) { Blocking = true }.set_offset(buffer))

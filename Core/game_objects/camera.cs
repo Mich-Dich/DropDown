@@ -68,21 +68,18 @@ namespace Core.game_objects
             return orthographic_matrix * zoom_matrix;
         }
 
-        //Vector2 convertScreenToWorldCoords(float x, float y) {
+       public Vector2 convertScreenToWorldCoords(float x, float y) {
+            Vector2 normalizedCoords = new Vector2(
+                2.0f * x / transform.size.X - 1.0f,
+                1.0f - 2.0f * y / transform.size.Y
+            );
 
-        //    Vector2 mouse;
-        //    int[] viewport = new int[4];
-        //    GL.GetInteger(GetPName.Viewport, viewport);
-        //    Matrix4 modelViewMatrix = (Matrix4.CreateTranslation(trX, trY, trZ) * Matrix4.CreateScale(Escala3D));
-        //    Matrix4 projectionMatrix = Matrix4.CreateOrthographic(7.89f, 9.5f, 1.0f, 200f);
+            Matrix4 inverseProjectionMatrix = Matrix4.Invert(get_projection_matrix());
 
-        //    mouse.X = x;
-        //    mouse.Y = viewport[3] - y;
-        //    Vector4 vector = UnProject(ref projectionMatrix, modelViewMatrix, new Size(viewport[2], viewport[3]), mouse);
-        //    PointF coords = new PointF(vector.X, vector.Y);
-        //    return coords;
-        //}
+            Vector3 worldCoords = Vector3.TransformPerspective(new Vector3(normalizedCoords.X, normalizedCoords.Y, 0), inverseProjectionMatrix);
 
+            return new Vector2(worldCoords.X, worldCoords.Y);
+        }
 
         // ========================================== private ========================================== 
 
