@@ -16,12 +16,6 @@
     <None Update="assets\defaults\default_grid.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\defaults\default_grid_bright.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="assets\levels\LargeTestMap.tmx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="assets\levels\TestMap.tmx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

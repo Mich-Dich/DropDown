@@ -32,17 +32,8 @@ namespace Hell {
             // ------------- init player ------------- 
             this.player_controller = new PC_default();
             this.player = new player();
-
-            float testX = 100f;
-            float testY = 200f;
-            Console.WriteLine($"Before conversion: Screen coordinates ({testX}, {testY})");
-            Vector2 worldCoords = this.camera.convertScreenToWorldCoords(testX, testY);
-            Console.WriteLine($"After conversion: World coordinates ({worldCoords.X}, {worldCoords.Y})");
-
-
             test_cursor_object = new game_object(new Vector2(150, 150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
             this.active_map.add_game_object(test_cursor_object);
-
         }
         
         protected override void shutdown() { }
@@ -50,6 +41,9 @@ namespace Hell {
         protected override void update(float delta_time) {
 
             test_cursor_object.transform.position = this.camera.convertScreenToWorldCoords(0, 0);
+            Vector2 cameraPosition = this.camera.transform.position;
+            cameraPosition.Y = this.player.transform.position.Y;
+            this.camera.set_position(cameraPosition);
         }
 
         protected override void window_resize() {
