@@ -18,7 +18,7 @@ namespace Hell {
                     .set_physics_material(new physics_material(0.05f, 0.1f)))
                 .set_mobility(mobility.DYNAMIC);
             
-            this.movement_speed = 500.0f;
+            this.movement_speed = 1000.0f;
         }
 
         public override void hit(hit_data hit) {

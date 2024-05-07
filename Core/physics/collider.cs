@@ -67,7 +67,6 @@ namespace Core.physics
     }
 
     public enum collision_type {
-
         None = 0,
         world = 1,
         character = 2,

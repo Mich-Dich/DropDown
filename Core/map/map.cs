@@ -226,7 +226,6 @@ namespace Core {
         }
 
         public void LoadLevel(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath) {
-
             LevelData levelData = level_parser.ParseLevel(tmxFilePath, tsxFilePath);
             MapData mapData = levelData.Map;
             this.levelWidth = mapData.LevelPixelWidth;
@@ -265,24 +264,23 @@ namespace Core {
                                             .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
 
                         if (tilesetData.CollidableTiles.ContainsKey(tileIndex) && tilesetData.CollidableTiles[tileIndex]) {
-
                             transform buffer = ((tileColumn == 0 && tileRow == 5))
                                 ? new transform(new Vector2(0, -10), new Vector2(0, -23), 0, mobility.STATIC)
                                 : new transform(Vector2.Zero, Vector2.Zero, 0, mobility.STATIC);
 
-                            //Console.WriteLine($"Creating collider for tile at ({x}, {y}) pos: {tileTransform.position} size: {tileTransform.size}            tile {tileColumn}/{tileRow}");
-                            add_game_object(new game_object(tileTransform)
+                            game_object newGameObject = new game_object(tileTransform)
                                 .set_sprite(tileSprite)
                                 .add_collider(new collider(collision_shape.Square) { Blocking = true }.set_offset(buffer))
-                                .set_mobility(mobility.STATIC));
+                                .set_mobility(mobility.STATIC);
+
+                            add_static_game_object(newGameObject, tileTransform.position);
 
                             if(layerIndex == 0)
-                                backgound.Add(tileSprite);
+                                add_background_sprite(tileSprite, tileTransform.position);
 
                         } else {
-
                             if (layerIndex == 0)
-                                backgound.Add(tileSprite);
+                                add_background_sprite(tileSprite, tileTransform.position);
                             else
                                 all_dynamic_game_objects.Add(new game_object(tileTransform).set_sprite(tileSprite));
                         }
