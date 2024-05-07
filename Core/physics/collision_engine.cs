@@ -24,22 +24,25 @@ namespace Core.physics {
             if(game.instance.show_debug)
                 debug_data.colidable_objects = all_objects.Count;
 
-            List<game_object> finished_objects = new List<game_object>();
 
             hit_data current = new hit_data();
 
             for (int x = 0; x < all_objects.Count; x++) {
+
+
+                //if(x == 644)
+                //    Console.WriteLine($"player");
+
+                // update position
+                if((all_objects[x].collider != null)
+                    && (all_objects[x].transform.mobility != mobility.STATIC)) {
+
+                    all_objects[x].collider.velocity /= 1 + all_objects[x].collider.material.friction;
+                    all_objects[x].transform.position += all_objects[x].collider.velocity * delta_time;
+                }
+
                 for(int y = 1+x; y < all_objects.Count; y++) {
 
-
-                    // update position
-                    if((all_objects[x].collider != null) 
-                        && (all_objects[x].transform.mobility != mobility.STATIC) 
-                        && (!finished_objects.Contains(all_objects[y]))) {
-                        
-                        all_objects[x].collider.velocity /= 1 + all_objects[x].collider.material.friction;
-                        all_objects[x].transform.position += all_objects[x].collider.velocity * delta_time;
-                    }
 
                     // Skip unneeded
                     if(x == y 
@@ -50,8 +53,7 @@ namespace Core.physics {
                         continue;
 
                     if(all_objects[x].collider == null 
-                        || all_objects[y].collider == null 
-                        || finished_objects.Contains(all_objects[y]))
+                        || all_objects[y].collider == null)
                         continue;
 
 
@@ -79,7 +81,6 @@ namespace Core.physics {
                             current = collision_AABB_AABB(all_objects[x], all_objects[y]);
                     }
 
-                    finished_objects.Add(all_objects[x]);
 
                     // early exit
                     if(!current.is_hit)
