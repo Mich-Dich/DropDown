@@ -58,7 +58,7 @@ namespace Core.physics {
                     if(game.instance.show_debug) {
 
                         debug_data.collision_checks_num++;
-                        if(obj_X.transform.mobility == mobility.STATIC)
+                        if(obj_Y.transform.mobility == mobility.STATIC)
                             debug_data.colidable_objects_static++;
                         else
                             debug_data.colidable_objects_dynamic++;
@@ -156,6 +156,7 @@ namespace Core.physics {
         }
 
         private hit_data collision_circle_AABB(game_object circle, game_object AABB) {
+
             hit_data hit = new hit_data();
 
             Vector2 posA = circle.transform.position + circle.collider.offset.position;
@@ -180,7 +181,7 @@ namespace Core.physics {
                 return hit;
 
             if (circle.collider.Blocking && AABB.collider.Blocking) {
-                hit.hit_direction = centerToNearest.Normalized() * -overlap;
+                hit.hit_direction = centerToNearest.Normalized() * overlap;
             } else {
                 hit.hit_direction = Vector2.Zero;
             }

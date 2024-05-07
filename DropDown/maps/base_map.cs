@@ -28,7 +28,11 @@ namespace Hell {
 
             //this.add_character(new character().add_collider(new collider()), new Vector2(-300));
 
+            this.cell_size = 500;
             generate_bit_map();
+
+
+
 
         }
 
@@ -41,7 +45,7 @@ namespace Hell {
             imgui_diaplay_level_bit_map();
         }
 
-        public void imgui_diaplay_level_bit_map() {
+        private void imgui_diaplay_level_bit_map() {
 
             if(!ImGui.Begin("level_bit_map"))
                 return;
@@ -135,6 +139,7 @@ namespace Hell {
             imgui_util.add_table_row("Bit-map generation duration", $"{bit_map_generation_duration} ms");
             imgui_util.add_table_row("convert to actual map duration", $"{map_generation_duration} ms");
             imgui_util.add_table_row("collision generation", $"{collision_generation_duration} ms");
+            imgui_util.add_table_row("generation until start_pos empty", $"{bit_map_generation_iteration}");
             imgui_util.add_table_row("Total duration", $"{bit_map_generation_duration + map_generation_duration + collision_generation_duration} ms");
             imgui_util.end_default_table();
 
@@ -162,7 +167,7 @@ namespace Hell {
                         continue;
 
                     this.add_background_sprite(
-                        new sprite(texture_buffer).select_texture_region(32, 64, 1, 60 ),
+                        new sprite(texture_buffer).select_texture_region(32, 64, 4, 60 ),
                         new Vector2((y - totalBits/2) * this.cell_size, (x - totalBits/2) * this.cell_size));
 
                 }
@@ -283,7 +288,6 @@ namespace Hell {
             if(tile_index_x < 0 || tile_index_x > (totalBits/loc_tile_size) || tile_index_y < 0 || tile_index_y > (totalBits/loc_tile_size)) 
                 throw new ArgumentException("Invalid startRow or startCol for extracting 8x8 block.");
 
-
             // Iterate over the rows of the 8x8 block
             UInt64 int_buffer = 0;
             byte[] block = new byte[8];
@@ -293,15 +297,6 @@ namespace Hell {
                 block[x] = (byte)((int_buffer >> (tile_index_x * 8)) & 0xFF);
             }
 
-            //// Display each byte in the array as a binary string
-            //for(int i = 0; i < block.Length; i++) {
-                
-            //    string binaryString = Convert.ToString(block[i], 2).PadLeft(8, '0');
-            //    string displayString = binaryString.Replace('0', ' ').Replace('1', 'X');
-            //    Console.WriteLine(displayString);
-            //}
-            //Console.WriteLine();
-
             return block;
         }
 
@@ -310,13 +305,25 @@ namespace Hell {
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
+            bit_map_generation_iteration = 0;
 
-            // Call the method or perform the process you want to measure
-            generate_random_64x64_bit_map();
-            for(int x = 0; x < iterations.Length; x++) {
+            bool found = false;
+            while(found == false && bit_map_generation_iteration < 1000) {
 
-                //Console.WriteLine($"ITERATION: {x}");
-                iterate_over_bit_map(iterations[x]);
+                // Call the method or perform the process you want to measure
+                generate_random_64x64_bit_map();
+                for(int x = 0; x < iterations.Length; x++) {
+
+                    //Console.WriteLine($"ITERATION: {x}");
+                    iterate_over_bit_map(iterations[x]);
+                }
+
+                UInt64 targetUInt64 = floor_layout[32];
+                UInt64 mask = (UInt64)1 << 32;
+
+                found = (targetUInt64 & mask) == 0;
+                bit_map_generation_iteration++;
+                Console.WriteLine($"player loc is empty: {found}");
             }
 
             stopwatch.Stop();
@@ -390,6 +397,7 @@ namespace Hell {
         // imgui Window
         private float tile_display_size = 7;
         private double bit_map_generation_duration = 0;
+        private double bit_map_generation_iteration = 0;
         private double map_generation_duration = 0;
         private double collision_generation_duration = 0;
 

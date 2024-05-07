@@ -8,7 +8,7 @@ namespace Core {
 
     public class map {
 
-        public List<game_object> all_dynamic_game_objects { get; set; } = new List<game_object>();
+        public List<game_object> all_collidable_game_objects { get; set; } = new List<game_object>();
 
         public map() {}
 
@@ -36,7 +36,6 @@ namespace Core {
 
             Vector2 camera_pos = game.instance.camera.transform.position;
             Vector2 camera_size = game.instance.camera.get_view_size_in_world_coord() + new Vector2(300);
-
             float tiel_size = tile_size * cell_size;
 
             foreach (var tile in map_tiles) {
@@ -62,17 +61,26 @@ namespace Core {
 
         public void draw_denug() {
 
-            for(int x = 0; x < world.Count; x++)
-                world[x].draw_debug();
+            Vector2 camera_pos = game.instance.camera.transform.position;
+            Vector2 camera_size = game.instance.camera.get_view_size_in_world_coord() + new Vector2(300);
+            float tiel_size = tile_size * cell_size;
 
+            foreach(var tile in map_tiles) {
 
-            foreach(var tile in map_tiles.Values) {
+                float overlapX = (camera_size.X / 2 + tiel_size / 2) - Math.Abs(camera_pos.X - tile.Key.X);
+                float overlapY = (camera_size.Y / 2 + tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
 
-                foreach(var game_object in tile.static_game_object) {
-                    game_object.draw_debug();
+                if(overlapX > 0 && overlapY > 0) {
+
+                    debug_data.num_of_tiels_displayed++;
+                    foreach(var game_object in tile.Value.static_game_object) {
+                        game_object.draw_debug();
+                    }
                 }
             }
 
+            for(int x = 0; x < world.Count; x++)
+                world[x].draw_debug();
         }
 
         public virtual void draw_imgui() {
@@ -82,14 +90,14 @@ namespace Core {
         public void add_game_object(game_object game_object) {
 
             world.Add(game_object);
-            all_dynamic_game_objects.Add(game_object);
+            all_collidable_game_objects.Add(game_object);
             //Console.WriteLine($"Adding game_object [{game_object}] to world. Current count: {world.Count} ");
         }
 
         public void add_character(character character, Vector2? position = null) {
 
             world.Add(character);
-            all_dynamic_game_objects.Add(character);
+            all_collidable_game_objects.Add(character);
 
             if(position != null)
                 character.transform.position = position.Value;
@@ -149,6 +157,7 @@ namespace Core {
                 new_game_object.transform.size = new Vector2(cell_size);
 
             current_tile.static_game_object.Add(new_game_object);
+            all_collidable_game_objects.Add(new_game_object);
         }
 
         private map_tile get_correct_map_tile(Vector2 position) {
@@ -158,14 +167,10 @@ namespace Core {
             key *= final_tile_size;
             key += new Vector2i(final_tile_size / 2, (final_tile_size / 3));
 
-            Console.WriteLine($"position => key      {position} => {key}");
-
             if (!map_tiles.ContainsKey(key)) {
 
                 map_tiles.Add(key, new map_tile(key));
                 debug_data.num_of_tiels++;
-
-                Console.WriteLine($"-----------  add tile at: {key}");
             }
 
             map_tiles.TryGetValue(key, out map_tile current_tile);
@@ -284,7 +289,7 @@ namespace Core {
                             if (layerIndex == 0)
                                 backgound.Add(tileSprite);
                             else
-                                all_dynamic_game_objects.Add(new game_object(tileTransform).set_sprite(tileSprite));
+                                all_collidable_game_objects.Add(new game_object(tileTransform).set_sprite(tileSprite));
                         }
                     }
                 }
