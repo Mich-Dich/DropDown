@@ -10,12 +10,17 @@ namespace Core {
 
         public List<game_object> all_dynamic_game_objects { get; set; } = new List<game_object>();
 
-        public map() { }
+        public map() {}
 
         //public Vector2 loc_tile_size { get; set; } = new Vector2(100, 100);
 
         public int levelWidth { get; set; }
         public int levelHeight { get; set; }
+        public int tileHeight { get; set; }
+        public int tileWidth { get; set; }
+        public int TilesOnScreenWidth { get; set; }
+        public int TilesOnScreenHeight { get; set; }
+
 
         public struct tile_data {
 
@@ -205,6 +210,10 @@ namespace Core {
 
             LevelData levelData = level_parser.ParseLevel(tmxFilePath, tsxFilePath);
             MapData mapData = levelData.Map;
+            this.levelWidth = mapData.LevelPixelWidth;
+            this.levelHeight = mapData.LevelPixelHeight;
+            this.tileWidth = mapData.TileWidth;
+            this.tileHeight = mapData.TileHeight;
             TilesetData tilesetData = levelData.Tileset;
             Texture tilesetTexture = resource_manager.get_texture(tilesetImageFilePath, false);
 
