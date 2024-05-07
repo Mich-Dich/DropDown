@@ -10,11 +10,11 @@ namespace Hell {
 
         public player() {
             this.transform.size = new Vector2(100);
-            this.transform.position = new Vector2(300,100);
+            this.transform.position = new Vector2(480, 6080);
             set_sprite(new sprite(resource_manager.get_texture("assets/textures/Spaceship/Spaceship.png", true)));
-            add_collider(new collider(collision_shape.Square)).set_mobility(mobility.DYNAMIC);
+            add_collider(new collider(collision_shape.Circle)).set_mobility(mobility.DYNAMIC);
             
-            this.movement_speed = 100.0f;
+            this.movement_speed = 5.0f;
         }
 
         public override void hit(hit_data hit) {

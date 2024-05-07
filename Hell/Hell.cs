@@ -16,14 +16,16 @@ namespace Hell {
             set_update_frequency(144.0f);
             show_debug_data(true);
 
-            InitializePlayer();
             InitializeMap();
             InitializeCamera();
+            InitializePlayer();
         }
 
         private void InitializePlayer() {
             this.player_controller = new PC_default();
             this.player = new player();
+            //this.player.transform.position = this.camera.transform.position;
+            //Console.WriteLine(this.player.transform.position);
         }
 
         private void InitializeMap() {
