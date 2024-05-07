@@ -68,22 +68,50 @@ namespace Core.game_objects
             return orthographic_matrix * zoom_matrix;
         }
 
-       public Vector2 convertScreenToWorldCoords(float x, float y) {
+        public Vector2 convertScreenToWorldCoords(float x, float y) {
 
             Vector2 result = new Vector2();
             Vector2 default_offset = new Vector2(17, 40);
-            Vector2 mouse_position = game.instance.window.MousePosition;
+            Vector2 mouse_position = new Vector2(x, y);
 
-            var buffer = this.transform.position / 2;
-
-            result = buffer;
-            result += mouse_position - (game.instance.window.Size / 2);
+            result = this.transform.position * this.scale;
+            result += mouse_position - ((game.instance.window.Size / 2));
             result += (default_offset * ((mouse_position / game.instance.window.Size)));
             result /= this.scale;
 
-            Console.WriteLine($"zoom: {this.scale}");
+            return result;
+        }
+
+        public Vector2 get_uper_left_screen_corner_in_world_coordinates() {
+
+            Vector2 result = new Vector2();
+
+            result = this.transform.position * this.scale;
+            result -= ((game.instance.window.Size / 2));
+            result /= this.scale;
 
             return result;
+        }
+
+        public Vector2 get_lower_right_screen_corner_in_world_coordinates() {
+
+            Vector2 result = new Vector2();
+
+            result = this.transform.position * this.scale;
+            result += (game.instance.window.Size / 2);
+            result /= this.scale;
+
+            return result;
+        }
+
+        public Vector2 get_view_size_in_world_coord() {
+
+            Vector2 camera_view_min = this.get_uper_left_screen_corner_in_world_coordinates();
+            Vector2 camera_view_max = this.get_lower_right_screen_corner_in_world_coordinates();
+
+            return new Vector2(
+                camera_view_max.X - camera_view_min.X,
+                camera_view_max.Y - camera_view_min.Y);
         }
 
         // ========================================== private ========================================== 

@@ -13,7 +13,8 @@ namespace DropDown {
         public drop_down(String title, Int32 inital_window_width, Int32 inital_window_height)
             : base(title, inital_window_width, inital_window_height) { }
 
-        private game_object test_cursor_object;
+        //private game_object test_cursor_object;
+        //private game_object test_cursor_object_2;
 
         // ========================================================= functions =========================================================
         protected override void init() {
@@ -27,12 +28,13 @@ namespace DropDown {
 
             this.active_map = new base_map();
 
-
-            test_cursor_object = new game_object(new Vector2(150,150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
-            this.active_map.add_game_object(test_cursor_object);
-
-
             this.camera.set_min_max_zoom(0.05f, 10.9f);
+            
+            //test_cursor_object = new game_object(new Vector2(150, 150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
+            //this.active_map.add_game_object(test_cursor_object);
+
+            //test_cursor_object_2 = new game_object(new Vector2(150, 150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
+            //this.active_map.add_game_object(test_cursor_object_2);
 
             //this.active_map.add_sprite(new sprite(new Vector2(600, 200), new Vector2(500, 500)).add_animation("assets/textures/explosion", true, false, 60, true));
             //this.active_map.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).add_animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
@@ -42,9 +44,10 @@ namespace DropDown {
 
         protected override void update(float delta_time) {
 
-            test_cursor_object.transform.position = this.camera.convertScreenToWorldCoords(0, 0);
-
-            Console.WriteLine($"resultin pos: {test_cursor_object.transform.position}");
+            //test_cursor_object.transform.position = this.camera.get_uper_left_screen_corner_in_world_coordinates();
+            //test_cursor_object_2.transform.position = this.camera.get_lower_right_screen_corner_in_world_coordinates();
+            
+            //Console.WriteLine($"resultin pos: {test_cursor_object.transform.position}");
         }
 
         protected override void window_resize() {

@@ -35,7 +35,7 @@ namespace Core.imgui {
             imgui_util.add_table_row("update time", $"{io.Framerate:F1} FPS ({(1000.0f/ io.Framerate):F2} ms)");
             imgui_util.add_table_spacing(3);
 
-            imgui_util.add_table_row("chunks displayed", $"{debug_data.num_of_tiels_displayed}/{debug_data.num_of_tiels}");
+            imgui_util.add_table_row("tiels displayed", $"{debug_data.num_of_tiels_displayed}/{debug_data.num_of_tiels}");
             imgui_util.add_table_row("sprite draw calls", $"{debug_data.sprite_draw_calls_num}");
             imgui_util.add_table_row("playing animations", $"{debug_data.playing_animation_num}");
 			imgui_util.add_table_spacing(3);

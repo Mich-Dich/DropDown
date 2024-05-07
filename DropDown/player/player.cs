@@ -17,7 +17,7 @@ namespace DropDown.player {
                 .set_offset(new transform(Vector2.Zero, new Vector2(-10)))
                 .set_physics_material(new physics_material(0.05f, 0.1f)));
             
-            movement_speed = 2500.0f;
+            movement_speed = 15000.0f;
         }
 
         public override void hit(hit_data hit) { }

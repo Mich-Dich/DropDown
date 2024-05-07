@@ -12,8 +12,6 @@ namespace Core {
 
         public map() {}
 
-        //public Vector2 loc_tile_size { get; set; } = new Vector2(100, 100);
-
         public int levelWidth { get; set; }
         public int levelHeight { get; set; }
         public int tileHeight { get; set; }
@@ -36,10 +34,21 @@ namespace Core {
 
         public void draw() {
 
-            foreach(var tile in map_tiles.Values) {
+            Vector2 camera_pos = game.instance.camera.transform.position;
+            Vector2 camera_size = game.instance.camera.get_view_size_in_world_coord();
+            Vector2 tiel_size = new Vector2(tile_size * cell_size);
 
-                foreach(var sprite in tile.background) {
-                    sprite.draw();
+            foreach (var tile in map_tiles.Values) {
+                
+                if(camera_pos.X                         < tile.position.X + tiel_size.X
+                    && camera_pos.X + camera_size.X     > tile.position.X
+                    && camera_pos.X                     < tile.position.Y + tiel_size.Y
+                    && camera_pos.Y + camera_size.Y     > tile.position.Y) {
+
+                    debug_data.num_of_tiels_displayed++;
+                    foreach(var sprite in tile.background) {
+                        sprite.draw();
+                    }
                 }
             }
 
@@ -51,8 +60,6 @@ namespace Core {
         }
 
         public void draw_denug() {
-
-            debug_data.num_of_tiels_displayed = map_tiles.Count;
 
             for(int x = 0; x < world.Count; x++)
                 world[x].draw_debug();
@@ -118,39 +125,43 @@ namespace Core {
         // CURRENTLY IN DEV
         // ===============================================================================================================================================================
 
-        public void add_background_sprite(sprite sprite, Vector2 position) {
+        public void add_background_sprite(sprite sprite, Vector2 position, bool use_cell_size = true) {
 
-            Vector2i key = new Vector2i((int)(position.X / (tile_size * cell_size)), (int)(position.Y / (tile_size * cell_size)));
-            if(!map_tiles.ContainsKey(key)) {
+            var current_tile= get_correct_map_tile(position);
 
-                map_tiles.Add(key, new map_tile());
-                debug_data.num_of_tiels++;
-            }
-
-            map_tiles.TryGetValue(key, out map_tile current_tile);
             sprite.transform.position = position;
-            sprite.transform.size = new Vector2(cell_size);
+            if(use_cell_size)
+                sprite.transform.size = new Vector2(cell_size);
+
             current_tile.background.Add(sprite);
         }
 
         public void add_static_game_object(game_object new_game_object, Vector2 position, bool use_cell_size = true) {
 
+            var current_tile= get_correct_map_tile(position);
+
+            new_game_object.transform.position = position;
+            new_game_object.transform.mobility = mobility.STATIC;
+            if(new_game_object.collider != null)
+                new_game_object.collider.offset.mobility = mobility.STATIC;
+            if(use_cell_size)
+                new_game_object.transform.size = new Vector2(cell_size);
+
+            current_tile.static_game_object.Add(new_game_object);
+        }
+
+        private map_tile get_correct_map_tile(Vector2 position) {
+
             Vector2i key = new Vector2i((int)(position.X / (tile_size * cell_size)), (int)(position.Y / (tile_size * cell_size)));
+            key *= (tile_size * cell_size);
             if(!map_tiles.ContainsKey(key)) {
 
-                map_tiles.Add(key, new map_tile());
+                map_tiles.Add(key, new map_tile(key));
                 debug_data.num_of_tiels++;
             }
 
             map_tiles.TryGetValue(key, out map_tile current_tile);
-            new_game_object.transform.position = position;
-            new_game_object.transform.mobility = mobility.STATIC;
-            if(use_cell_size)
-                new_game_object.transform.size = new Vector2(cell_size);
-            if(new_game_object.collider != null)
-                new_game_object.collider.offset.mobility = mobility.STATIC;
-
-            current_tile.static_game_object.Add(new_game_object);
+            return current_tile;
         }
 
         public void force_clear_map_tiles() {
@@ -293,7 +304,10 @@ namespace Core {
         public List<sprite>         background = new List<sprite>();
         public List<game_object>    static_game_object = new List<game_object>();
 
-        public map_tile() { }
+        public map_tile(Vector2 position) {
+        
+            this.position = position;
+        }
 
     }
 

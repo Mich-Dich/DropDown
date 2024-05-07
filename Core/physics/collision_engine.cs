@@ -200,10 +200,10 @@ namespace Core.physics {
 
             hit_data hit = new hit_data();
 
-            if(!(AABB.position.X < AABB_2.position.X + AABB_2.size.X &&
-               AABB.position.X + AABB.size.X > AABB_2.position.X &&
-               AABB.position.Y < AABB_2.position.Y + AABB_2.size.Y &&
-               AABB.position.Y + AABB.size.Y > AABB_2.position.Y))
+            if(!(AABB.position.X                    < AABB_2.position.X + AABB_2.size.X 
+                && AABB.position.X + AABB.size.X    > AABB_2.position.X 
+                && AABB.position.Y                  < AABB_2.position.Y + AABB_2.size.Y 
+                && AABB.position.Y + AABB.size.Y    > AABB_2.position.Y))
                 return hit;
 
             hit.is_hit = true;
