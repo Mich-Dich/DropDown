@@ -36,13 +36,21 @@ namespace Core {
 
             Vector2 camera_pos = game.instance.camera.transform.position;
             Vector2 camera_size = game.instance.camera.get_view_size_in_world_coord();
+
+            camera_size /= 4;
+
+            new game_object(camera_pos, camera_size)
+                .add_collider(new collider(collision_shape.Square))
+                .draw_debug();
+
+
             Vector2 tiel_size = new Vector2(tile_size * cell_size);
 
             foreach (var tile in map_tiles.Values) {
                 
                 if(camera_pos.X                         < tile.position.X + tiel_size.X
                     && camera_pos.X + camera_size.X     > tile.position.X
-                    && camera_pos.X                     < tile.position.Y + tiel_size.Y
+                    && camera_pos.Y                     < tile.position.Y + tiel_size.Y
                     && camera_pos.Y + camera_size.Y     > tile.position.Y) {
 
                     debug_data.num_of_tiels_displayed++;
@@ -152,12 +160,19 @@ namespace Core {
 
         private map_tile get_correct_map_tile(Vector2 position) {
 
-            Vector2i key = new Vector2i((int)(position.X / (tile_size * cell_size)), (int)(position.Y / (tile_size * cell_size)));
-            key *= (tile_size * cell_size);
-            if(!map_tiles.ContainsKey(key)) {
+            int final_tile_size = (tile_size * cell_size);
+            Vector2i key = new Vector2i((int)(position.X / final_tile_size), (int)(position.Y / final_tile_size));
+            key *= final_tile_size;
+            key -= new Vector2i(final_tile_size/2);
+
+            Console.WriteLine($"position => key      {position} => {key}");
+
+            if (!map_tiles.ContainsKey(key)) {
 
                 map_tiles.Add(key, new map_tile(key));
                 debug_data.num_of_tiels++;
+
+                Console.WriteLine($"-----------  add tile at: {key}");
             }
 
             map_tiles.TryGetValue(key, out map_tile current_tile);

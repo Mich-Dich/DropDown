@@ -14,6 +14,8 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Runtime.InteropServices;
 using Core.imgui;
 using System.Diagnostics.Tracing;
+using Core.visual;
+using System.Diagnostics;
 
 namespace Core {
 
@@ -60,6 +62,8 @@ namespace Core {
             window = new GameWindow(_game_window_settings, _native_window_settings);
             window.CenterWindow();
 
+            Stopwatch stopwatch = new Stopwatch();
+
             window.Load += () => {
 
                 // ----------------------------------- defaults -----------------------------------
@@ -101,6 +105,9 @@ namespace Core {
             // internal game update
             window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
+                stopwatch.Restart();
+                stopwatch.Start();
+
                 update_game_time((float)eventArgs.Time);
                 this.player_controller.update_internal(game_time.delta, _input_event);
 
@@ -110,13 +117,22 @@ namespace Core {
 
                 update(game_time.delta);
                 _input_event.Clear();
+
+                stopwatch.Stop();
+                debug_data.work_time_update = stopwatch.Elapsed.TotalMilliseconds;
             };
 
             window.RenderFrame += (FrameEventArgs eventArgs) => {
 
+                stopwatch.Restart();
+                stopwatch.Start();
+
                 window.SwapBuffers();
                 internal_render();
                 imgui_render(game_time.delta);
+
+                stopwatch.Stop();
+                debug_data.work_time_render = stopwatch.Elapsed.TotalMilliseconds;
             };
 
             window.Resize += (ResizeEventArgs eventArgs) => {
@@ -278,6 +294,9 @@ namespace Core {
 
     public static class debug_data {
 
+        public static double work_time_update = 0;
+        public static double work_time_render = 0;
+
         public static int sprite_draw_calls_num = 0;
         public static int num_of_tiels = 0;
         public static int num_of_tiels_displayed = 0;
@@ -292,7 +311,9 @@ namespace Core {
         //public debug_data() {}
 
         public static void reset() {
-            
+
+            work_time_update = 0;
+            work_time_render = 0;
             sprite_draw_calls_num = 0;
             num_of_tiels_displayed = 0;
             playing_animation_num = 0;

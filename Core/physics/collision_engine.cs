@@ -36,7 +36,7 @@ namespace Core.physics {
                 // update position
                 if(obj_X.transform.mobility != mobility.STATIC) {
 
-                    obj_X.collider.velocity /= 1 + obj_X.collider.material.friction;
+                    obj_X.collider.velocity /= 1 + obj_X.collider.material.friction * delta_time;
                     obj_X.transform.position += obj_X.collider.velocity * delta_time;
                 }
 

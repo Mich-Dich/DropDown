@@ -33,6 +33,10 @@ namespace Core.imgui {
 
             imgui_util.begin_default_table("general_debug_data");
             imgui_util.add_table_row("update time", $"{io.Framerate:F1} FPS ({(1000.0f/ io.Framerate):F2} ms)");
+            imgui_util.add_table_row("total work time", $"{(debug_data.work_time_update + debug_data.work_time_render):F2} ms");
+            imgui_util.add_table_row("update time", $"{debug_data.work_time_update:F2} ms");
+            imgui_util.add_table_row("render time", $"{debug_data.work_time_render:F2} ms");
+
             imgui_util.add_table_spacing(3);
 
             imgui_util.add_table_row("tiels displayed", $"{debug_data.num_of_tiels_displayed}/{debug_data.num_of_tiels}");

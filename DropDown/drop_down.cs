@@ -20,7 +20,7 @@ namespace DropDown {
         protected override void init() {
             
             GL.ClearColor(new Color4(.05f, .05f, .05f, 1f));
-            set_update_frequency(600.0f);
+            set_update_frequency(144.0f);
             show_debug_data(true);
 
             this.player_controller = new PC_default();
