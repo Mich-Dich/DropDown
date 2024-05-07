@@ -24,61 +24,57 @@ namespace Core.physics {
             if(game.instance.show_debug)
                 debug_data.colidable_objects = all_objects.Count;
 
-
             hit_data current = new hit_data();
 
             for (int x = 0; x < all_objects.Count; x++) {
 
+                var obj_X = all_objects[x];
 
-                //if(x == 644)
-                //    Console.WriteLine($"player");
+                if(obj_X.collider == null)
+                    continue;       // early skip for colliderless objects
 
                 // update position
-                if((all_objects[x].collider != null)
-                    && (all_objects[x].transform.mobility != mobility.STATIC)) {
+                if(obj_X.transform.mobility != mobility.STATIC) {
 
-                    all_objects[x].collider.velocity /= 1 + all_objects[x].collider.material.friction;
-                    all_objects[x].transform.position += all_objects[x].collider.velocity * delta_time;
+                    obj_X.collider.velocity /= 1 + obj_X.collider.material.friction;
+                    obj_X.transform.position += obj_X.collider.velocity * delta_time;
                 }
 
                 for(int y = 1+x; y < all_objects.Count; y++) {
 
+                    var obj_Y = all_objects[y];
+
+                    if(obj_Y.collider == null)        // both objects are colliderless
+                        continue;
 
                     // Skip unneeded
-                    if(x == y 
-                        || (all_objects[x].transform.mobility == mobility.STATIC && all_objects[y].transform.mobility == mobility.STATIC))
+                    if(obj_X.transform.mobility == mobility.STATIC && obj_Y.transform.mobility == mobility.STATIC)
                         continue;
 
-                    if((all_objects[x].transform.position - all_objects[y].transform.position).LengthFast > min_distanc_for_collision)
-                        continue;
-
-                    if(all_objects[x].collider == null 
-                        || all_objects[y].collider == null)
+                    if((obj_X.transform.position - obj_Y.transform.position).LengthFast > min_distanc_for_collision)
                         continue;
 
 
                     if(game.instance.show_debug) {
 
                         debug_data.collision_checks_num++;
-
-                        if(all_objects[x].transform.mobility == mobility.STATIC)
+                        if(obj_X.transform.mobility == mobility.STATIC)
                             debug_data.colidable_objects_static++;
                         else
                             debug_data.colidable_objects_dynamic++;
                     }
 
-
-                    if(all_objects[x].collider.shape == collision_shape.Circle) {
-                        if(all_objects[y].collider.shape == collision_shape.Circle)
-                            current = collision_circle_circle(all_objects[x], all_objects[y]);
-                        else if(all_objects[y].collider.shape == collision_shape.Square)
-                            current = collision_circle_AABB(all_objects[x], all_objects[y]);
+                    if(obj_X.collider.shape == collision_shape.Circle) {
+                        if(obj_Y.collider.shape == collision_shape.Circle)
+                            current = collision_circle_circle(obj_X, obj_Y);
+                        else if(obj_Y.collider.shape == collision_shape.Square)
+                            current = collision_circle_AABB(obj_X, obj_Y);
                     }
-                    else if(all_objects[x].collider.shape == collision_shape.Square) {
-                        if(all_objects[y].collider.shape == collision_shape.Circle)
-                            current = collision_circle_AABB(all_objects[y], all_objects[x]);
-                        else if(all_objects[y].collider.shape == collision_shape.Square)
-                            current = collision_AABB_AABB(all_objects[x], all_objects[y]);
+                    else if(obj_X.collider.shape == collision_shape.Square) {
+                        if(obj_Y.collider.shape == collision_shape.Circle)
+                            current = collision_circle_AABB(obj_Y, obj_X);
+                        else if(obj_Y.collider.shape == collision_shape.Square)
+                            current = collision_AABB_AABB(obj_X, obj_Y);
                     }
 
 
@@ -87,19 +83,19 @@ namespace Core.physics {
                         continue;
 
                     // proccess hit => change position, velocity ...
-                    float total_mass = all_objects[x].collider.mass + all_objects[y].collider.mass;
-                    if(all_objects[x].transform.mobility != mobility.STATIC || all_objects[x].collider.offset.mobility != mobility.STATIC) {
+                    float total_mass = obj_X.collider.mass + obj_Y.collider.mass;
+                    if(obj_X.transform.mobility != mobility.STATIC || obj_X.collider.offset.mobility != mobility.STATIC) {
 
-                        all_objects[x].transform.position -= current.hit_direction; // * (all_objects[y].collider.mass / total_mass) * all_objects[y].collider.material.bounciness;
-                        all_objects[x].collider.velocity -= current.hit_direction * (all_objects[y].collider.mass / total_mass);// * all_objects[y].collider.material.bounciness;
-                        all_objects[x].hit(current);
+                        obj_X.transform.position -= current.hit_direction; // * (obj_Y.collider.mass / total_mass) * obj_Y.collider.material.bounciness;
+                        obj_X.collider.velocity -= current.hit_direction * (obj_Y.collider.mass / total_mass);// * obj_Y.collider.material.bounciness;
+                        obj_X.hit(current);
                     }
 
-                    if(all_objects[y].transform.mobility != mobility.STATIC || all_objects[y].collider.offset.mobility != mobility.STATIC) {
+                    if(obj_Y.transform.mobility != mobility.STATIC || obj_Y.collider.offset.mobility != mobility.STATIC) {
 
-                        all_objects[y].transform.position += current.hit_direction;// * (all_objects[x].collider.mass / total_mass) * all_objects[x].collider.material.bounciness;
-                        all_objects[y].collider.velocity += current.hit_direction * (all_objects[x].collider.mass / total_mass);// * all_objects[x].collider.material.bounciness;
-                        all_objects[y].hit(current);
+                        obj_Y.transform.position += current.hit_direction;// * (obj_X.collider.mass / total_mass) * obj_X.collider.material.bounciness;
+                        obj_Y.collider.velocity += current.hit_direction * (obj_X.collider.mass / total_mass);// * obj_X.collider.material.bounciness;
+                        obj_Y.hit(current);
                     }
                 }
             }
@@ -261,7 +257,7 @@ namespace Core.physics {
             // 
             //         4) update (position & velocity) of game_object [x]
             // 
-            //         5) all_objects[x].hit(loc_hit);   // call hit on game_object (this is already real code)
+            //         5) obj_X.hit(loc_hit);   // call hit on game_object (this is already real code)
             //     }
             // }
 
@@ -271,42 +267,42 @@ namespace Core.physics {
                 for(int y = 0; y < all_objects.Count; y++) {
 
                     // skip unneeded
-                    if(all_objects[x] == all_objects[y] ||
-                        (all_objects[x].mobility == mobility.STATIC && all_objects[y].mobility == mobility.STATIC))
+                    if(obj_X == obj_Y ||
+                        (obj_X.mobility == mobility.STATIC && obj_Y.mobility == mobility.STATIC))
                         break;
 
-                    if(all_objects[x].shape == primitive.CIRCLE) {
+                    if(obj_X.shape == primitive.CIRCLE) {
 
-                        if(all_objects[y].shape == primitive.CIRCLE)
-                            curent = collision_circle_circle(all_objects[x], all_objects[y]);
+                        if(obj_Y.shape == primitive.CIRCLE)
+                            curent = collision_circle_circle(obj_X, obj_Y);
 
-                        else if(all_objects[x].shape == primitive.SQUARE)
-                            curent = collision_circle_AABB(all_objects[x], all_objects[y]);
+                        else if(obj_X.shape == primitive.SQUARE)
+                            curent = collision_circle_AABB(obj_X, obj_Y);
                     }
 
-                    else if(all_objects[x].shape == primitive.SQUARE) {
+                    else if(obj_X.shape == primitive.SQUARE) {
 
-                        if(all_objects[y].shape == primitive.CIRCLE)
-                            curent = collision_circle_AABB(all_objects[x], all_objects[y]);
+                        if(obj_Y.shape == primitive.CIRCLE)
+                            curent = collision_circle_AABB(obj_X, obj_Y);
 
-                        else if(all_objects[x].shape == primitive.SQUARE)
-                            curent = collision_AABB_AABB(all_objects[x], all_objects[y]);
+                        else if(obj_X.shape == primitive.SQUARE)
+                            curent = collision_AABB_AABB(obj_X, obj_Y);
                     }
 
 
                     if(curent.is_hit) {
 
-                        if((all_objects[x].mobility == mobility.DYNAMIC || all_objects[x].mobility == mobility.MOVABLE) && (all_objects[y].mobility == mobility.DYNAMIC || all_objects[y].mobility == mobility.MOVABLE)) {
+                        if((obj_X.mobility == mobility.DYNAMIC || obj_X.mobility == mobility.MOVABLE) && (obj_Y.mobility == mobility.DYNAMIC || obj_Y.mobility == mobility.MOVABLE)) {
 
-                            all_objects[x].position = all_objects[x].position - (curent.hit_normal / 2); // velocity fehlt noch
-                            all_objects[y].position = all_objects[y].position + (curent.hit_normal / 2); // velocity fehlt noch
+                            obj_X.position = obj_X.position - (curent.hit_normal / 2); // velocity fehlt noch
+                            obj_Y.position = obj_Y.position + (curent.hit_normal / 2); // velocity fehlt noch
                         }
 
-                        if((all_objects[x].mobility == mobility.DYNAMIC || all_objects[x].mobility == mobility.MOVABLE) && all_objects[y].mobility == mobility.STATIC)
-                            all_objects[x].position = all_objects[x].position - curent.hit_normal; // velocity fehlt noch
+                        if((obj_X.mobility == mobility.DYNAMIC || obj_X.mobility == mobility.MOVABLE) && obj_Y.mobility == mobility.STATIC)
+                            obj_X.position = obj_X.position - curent.hit_normal; // velocity fehlt noch
 
-                        if(all_objects[x].mobility == mobility.STATIC && (all_objects[y].mobility == mobility.DYNAMIC || all_objects[y].mobility == mobility.MOVABLE))
-                            all_objects[y].position = all_objects[y].position + curent.hit_normal; // velocity fehlt noch
+                        if(obj_X.mobility == mobility.STATIC && (obj_Y.mobility == mobility.DYNAMIC || obj_Y.mobility == mobility.MOVABLE))
+                            obj_Y.position = obj_Y.position + curent.hit_normal; // velocity fehlt noch
 
                     }
 
