@@ -1,4 +1,6 @@
-﻿using Core.visual;
+﻿using Core.game_objects;
+using Core.util;
+using Core.visual;
 using DropDown.player;
 using Hell;
 using OpenTK.Graphics.OpenGL4;
@@ -11,6 +13,8 @@ namespace DropDown {
         public drop_down(String title, Int32 inital_window_width, Int32 inital_window_height)
             : base(title, inital_window_width, inital_window_height) { }
 
+        private game_object test_cursor_object;
+
         // ========================================================= functions =========================================================
         protected override void init() {
             
@@ -22,6 +26,12 @@ namespace DropDown {
             this.player = new CH_player();
 
             this.active_map = new base_map();
+
+
+            test_cursor_object = new game_object(new Vector2(150,150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
+            this.active_map.add_game_object(test_cursor_object);
+
+
             this.camera.set_min_max_zoom(0.05f, 10.9f);
 
             //this.active_map.add_sprite(new sprite(new Vector2(600, 200), new Vector2(500, 500)).add_animation("assets/textures/explosion", true, false, 60, true));
@@ -30,7 +40,12 @@ namespace DropDown {
 
         protected override void shutdown() { }
 
-        protected override void update(float delta_time) { }
+        protected override void update(float delta_time) {
+
+            test_cursor_object.transform.position = this.camera.convertScreenToWorldCoords(0, 0);
+
+            Console.WriteLine($"resultin pos: {test_cursor_object.transform.position}");
+        }
 
         protected override void window_resize() {
 

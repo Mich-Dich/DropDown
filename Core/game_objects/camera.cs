@@ -69,16 +69,21 @@ namespace Core.game_objects
         }
 
        public Vector2 convertScreenToWorldCoords(float x, float y) {
-            Vector2 normalizedCoords = new Vector2(
-                2.0f * x / transform.size.X - 1.0f,
-                1.0f - 2.0f * y / transform.size.Y
-            );
 
-            Matrix4 inverseProjectionMatrix = Matrix4.Invert(get_projection_matrix());
+            Vector2 result = new Vector2();
+            Vector2 default_offset = new Vector2(17, 40);
+            Vector2 mouse_position = game.instance.window.MousePosition;
 
-            Vector3 worldCoords = Vector3.TransformPerspective(new Vector3(normalizedCoords.X, normalizedCoords.Y, 0), inverseProjectionMatrix);
+            var buffer = this.transform.position / 2;
 
-            return new Vector2(worldCoords.X, worldCoords.Y);
+            result = buffer;
+            result += mouse_position - (game.instance.window.Size / 2);
+            result += (default_offset * ((mouse_position / game.instance.window.Size)));
+            result /= this.scale;
+
+            Console.WriteLine($"zoom: {this.scale}");
+
+            return result;
         }
 
         // ========================================== private ========================================== 

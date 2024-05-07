@@ -21,6 +21,9 @@
     <None Update="assets\defaults\default_grid.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\defaults\default_grid_bright.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\fonts\Open_Sans\OFL.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
