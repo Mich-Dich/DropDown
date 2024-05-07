@@ -29,7 +29,7 @@ namespace Core.physics {
             hit_data current = new hit_data();
 
             for (int x = 0; x < all_objects.Count; x++) {
-                for(int y = 0; y < all_objects.Count; y++) {
+                for(int y = 1+x; y < all_objects.Count; y++) {
 
 
                     // update position
@@ -42,7 +42,7 @@ namespace Core.physics {
                     }
 
                     // Skip unneeded
-                    if(all_objects[x] == all_objects[y] 
+                    if(x == y 
                         || (all_objects[x].transform.mobility == mobility.STATIC && all_objects[y].transform.mobility == mobility.STATIC))
                         continue;
 
