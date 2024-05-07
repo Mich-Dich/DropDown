@@ -32,7 +32,7 @@ namespace Hell {
         protected override void update(float delta_time) {
             if(move.X != 0 || move.Y != 0)
                 character.add_velocity(Vector2.NormalizeFast((Vector2)move.get_value()) * character.movement_speed * delta_time);
-                Console.WriteLine($"velocity:" + character.collider.velocity);
+            //Console.WriteLine($"velocity:" + character.collider.velocity);
         }
     }
 }
