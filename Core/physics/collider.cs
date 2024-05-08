@@ -1,11 +1,10 @@
-﻿using Core.physics.material;
-using Core.util;
-using OpenTK.Mathematics;
+﻿
+namespace Core.physics {
 
-namespace Core.physics
-{
+    using Core.util;
+    using OpenTK.Mathematics;
 
-    public class collider {
+    public sealed class collider {
 
         public collision_shape  shape;
         public collision_type   type;

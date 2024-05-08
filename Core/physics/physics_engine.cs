@@ -1,8 +1,8 @@
-﻿using Core.game_objects;
-using ImGuiNET;
-using OpenTK.Mathematics;
-
+﻿
 namespace Core.physics {
+
+    using Core.world;
+    using OpenTK.Mathematics;
 
     public struct hit_data {
 
@@ -15,9 +15,9 @@ namespace Core.physics {
     }
 
     // first game_object is the main object to consider, the second is the compare and will be set as the hit_object
-    public class collision_engine {
+    public sealed class physics_engine {
 
-        public collision_engine() { }
+        public physics_engine() { }
 
         public void update(List<game_object> all_objects, float delta_time, float min_distanc_for_collision = 1600) {
 
@@ -181,7 +181,7 @@ namespace Core.physics {
                 return hit;
 
             if (circle.collider.Blocking && AABB.collider.Blocking) {
-                hit.hit_direction = centerToNearest.Normalized() * overlap;
+                hit.hit_direction = centerToNearest.Normalized() * -overlap;
             } else {
                 hit.hit_direction = Vector2.Zero;
             }

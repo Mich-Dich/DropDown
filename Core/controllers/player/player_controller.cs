@@ -1,7 +1,8 @@
-﻿using Core.game_objects;
-using OpenTK.Mathematics;
-
+﻿
 namespace Core.controllers.player {
+
+using Core.world;
+using OpenTK.Mathematics;
 
     public abstract class player_controller : I_controller {
 

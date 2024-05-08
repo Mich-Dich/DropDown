@@ -1,16 +1,16 @@
-﻿using Core.game_objects;
-using Core.util;
-using Core.visual;
-using Core.physics;
-using OpenTK.Mathematics;
+﻿
+namespace Core.world.map {
 
-namespace Core {
+    using Core.physics;
+    using Core.render;
+    using Core.util;
+    using OpenTK.Mathematics;
 
     public class map {
 
         public List<game_object> all_collidable_game_objects { get; set; } = new List<game_object>();
 
-        public map() {}
+        public map() { }
 
         public int levelWidth { get; set; }
         public int levelHeight { get; set; }
@@ -25,7 +25,7 @@ namespace Core {
             public int texture_slot { get; set; }
             public Matrix4 modle_matrix { get; set; }
 
-            public tile_data(Int32 texture_slot, Matrix4 modle_matrix) {
+            public tile_data(int texture_slot, Matrix4 modle_matrix) {
 
                 this.texture_slot = texture_slot;
                 this.modle_matrix = modle_matrix;
@@ -35,13 +35,13 @@ namespace Core {
         public void draw() {
 
             Vector2 camera_pos = game.instance.camera.transform.position;
-            Vector2 camera_size = game.instance.camera.get_view_size_in_world_coord() + new Vector2(300);
+            Vector2 camera_size = game.instance.camera.get_view_size_in_world_coord() + new Vector2(cell_size * 2);
             float tiel_size = tile_size * cell_size;
 
-            foreach (var tile in map_tiles) {
+            foreach(var tile in map_tiles) {
 
-                float overlapX = (camera_size.X / 2 + tiel_size / 2) - Math.Abs(camera_pos.X - tile.Key.X);
-                float overlapY = (camera_size.Y / 2 + tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
+                float overlapX = camera_size.X / 2 + tiel_size / 2 - Math.Abs(camera_pos.X - tile.Key.X);
+                float overlapY = camera_size.Y / 2 + tiel_size / 2 - Math.Abs(camera_pos.Y - tile.Key.Y);
 
                 if(overlapX > 0 && overlapY > 0) {
 
@@ -67,12 +67,11 @@ namespace Core {
 
             foreach(var tile in map_tiles) {
 
-                float overlapX = (camera_size.X / 2 + tiel_size / 2) - Math.Abs(camera_pos.X - tile.Key.X);
-                float overlapY = (camera_size.Y / 2 + tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
+                float overlapX = camera_size.X / 2 + tiel_size / 2 - Math.Abs(camera_pos.X - tile.Key.X);
+                float overlapY = camera_size.Y / 2 + tiel_size / 2 - Math.Abs(camera_pos.Y - tile.Key.Y);
 
                 if(overlapX > 0 && overlapY > 0) {
 
-                    debug_data.num_of_tiels_displayed++;
                     foreach(var game_object in tile.Value.static_game_object) {
                         game_object.draw_debug();
                     }
@@ -85,6 +84,11 @@ namespace Core {
 
         public virtual void draw_imgui() {
 
+        }
+
+        public void update(float delta_time) {
+
+            game.instance.physics_engine.update(all_collidable_game_objects, game_time.delta, min_distanc_for_collision);
         }
 
         public void add_game_object(game_object game_object) {
@@ -136,7 +140,7 @@ namespace Core {
 
         public void add_background_sprite(sprite sprite, Vector2 position, bool use_cell_size = true) {
 
-            var current_tile= get_correct_map_tile(position);
+            var current_tile = get_correct_map_tile(position);
 
             sprite.transform.position = position;
             if(use_cell_size)
@@ -147,7 +151,7 @@ namespace Core {
 
         public void add_static_game_object(game_object new_game_object, Vector2 position, bool use_cell_size = true) {
 
-            var current_tile= get_correct_map_tile(position);
+            var current_tile = get_correct_map_tile(position);
 
             new_game_object.transform.position = position;
             new_game_object.transform.mobility = mobility.STATIC;
@@ -162,12 +166,12 @@ namespace Core {
 
         private map_tile get_correct_map_tile(Vector2 position) {
 
-            int final_tile_size = (tile_size * cell_size);
+            int final_tile_size = tile_size * cell_size;
             Vector2i key = new Vector2i((int)Math.Floor(position.X / final_tile_size), (int)Math.Floor(position.Y / final_tile_size));
             key *= final_tile_size;
-            key += new Vector2i(final_tile_size / 2, (final_tile_size / 3));
+            key += new Vector2i(final_tile_size / 2, final_tile_size / 3);
 
-            if (!map_tiles.ContainsKey(key)) {
+            if(!map_tiles.ContainsKey(key)) {
 
                 map_tiles.Add(key, new map_tile(key));
                 debug_data.num_of_tiels++;
@@ -200,8 +204,8 @@ namespace Core {
             Random random = new Random();
             double missing_time_rate = 0f;
 
-            float offset_x = (((float)width - 1) / 2) * cell_size;
-            float offset_y = (((float)height - 1) / 2) * cell_size;
+            float offset_x = ((float)width - 1) / 2 * cell_size;
+            float offset_y = ((float)height - 1) / 2 * cell_size;
 
             // Loop through the tiles and add them to the _positions list
             for(int x = 0; x < width; x++) {
@@ -210,7 +214,7 @@ namespace Core {
                     if(random.NextDouble() < missing_time_rate)    // Skip adding tiles at certain positions (e.g., missing tiles)
                         continue;
 
-                    transform loc_trans_buffer = new transform(new Vector2( x * cell_size - offset_x, y * cell_size - offset_y),
+                    transform loc_trans_buffer = new transform(new Vector2(x * cell_size - offset_x, y * cell_size - offset_y),
                         new Vector2(cell_size),
                         0, //(float)utility.degree_to_radians(_rotations[random.Next(0, 3)]),
                         mobility.STATIC);
@@ -233,10 +237,10 @@ namespace Core {
         public void LoadLevel(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath) {
             LevelData levelData = level_parser.ParseLevel(tmxFilePath, tsxFilePath);
             MapData mapData = levelData.Map;
-            this.levelWidth = mapData.LevelPixelWidth;
-            this.levelHeight = mapData.LevelPixelHeight;
-            this.tileWidth = mapData.TileWidth;
-            this.tileHeight = mapData.TileHeight;
+            levelWidth = mapData.LevelPixelWidth;
+            levelHeight = mapData.LevelPixelHeight;
+            tileWidth = mapData.TileWidth;
+            tileHeight = mapData.TileHeight;
             TilesetData tilesetData = levelData.Tileset;
             Texture tilesetTexture = resource_manager.get_texture(tilesetImageFilePath, false);
 
@@ -245,15 +249,15 @@ namespace Core {
             int textureWidth = tilesetData.ImageWidth;
             int textureHeight = tilesetData.ImageHeight;
 
-            for (int layerIndex = 0; layerIndex < mapData.Layers.Count; layerIndex++) {
-                for (int y = 0; y < mapData.Height; y++) {
-                    for (int x = 0; x < mapData.Width; x++) {
+            for(int layerIndex = 0; layerIndex < mapData.Layers.Count; layerIndex++) {
+                for(int y = 0; y < mapData.Height; y++) {
+                    for(int x = 0; x < mapData.Width; x++) {
                         int tileGID = mapData.Layers[layerIndex].Tiles[x, y];
-                        if (tileGID <= 0)
+                        if(tileGID <= 0)
                             continue;
 
                         int tileIndex = tileGID - tilesetData.FirstGid;
-                        if (tileIndex < 0)
+                        if(tileIndex < 0)
                             continue;
 
                         int tileRow = tileIndex / tilesetColumns;
@@ -268,8 +272,8 @@ namespace Core {
                         sprite tileSprite = new sprite(tileTransform, tilesetTexture)
                                             .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
 
-                        if (tilesetData.CollidableTiles.ContainsKey(tileIndex) && tilesetData.CollidableTiles[tileIndex]) {
-                            transform buffer = ((tileColumn == 0 && tileRow == 5))
+                        if(tilesetData.CollidableTiles.ContainsKey(tileIndex) && tilesetData.CollidableTiles[tileIndex]) {
+                            transform buffer = tileColumn == 0 && tileRow == 5
                                 ? new transform(new Vector2(0, -10), new Vector2(0, -23), 0, mobility.STATIC)
                                 : new transform(Vector2.Zero, Vector2.Zero, 0, mobility.STATIC);
 
@@ -283,8 +287,9 @@ namespace Core {
                             if(layerIndex == 0)
                                 add_background_sprite(tileSprite, tileTransform.position);
 
-                        } else {
-                            if (layerIndex == 0)
+                        }
+                        else {
+                            if(layerIndex == 0)
                                 add_background_sprite(tileSprite, tileTransform.position);
                             else
                                 all_collidable_game_objects.Add(new game_object(tileTransform).set_sprite(tileSprite));
@@ -300,8 +305,8 @@ namespace Core {
         private List<sprite> backgound { get; set; } = new List<sprite>();       // change to list of lists => to reduce drawcalls
         private List<game_object> world { get; set; } = new List<game_object>();
 
-
         // ------------------------------------------ tiles ------------------------------------------
+        protected float min_distanc_for_collision = 1600;
         protected int cell_size = 200;
         protected int tile_size = 8;     // 8 default_sprites fit in one tile
         private Dictionary<Vector2i, map_tile> map_tiles { get; set; } = new Dictionary<Vector2i, map_tile>();
@@ -310,13 +315,13 @@ namespace Core {
 
     public struct map_tile {
 
-        public Vector2              position = new Vector2();
+        public Vector2 position = new Vector2();
 
-        public List<sprite>         background = new List<sprite>();
-        public List<game_object>    static_game_object = new List<game_object>();
+        public List<sprite> background = new List<sprite>();
+        public List<game_object> static_game_object = new List<game_object>();
 
         public map_tile(Vector2 position) {
-        
+
             this.position = position;
         }
 

@@ -1,4 +1,4 @@
-﻿using Core.game_objects;
+﻿using Core.world;
 using Core.util;
 
 namespace Core.defaults {
@@ -9,7 +9,7 @@ namespace Core.defaults {
 
             this.transform.size = new OpenTK.Mathematics.Vector2(50);
             this.transform.rotation = float.Pi;
-            set_sprite(new Core.visual.sprite(resource_manager.get_texture("assets/textures/player/00.png")));
+            set_sprite(new Core.render.sprite(resource_manager.get_texture("assets/textures/player/00.png")));
             
             this.movement_speed = 5.0f;
         }

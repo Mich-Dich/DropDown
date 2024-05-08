@@ -1,16 +1,13 @@
-﻿using Core.util;
-using ImGuiNET;
-using System;
-using System.Numerics;
-using System.Reflection.Emit;
+﻿
+namespace Core.render {
 
-namespace Core.imgui {
+    using Core.util;
+    using ImGuiNET;
+    using System.Numerics;
 
-    public class debug_data_viualizer {
+    public sealed class debug_data_viualizer {
 
-        public debug_data_viualizer() {
-
-        }
+        public debug_data_viualizer() { }
 
         public void draw() {
 

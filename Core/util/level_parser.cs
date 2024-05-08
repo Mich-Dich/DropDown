@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
-using OpenTK.Mathematics;
 
 namespace Core.util {
+
+    using System.Xml.Linq;
+
     public class level_parser {
         public static LevelData ParseLevel(string tmxFilePath, string tsxFilePath) {
 

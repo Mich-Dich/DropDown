@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using Core.physics;
-using Core.util;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 
-namespace Core.renderer
-{
+namespace Core.renderer {
+
+    using Core.physics;
+    using Core.render.shaders;
+    using Core.util;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
 
     public enum DebugColor {
 
@@ -16,8 +15,8 @@ namespace Core.renderer
         White,
     }
 
-    public class debug_drawer {
-
+    public sealed class debug_drawer {
+        
         private shader debugShader;
         private int vbo, vao, ebo;
 

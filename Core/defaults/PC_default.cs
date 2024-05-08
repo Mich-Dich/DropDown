@@ -1,9 +1,9 @@
-﻿using Core;
+﻿
+namespace Core.defaults {
+
 using Core.controllers.player;
 using Core.input;
 using OpenTK.Mathematics;
-
-namespace Core.defaults {
 
     public class PC_default : player_controller {
 

@@ -1,23 +1,18 @@
-﻿using Core.controllers.player;
-using Core.defaults;
-using Core.input;
-using OpenTK.Mathematics;
-using System.Collections.Generic;
-using Core;
+﻿
+namespace Hell {
 
+    using Core.controllers.player;
+    using Core.input;
+    using OpenTK.Mathematics;
+    using System.Collections.Generic;
 
-namespace Hell
-{
-
-    public class PC_default : player_controller
-    {
+    public class PC_default : player_controller {
 
         public action move { get; set; }
         public action look { get; set; }
         public action shoot { get; set; }
 
-        public PC_default()
-        {
+        public PC_default() {
 
             actions.Clear();
 
@@ -62,15 +57,14 @@ namespace Hell
                 });
         }
 
-       protected override void update(float delta_time) {
+        protected override void update(float delta_time) {
             if(move.X != 0 || move.Y != 0)
                 character.add_velocity(Vector2.NormalizeFast((Vector2)move.get_value()) * character.movement_speed * delta_time);
             //Console.WriteLine($"velocity:" + character.collider.velocity);
         }
 
 
-        public void Shoot()
-        {
+        public void Shoot() {
             /*
             // Assuming shoot is a method that returns a bool
             if (shoot()) 

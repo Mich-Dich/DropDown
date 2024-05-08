@@ -1,13 +1,14 @@
-﻿using Core.game_objects;
-using Core.renderer;
-using Core.util;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+﻿
+namespace Core.render {
 
-namespace Core.visual {
+    using Core.render.shaders;
+    using Core.util;
+    using Core.world;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
 
-    public class sprite : I_animatable, IDisposable {
-
+    public sealed class sprite : I_animatable, IDisposable {
+        
         public transform transform { get; set; } = new();
         public shader? shader { get; set; }
         public Texture texture { get; set; }
@@ -44,9 +45,7 @@ namespace Core.visual {
             this.transform.mobility = mobility;
             init();
         }
-        ~sprite() {
-            Console.WriteLine($"DESTUCTOR");
-        }
+
         public void Dispose() {
 
             throw new NotImplementedException();

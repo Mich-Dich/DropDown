@@ -1,7 +1,8 @@
-﻿using Core.game_objects;
-using OpenTK.Mathematics;
-
+﻿
 namespace Core.util {
+
+    using Core.world;
+    using OpenTK.Mathematics;
 
     public class transform {
 

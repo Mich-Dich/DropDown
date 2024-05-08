@@ -1,6 +1,5 @@
-using Core.visual;
 
-namespace Core.renderer {
+namespace Core.render {
 
     public interface I_animatable {
 

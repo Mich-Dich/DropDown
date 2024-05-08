@@ -1,13 +1,16 @@
-﻿using Core.game_objects;
-using Core.physics;
-using Core.physics.material;
-using Core.util;
-using Core.visual;
-using OpenTK.Mathematics;
-
+﻿
 namespace DropDown.player {
 
+    using Core.physics;
+    using Core.render;
+    using Core.util;
+    using Core.world;
+    using OpenTK.Mathematics;
+
     public class CH_player : character {
+
+        public float stamina = 70;
+        public float stamina_max = 100;
 
         public CH_player() {
             
@@ -21,6 +24,8 @@ namespace DropDown.player {
         }
 
         public override void hit(hit_data hit) { }
+
+
 
     }
 }

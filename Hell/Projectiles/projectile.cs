@@ -1,16 +1,13 @@
-using Core.game_objects;
-using Core.physics;
-using Core.physics.material;
-using Core.util;
-using Core.visual;
-using Core.defaults;
-using OpenTK.Mathematics;
 
-namespace Hell
-{
+namespace Hell {
+ 
+    using Core.physics;
+    using Core.render;
+    using Core.util;
+    using Core.world;
+    using OpenTK.Mathematics;
 
-    public class projectile : game_object
-    {
+    public class projectile : game_object {
 
         private Vector2 direction;
         private float speed;
@@ -18,8 +15,7 @@ namespace Hell
 
 
 
-        public projectile(Vector2 position, Vector2 direction, float speed, float life_time)
-        {
+        public projectile(Vector2 position, Vector2 direction, float speed, float life_time) {
 
             this.transform.position = position;
             this.direction = direction;
@@ -32,8 +28,7 @@ namespace Hell
 
         }
 
-        public override void update(float delta_time)
-        {
+        public override void update(float delta_time) {
 
             base.update(delta_time);
 
@@ -41,7 +36,7 @@ namespace Hell
 
             life_time -= delta_time;
             //if (life_time <= 0)
-                //destroy();
+            //destroy();
 
 
 
@@ -49,8 +44,7 @@ namespace Hell
 
         }
 
-        public override void hit(hit_data hit)
-        {
+        public override void hit(hit_data hit) {
 
             base.hit(hit);
             //Console.WriteLine("Projectile collided with an object");

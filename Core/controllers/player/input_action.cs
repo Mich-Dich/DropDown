@@ -1,12 +1,12 @@
-﻿using Core.input;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-
+﻿
 namespace Core.controllers.player {
 
+    using Core.input;
+    using OpenTK.Mathematics;
+    using OpenTK.Windowing.GraphicsLibraryFramework;
 
     // ----------------------- class ----------------------- 
-    public class action {
+    public sealed class action {
 
         // ======================================= public =======================================
         public string name              { get; set; } = "";

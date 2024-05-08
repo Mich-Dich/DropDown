@@ -1,10 +1,11 @@
-using Core.game_objects;
-using Core.util;
-using Core.visual;
-using Core.physics;
-using OpenTK.Mathematics;
 
 namespace Hell {
+
+    using Core.physics;
+    using Core.render;
+    using Core.util;
+    using Core.world;
+    using OpenTK.Mathematics;
 
     public class enemy : character {
 

@@ -1,13 +1,11 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using Core.util;
+﻿
+namespace Core.render {
 
-namespace Core.renderer {
+    using OpenTK.Graphics.OpenGL4;
 
-    public class buffer_layout {
+    public sealed class buffer_layout {
 
-        public buffer_layout() {
-
-        }
+        public buffer_layout() { }
 
         public List<buffer_element> get_buffer_elements() => _elements;
         public int get_stride() => _stride;

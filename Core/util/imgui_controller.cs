@@ -1,15 +1,15 @@
-using ImGuiNET;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Diagnostics;
-using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
 
 namespace Core.util {
+
+    using ImGuiNET;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
+    using OpenTK.Windowing.Desktop;
+    using OpenTK.Windowing.GraphicsLibraryFramework;
+    using System.Diagnostics;
+    using System.Runtime.CompilerServices;
+    using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
+
     public class ImGuiController : IDisposable {
         private bool _frameBegun;
 

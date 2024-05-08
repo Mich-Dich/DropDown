@@ -1,12 +1,11 @@
-﻿using System;
-using System.IO;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-using StbImageSharp;
-
+﻿
 namespace Core {
-        
-    public class Texture : IDisposable {
+
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
+    using StbImageSharp;
+
+    public sealed class Texture : IDisposable {
 
         private byte[] imageData;
         public int Width { get; private set; }

@@ -1,15 +1,15 @@
-﻿using Core;
-using Core.game_objects;
-using Core.physics;
-using Core.physics.material;
-using Core.util;
-using Core.visual;
-using ImGuiNET;
-using OpenTK.Mathematics;
-using System.Diagnostics;
-using System.Resources;
+﻿
+namespace DropDown {
 
-namespace Hell {
+    using Core;
+    using Core.physics;
+    using Core.render;
+    using Core.util;
+    using Core.world;
+    using Core.world.map;
+    using ImGuiNET;
+    using OpenTK.Mathematics;
+    using System.Diagnostics;
 
     public class base_map : map {
 
@@ -28,11 +28,10 @@ namespace Hell {
 
             //this.add_character(new character().add_collider(new collider()), new Vector2(-300));
 
-            this.cell_size = 500;
+            this.cell_size = 100;
+            this.min_distanc_for_collision = (float)(this.cell_size * this.tile_size);
             generate_bit_map();
-
-
-
+            generate_actual_map();
 
         }
 
@@ -155,6 +154,7 @@ namespace Hell {
             stopwatch.Start();
 
             // --------------------------- spawn sprites --------------------------- 
+            Random rnd = new Random();
             force_clear_map_tiles();
             const int totalBits = sizeof(UInt64) * 8;
             for(int x = 0; x < totalBits; x++) {
@@ -166,17 +166,35 @@ namespace Hell {
                     if(currentBit == 1)
                         continue;
 
-                    this.add_background_sprite(
-                        new sprite(texture_buffer).select_texture_region(32, 64, 4, 60 ),
-                        new Vector2((y - totalBits/2) * this.cell_size, (x - totalBits/2) * this.cell_size));
+
+                    double probebilits = rnd.NextDouble();
+                    if(probebilits < 0.05f) {
+
+                        this.add_background_sprite(
+                            new sprite(texture_buffer).select_texture_region(32, 64, 3, 58 ),
+                            new Vector2((y - totalBits/2) * this.cell_size, (x - totalBits/2) * this.cell_size));
+                    }
+
+                    else if(probebilits < 0.2f) {
+
+                        this.add_background_sprite(
+                            new sprite(texture_buffer).select_texture_region(32, 64, 4, 58),
+                            new Vector2((y - totalBits / 2) * this.cell_size, (x - totalBits / 2) * this.cell_size));
+                    }
+                    
+                    else {
+
+                        this.add_background_sprite(
+                            new sprite(texture_buffer).select_texture_region(32, 64, 5, 58),
+                            new Vector2((y - totalBits / 2) * this.cell_size, (x - totalBits / 2) * this.cell_size));
+                    }
 
                 }
             }
 
             stopwatch.Stop();
             map_generation_duration = stopwatch.Elapsed.TotalMilliseconds;
-            stopwatch.Reset();
-            stopwatch.Start();
+            stopwatch.Restart();
 
             // --------------------------- generate collision --------------------------- 
 

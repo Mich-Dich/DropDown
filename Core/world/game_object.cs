@@ -1,11 +1,11 @@
-﻿using Core.physics;
-using Core.renderer;
-using Core.util;
-using Core.visual;
-using OpenTK.Mathematics;
+﻿
+namespace Core.world {
 
-namespace Core.game_objects
-{
+    using Core.physics;
+    using Core.render;
+    using Core.renderer;
+    using Core.util;
+    using OpenTK.Mathematics;
 
     public class game_object {
 

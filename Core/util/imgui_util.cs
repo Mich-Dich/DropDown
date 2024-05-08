@@ -1,12 +1,7 @@
-﻿using ImGuiNET;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Core.util {
+
+    using ImGuiNET;
 
     public static class imgui_util {
     
@@ -89,6 +84,19 @@ namespace Core.util {
                 ImGui.PushFont(imgui_fonts.fonts["regular_big"]);
             ImGui.Text(label);
             ImGui.PopFont();
+        }
+
+        public static void progress_bar_stylised(float ratio, uint color, System.Numerics.Vector2? size = null, string lable = "") {
+
+            ImGui.GetIO();
+
+            ImGui.PushStyleColor(ImGuiCol.PlotHistogram, color);
+            ImGui.ProgressBar(ratio, size ?? new System.Numerics.Vector2(150, 20), lable);
+            ImGui.PopStyleColor();
+
+
+
+
         }
 
     }

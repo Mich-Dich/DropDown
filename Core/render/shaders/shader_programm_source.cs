@@ -1,7 +1,7 @@
 ﻿
-namespace Core.renderer {
+namespace Core.render.shaders {
 
-    public class shader_programm_source {
+    public sealed class shader_programm_source {
 
         public string vertex_shader_string;
         public string fragment_shader_string;

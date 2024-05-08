@@ -1,11 +1,9 @@
-﻿using Core.physics;
-using OpenTK.Mathematics;
-using System.Drawing;
+﻿
+namespace Core.world {
 
-namespace Core.game_objects
-{
+    using OpenTK.Mathematics;
 
-    public class camera : game_object{
+    public sealed class camera : game_object{
 
         public float    zoom_offset { get; set; } = 0;
         public float    zoom = 0;

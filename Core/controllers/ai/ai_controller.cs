@@ -1,6 +1,7 @@
-﻿using Core.game_objects;
-
+﻿
 namespace Core.controllers.ai {
+
+using Core.world;
 
     public abstract class ai_controller : I_controller {
 
@@ -54,7 +55,7 @@ namespace Core.controllers.ai {
         /// <returns>The name of the selected or created state.</returns>
         private string select_state_to_execute(Type state) {
 
-            string className = state.GetType().Name;
+            string className = state.Name;
             Console.WriteLine(className); // This will print the class name as a string
 
             if(!_all_states.ContainsKey(className))       // create new states when they are needed

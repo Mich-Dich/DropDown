@@ -1,39 +1,37 @@
-﻿using Core.controllers.player;
-using Core.game_objects;
-using Core.input;
-using Core.physics;
-using Core.renderer;
-using Core.util;
-using ImGuiNET;
-using System;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Runtime.InteropServices;
-using Core.imgui;
-using System.Diagnostics.Tracing;
-using Core.visual;
-using System.Diagnostics;
-
+﻿
 namespace Core {
+
+    using Core.controllers.player;
+    using Core.input;
+    using Core.physics;
+    using Core.render;
+    using Core.render.shaders;
+    using Core.util;
+    using Core.world;
+    using Core.world.map;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
+    using OpenTK.Windowing.Common;
+    using OpenTK.Windowing.Desktop;
+    using OpenTK.Windowing.GraphicsLibraryFramework;
+    using System.Diagnostics;
 
     public abstract class game {
 
         public GameWindowSettings   _game_window_settings = GameWindowSettings.Default;
         public NativeWindowSettings _native_window_settings = NativeWindowSettings.Default;
-
+        
         public shader               default_sprite_shader;
         public static game          instance { get; private set; }
         public bool                 show_debug = true;
         public GameWindow           window { get; private set; }
         public camera               camera { get; set; }
-
+        public physics_engine       physics_engine { get; } = new();
+        
         //public debug_data    debug_data { get; set; } = new debug_data();
 
         public ImGuiController      imguiController;
-
+        
         // ============================================================================== public ============================================================================== 
         public game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
 
@@ -106,14 +104,15 @@ namespace Core {
             window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
                 stopwatch.Restart();
-                stopwatch.Start();
 
                 update_game_time((float)eventArgs.Time);
                 this.player_controller.update_internal(game_time.delta, _input_event);
 
                 for(int x = 0; x < active_map.all_collidable_game_objects.Count; x++)
                     active_map.all_collidable_game_objects[x].update(game_time.delta);
-                collision_engine.update(active_map.all_collidable_game_objects, game_time.delta);
+
+                //collision_engine.update(active_map.all_collidable_game_objects, game_time.delta);
+                this.active_map.update(game_time.delta);
 
                 update(game_time.delta);
                 _input_event.Clear();
@@ -123,9 +122,8 @@ namespace Core {
             };
 
             window.RenderFrame += (FrameEventArgs eventArgs) => {
-
+                
                 stopwatch.Restart();
-                stopwatch.Start();
 
                 window.SwapBuffers();
                 internal_render();
@@ -194,7 +192,6 @@ namespace Core {
         protected int inital_window_width { get; set; }
         protected int inital_window_height { get; set; }
 
-        protected collision_engine collision_engine { get; } = new();
         protected map default_map { get; set; }
         protected character player { get; set; }
         protected player_controller player_controller { get; set; }

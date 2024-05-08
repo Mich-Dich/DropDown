@@ -1,10 +1,10 @@
-﻿using Core.controllers;
-using Core.physics;
-using Core.util;
-using ImGuiNET;
-using OpenTK.Mathematics;
+﻿
+namespace Core.world {
 
-namespace Core.game_objects {
+    using Core.controllers;
+    using Core.physics;
+    using ImGuiNET;
+    using OpenTK.Mathematics;
 
     public class character : game_object {
 

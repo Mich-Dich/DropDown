@@ -1,9 +1,9 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Core.renderer {
+namespace Core.render.shaders {
 
-    public class shader {
+    public sealed class shader {
 
         //  ============================================================================== public ============================================================================== 
         public int programm_id { get; private set; }

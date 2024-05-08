@@ -1,12 +1,12 @@
-﻿using Core.game_objects;
-using Core.util;
-using Core.visual;
-using OpenTK.Mathematics;
-
+﻿
 namespace Hell {
 
-    internal class Hell : Core.game {
+    using Core.util;
+    using Core.world;
+    using OpenTK.Mathematics;
 
+    internal class Hell : Core.game {
+        
         private const int TilesOnScreenWidth = 30;
         private const int TilesOnScreenHeight = 20;
 
@@ -28,10 +28,10 @@ namespace Hell {
             AdjustCameraPosition();
             AdjustCameraZoom();
             this.camera.set_min_max_zoom(0.001f, 1000f);
-
+            
             // ------------- init player ------------- 
             this.player_controller = new PC_default();
-            this.player = new player();
+            this.player = new CH_player();
             test_cursor_object = new game_object(new Vector2(150, 150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
             this.active_map.add_game_object(test_cursor_object);
         }

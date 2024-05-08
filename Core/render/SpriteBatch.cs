@@ -1,9 +1,9 @@
-﻿using Core.util;
+﻿
+namespace Core {
 
-namespace Core
-{
+using Core.util;
 
-    public class SpriteBatch {
+    public sealed class SpriteBatch {
         
         private List<Texture> frames;
 

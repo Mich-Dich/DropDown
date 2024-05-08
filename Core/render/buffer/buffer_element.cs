@@ -1,6 +1,7 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿
+namespace Core.render {
 
-namespace Core.renderer {
+    using OpenTK.Graphics.OpenGL4;
 
     public struct buffer_element {
 

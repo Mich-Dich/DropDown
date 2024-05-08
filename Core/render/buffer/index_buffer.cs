@@ -1,8 +1,9 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿
+namespace Core.render {
 
-namespace Core.renderer {
+    using OpenTK.Graphics.OpenGL4;
 
-    public class index_buffer : i_buffer, IDisposable {
+    public sealed class index_buffer : i_buffer, IDisposable {
 
         public int id { get; }
 

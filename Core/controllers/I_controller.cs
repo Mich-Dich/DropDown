@@ -1,4 +1,4 @@
-﻿using Core.game_objects;
+﻿using Core.world;
 
 namespace Core.controllers {
 

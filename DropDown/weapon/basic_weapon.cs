@@ -1,7 +1,8 @@
-﻿using Core.game_objects;
-using Core.visual;
-
+﻿
 namespace DropDown.weapon {
+
+    using Core.world;
+    using Core.render;
 
     public /*abstract*/ class base_weapon : game_object {
 
@@ -28,7 +29,7 @@ namespace DropDown.weapon {
         }
 
         public override void update(float delta_time) {
-        
+
         }
 
         public override void draw() {

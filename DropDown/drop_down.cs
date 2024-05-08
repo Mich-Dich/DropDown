@@ -1,12 +1,10 @@
-﻿using Core.game_objects;
-using Core.util;
-using Core.visual;
-using DropDown.player;
-using Hell;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-
+﻿
 namespace DropDown {
+
+    using DropDown.player;
+    using ImGuiNET;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
 
     internal class drop_down : Core.game {
 
@@ -15,6 +13,7 @@ namespace DropDown {
 
         //private game_object test_cursor_object;
         //private game_object test_cursor_object_2;
+        private CH_player CH_player;
 
         // ========================================================= functions =========================================================
         protected override void init() {
@@ -24,12 +23,14 @@ namespace DropDown {
             show_debug_data(true);
 
             this.player_controller = new PC_default();
-            this.player = new CH_player();
+
+            CH_player = new CH_player();
+            this.player = CH_player;
 
             this.active_map = new base_map();
 
             this.camera.set_min_max_zoom(0.05f, 10.9f);
-            
+
             //test_cursor_object = new game_object(new Vector2(150, 150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
             //this.active_map.add_game_object(test_cursor_object);
 
@@ -57,7 +58,42 @@ namespace DropDown {
 
         protected override void render(float delta_time) { }
         
-        protected override void render_imgui(float delta_time) { }
+        protected override void render_imgui(float delta_time) {
+
+            //ImGui.ShowStyleEditor();
+
+            // HUD
+            ImGuiIOPtr io = ImGui.GetIO();
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
+                | ImGuiWindowFlags.NoDocking
+                | ImGuiWindowFlags.AlwaysAutoResize
+                | ImGuiWindowFlags.NoSavedSettings
+                | ImGuiWindowFlags.NoFocusOnAppearing
+                | ImGuiWindowFlags.NoNav
+                | ImGuiWindowFlags.NoMove;
+
+            ImGui.SetNextWindowBgAlpha(1f);
+            ImGui.SetNextWindowPos(new System.Numerics.Vector2(-2, this.window.Size.Y-38), ImGuiCond.Always, new System.Numerics.Vector2(0,1));
+            ImGui.Begin("HUD_BotomLeft", window_flags);
+
+            //imgui_util.title("TestArea");
+
+
+            uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.8f, 0.2f, 0.2f, 1));
+            uint col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.8f, 1));
+
+            ImGui.PushStyleColor(ImGuiCol.PlotHistogram, col_red);
+            ImGui.ProgressBar(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250,15), "");
+            ImGui.PopStyleColor();
+            ImGui.PushStyleColor(ImGuiCol.PlotHistogram, col_blue);
+            ImGui.ProgressBar(CH_player.stamina / CH_player.stamina_max, new System.Numerics.Vector2(250,15), "");
+            ImGui.PopStyleColor();
+
+            ImGui.End();
+        
+        
+        
+        }
 
     }
 }

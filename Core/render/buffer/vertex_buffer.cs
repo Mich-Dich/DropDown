@@ -1,8 +1,9 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿
+namespace Core.render {
 
-namespace Core.renderer {
+    using OpenTK.Graphics.OpenGL4;
 
-    public class vertex_buffer : i_buffer, IDisposable {
+    public sealed class vertex_buffer : i_buffer, IDisposable {
 
         public int id { get; private set; }
 

@@ -1,11 +1,8 @@
-﻿using Core;
-using Core.game_objects;
-using Core.physics;
-using Core.physics.material;
-using Core.util;
-using OpenTK.Mathematics;
-
+﻿
 namespace Hell {
+    
+    using Core.world.map;
+
     public class base_map : map {
         public base_map() {
             this.cell_size = 32;

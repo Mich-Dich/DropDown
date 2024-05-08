@@ -1,7 +1,8 @@
-﻿using ImGuiNET;
-using OpenTK.Graphics.OpenGL4;
-
+﻿
 namespace Core {
+    
+    using ImGuiNET;
+    using OpenTK.Graphics.OpenGL4;
 
     public static class utility {
     
@@ -53,7 +54,7 @@ namespace Core {
 
     }
 
-    public class ResourceNotAssignedException : Exception {
+    public sealed class ResourceNotAssignedException : Exception {
         public ResourceNotAssignedException(string message)
             : base(message) {
         }
@@ -65,7 +66,8 @@ namespace Core {
 
     }
 
-    public class RefWrapper<T> {
+    public sealed class RefWrapper<T> {
+
         private List<T> list;
         private int index;
 

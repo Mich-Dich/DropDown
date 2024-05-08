@@ -1,9 +1,9 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using System.Diagnostics.CodeAnalysis;
+﻿
+namespace Core.render {
 
-namespace Core.renderer {
+    using OpenTK.Graphics.OpenGL4;
 
-    public class vertex_array : i_buffer, IDisposable {
+    public sealed class vertex_array : i_buffer, IDisposable {
 
         public int id { get; private set; }
 

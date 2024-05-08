@@ -1,9 +1,9 @@
-﻿using Core.renderer;
-using Core.util;
+﻿
+namespace Core.render {
 
-namespace Core.visual {
+    using Core.util;
 
-    public class animation {
+    public sealed class animation {
 
         public bool Loop;
 
