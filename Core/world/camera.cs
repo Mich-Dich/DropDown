@@ -119,7 +119,7 @@ namespace Core.world {
             this.scale = Math.Clamp(this.zoom + this.zoom_offset, min_zoom, max_zoom);
         }
 
-        private float scale { get; set; }    // camera zoom
+        private float scale { get; set; }
         private float min_zoom = 0.3f;
         private float max_zoom = 2.0f;
     }

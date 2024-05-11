@@ -133,10 +133,13 @@ namespace Core.world.map {
         public void set_background_image(string image_path) {
             Texture background_texture = resource_manager.get_texture(image_path, false);
 
-            Vector2 window_size = new Vector2(game.instance.window.Size.X, game.instance.window.Size.Y);
-            Console.WriteLine($"window_size: {window_size}");
+            Vector2 view_size = game.instance.camera.get_view_size_in_world_coord();
 
-            Vector2 sprite_size = window_size;
+            Vector2 original_sprite_size = new Vector2(background_texture.Width, background_texture.Height);
+
+            Vector2 scale_factor = view_size / original_sprite_size;
+
+            Vector2 sprite_size = original_sprite_size * scale_factor;
 
             Vector2 sprite_position = Vector2.Zero;
 
