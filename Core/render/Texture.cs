@@ -13,12 +13,12 @@ namespace Core {
         public bool IsPixelArt { get; set; }
         public int Handle { get; private set; }
 
-
         public Texture(string path, bool isPixelArt = false) {
 
-            if(!File.Exists(path)) 
-                throw new FileNotFoundException($"The file at path {path} could not be found.");
-            
+            if(!File.Exists(path)) {
+                string workingDirectory = Directory.GetCurrentDirectory();
+                throw new FileNotFoundException($"The file at path {path} could not be found. Current working directory is {workingDirectory}.");
+            }
 
             this.IsPixelArt = isPixelArt;
             this.Handle = GL.GenTexture();
