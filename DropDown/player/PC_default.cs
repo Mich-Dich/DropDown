@@ -1,25 +1,24 @@
-﻿using Core;
+﻿using Box2DX.Common;
+using Core;
 using Core.controllers.player;
 using Core.input;
 using Core.world;
 using OpenTK.Mathematics;
-using System.Runtime.InteropServices.JavaScript;
-using System.Threading.Channels;
 
 namespace DropDown.player {
 
     public class PC_default : player_controller {
 
-        public action move { get; set; }
-        public action look { get; set; }
-        public action sprint { get; set; }
+        public Core.controllers.player.Action move { get; set; }
+        public Core.controllers.player.Action look { get; set; }
+        public Core.controllers.player.Action sprint { get; set; }
 
         public PC_default(Character character)
             : base (character, null) {
 
             actions.Clear();
 
-            move = new action(
+            move = new Core.controllers.player.Action(
                 "move",
                 (uint)action_modefier_flags.auto_reset,
                 false,
@@ -35,7 +34,7 @@ namespace DropDown.player {
             add_input_action(move);
 
 
-            look = new action(
+            look = new Core.controllers.player.Action(
                 "look",
                 (uint)action_modefier_flags.none,
                 false,
@@ -48,7 +47,7 @@ namespace DropDown.player {
             add_input_action(look);
 
 
-            sprint = new action(
+            sprint = new Core.controllers.player.Action(
                 "shoot",
                 (uint)action_modefier_flags.none,
                 false,
@@ -69,9 +68,13 @@ namespace DropDown.player {
                 total_speed += sprint_speed;
 
             // simple movement
-            if(move.X != 0 || move.Y != 0)
-                character.Add_Velocity(Vector2.NormalizeFast((Vector2)move.get_value()) * total_speed * delta_time);
+            if(move.X != 0 || move.Y != 0) {
 
+                Vector2 direction = Vector2.NormalizeFast((Vector2)move.get_value());
+                character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * delta_time);
+                Console.WriteLine($"direction: {direction * total_speed * delta_time}  Velocity: {character.collider.body.GetLinearVelocity().X}/{character.collider.body.GetLinearVelocity().Y}");
+            }
+            
             // camera follows player
             Game.instance.camera.transform.position = character.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
 
@@ -79,7 +82,7 @@ namespace DropDown.player {
 
             // look at mouse
             Vector2 screen_look = Game.instance.get_mouse_relative_pos();
-            float angleRadians = (float)Math.Atan2(screen_look.X, screen_look.Y);
+            float angleRadians = (float)System.Math.Atan2(screen_look.X, screen_look.Y);
             character.transform.rotation = -angleRadians + (float.Pi / 2) + (float.Pi/20);
         }
 

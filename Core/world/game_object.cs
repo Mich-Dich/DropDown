@@ -52,7 +52,7 @@ namespace Core.world {
         /// <summary>
         /// Creates and sets a sprite using the provided texture for the game object.
         /// </summary>
-        /// <param name="texture">The texture to use for creating the sprite.</param>
+        /// <param name="texture">The texture to Use for creating the sprite.</param>
         /// <returns>The game object with the created sprite.</returns>
         public Game_Object Set_Sprite(Texture Texture) {
 
@@ -154,7 +154,7 @@ namespace Core.world {
         internal void Draw_Debug() {
 
             if(this.collider != null)
-                this.debug_drawer?.draw_collision_shape(this.transform, this.collider, DebugColor.Red);
+                this.debug_drawer?.Draw_Collision_Shape(this.transform, this.collider, DebugColor.Red);
         }
         
         // =============================================== private ==============================================

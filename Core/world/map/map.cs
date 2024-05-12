@@ -11,7 +11,8 @@ namespace Core.world.map {
 
     public class Map {
 
-        public List<Game_Object> all_collidable_game_objects { get; set; } = new List<Game_Object>();
+        public List<Game_Object>    all_collidable_game_objects { get; set; } = new List<Game_Object>();
+        private List<Character>     _all_character{ get; set; } = new List<Character>();
 
         private World physics_world;
         public Map() {
@@ -67,13 +68,25 @@ namespace Core.world.map {
         /// <param name="position">The optional position to place the character.</param>
         public void Add_Character(Character character, Vector2? position = null) {
 
-            world.Add(character);
-            all_collidable_game_objects.Add(character);
-
             if(position != null)
                 character.transform.position = position.Value;
 
-            //Console.WriteLine($"Adding character [{character}] to world. Current count: {world.Count} ");
+            CircleDef circleDef = new CircleDef{ Radius = character.transform.size.X };
+            BodyDef def = new BodyDef();
+            
+            Body body = physics_world.CreateBody(def);
+            body.IsDynamic();
+            body.CreateShape(circleDef);
+
+            
+
+            character.collider.body = body;
+            _all_character.Add(character);
+
+
+
+
+            Console.WriteLine($"Adding character [{character}] to map. Current count: {_all_character.Count} ");
         }
 
         /// <summary>
@@ -150,6 +163,9 @@ namespace Core.world.map {
                 }
             }
 
+            foreach(var character in _all_character)
+                character.Draw();
+
             for(int x = 0; x < backgound.Count; x++)
                 backgound[x].Draw();
 
@@ -179,6 +195,9 @@ namespace Core.world.map {
                 }
             }
 
+            foreach(var character in _all_character)
+                character.Draw_Debug();
+
             for(int x = 0; x < world.Count; x++)
                 world[x].Draw_Debug();
         }
@@ -189,6 +208,12 @@ namespace Core.world.map {
         /// <param name="delta_time">The time elapsed since the last update.</param>
         internal void Update(float delta_time) {
 
+            physics_world.Step(delta_time, 6, 5);
+
+            foreach(var character in _all_character) {
+                character.update_position();
+            }
+
             //game.instance.physics_engine.update(all_collidable_game_objects, game_time.delta, min_distanc_for_collision);
         }
 
@@ -197,7 +222,7 @@ namespace Core.world.map {
         /// </summary>
         /// <param name="sprite">The sprite to add to the background.</param>
         /// <param name="position">The position where the sprite should be added.</param>
-        /// <param name="use_cell_size">Flag indicating whether to use the cell size for the sprite.</param>
+        /// <param name="use_cell_size">Flag indicating whether to Use the cell size for the sprite.</param>
         public void Add_Background_Sprite(Sprite sprite, Vector2 position, bool use_cell_size = true) {
 
             var current_tile = Get_Correct_Map_Tile(position);
@@ -214,7 +239,7 @@ namespace Core.world.map {
         /// </summary>
         /// <param name="new_game_object">The new game object to add to the map.</param>
         /// <param name="position">The position where the game object should be added.</param>
-        /// <param name="use_cell_size">Flag indicating whether to use the cell size for the game object.</param>
+        /// <param name="use_cell_size">Flag indicating whether to Use the cell size for the game object.</param>
         public void Add_Static_Game_Object(Game_Object new_game_object, Vector2 position, bool use_cell_size = true) {
 
             var current_tile = Get_Correct_Map_Tile(position);
@@ -285,7 +310,7 @@ namespace Core.world.map {
 
         public void Load_Level(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath) {
 
-            Level_Data levelData = Level_Parser.ParseLevel(tmxFilePath, tsxFilePath);
+            Level_Data levelData = Level_Parser.Parse_Level(tmxFilePath, tsxFilePath);
             Map_Data mapData = levelData.Map;
             levelWidth = mapData.LevelPixelWidth;
             levelHeight = mapData.LevelPixelHeight;
@@ -398,7 +423,7 @@ namespace Core.world.map {
 
         None = 0,
         backgound = 1,      // will only be drawn (no collision)    eg. background image
-        world = 2,          // can draw/interact/collide            eg. walls/chest
+        world = 2,          // can Draw/interact/collide            eg. walls/chest
     }
 
 }

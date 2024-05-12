@@ -203,7 +203,7 @@ namespace Core.render {
         /// <summary>
         /// Draws the sprite using the specified model matrix.
         /// </summary>
-        /// <param name="model">The model matrix to use for drawing. If null, the sprite's own matrix is used.</param>
+        /// <param name="model">The model matrix to Use for drawing. If null, the sprite's own matrix is used.</param>
         /// <exception cref="NotImplementedException">Thrown if neither a texture nor an animation is assigned to the sprite.</exception>
         public void Draw(Matrix4? model = null) {
 
@@ -222,29 +222,29 @@ namespace Core.render {
             this.texture?.Use(TextureUnit.Texture0);
 
 
-            // -------------------------------------- bind data for draw -------------------------------------- 
+            // -------------------------------------- bind data for Draw -------------------------------------- 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            shader.use();
+            shader.Use();
             _vertex_array.Bind();
             _index_buffer.Bind();
 
             // -------------------------------------- modle matrix -------------------------------------- 
             if(model != null)
-                this.shader.set_matrix_4x4("model", model.Value);
+                this.shader.Set_Matrix_4x4("model", model.Value);
 
-            // else use precalculated matrix
+            // else Use precalculated matrix
             else if(this.transform.mobility == Mobility.STATIC)
-                this.shader.set_matrix_4x4("model", _model_matrix);
+                this.shader.Set_Matrix_4x4("model", _model_matrix);
 
             // recalculate matrix every frame
             else if(this.transform.mobility == Mobility.DYNAMIC || needs_update) {
 
-                this.shader.set_matrix_4x4("model", calc_modle_matrix());
+                this.shader.Set_Matrix_4x4("model", calc_modle_matrix());
                 needs_update = false;
             }
 
-            // -------------------------------------- draw call -------------------------------------- 
+            // -------------------------------------- Draw call -------------------------------------- 
             GL.DrawElements(PrimitiveType.Triangles, _indeices.Length, DrawElementsType.UnsignedInt, 0);
 
         }

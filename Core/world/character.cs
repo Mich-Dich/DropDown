@@ -1,6 +1,6 @@
 ﻿
 namespace Core.world {
-
+    using Box2DX.Common;
     using Core.controllers;
     using Core.physics;
     using ImGuiNET;
@@ -45,10 +45,27 @@ namespace Core.world {
         /// Adds to the current velocity of the character.
         /// </summary>
         /// <param name="new_velocity">The additional velocity to add to the character's current velocity.</param>
-        public void Add_Velocity(Vector2 new_velocity) {
+        public void Add_Linear_Velocity(Vec2 add_velocity) {
+            
+            if(this.collider != null && collider.body != null) {
 
-            if(this.collider != null)
-                this.collider.velocity += new_velocity;
+                collider.body.SetLinearVelocity(collider.body.GetLinearVelocity() + add_velocity);
+            }
+        }
+
+        public void Set_Velocity(Vec2 new_velocity) {
+
+            if(this.collider != null && collider.body != null) {
+
+                collider.body.SetLinearVelocity(new_velocity);
+            }
+        }
+
+        public void update_position() {
+
+            Vec2 pos = this.collider.body.GetPosition();
+            Vector2 loc_pos = new Vector2(pos.X, pos.Y);
+            this.transform.position = loc_pos;
         }
 
         /// <summary>

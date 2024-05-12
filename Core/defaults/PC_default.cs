@@ -8,15 +8,15 @@ namespace Core.defaults {
 
     public class PC_default : player_controller {
 
-        public action move { get; set; }
-        public action look { get; set; }
+        public Action move { get; set; }
+        public Action look { get; set; }
         
         public PC_default(Character character)
             : base(character, null) {
 
             this.actions.Clear();
 
-            move = new action(
+            move = new Action(
                 "move",
                 (uint)action_modefier_flags.auto_reset,
                 false,
@@ -32,7 +32,7 @@ namespace Core.defaults {
             add_input_action(move);
 
 
-            look = new action(
+            look = new Action(
                 "look",
                 (uint)action_modefier_flags.none,
                 false,

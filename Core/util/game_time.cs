@@ -1,4 +1,5 @@
-﻿namespace Core.util {
+﻿
+namespace Core.util {
 
     public static class Game_Time {
 

@@ -14,9 +14,9 @@ using OpenTK.Mathematics;
         /// </summary>
         /// <param name="character">The character associated with this controller.</param>
         /// <param name="actions">Optional list of actions to initialize the controller with (default: null).</param>
-        public player_controller(Character character, List<action>? actions = null) {
+        public player_controller(Character character, List<Action>? actions = null) {
 
-            this.actions = actions?? new List<action>();
+            this.actions = actions?? new List<Action>();
             this.character = character;
         }
 
@@ -30,7 +30,7 @@ using OpenTK.Mathematics;
                 input_event loc_event = input_event[x];
 
                 for (int y = 0; y < actions.Count; y++) {
-                    action loc_action = actions[y];
+                    Action loc_action = actions[y];
 
                     for (int z = 0; z < loc_action.keys_bindings.Count; z++) {
                         key_binding_detail key_binding = loc_action.keys_bindings[z];
@@ -146,7 +146,7 @@ using OpenTK.Mathematics;
 
 
 
-                    // proccess action modefiers
+                    // proccess Action modefiers
 
                     if((loc_action.modefier_flags & (uint)action_modefier_flags.normalize_vec) != 0) {
 
@@ -194,7 +194,7 @@ using OpenTK.Mathematics;
                 input_event loc_event = input_event[x];
 
                 for(int y = 0; y < actions.Count; y++) {
-                    action loc_action = actions[y];
+                    Action loc_action = actions[y];
 
                     for(int z = 0; z < loc_action.keys_bindings.Count; z++) {
                         key_binding_detail key_binding = loc_action.keys_bindings[z];
@@ -310,28 +310,28 @@ using OpenTK.Mathematics;
         // ----------------------------- utility -----------------------------
 
         /// <summary>
-        /// Adds an input action to the player controller.
+        /// Adds an input Action to the player controller.
         /// </summary>
-        /// <param name="action">The input action to add.</param>
-        public void add_input_action(action action) {
+        /// <param name="action">The input Action to add.</param>
+        public void add_input_action(Action action) {
 
             // TODO: (Leonhard) load input data (key_codes) from file
             actions.Add(action);
         }
 
         /// <summary>
-        /// Removes an input action from the player controller.
+        /// Removes an input Action from the player controller.
         /// </summary>
-        /// <param name="action">The input action to remove.</param>
-        /// <returns>True if the action was successfully removed; otherwise, false.</returns>
-        public bool remove_input_action(action action) {
+        /// <param name="action">The input Action to remove.</param>
+        /// <returns>True if the Action was successfully removed; otherwise, false.</returns>
+        public bool remove_input_action(Action action) {
 
             return actions.Remove(action);
         }
 
         // ============================= protected  ============================= 
 
-        protected List<action> actions { get; set; }
+        protected List<Action> actions { get; set; }
         protected abstract void update(float delta_time);
 
     }

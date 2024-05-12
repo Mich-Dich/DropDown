@@ -52,7 +52,7 @@ using Core.world;
                 _all_states[current_state].exit(this);
                 _all_states[new_state].enter(this);
             }
-            current_state = new_state;      // use updated state in next update
+            current_state = new_state;      // Use updated state in next update
         }
 
         // ------------------------------------------ private ------------------------------------------

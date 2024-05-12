@@ -52,10 +52,7 @@ namespace DropDown {
             //Console.WriteLine($"resultin pos: {test_cursor_object.transform.position}");
         }
 
-        protected override void window_resize() {
-
-            this.camera.Set_Zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset);
-        }
+        protected override void window_resize() { this.camera.Set_Zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset); }
 
         protected override void render(float delta_time) { }
         
@@ -77,21 +74,18 @@ namespace DropDown {
             ImGui.SetNextWindowPos(new System.Numerics.Vector2(-2, this.window.Size.Y-38), ImGuiCond.Always, new System.Numerics.Vector2(0,1));
             ImGui.Begin("HUD_BotomLeft", window_flags);
 
-            //imgui_util.title("TestArea");
-
-
             uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
             uint col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.8f, 1));
             uint col_black = ImGui.GetColorU32(new System.Numerics.Vector4(0f, 0f, 0f, 1f));
 
-            Imgui_Util.progress_bar_stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.32f, 0.28f, 0.6f);
+            Imgui_Util.Progress_Bar_Stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.32f, 0.28f, 0.6f);
             ImGui.Spacing();
-            Imgui_Util.progress_bar_stylised(1f, new System.Numerics.Vector2(250, 15), col_blue, col_black, 0.32f, 0.28f, 0.6f);
+            Imgui_Util.Progress_Bar_Stylised(1f, new System.Numerics.Vector2(250, 15), col_blue, col_black, 0.32f, 0.28f, 0.6f);
 
             ImGui.Spacing();
-            Imgui_Util.title("{weapon image}");
+            Imgui_Util.Title("{weapon image}");
             ImGui.SameLine();
-            Imgui_Util.title("10/10");
+            Imgui_Util.Title("10/10");
 
             ImGui.End();
 

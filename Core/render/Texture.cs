@@ -13,6 +13,12 @@ namespace Core {
         public bool IsPixelArt { get; set; }
         public int Handle { get; private set; }
 
+        /// <summary>
+        /// Constructs a new texture from the specified image file.
+        /// </summary>
+        /// <param name="path">The path to the image file.</param>
+        /// <param name="isPixelArt">Determines whether the texture should Use nearest-neighbor sampling for pixel art style rendering (default is false).</param>
+        /// <exception cref="FileNotFoundException">Thrown if the specified image file is not found.</exception>
         public Texture(string path, bool isPixelArt = false) {
 
             if(!File.Exists(path)) {
@@ -48,6 +54,12 @@ namespace Core {
             this.imageData = image.Data;
         }
 
+        /// <summary>
+        /// Constructs a sub-image texture from a source texture, specifying a region by normalized coordinates.
+        /// </summary>
+        /// <param name="source">The source texture from which to extract a sub-image.</param>
+        /// <param name="min">The minimum normalized coordinates (0 to 1) defining the top-left corner of the sub-image.</param>
+        /// <param name="max">The maximum normalized coordinates (0 to 1) defining the bottom-right corner of the sub-image.</param>
         public Texture(Texture source, Vector2 min, Vector2 max) {
             
             this.Width = (int)((max.X - min.X) * source.Width);
@@ -73,16 +85,30 @@ namespace Core {
             }
         }
 
+        // ================================================================= public =================================================================
+
+        /// <summary>
+        /// Releases the OpenGL texture resource associated with this object.
+        /// </summary>
         public void Dispose() { GL.DeleteTexture(this.Handle); }
 
-        public byte[] GetImageData() { return this.imageData; }
-
+        /// <summary>
+        /// Unbinds the currently bound texture from the active texture unit.
+        /// </summary>
         public void Unbind() { GL.BindTexture(TextureTarget.Texture2D, 0); }
 
+        /// <summary>
+        /// Binds this texture to the specified texture unit for Use in rendering.
+        /// </summary>
+        /// <param name="unit">Texture unit to bind this texture to (default is TextureUnit.Texture0).</param>
         public void Use(TextureUnit unit = TextureUnit.Texture0) {
         
             GL.ActiveTexture(unit);
             GL.BindTexture(TextureTarget.Texture2D, this.Handle);
         }
+
+        // ================================================================= private =================================================================
+
+        private byte[] GetImageData() { return this.imageData; }
     }
 }

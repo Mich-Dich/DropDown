@@ -255,7 +255,7 @@ namespace Core.physics {
             // 
             //         1) call collision function based on mobility_type of [x] and [y] and save in hit variable
             // 
-            //         2) use hit var & (physics_material of [y] & [y]) to update position and velocity
+            //         2) Use hit var & (physics_material of [y] & [y]) to update position and velocity
             // 
             //         3) adjust velocity besed on mobility (make new Velocity)
             //              STATIC can never move

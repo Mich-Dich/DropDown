@@ -30,11 +30,19 @@ namespace Core.render {
             this.ebo = GL.GenBuffer();
         }
 
-        public void draw_collision_shape(Transform transform, Collider collider, DebugColor debugColor) {
+        // ================================================================= public =================================================================
+
+        /// <summary>
+        /// Draws a collision shape with specified transformation, collider, and debug color.
+        /// </summary>
+        /// <param name="transform">The transformation of the collision shape.</param>
+        /// <param name="collider">The collider representing the shape to Draw.</param>
+        /// <param name="debugColor">The debug color used for drawing (default is DebugColor.White).</param>
+        public void Draw_Collision_Shape(Transform transform, Collider collider, DebugColor debugColor) {
 
             //Console.WriteLine("Drawing collision shape");
             this.DebugColor = debugColor;
-            this.debugShader.use();
+            this.debugShader.Use();
             Vector4 color;
             switch(this.DebugColor) {
                 case DebugColor.Red:
@@ -50,26 +58,41 @@ namespace Core.render {
                     color = new Vector4(1.0f, 1.0f, 1.0f, 0.5f);
                     break;
             }
-            this.debugShader.set_uniform("color", color);
+            this.debugShader.Set_Uniform("color", color);
 
             Transform buffer = new Transform(transform + collider.offset);
             buffer.size = Vector2.One;
             Matrix4 matrixTransform = buffer.GetTransformationMatrix();
             Matrix4 finalTransform = matrixTransform * Game.instance.camera.Get_Projection_Matrix();
-            this.debugShader.set_matrix_4x4("transform", finalTransform);
+            this.debugShader.Set_Matrix_4x4("transform", finalTransform);
 
-            if(collider.shape == collision_shape.Circle) {
-                this.draw_circle(transform.size.X/2 + collider.offset.size.X/2, 20);
-            }
-            else if(collider.shape == collision_shape.Square) {
-                this.draw_rectangle(transform.size + collider.offset.size);
-            }
-
+            if(collider.shape == collision_shape.Circle)
+                this.Draw_Circle(transform.size.X/2 + collider.offset.size.X/2, 20);
+            
+            else if(collider.shape == collision_shape.Square)
+                this.Draw_Rectangle(transform.size + collider.offset.size);
+            
             GL.BindVertexArray(0);
-            this.debugShader.unbind();
+            this.debugShader.Unbind();
         }
 
-        private void draw_rectangle(Vector2 size) {
+        /// <summary>
+        /// Disposes of resources used by the debug drawer.
+        /// </summary>
+        public void Dispose() {
+
+            Console.WriteLine("Disposing debug_drawer");
+            this.debugShader.dispose();
+
+            // Delete the VBO, VAO, and EBO
+            GL.DeleteBuffer(this.vbo);
+            GL.DeleteVertexArray(this.vao);
+            GL.DeleteBuffer(this.ebo);
+        }
+
+        // ================================================================= private =================================================================
+
+        private void Draw_Rectangle(Vector2 size) {
 
             //Console.WriteLine("Drawing rectangle");
             float[] vertices = {
@@ -81,10 +104,10 @@ namespace Core.render {
 
             uint[] indices = { 0, 1, 2, 3 };
 
-            this.DrawShape(vertices, indices, PrimitiveType.LineLoop);
+            this.Draw_Shape(vertices, indices, PrimitiveType.LineLoop);
         }
 
-        private void draw_circle(float radius, int sides) {
+        private void Draw_Circle(float radius, int sides) {
 
             //Console.WriteLine("Drawing circle");
             List<float> vertices = new List<float>();
@@ -100,10 +123,10 @@ namespace Core.render {
                 indices.Add((uint)i);
             }
 
-            this.DrawShape(vertices.ToArray(), indices.ToArray(), PrimitiveType.LineLoop);
+            this.Draw_Shape(vertices.ToArray(), indices.ToArray(), PrimitiveType.LineLoop);
         }
 
-        private void DrawShape(float[] vertices, uint[] indices, PrimitiveType primitiveType) {
+        private void Draw_Shape(float[] vertices, uint[] indices, PrimitiveType primitiveType) {
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, this.vbo);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
@@ -121,14 +144,5 @@ namespace Core.render {
             GL.DrawElements(primitiveType, indices.Length, DrawElementsType.UnsignedInt, 0);
         }
 
-        public void Dispose() {
-            Console.WriteLine("Disposing debug_drawer");
-            this.debugShader.dispose();
-
-            // Delete the VBO, VAO, and EBO
-            GL.DeleteBuffer(this.vbo);
-            GL.DeleteVertexArray(this.vao);
-            GL.DeleteBuffer(this.ebo);
-        }
     }
 }

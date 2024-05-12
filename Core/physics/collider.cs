@@ -1,6 +1,6 @@
 ﻿
 namespace Core.physics {
-
+    using Box2DX.Dynamics;
     using Core.util;
     using OpenTK.Mathematics;
 
@@ -12,9 +12,20 @@ namespace Core.physics {
         public physics_material material;
         public hit_data         hit_data;
 
+        public Body?            body { get; set; }
+        public BodyDef          bodyDef;
+
         public float            mass;
         public Vector2          velocity {  get; set; }
         public bool Blocking { get; set; } = true;
+
+
+        public Collider(BodyDef body_def) {
+
+        }
+
+
+
 
         public Collider() {
 

@@ -46,7 +46,7 @@ namespace Core {
             this.inital_window_width = inital_window_width;
             this.inital_window_height = inital_window_height;
 
-            _native_window_settings.Size = new Vector2i(inital_window_width, inital_window_height);
+            _native_window_settings.ClientSize = new Vector2i(inital_window_width, inital_window_height);
             _native_window_settings.Title = title;
             _native_window_settings.StartVisible = false;
             _native_window_settings.StartFocused = true;
@@ -69,7 +69,7 @@ namespace Core {
                 // ----------------------------------- defaults -----------------------------------
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
                 default_sprite_shader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
-                default_sprite_shader.use();
+                default_sprite_shader.Use();
                 camera = new(Vector2.Zero, this.window.Size, 0.5f);
                 default_map = new Map();
 
@@ -87,7 +87,8 @@ namespace Core {
 
                 // ----------------------------------- finish setup -----------------------------------
                 player_controller.character = player;
-                this.active_map.Add_Game_Object(player);
+                this.active_map.Add_Character(player);
+
                 initImGuiController();
                 window.IsVisible = true;
             };
@@ -220,22 +221,22 @@ namespace Core {
 
         //  ============================================================================== private ============================================================================== 
         private readonly Vector2 cursor_pos_offset = new Vector2(0,20);
-        private debug_data_viualizer debug_data_viualizer = new debug_data_viualizer();
+        private Debug_Data_Viualizer debug_data_viualizer = new Debug_Data_Viualizer();
 
 
         private void internal_render() {
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            default_sprite_shader.use();
-            default_sprite_shader.set_matrix_4x4("projection", camera.Get_Projection_Matrix());
+            default_sprite_shader.Use();
+            default_sprite_shader.Set_Matrix_4x4("projection", camera.Get_Projection_Matrix());
 
             active_map.Draw();
-            //player.draw();
+            //player.Draw();
 
             if(show_debug) {
 
-                //default_sprite_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
+                //default_sprite_shader.Set_Matrix_4x4("projection", camera.get_projection_matrix());
                 active_map.Draw_Debug();
             }
 
@@ -257,7 +258,7 @@ namespace Core {
             imguiController.Update(this.window, (float)Game_Time.delta);
 
             if(show_debug)
-                debug_data_viualizer.draw();
+                debug_data_viualizer.Draw();
 
             active_map.Draw_Imgui();
             render_imgui(delta_time);     // client side imgui code

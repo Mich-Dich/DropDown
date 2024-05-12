@@ -6,7 +6,7 @@ namespace Core.controllers.player {
     using OpenTK.Windowing.GraphicsLibraryFramework;
 
     // ----------------------- class ----------------------- 
-    public sealed class action {
+    public sealed class Action {
 
         // ======================================= public =======================================
         public string name              { get; set; } = "";
@@ -21,7 +21,7 @@ namespace Core.controllers.player {
         public float Y { get; set; } = 0;
         public float Z { get; set; } = 0;
 
-        public action(string name, uint modefier_flags, bool triger_when_paued, action_type action_type, float duration_in_sec, List<key_binding_detail> keys) {
+        public Action(string name, uint modefier_flags, bool triger_when_paued, action_type action_type, float duration_in_sec, List<key_binding_detail> keys) {
 
             this.name = name;
             this.modefier_flags = modefier_flags;
@@ -47,15 +47,15 @@ namespace Core.controllers.player {
                 return new Vector3(X, Y, Z);
 
                 default:
-                throw new InvalidOperationException("Unsupported action type.");
+                throw new InvalidOperationException("Unsupported Action type.");
             }
         }
 
         // ======================================= private =======================================
         private bool is_triggered       { get; set; } = false;
-        private TimeSpan trigger_time   { get; set; } = TimeSpan.Zero;       // time_stamp  of moment this action was last triggered
+        private TimeSpan trigger_time   { get; set; } = TimeSpan.Zero;       // time_stamp  of moment this Action was last triggered
 
-        // the input system is Event based, meaning wi calculate the target value of this action only once (when an event changes it)
+        // the input system is Event based, meaning wi calculate the target value of this Action only once (when an event changes it)
         // but If we want to change the value gradualy (with duration_in_sec) we need to know that the target should be and in waht direction to change the payload calue
         private bool target_boolean     { get; set; } = false;
         private float target_vec_1D     { get; set; } = 0;

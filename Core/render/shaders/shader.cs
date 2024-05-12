@@ -76,7 +76,7 @@ namespace Core.render.shaders {
             return true;
         }
 
-        public void use() {
+        public void Use() {
 
             if(!_is_compiled) {
 
@@ -92,12 +92,12 @@ namespace Core.render.shaders {
             GL.Uniform3(location, value);
         }
 
-        public void set_uniform(string name, Vector4 value) {
+        public void Set_Uniform(string name, Vector4 value) {
             int location = GL.GetUniformLocation(programm_id, name);
             GL.Uniform4(location, value);
         }
 
-        public void set_matrix_4x4(string uniform_name, Matrix4 mat) {
+        public void Set_Matrix_4x4(string uniform_name, Matrix4 mat) {
             int location = GL.GetUniformLocation(programm_id, uniform_name);
             GL.UniformMatrix4(location, 1, false, get_matrix4_values(mat));
         }
@@ -136,7 +136,7 @@ namespace Core.render.shaders {
             GL.DeleteProgram(programm_id);
         }
 
-        public void unbind()
+        public void Unbind()
         {
             GL.UseProgram(0);
         }

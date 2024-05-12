@@ -283,3 +283,4 @@ namespace Core.input {
         /// <summary> The last valid key in this enum. </summary>
         LastKey = 348,
     }
+}
