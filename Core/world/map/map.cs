@@ -1,6 +1,9 @@
 ﻿
 namespace Core.world.map {
 
+    using Box2DX.Collision;
+    using Box2DX.Common;
+    using Box2DX.Dynamics;
     using Core.physics;
     using Core.render;
     using Core.util;
@@ -10,7 +13,14 @@ namespace Core.world.map {
 
         public List<game_object> all_collidable_game_objects { get; set; } = new List<game_object>();
 
-        public map() { }
+        private World physics_world;
+        public map() {
+
+            AABB aabb = new AABB();
+            aabb.LowerBound.Set(-levelWidth, -levelHeight);
+            aabb.UpperBound.Set(levelWidth, levelHeight);
+            physics_world = new World(aabb, Vec2.Zero, true);
+        }
 
         public int levelWidth { get; set; }
         public int levelHeight { get; set; }
@@ -88,7 +98,7 @@ namespace Core.world.map {
 
         public void update(float delta_time) {
 
-            game.instance.physics_engine.update(all_collidable_game_objects, game_time.delta, min_distanc_for_collision);
+            //game.instance.physics_engine.update(all_collidable_game_objects, game_time.delta, min_distanc_for_collision);
         }
 
         public void add_game_object(game_object game_object) {
@@ -163,11 +173,22 @@ namespace Core.world.map {
             current_tile.static_game_object.Add(new_game_object);
             all_collidable_game_objects.Add(new_game_object);
         }
+          
+        public void register_player_NEW(character character) {
+
+
+
+        }
+
+        public void force_clear_map_tiles() {
+            map_tiles.Clear();
+            debug_data.num_of_tiels = 0;
+        }
 
         private map_tile get_correct_map_tile(Vector2 position) {
-
+            
             int final_tile_size = tile_size * cell_size;
-            Vector2i key = new Vector2i((int)Math.Floor(position.X / final_tile_size), (int)Math.Floor(position.Y / final_tile_size));
+            Vector2i key = new Vector2i((int)System.Math.Floor(position.X / final_tile_size), (int)System.Math.Floor(position.Y / final_tile_size));
             key *= final_tile_size;
             key += new Vector2i(final_tile_size / 2, final_tile_size / 3);
 
@@ -179,11 +200,6 @@ namespace Core.world.map {
 
             map_tiles.TryGetValue(key, out map_tile current_tile);
             return current_tile;
-        }
-
-        public void force_clear_map_tiles() {
-            map_tiles.Clear();
-            debug_data.num_of_tiels = 0;
         }
 
         // ===============================================================================================================================================================

@@ -26,7 +26,7 @@ namespace Core {
         public bool                 show_debug = true;
         public GameWindow           window { get; private set; }
         public camera               camera { get; set; }
-        public physics_engine       physics_engine { get; } = new();
+        //public physics_engine       physics_engine { get; } = new();
         
         //public debug_data    debug_data { get; set; } = new debug_data();
 

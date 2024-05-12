@@ -1,6 +1,6 @@
 ﻿
 namespace DropDown {
-
+    using Core.util;
     using DropDown.player;
     using ImGuiNET;
     using OpenTK.Graphics.OpenGL4;
@@ -79,20 +79,16 @@ namespace DropDown {
             //imgui_util.title("TestArea");
 
 
-            uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.8f, 0.2f, 0.2f, 1));
+            uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
             uint col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.8f, 1));
+            uint col_black = ImGui.GetColorU32(new System.Numerics.Vector4(0f, 0f, 0f, 1f));
 
-            ImGui.PushStyleColor(ImGuiCol.PlotHistogram, col_red);
-            ImGui.ProgressBar(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250,15), "");
-            ImGui.PopStyleColor();
-            ImGui.PushStyleColor(ImGuiCol.PlotHistogram, col_blue);
-            ImGui.ProgressBar(CH_player.stamina / CH_player.stamina_max, new System.Numerics.Vector2(250,15), "");
-            ImGui.PopStyleColor();
+            imgui_util.progress_bar_stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.32f, 0.28f, 0.6f);
+            ImGui.Spacing();
+            imgui_util.progress_bar_stylised(1f, new System.Numerics.Vector2(250, 15), col_blue, col_black, 0.32f, 0.28f, 0.6f);
 
             ImGui.End();
-        
-        
-        
+
         }
 
     }

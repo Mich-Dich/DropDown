@@ -86,16 +86,42 @@ namespace Core.util {
             ImGui.PopFont();
         }
 
-        public static void progress_bar_stylised(float ratio, uint color, System.Numerics.Vector2? size = null, string lable = "") {
+        public static void progress_bar_stylised(float ratio, System.Numerics.Vector2? size = null, uint color = 4281591347, uint background_color = 4278190080, float length_of_mini_bar = 0.3f, float height_of_mini_bar = 0.3f, float slope = 1.0f) {
 
-            ImGui.GetIO();
+            ImDrawListPtr draw_list = ImGui.GetWindowDrawList();
+            var current_pos = ImGui.GetCursorPos();
+            var window_pos = ImGui.GetWindowPos() + ImGui.GetCursorPos();
 
             ImGui.PushStyleColor(ImGuiCol.PlotHistogram, color);
-            ImGui.ProgressBar(ratio, size ?? new System.Numerics.Vector2(150, 20), lable);
+            ImGui.ProgressBar(ratio, size ?? new System.Numerics.Vector2(150, 20), "");
             ImGui.PopStyleColor();
 
+            float partial_height = size.Value.Y * height_of_mini_bar;
+            float partial_width = size.Value.X * length_of_mini_bar;
 
+            var current_pos_after_bar = ImGui.GetCursorPos();
 
+            draw_list.AddTriangleFilled(
+                window_pos + new System.Numerics.Vector2(0, size.Value.Y),
+                window_pos + new System.Numerics.Vector2(0, 0),
+                window_pos + new System.Numerics.Vector2(size.Value.Y * slope, 0),
+                background_color);
+            draw_list.AddTriangleFilled(
+                window_pos + new System.Numerics.Vector2(size.Value.X - partial_width - (partial_height * slope), size.Value.Y),
+                window_pos + new System.Numerics.Vector2(size.Value.X - partial_width, size.Value.Y - partial_height),
+                window_pos + new System.Numerics.Vector2(size.Value.X - partial_width, size.Value.Y), 
+                background_color);
+            draw_list.AddRectFilled(
+                window_pos + new System.Numerics.Vector2(size.Value.X - partial_width, size.Value.Y - partial_height),
+                window_pos + new System.Numerics.Vector2(size.Value.X, size.Value.Y),
+                background_color);
+            draw_list.AddTriangleFilled(
+                window_pos + new System.Numerics.Vector2(size.Value.X - (size.Value.Y * slope), size.Value.Y),
+                window_pos + new System.Numerics.Vector2(size.Value.X, 0),
+                window_pos + new System.Numerics.Vector2(size.Value.X, size.Value.Y),
+                background_color);
+
+            ImGui.SetCursorPos(current_pos_after_bar);
 
         }
 

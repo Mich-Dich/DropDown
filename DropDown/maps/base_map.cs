@@ -28,7 +28,7 @@ namespace DropDown {
 
             //this.add_character(new character().add_collider(new collider()), new Vector2(-300));
 
-            this.cell_size = 100;
+            this.cell_size = 150;
             this.min_distanc_for_collision = (float)(this.cell_size * this.tile_size);
             generate_bit_map();
             generate_actual_map();
