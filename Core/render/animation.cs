@@ -3,33 +3,35 @@ namespace Core.render {
 
     using Core.util;
 
-    public sealed class animation {
+    public sealed class Animation {
 
         public bool Loop;
 
-        public animation(sprite sprite, SpriteBatch sprite_batch, int fps = 30, bool loop = true) {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.        => fields are set in init()
+        public Animation(Sprite sprite, SpriteBatch sprite_batch, int fps = 30, bool loop = true) {
 
             this._sprite_batch = sprite_batch;
             init(sprite, fps, loop);
         }
 
-        public animation(sprite sprite, Texture texture_atlas, int num_of_columns, int num_of_rows, int fps = 30, bool loop = true) {
+        public Animation(Sprite sprite, Texture texture_atlas, int num_of_columns, int num_of_rows, int fps = 30, bool loop = true) {
 
             this._texture_atlas = texture_atlas;
             this._num_of_rows = num_of_rows;
             this._num_of_columns = num_of_columns;
             init(sprite, fps, loop);
         }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public void update() {
 
             if(!_is_playing)
                 return;
 
-            if(game.instance.show_debug)
+            if(Game.instance.show_debug)
                 debug_data.playing_animation_num++;
 
-            _sprite.animation_timer += game_time.delta;
+            _sprite.animation_timer += Game_Time.delta;
             int _current_frame_index = (int)(_sprite.animation_timer / _frame_time);
 
 
@@ -76,7 +78,7 @@ namespace Core.render {
 
         // ======================================= private ======================================= 
 
-        private sprite          _sprite;
+        private Sprite          _sprite;
         private float           _frame_time;
         private bool            _is_playing = false;
 
@@ -87,7 +89,7 @@ namespace Core.render {
         private int _num_of_columns;
 
 
-        private void init(sprite sprite, int fps = 30, bool loop = true) {
+        private void init(Sprite sprite, int fps = 30, bool loop = true) {
 
             this._sprite = sprite;
             _frame_time = 1.0f / fps;

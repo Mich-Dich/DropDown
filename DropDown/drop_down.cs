@@ -1,15 +1,19 @@
 ﻿
 namespace DropDown {
+
+    using Core.render;
     using Core.util;
     using DropDown.player;
     using ImGuiNET;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
 
-    internal class drop_down : Core.game {
+    internal class Drop_Down : Core.Game {
 
-        public drop_down(String title, Int32 inital_window_width, Int32 inital_window_height)
-            : base(title, inital_window_width, inital_window_height) { }
+        public Drop_Down(String title, Int32 inital_window_width, Int32 inital_window_height)
+            : base(title, inital_window_width, inital_window_height) {
+        
+        }
 
         //private game_object test_cursor_object;
         //private game_object test_cursor_object_2;
@@ -22,21 +26,18 @@ namespace DropDown {
             set_update_frequency(144.0f);
             show_debug_data(true);
 
-            this.player_controller = new PC_default();
-
             CH_player = new CH_player();
+            this.player_controller = new PC_default(CH_player);
             this.player = CH_player;
-
             this.active_map = new base_map();
-
-            this.camera.set_min_max_zoom(0.05f, 10.9f);
+            this.camera.Set_min_Max_Zoom(0.05f, 10.9f);
 
             //test_cursor_object = new game_object(new Vector2(150, 150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
             //this.active_map.add_game_object(test_cursor_object);
 
             //test_cursor_object_2 = new game_object(new Vector2(150, 150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
             //this.active_map.add_game_object(test_cursor_object_2);
-
+            
             //this.active_map.add_sprite(new sprite(new Vector2(600, 200), new Vector2(500, 500)).add_animation("assets/textures/explosion", true, false, 60, true));
             //this.active_map.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).add_animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
         }
@@ -53,7 +54,7 @@ namespace DropDown {
 
         protected override void window_resize() {
 
-            this.camera.set_zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset);
+            this.camera.Set_Zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset);
         }
 
         protected override void render(float delta_time) { }
@@ -83,9 +84,14 @@ namespace DropDown {
             uint col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.8f, 1));
             uint col_black = ImGui.GetColorU32(new System.Numerics.Vector4(0f, 0f, 0f, 1f));
 
-            imgui_util.progress_bar_stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.32f, 0.28f, 0.6f);
+            Imgui_Util.progress_bar_stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.32f, 0.28f, 0.6f);
             ImGui.Spacing();
-            imgui_util.progress_bar_stylised(1f, new System.Numerics.Vector2(250, 15), col_blue, col_black, 0.32f, 0.28f, 0.6f);
+            Imgui_Util.progress_bar_stylised(1f, new System.Numerics.Vector2(250, 15), col_blue, col_black, 0.32f, 0.28f, 0.6f);
+
+            ImGui.Spacing();
+            Imgui_Util.title("{weapon image}");
+            ImGui.SameLine();
+            Imgui_Util.title("10/10");
 
             ImGui.End();
 

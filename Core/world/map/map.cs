@@ -9,12 +9,12 @@ namespace Core.world.map {
     using Core.util;
     using OpenTK.Mathematics;
 
-    public class map {
+    public class Map {
 
-        public List<game_object> all_collidable_game_objects { get; set; } = new List<game_object>();
+        public List<Game_Object> all_collidable_game_objects { get; set; } = new List<Game_Object>();
 
         private World physics_world;
-        public map() {
+        public Map() {
 
             AABB aabb = new AABB();
             aabb.LowerBound.Set(-levelWidth, -levelHeight);
@@ -29,8 +29,10 @@ namespace Core.world.map {
         public int TilesOnScreenWidth { get; set; }
         public int TilesOnScreenHeight { get; set; }
 
-
-        public struct tile_data {
+        /// <summary>
+        /// Represents data for a tile, including texture slot and model matrix.
+        /// </summary>
+        internal struct tile_data {
 
             public int texture_slot { get; set; }
             public Matrix4 modle_matrix { get; set; }
@@ -42,10 +44,96 @@ namespace Core.world.map {
             }
         }
 
-        public void draw() {
+        /// <summary>
+        /// Draws ImGui elements specific to the map.
+        /// </summary>
+        public virtual void Draw_Imgui() { }
 
-            Vector2 camera_pos = game.instance.camera.transform.position;
-            Vector2 camera_size = game.instance.camera.get_view_size_in_world_coord() + new Vector2(cell_size * 2);
+        /// <summary>
+        /// Adds a game object to the map's world.
+        /// </summary>
+        /// <param name="game_object">The game object to add.</param>
+        public void Add_Game_Object(Game_Object game_object) {
+
+            world.Add(game_object);
+            all_collidable_game_objects.Add(game_object);
+            //Console.WriteLine($"Adding game_object [{game_object}] to world. Current count: {world.Count} ");
+        }
+
+        /// <summary>
+        /// Adds a character to the map's world.
+        /// </summary>
+        /// <param name="character">The character to add.</param>
+        /// <param name="position">The optional position to place the character.</param>
+        public void Add_Character(Character character, Vector2? position = null) {
+
+            world.Add(character);
+            all_collidable_game_objects.Add(character);
+
+            if(position != null)
+                character.transform.position = position.Value;
+
+            //Console.WriteLine($"Adding character [{character}] to world. Current count: {world.Count} ");
+        }
+
+        /// <summary>
+        /// Adds a background sprite to the map's background layer.
+        /// </summary>
+        /// <param name="sprite">The background sprite to add.</param>
+        public void Add_Sprite(Sprite sprite) { backgound.Add(sprite); }
+
+        /// <summary>
+        /// Adds a sprite to the specified world layer.
+        /// </summary>
+        /// <param name="world_layer">The world layer to add the sprite to.</param>
+        /// <param name="sprite">The sprite to add.</param>
+        public void Add_Sprite(world_layer world_layer, Sprite sprite) {
+
+            if(sprite == null)
+                return;
+
+            switch(world_layer) {
+                case world_layer.None: break;
+                case world_layer.world:
+                    //Console.WriteLine($"add_sprite() with argument [world_layer = world_layer.world] is not implemented yet");
+                    //world.Add(new game_object().set_sprite(sprite));
+                break;
+
+                case world_layer.backgound:
+                    backgound.Add(sprite);
+                break;
+            }
+
+        }
+
+        /// <summary>
+        /// Sets the background image of the map.
+        /// </summary>
+        /// <param name="image_path">The path to the background image.</param>
+        public void Set_Background_Image(string image_path) {
+
+            Texture background_texture = Resource_Manager.Get_Texture(image_path, false);
+            Vector2 view_size = Game.instance.camera.Get_View_Size_In_World_Coord();
+            Vector2 original_sprite_size = new Vector2(background_texture.Width, background_texture.Height);
+            Vector2 scale_factor = view_size / original_sprite_size;
+            Vector2 sprite_size = original_sprite_size * scale_factor;
+            Vector2 sprite_position = Vector2.Zero;
+            Transform background_transform = new Transform(sprite_position, sprite_size, 0, Mobility.STATIC);
+            Sprite background_sprite = new Sprite(background_transform, background_texture);
+
+            backgound.Clear();
+            backgound.Add(background_sprite);
+        }
+
+        // ================================================================= internal =================================================================
+
+        /// <summary>
+        /// Draws the map, including background sprites and world objects.
+        /// </summary>
+        internal void Draw() {
+
+            Vector2 camera_pos = Game.instance.camera.transform.position;
+            Vector2 camera_size = Game.instance.camera.Get_View_Size_In_World_Coord() + new Vector2(cell_size * 2);
             float tiel_size = tile_size * cell_size;
 
             foreach(var tile in map_tiles) {
@@ -57,22 +145,25 @@ namespace Core.world.map {
 
                     debug_data.num_of_tiels_displayed++;
                     foreach(var sprite in tile.Value.background) {
-                        sprite.draw();
+                        sprite.Draw();
                     }
                 }
             }
 
             for(int x = 0; x < backgound.Count; x++)
-                backgound[x].draw();
+                backgound[x].Draw();
 
             for(int x = 0; x < world.Count; x++)
-                world[x].draw();
+                world[x].Draw();
         }
 
-        public void draw_denug() {
+        /// <summary>
+        /// Draws debug information for the map, such as collision shapes of game objects.
+        /// </summary>
+        internal void Draw_Debug() {
 
-            Vector2 camera_pos = game.instance.camera.transform.position;
-            Vector2 camera_size = game.instance.camera.get_view_size_in_world_coord() + new Vector2(300);
+            Vector2 camera_pos = Game.instance.camera.transform.position;
+            Vector2 camera_size = Game.instance.camera.Get_View_Size_In_World_Coord() + new Vector2(300);
             float tiel_size = tile_size * cell_size;
 
             foreach(var tile in map_tiles) {
@@ -83,92 +174,33 @@ namespace Core.world.map {
                 if(overlapX > 0 && overlapY > 0) {
 
                     foreach(var game_object in tile.Value.static_game_object) {
-                        game_object.draw_debug();
+                        game_object.Draw_Debug();
                     }
                 }
             }
 
             for(int x = 0; x < world.Count; x++)
-                world[x].draw_debug();
+                world[x].Draw_Debug();
         }
 
-        public virtual void draw_imgui() {
-
-        }
-
-        public void update(float delta_time) {
+        /// <summary>
+        /// Updates the map's logic and physics.
+        /// </summary>
+        /// <param name="delta_time">The time elapsed since the last update.</param>
+        internal void Update(float delta_time) {
 
             //game.instance.physics_engine.update(all_collidable_game_objects, game_time.delta, min_distanc_for_collision);
         }
 
-        public void add_game_object(game_object game_object) {
+        /// <summary>
+        /// Adds a background sprite to the map tile at the specified position.
+        /// </summary>
+        /// <param name="sprite">The sprite to add to the background.</param>
+        /// <param name="position">The position where the sprite should be added.</param>
+        /// <param name="use_cell_size">Flag indicating whether to use the cell size for the sprite.</param>
+        public void Add_Background_Sprite(Sprite sprite, Vector2 position, bool use_cell_size = true) {
 
-            world.Add(game_object);
-            all_collidable_game_objects.Add(game_object);
-            //Console.WriteLine($"Adding game_object [{game_object}] to world. Current count: {world.Count} ");
-        }
-
-        public void add_character(character character, Vector2? position = null) {
-
-            world.Add(character);
-            all_collidable_game_objects.Add(character);
-
-            if(position != null)
-                character.transform.position = position.Value;
-
-            //Console.WriteLine($"Adding character [{character}] to world. Current count: {world.Count} ");
-        }
-
-        public void add_sprite(sprite sprite) { backgound.Add(sprite); }
-
-        public void add_sprite(world_layer world_layer, sprite sprite) {
-
-            if(sprite == null)
-                return;
-
-            switch(world_layer) {
-            case world_layer.None: break;
-            case world_layer.world:
-            //Console.WriteLine($"add_sprite() with argument [world_layer = world_layer.world] is not implemented yet");
-            //world.Add(new game_object().set_sprite(sprite));
-            break;
-
-            case world_layer.backgound:
-            backgound.Add(sprite);
-            break;
-            }
-
-        }
-
-        public void set_background_image(string image_path) {
-            Texture background_texture = resource_manager.get_texture(image_path, false);
-
-            Vector2 view_size = game.instance.camera.get_view_size_in_world_coord();
-
-            Vector2 original_sprite_size = new Vector2(background_texture.Width, background_texture.Height);
-
-            Vector2 scale_factor = view_size / original_sprite_size;
-
-            Vector2 sprite_size = original_sprite_size * scale_factor;
-
-            Vector2 sprite_position = Vector2.Zero;
-
-            transform background_transform = new transform(sprite_position, sprite_size, 0, mobility.STATIC);
-
-            sprite background_sprite = new sprite(background_transform, background_texture);
-
-            backgound.Clear();
-
-            backgound.Add(background_sprite);
-        }
-
-        // ===============================================================================================================================================================
-        // CURRENTLY IN DEV
-        // ===============================================================================================================================================================
-
-        public void add_background_sprite(sprite sprite, Vector2 position, bool use_cell_size = true) {
-
-            var current_tile = get_correct_map_tile(position);
+            var current_tile = Get_Correct_Map_Tile(position);
 
             sprite.transform.position = position;
             if(use_cell_size)
@@ -177,57 +209,46 @@ namespace Core.world.map {
             current_tile.background.Add(sprite);
         }
 
-        public void add_static_game_object(game_object new_game_object, Vector2 position, bool use_cell_size = true) {
+        /// <summary>
+        /// Adds a static game object to the map tile at the specified position.
+        /// </summary>
+        /// <param name="new_game_object">The new game object to add to the map.</param>
+        /// <param name="position">The position where the game object should be added.</param>
+        /// <param name="use_cell_size">Flag indicating whether to use the cell size for the game object.</param>
+        public void Add_Static_Game_Object(Game_Object new_game_object, Vector2 position, bool use_cell_size = true) {
 
-            var current_tile = get_correct_map_tile(position);
+            var current_tile = Get_Correct_Map_Tile(position);
 
             new_game_object.transform.position = position;
-            new_game_object.transform.mobility = mobility.STATIC;
+            new_game_object.transform.mobility = Mobility.STATIC;
             if(new_game_object.collider != null)
-                new_game_object.collider.offset.mobility = mobility.STATIC;
+                new_game_object.collider.offset.mobility = Mobility.STATIC;
             if(use_cell_size)
                 new_game_object.transform.size = new Vector2(cell_size);
 
             current_tile.static_game_object.Add(new_game_object);
             all_collidable_game_objects.Add(new_game_object);
         }
-          
-        public void register_player_NEW(character character) {
 
+        /// <summary>
+        /// Registers a new player character.
+        /// </summary>
+        /// <param name="character">The character to register as a player.</param>
+        public void Register_Player_NEW(Character character) { }
 
-
-        }
-
-        public void force_clear_map_tiles() {
+        /// <summary>
+        /// Clears all map tiles and associated debug data.
+        /// </summary>
+        public void Force_Clear_Map_Tiles() {
             map_tiles.Clear();
             debug_data.num_of_tiels = 0;
         }
 
-        private map_tile get_correct_map_tile(Vector2 position) {
-            
-            int final_tile_size = tile_size * cell_size;
-            Vector2i key = new Vector2i((int)System.Math.Floor(position.X / final_tile_size), (int)System.Math.Floor(position.Y / final_tile_size));
-            key *= final_tile_size;
-            key += new Vector2i(final_tile_size / 2, final_tile_size / 3);
 
-            if(!map_tiles.ContainsKey(key)) {
-
-                map_tiles.Add(key, new map_tile(key));
-                debug_data.num_of_tiels++;
-            }
-
-            map_tiles.TryGetValue(key, out map_tile current_tile);
-            return current_tile;
-        }
-
-        // ===============================================================================================================================================================
-        // CURRENTLY IN DEV
-        // ===============================================================================================================================================================
-
-        public map generate_backgound_tile(int width, int height) {
+        public Map Generate_Backgound_Tile(int width, int height) {
 
             // ------------------------ SETUP ------------------------
-            Texture texture_atlas = resource_manager.get_texture("assets/textures/terrain.png", false);
+            Texture texture_atlas = Resource_Manager.Get_Texture("assets/textures/terrain.png", false);
 
             Random random = new Random();
             double missing_time_rate = 0f;
@@ -242,35 +263,36 @@ namespace Core.world.map {
                     if(random.NextDouble() < missing_time_rate)    // Skip adding tiles at certain positions (e.g., missing tiles)
                         continue;
 
-                    transform loc_trans_buffer = new transform(new Vector2(x * cell_size - offset_x, y * cell_size - offset_y),
+                    Transform loc_trans_buffer = new Transform(new Vector2(x * cell_size - offset_x, y * cell_size - offset_y),
                         new Vector2(cell_size),
                         0, //(float)utility.degree_to_radians(_rotations[random.Next(0, 3)]),
-                        mobility.STATIC);
+                        Mobility.STATIC);
 
                     // ============================ GRAS FILD ============================ 
                     if(random.NextDouble() < 0.01f)
-                        backgound.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 3, 30));
+                        backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 3, 30));
                     else if(random.NextDouble() < 0.03f)
-                        backgound.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 5, 26));
+                        backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 5, 26));
                     else if(random.NextDouble() < 0.1f)
-                        backgound.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 10, 5));
+                        backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 10, 5));
                     else
-                        backgound.Add(new sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 4, 28));
+                        backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).select_texture_region(32, 64, 4, 28));
                 }
             }
 
             return this;
         }
 
-        public void LoadLevel(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath) {
-            LevelData levelData = level_parser.ParseLevel(tmxFilePath, tsxFilePath);
-            MapData mapData = levelData.Map;
+        public void Load_Level(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath) {
+
+            Level_Data levelData = Level_Parser.ParseLevel(tmxFilePath, tsxFilePath);
+            Map_Data mapData = levelData.Map;
             levelWidth = mapData.LevelPixelWidth;
             levelHeight = mapData.LevelPixelHeight;
             tileWidth = mapData.TileWidth;
             tileHeight = mapData.TileHeight;
-            TilesetData tilesetData = levelData.Tileset;
-            Texture tilesetTexture = resource_manager.get_texture(tilesetImageFilePath, false);
+            Tileset_Data tilesetData = levelData.Tileset;
+            Texture tilesetTexture = Resource_Manager.Get_Texture(tilesetImageFilePath, false);
 
             int tilesetColumns = tilesetData.Columns;
             int tilesetRows = tilesetData.TileCount / tilesetColumns;
@@ -291,36 +313,36 @@ namespace Core.world.map {
                         int tileRow = tileIndex / tilesetColumns;
                         int tileColumn = tileIndex % tilesetColumns;
 
-                        transform tileTransform = new transform(
+                        Transform tileTransform = new Transform(
                             new Vector2(x * mapData.TileWidth, y * mapData.TileHeight),
                             new Vector2(mapData.TileWidth, mapData.TileHeight),
                             0,
-                            mobility.STATIC);
+                            Mobility.STATIC);
 
-                        sprite tileSprite = new sprite(tileTransform, tilesetTexture)
+                        Sprite tileSprite = new Sprite(tileTransform, tilesetTexture)
                                             .select_texture_regionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
 
                         if(tilesetData.CollidableTiles.ContainsKey(tileIndex) && tilesetData.CollidableTiles[tileIndex]) {
-                            transform buffer = tileColumn == 0 && tileRow == 5
-                                ? new transform(new Vector2(0, -10), new Vector2(0, -23), 0, mobility.STATIC)
-                                : new transform(Vector2.Zero, Vector2.Zero, 0, mobility.STATIC);
+                            Transform buffer = tileColumn == 0 && tileRow == 5
+                                ? new Transform(new Vector2(0, -10), new Vector2(0, -23), 0, Mobility.STATIC)
+                                : new Transform(Vector2.Zero, Vector2.Zero, 0, Mobility.STATIC);
 
-                            game_object newGameObject = new game_object(tileTransform)
-                                .set_sprite(tileSprite)
-                                .add_collider(new collider(collision_shape.Square) { Blocking = true }.set_offset(buffer))
-                                .set_mobility(mobility.STATIC);
+                            Game_Object newGameObject = new Game_Object(tileTransform)
+                                .Set_Sprite(tileSprite)
+                                .Add_Collider(new Collider(collision_shape.Square) { Blocking = true }.set_offset(buffer))
+                                .Set_Mobility(Mobility.STATIC);
 
-                            add_static_game_object(newGameObject, tileTransform.position);
+                            Add_Static_Game_Object(newGameObject, tileTransform.position);
 
                             if(layerIndex == 0)
-                                add_background_sprite(tileSprite, tileTransform.position);
+                                Add_Background_Sprite(tileSprite, tileTransform.position);
 
                         }
                         else {
                             if(layerIndex == 0)
-                                add_background_sprite(tileSprite, tileTransform.position);
+                                Add_Background_Sprite(tileSprite, tileTransform.position);
                             else
-                                all_collidable_game_objects.Add(new game_object(tileTransform).set_sprite(tileSprite));
+                                all_collidable_game_objects.Add(new Game_Object(tileTransform).Set_Sprite(tileSprite));
                         }
                     }
                 }
@@ -330,8 +352,8 @@ namespace Core.world.map {
 
         // ========================================== private ==========================================
 
-        private List<sprite> backgound { get; set; } = new List<sprite>();       // change to list of lists => to reduce drawcalls
-        private List<game_object> world { get; set; } = new List<game_object>();
+        private List<Sprite> backgound { get; set; } = new List<Sprite>();       // change to list of lists => to reduce drawcalls
+        private List<Game_Object> world { get; set; } = new List<Game_Object>();
 
         // ------------------------------------------ tiles ------------------------------------------
         protected float min_distanc_for_collision = 1600;
@@ -339,14 +361,31 @@ namespace Core.world.map {
         protected int tile_size = 8;     // 8 default_sprites fit in one tile
         private Dictionary<Vector2i, map_tile> map_tiles { get; set; } = new Dictionary<Vector2i, map_tile>();
 
+
+        private map_tile Get_Correct_Map_Tile(Vector2 position) {
+
+            int final_tile_size = tile_size * cell_size;
+            Vector2i key = new Vector2i((int)System.Math.Floor(position.X / final_tile_size), (int)System.Math.Floor(position.Y / final_tile_size));
+            key *= final_tile_size;
+            key += new Vector2i(final_tile_size / 2, final_tile_size / 3);
+
+            if(!map_tiles.ContainsKey(key)) {
+
+                map_tiles.Add(key, new map_tile(key));
+                debug_data.num_of_tiels++;
+            }
+
+            map_tiles.TryGetValue(key, out map_tile current_tile);
+            return current_tile;
+        }
     }
 
     public struct map_tile {
 
         public Vector2 position = new Vector2();
 
-        public List<sprite> background = new List<sprite>();
-        public List<game_object> static_game_object = new List<game_object>();
+        public List<Sprite> background = new List<Sprite>();
+        public List<Game_Object> static_game_object = new List<Game_Object>();
 
         public map_tile(Vector2 position) {
 

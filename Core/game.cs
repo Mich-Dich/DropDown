@@ -3,7 +3,6 @@ namespace Core {
 
     using Core.controllers.player;
     using Core.input;
-    using Core.physics;
     using Core.render;
     using Core.render.shaders;
     using Core.util;
@@ -16,24 +15,26 @@ namespace Core {
     using OpenTK.Windowing.GraphicsLibraryFramework;
     using System.Diagnostics;
 
-    public abstract class game {
+    public abstract class Game {
 
         public GameWindowSettings   _game_window_settings = GameWindowSettings.Default;
         public NativeWindowSettings _native_window_settings = NativeWindowSettings.Default;
         
-        public shader               default_sprite_shader;
-        public static game          instance { get; private set; }
+        public Shader               default_sprite_shader;
+        public static Game          instance { get; private set; }
         public bool                 show_debug = true;
         public GameWindow           window { get; private set; }
-        public camera               camera { get; set; }
+        public Camera               camera { get; set; }
         //public physics_engine       physics_engine { get; } = new();
         
         //public debug_data    debug_data { get; set; } = new debug_data();
 
-        public ImGuiController      imguiController;
-        
+        public Imgui_Controller      imguiController;
+
         // ============================================================================== public ============================================================================== 
-        public game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.   => Value will be set in window.load function
+        public Game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
 
             if(instance != null)
                 throw new Exception("You can only create one instance of Game!");
@@ -54,6 +55,7 @@ namespace Core {
             _native_window_settings.Profile = ContextProfile.Core;
             _native_window_settings.Flags = ContextFlags.ForwardCompatible;
         }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public void run() {
 
@@ -69,7 +71,7 @@ namespace Core {
                 default_sprite_shader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
                 default_sprite_shader.use();
                 camera = new(Vector2.Zero, this.window.Size, 0.5f);
-                default_map = new map();
+                default_map = new Map();
 
                 init();
 
@@ -78,14 +80,14 @@ namespace Core {
                     active_map = default_map;
 
                 if(player == null)
-                    player = new character();
+                    player = new Character();
 
                 if(player_controller == null)
                     throw new ResourceNotAssignedException("player_controller musst be assigned in game class init() function");
 
                 // ----------------------------------- finish setup -----------------------------------
                 player_controller.character = player;
-                this.active_map.add_game_object(player);
+                this.active_map.Add_Game_Object(player);
                 initImGuiController();
                 window.IsVisible = true;
             };
@@ -106,15 +108,15 @@ namespace Core {
                 stopwatch.Restart();
 
                 update_game_time((float)eventArgs.Time);
-                this.player_controller.update_internal(game_time.delta, _input_event);
+                this.player_controller.update_internal(Game_Time.delta, _input_event);
 
                 for(int x = 0; x < active_map.all_collidable_game_objects.Count; x++)
-                    active_map.all_collidable_game_objects[x].update(game_time.delta);
+                    active_map.all_collidable_game_objects[x].Update(Game_Time.delta);
 
                 //collision_engine.update(active_map.all_collidable_game_objects, game_time.delta);
-                this.active_map.update(game_time.delta);
+                this.active_map.Update(Game_Time.delta);
 
-                update(game_time.delta);
+                update(Game_Time.delta);
                 _input_event.Clear();
 
                 stopwatch.Stop();
@@ -127,7 +129,7 @@ namespace Core {
 
                 window.SwapBuffers();
                 internal_render();
-                imgui_render(game_time.delta);
+                imgui_render(Game_Time.delta);
 
                 stopwatch.Stop();
                 debug_data.work_time_render = stopwatch.Elapsed.TotalMilliseconds;
@@ -145,38 +147,38 @@ namespace Core {
 
                 imguiController.WindowResized(this.window.ClientSize.X, this.window.ClientSize.Y);
 
-                camera.set_view_size(window.Size);
+                camera.Set_View_Size(window.Size);
                 internal_render();
-                imgui_render(game_time.delta);
+                imgui_render(Game_Time.delta);
                 window.SwapBuffers();
             };
 
 
 
             // ============================ input ============================ 
-            window.KeyDown += (KeyboardKeyEventArgs args) => { _input_event.Add(new input_event((key_code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Pressed)); };
-            window.KeyUp += (KeyboardKeyEventArgs args) => { _input_event.Add(new input_event((key_code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Release)); };
-            window.MouseDown += (MouseButtonEventArgs args) => { _input_event.Add(new input_event((key_code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (key_state)args.Action)); };
-            window.MouseUp += (MouseButtonEventArgs args) => { _input_event.Add(new input_event((key_code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (key_state)args.Action)); };
+            window.KeyDown += (KeyboardKeyEventArgs args) => { _input_event.Add(new input_event((Key_Code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Pressed)); };
+            window.KeyUp += (KeyboardKeyEventArgs args) => { _input_event.Add(new input_event((Key_Code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Release)); };
+            window.MouseDown += (MouseButtonEventArgs args) => { _input_event.Add(new input_event((Key_Code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (key_state)args.Action)); };
+            window.MouseUp += (MouseButtonEventArgs args) => { _input_event.Add(new input_event((Key_Code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (key_state)args.Action)); };
 
             // make two events for X/Y of mouse wheel movement
             window.MouseWheel += (MouseWheelEventArgs args) => {
 
                 if(args.OffsetX != 0)
-                    _input_event.Add(new input_event(key_code.MouseWheelX, (KeyModifiers)0, (int)args.Offset.X, key_state.Repeat));
+                    _input_event.Add(new input_event(Key_Code.MouseWheelX, (KeyModifiers)0, (int)args.Offset.X, key_state.Repeat));
 
                 if(args.OffsetY != 0)
-                    _input_event.Add(new input_event(key_code.MouseWheelY, (KeyModifiers)0, (int)args.Offset.Y, key_state.Repeat));
+                    _input_event.Add(new input_event(Key_Code.MouseWheelY, (KeyModifiers)0, (int)args.Offset.Y, key_state.Repeat));
             };
 
             // make two events for X/Y of mouse movement
             window.MouseMove += (MouseMoveEventArgs args) => {
 
                 if(args.DeltaX != 0)
-                    _input_event.Add(new input_event(key_code.CursorPositionX, (KeyModifiers)0, (int)args.X, key_state.Repeat));
+                    _input_event.Add(new input_event(Key_Code.CursorPositionX, (KeyModifiers)0, (int)args.X, key_state.Repeat));
 
                 if(args.DeltaY != 0)
-                    _input_event.Add(new input_event(key_code.CursorPositionY, (KeyModifiers)0, (int)args.Y, key_state.Repeat));
+                    _input_event.Add(new input_event(Key_Code.CursorPositionY, (KeyModifiers)0, (int)args.Y, key_state.Repeat));
             };
 
             //collision_engine = new collision_engine();
@@ -192,14 +194,13 @@ namespace Core {
         protected int inital_window_width { get; set; }
         protected int inital_window_height { get; set; }
 
-        protected map default_map { get; set; }
-        protected character player { get; set; }
+        protected Map default_map { get; set; }
+        protected Character player { get; set; }
         protected player_controller player_controller { get; set; }
-        protected map active_map { get; set; }
+        protected Map active_map { get; set; }
         //protected List<map> active_maps { get; set; }     // TODO: add array of maps to enable DROP into new level
 
         // general
-
         protected abstract void init();
         protected abstract void shutdown();
         protected abstract void update(float delta_time);
@@ -215,19 +216,11 @@ namespace Core {
 
         // input system
         protected List<input_event> _input_event { get; } = new List<input_event>();
-
         protected void reset_input_event_list() { _input_event.Clear(); }
 
         //  ============================================================================== private ============================================================================== 
-        private game _instance;
         private readonly Vector2 cursor_pos_offset = new Vector2(0,20);
-
-
-        // ================ IMGUI TEST ================ 
-        private float sliderFloatValue = 0.0f;
         private debug_data_viualizer debug_data_viualizer = new debug_data_viualizer();
-        
-        // ================ IMGUI TEST ================ 
 
 
         private void internal_render() {
@@ -235,25 +228,25 @@ namespace Core {
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             default_sprite_shader.use();
-            default_sprite_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
+            default_sprite_shader.set_matrix_4x4("projection", camera.Get_Projection_Matrix());
 
-            active_map.draw();
+            active_map.Draw();
             //player.draw();
 
             if(show_debug) {
 
                 //default_sprite_shader.set_matrix_4x4("projection", camera.get_projection_matrix());
-                active_map.draw_denug();
+                active_map.Draw_Debug();
             }
 
             // client side code
-            render(game_time.delta);
+            render(Game_Time.delta);
         }
 
         private void update_game_time(float delta_time) {
 
-            game_time.delta = delta_time;
-            game_time.total += delta_time;
+            Game_Time.delta = delta_time;
+            Game_Time.total += delta_time;
 
         }
 
@@ -261,17 +254,17 @@ namespace Core {
 
         private void imgui_render(float delta_time) {
 
-            imguiController.Update(this.window, (float)game_time.delta);
+            imguiController.Update(this.window, (float)Game_Time.delta);
 
             if(show_debug)
                 debug_data_viualizer.draw();
 
-            active_map.draw_imgui();
+            active_map.Draw_Imgui();
             render_imgui(delta_time);     // client side imgui code
             //ImGui.ShowDemoWindow();
 
             imguiController.Render();
-            ImGuiController.CheckGLError("End of frame");
+            Imgui_Controller.CheckGLError("End of frame");
 
             debug_data.reset();
             //debug_data = new debug_data();  // reset debug infos
@@ -285,7 +278,7 @@ namespace Core {
             int scaleFactorY = fb.Y / this.window.ClientSize.Y;
 
             // Instanciate the ImGuiController with the right Scale Factor
-            imguiController = new ImGuiController(this.window.ClientSize.X, this.window.ClientSize.Y, scaleFactorX, scaleFactorY);
+            imguiController = new Imgui_Controller(this.window.ClientSize.X, this.window.ClientSize.Y, scaleFactorX, scaleFactorY);
         }
     }
 

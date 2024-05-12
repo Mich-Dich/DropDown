@@ -159,6 +159,9 @@ nCrunchTemp_*
 *.mm.*
 AutoTest.Net/
 
+# Mac stuff
+.DS_Store
+
 # Web workbench (sass)
 .sass-cache/
 

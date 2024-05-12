@@ -1,12 +1,12 @@
 ﻿namespace Core.render {
 
-    public interface i_buffer {
+    public interface I_Buffer {
     
         int id { get; }
 
-        void bind();
+        void Bind();
 
-        void unbind();
+        void Unbind();
 
     }
 }

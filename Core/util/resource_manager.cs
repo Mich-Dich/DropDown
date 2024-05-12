@@ -3,46 +3,49 @@ namespace Core.util {
 
     using Core.render.shaders;
 
-    public static class resource_manager {
+    public static class Resource_Manager {
 
-        private static Dictionary<string, shader> shaders = new Dictionary<string, shader>();
+        private static Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
         private static Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
         private static Dictionary<string, SpriteBatch> spriteBatches = new Dictionary<string, SpriteBatch>();
 
-        //public static ResourceManager instance {
-        //    get {
-        //        lock(_loc) {
-
-        //            if(_instance == null)
-        //                _instance = new resource_manager();
-
-        //            return _instance;
-        //        }
-        //    }
-        //}
-
-        static public shader get_shader(string vertexPath, string fragmentPath) {
+        /// <summary>
+        /// Retrieves or creates a shader based on the specified vertex and fragment shader file paths.
+        /// </summary>
+        /// <param name="vertexPath">The path to the vertex shader file.</param>
+        /// <param name="fragmentPath">The path to the fragment shader file.</param>
+        /// <returns>The shader associated with the provided file paths.</returns>
+        static public Shader Get_Shader(string vertexPath, string fragmentPath) {
 
             string key = vertexPath + fragmentPath;
             if(!shaders.ContainsKey(key)) 
-                shaders[key] = new shader(vertexPath, fragmentPath);
-            
+                shaders[key] = new Shader(vertexPath, fragmentPath);
             return shaders[key];
         }
 
-        static public Texture get_texture(string path, bool isPixelArt = false) {
+        /// <summary>
+        /// Retrieves or creates a texture based on the specified image file path.
+        /// </summary>
+        /// <param name="path">The path to the texture image file.</param>
+        /// <param name="isPixelArt">Flag indicating whether the texture should be treated as pixel art.</param>
+        /// <returns>The texture associated with the provided image file path.</returns>
+        static public Texture Get_Texture(string path, bool isPixelArt = false) {
             
             if(!textures.ContainsKey(path)) 
                 textures[path] = new Texture(path, isPixelArt);
-            
             return textures[path];
         }
 
-        static public SpriteBatch GetSpriteBatch(string directoryPath, bool isPixelArt = false) {
+        /// <summary>
+        /// Retrieves or creates a sprite batch for the specified directory path.
+        /// </summary>
+        /// <param name="directoryPath">The directory path containing sprite images.</param>
+        /// <param name="isPixelArt">Flag indicating whether the sprites in the batch should be treated as pixel art.</param>
+        /// <returns>The sprite batch associated with the provided directory path.</returns>
+        static public SpriteBatch Get_Sprite_Batch(string directoryPath, bool isPixelArt = false) {
 
             if(!spriteBatches.ContainsKey(directoryPath)) 
                 spriteBatches[directoryPath] = new SpriteBatch(directoryPath, isPixelArt);
-            
             return spriteBatches[directoryPath];
         }
     }

@@ -3,11 +3,11 @@ namespace Core.render {
 
     using OpenTK.Graphics.OpenGL4;
 
-    public sealed class vertex_buffer : i_buffer, IDisposable {
+    public sealed class Vertex_Buffer : I_Buffer, IDisposable {
 
         public int id { get; private set; }
 
-        public vertex_buffer(float[] vertices) {
+        public Vertex_Buffer(float[] vertices) {
 
             id = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, id);
@@ -32,12 +32,12 @@ namespace Core.render {
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        public void bind() {
+        public void Bind() {
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, id);
         }
 
-        public void unbind() {
+        public void Unbind() {
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }

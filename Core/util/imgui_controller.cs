@@ -10,7 +10,8 @@ namespace Core.util {
     using System.Runtime.CompilerServices;
     using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
 
-    public class ImGuiController : IDisposable {
+    public class Imgui_Controller : IDisposable {
+
         private bool _frameBegun;
 
         private int _vertexArray;
@@ -38,7 +39,7 @@ namespace Core.util {
         /// <summary>
         /// Constructs a new ImGuiController.
         /// </summary>
-        public ImGuiController(int width, int height, float scaleFactorX = 1, float scaleFactorY = 1) {
+        public Imgui_Controller(int width, int height, float scaleFactorX = 1, float scaleFactorY = 1) {
 
             _windowWidth = width;
             _windowHeight = height;

@@ -3,13 +3,13 @@ using Core.util;
 
 namespace Core.defaults {
 
-    public class player : character {
+    public class Player : Character {
 
-        public player() {
+        public Player() {
 
             this.transform.size = new OpenTK.Mathematics.Vector2(50);
             this.transform.rotation = float.Pi;
-            set_sprite(new Core.render.sprite(resource_manager.get_texture("assets/textures/player/00.png")));
+            Set_Sprite(new Core.render.Sprite(Resource_Manager.Get_Texture("assets/textures/player/00.png")));
             
             this.movement_speed = 5.0f;
         }

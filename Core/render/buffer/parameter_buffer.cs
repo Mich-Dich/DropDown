@@ -3,11 +3,11 @@ namespace Core.render {
 
     using OpenTK.Graphics.OpenGL4;
 
-    public sealed class parameter_buffer : i_buffer, IDisposable {
+    public sealed class Parameter_Buffer : I_Buffer, IDisposable {
 
         public int id { get; }
 
-        public parameter_buffer(float[] indecies, int stride) { 
+        public Parameter_Buffer(float[] indecies, int stride) { 
             
             id = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ParameterBuffer, id);
@@ -24,12 +24,12 @@ namespace Core.render {
             _disposed = true;
         }
 
-        public void bind() {
+        public void Bind() {
 
             GL.BindBuffer(BufferTarget.ParameterBuffer, id);
         }
 
-        public void unbind() {
+        public void Unbind() {
             
             GL.BindBuffer(BufferTarget.ParameterBuffer, 0);
         }

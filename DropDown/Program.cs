@@ -2,11 +2,11 @@
 
 namespace DropDown {
 
-    public class programm {
+    public class Programm {
 
         public static void Main(string[] args) {
 
-            game game = new drop_down("Texture_test", 1600, 920);
+            Game game = new Drop_Down("Texture_test", 1600, 920);
             game.run();
         }
     }

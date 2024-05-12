@@ -6,17 +6,21 @@ using OpenTK.Mathematics;
 
     public abstract class player_controller : I_controller {
 
-        public character character { get; set; }
+        public Character character { get; set; }
         //public character character { get; set; }
 
-        public player_controller() { }
+        /// <summary>
+        /// Initializes a new instance of the player controller with the specified character and actions.
+        /// </summary>
+        /// <param name="character">The character associated with this controller.</param>
+        /// <param name="actions">Optional list of actions to initialize the controller with (default: null).</param>
+        public player_controller(Character character, List<action>? actions = null) {
 
-        public player_controller(List<action> actions) {
-
-            this.actions = actions;
+            this.actions = actions?? new List<action>();
+            this.character = character;
         }
 
-        public void update_internal(float delta_time, List<input_event> input_event) {
+        internal void update_internal(float delta_time, List<input_event> input_event) {
 
             // TODO: make input event driven && make movement physics-based
             //if(input_event.Count == 0)
@@ -99,10 +103,10 @@ using OpenTK.Mathematics;
                         // proccess key_binding modefiers
                         int payload_buffer = is_key_active? 1 : 0;
 
-                        if (key_binding.key == input.key_code.CursorPositionX
-                            || key_binding.key == input.key_code.CursorPositionY
-                            || key_binding.key == input.key_code.MouseWheelX
-                            || key_binding.key == input.key_code.MouseWheelY)
+                        if (key_binding.key == input.Key_Code.CursorPositionX
+                            || key_binding.key == input.Key_Code.CursorPositionY
+                            || key_binding.key == input.Key_Code.MouseWheelX
+                            || key_binding.key == input.Key_Code.MouseWheelY)
                             payload_buffer = is_key_active ? loc_event.repeat_amout : 0;
 
 
@@ -304,12 +308,22 @@ using OpenTK.Mathematics;
         }
 
         // ----------------------------- utility -----------------------------
+
+        /// <summary>
+        /// Adds an input action to the player controller.
+        /// </summary>
+        /// <param name="action">The input action to add.</param>
         public void add_input_action(action action) {
 
             // TODO: (Leonhard) load input data (key_codes) from file
             actions.Add(action);
         }
 
+        /// <summary>
+        /// Removes an input action from the player controller.
+        /// </summary>
+        /// <param name="action">The input action to remove.</param>
+        /// <returns>True if the action was successfully removed; otherwise, false.</returns>
         public bool remove_input_action(action action) {
 
             return actions.Remove(action);
@@ -317,7 +331,7 @@ using OpenTK.Mathematics;
 
         // ============================= protected  ============================= 
 
-        protected List<action> actions { get; set; } = new List<action>();
+        protected List<action> actions { get; set; }
         protected abstract void update(float delta_time);
 
     }

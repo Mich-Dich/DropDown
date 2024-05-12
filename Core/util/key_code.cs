@@ -4,62 +4,36 @@ namespace Core.input {
     //
     // Summary:
     //     Specifies key codes and modifiers in US keyboard layout.
-    public enum key_code {
+    public enum Key_Code {
 
-        //
-        // Summary:
-        //     An unknown key.
+        /// <summary> An unknown key. </summary>
         Unknown = -1,
 
         // ======================================== mouse ========================================
 
-        //
-        // Summary:
-        //     The first mouse button.
+        /// <summary> The first mouse button. </summary>
         Button1 = 0,
-        //
-        // Summary:
-        //     The second mouse button.
+        /// <summary> The second mouse button. </summary>
         Button2 = 1,
-        //
-        // Summary:
-        //     The third mouse button.
+        /// <summary> The third mouse button. </summary>
         Button3 = 2,
-        //
-        // Summary:
-        //     The fourth mouse button.
+        /// <summary> The fourth mouse button. </summary>
         Button4 = 3,
-        //
-        // Summary:
-        //     The fifth mouse button.
+        /// <summary> The fifth mouse button. </summary>
         Button5 = 4,
-        //
-        // Summary:
-        //     The sixth mouse button.
+        /// <summary> The sixth mouse button. </summary>
         Button6 = 5,
-        //
-        // Summary:
-        //     The seventh mouse button.
+        /// <summary> The seventh mouse button. </summary>
         Button7 = 6,
-        //
-        // Summary:
-        //     The eighth mouse button.
+        /// <summary> The eighth mouse button. </summary>
         Button8 = 7,
-        //
-        // Summary:
-        //     The left mouse button. This corresponds to OpenTK.Windowing.GraphicsLibraryFramework.MouseButton.Button1.
+        /// <summary> The left mouse button. This corresponds to OpenTK.Windowing.GraphicsLibraryFramework.MouseButton.Button1. </summary>
         LeftMouseButton = 0,
-        //
-        // Summary:
-        //     The right mouse button. This corresponds to OpenTK.Windowing.GraphicsLibraryFramework.MouseButton.Button2.
+        /// <summary> The right mouse button. This corresponds to OpenTK.Windowing.GraphicsLibraryFramework.MouseButton.Button2. </summary>
         RightMouseButton = 1,
-        //
-        // Summary:
-        //     The middle mouse button. This corresponds to OpenTK.Windowing.GraphicsLibraryFramework.MouseButton.Button3.
+        /// <summary> The middle mouse button. This corresponds to OpenTK.Windowing.GraphicsLibraryFramework.MouseButton.Button3. </summary>
         MiddleMouseButton = 2,
-        //
-        // Summary:
-        //     The highest mouse button available.
+        /// <summary> The highest mouse button available. </summary>
         LastMouseButton = 7,
 
         CursorPositionX = 8,
@@ -70,481 +44,242 @@ namespace Core.input {
 
         // ======================================== keyboard ========================================
 
-        //
-        // Summary:
-        //     The spacebar key.
+        /// <summary> The spacebar key. </summary>
         Space = 32,
-        //
-        // Summary:
-        //     The apostrophe key.
+        /// <summary> The apostrophe key. </summary>
         Apostrophe = 39,
-        //
-        // Summary:
-        //     The comma key.
+        /// <summary> The comma key. </summary>
         Comma = 44,
-        //
-        // Summary:
-        //     The minus key.
+        /// <summary> The minus key. </summary>
         Minus = 45,
-        //
-        // Summary:
-        //     The period key.
+        /// <summary> The period key. </summary>
         Period = 46,
-        //
-        // Summary:
-        //     The slash key.
+        /// <summary> The slash key. </summary>
         Slash = 47,
-        //
-        // Summary:
-        //     The 0 key.
+        /// <summary> The 0 key. </summary>
         D0 = 48,
-        //
-        // Summary:
-        //     The 1 key.
+        /// <summary> The 1 key. </summary>
         D1 = 49,
-        //
-        // Summary:
-        //     The 2 key.
+        /// <summary> The 2 key. </summary>
         D2 = 50,
-        //
-        // Summary:
-        //     The 3 key.
+        /// <summary> The 3 key. </summary>
         D3 = 51,
-        //
-        // Summary:
-        //     The 4 key.
+        /// <summary> The 4 key. </summary>
         D4 = 52,
-        //
-        // Summary:
-        //     The 5 key.
+        /// <summary> The 5 key. </summary>
         D5 = 53,
-        //
-        // Summary:
-        //     The 6 key.
+        /// <summary> The 6 key. </summary>
         D6 = 54,
-        //
-        // Summary:
-        //     The 7 key.
+        /// <summary> The 7 key. </summary>
         D7 = 55,
-        //
-        // Summary:
-        //     The 8 key.
+        /// <summary> The 8 key. </summary>
         D8 = 56,
-        //
-        // Summary:
-        //     The 9 key.
+        /// <summary> The 9 key. </summary>
         D9 = 57,
-        //
-        // Summary:
-        //     The semicolon key.
+        /// <summary> The semicolon key. </summary>
         Semicolon = 59,
-        //
-        // Summary:
-        //     The equal key.
+        /// <summary> The equal key. </summary>
         Equal = 61,
-        //
-        // Summary:
-        //     The A key.
+        /// <summary> The A key. </summary>
         A = 65,
-        //
-        // Summary:
-        //     The B key.
+        /// <summary> The B key. </summary>
         B = 66,
-        //
-        // Summary:
-        //     The C key.
+        /// <summary> The C key. </summary>
         C = 67,
-        //
-        // Summary:
-        //     The D key.
+        /// <summary> The D key. </summary>
         D = 68,
-        //
-        // Summary:
-        //     The E key.
+        /// <summary> The E key. </summary>
         E = 69,
-        //
-        // Summary:
-        //     The F key.
+        /// <summary> The F key. </summary>
         F = 70,
-        //
-        // Summary:
-        //     The G key.
+        /// <summary> The G key. </summary>
         G = 71,
-        //
-        // Summary:
-        //     The H key.
+        /// <summary> The H key. </summary>
         H = 72,
-        //
-        // Summary:
-        //     The I key.
+        /// <summary> The I key. </summary>
         I = 73,
-        //
-        // Summary:
-        //     The J key.
+        /// <summary> The J key. </summary>
         J = 74,
-        //
-        // Summary:
-        //     The K key.
+        /// <summary> The K key. </summary>
         K = 75,
-        //
-        // Summary:
-        //     The L key.
+        /// <summary> The L key. </summary>
         L = 76,
-        //
-        // Summary:
-        //     The M key.
+        /// <summary> The M key. </summary>
         M = 77,
-        //
-        // Summary:
-        //     The N key.
+        /// <summary> The N key. </summary>
         N = 78,
-        //
-        // Summary:
-        //     The O key.
+        /// <summary> The O key. </summary>
         O = 79,
-        //
-        // Summary:
-        //     The P key.
+        /// <summary> The P key. </summary>
         P = 80,
-        //
-        // Summary:
-        //     The Q key.
+        /// <summary> The Q key. </summary>
         Q = 81,
-        //
-        // Summary:
-        //     The R key.
+        /// <summary> The R key. </summary>
         R = 82,
-        //
-        // Summary:
-        //     The S key.
+        /// <summary> The S key. </summary>
         S = 83,
-        //
-        // Summary:
-        //     The T key.
+        /// <summary> The T key. </summary>
         T = 84,
-        //
-        // Summary:
-        //     The U key.
+        /// <summary> The U key. </summary>
         U = 85,
-        //
-        // Summary:
-        //     The V key.
+        /// <summary> The V key. </summary>
         V = 86,
-        //
-        // Summary:
-        //     The W key.
+        /// <summary> The W key. </summary>
         W = 87,
-        //
-        // Summary:
-        //     The X key.
+        /// <summary> The X key. </summary>
         X = 88,
-        //
-        // Summary:
-        //     The Y key.
+        /// <summary> The Y key. </summary>
         Y = 89,
-        //
-        // Summary:
-        //     The Z key.
+        /// <summary> The Z key. </summary>
         Z = 90,
-        //
-        // Summary:
-        //     The left bracket(opening bracket) key.
+        /// <summary> The left bracket (opening bracket) key. </summary>
         LeftBracket = 91,
-        //
-        // Summary:
-        //     The backslash.
+        /// <summary> The backslash key. </summary>
         Backslash = 92,
-        //
-        // Summary:
-        //     The right bracket(closing bracket) key.
+        /// <summary> The right bracket (closing bracket) key. </summary>
         RightBracket = 93,
-        //
-        // Summary:
-        //     The grave accent key.
+        /// <summary> The grave accent key. </summary>
         GraveAccent = 96,
-        //
-        // Summary:
-        //     The escape key.
+        /// <summary> The escape key. </summary>
         Escape = 256,
-        //
-        // Summary:
-        //     The enter key.
+        /// <summary> The enter key. </summary>
         Enter = 257,
-        //
-        // Summary:
-        //     The tab key.
+        /// <summary> The tab key. </summary>
         Tab = 258,
-        //
-        // Summary:
-        //     The backspace key.
+        /// <summary> The backspace key. </summary>
         Backspace = 259,
-        //
-        // Summary:
-        //     The insert key.
+        /// <summary> The insert key. </summary>
         Insert = 260,
-        //
-        // Summary:
-        //     The delete key.
+        /// <summary> The delete key. </summary>
         Delete = 261,
-        //
-        // Summary:
-        //     The right arrow key.
+        /// <summary> The right arrow key. </summary>
         RightArrow = 262,
-        //
-        // Summary:
-        //     The left arrow key.
+        /// <summary> The left arrow key. </summary>
         LeftArrow = 263,
-        //
-        // Summary:
-        //     The down arrow key.
+        /// <summary> The down arrow key. </summary>
         DownArrow = 264,
-        //
-        // Summary:
-        //     The up arrow key.
+        /// <summary> The up arrow key. </summary>
         UpArrow = 265,
-        //
-        // Summary:
-        //     The page up key.
+        /// <summary> The page up key. </summary>
         PageUp = 266,
-        //
-        // Summary:
-        //     The page down key.
+        /// <summary> The page down key. </summary>
         PageDown = 267,
-        //
-        // Summary:
-        //     The home key.
+        /// <summary> The home key. </summary>
         Home = 268,
-        //
-        // Summary:
-        //     The end key.
+        /// <summary> The end key. </summary>
         End = 269,
-        //
-        // Summary:
-        //     The caps lock key.
+        /// <summary> The caps lock key. </summary>
         CapsLock = 280,
-        //
-        // Summary:
-        //     The scroll lock key.
+        /// <summary> The scroll lock key. </summary>
         ScrollLock = 281,
-        //
-        // Summary:
-        //     The num lock key.
+        /// <summary> The num lock key. </summary>
         NumLock = 282,
-        //
-        // Summary:
-        //     The print screen key.
+        /// <summary> The print screen key. </summary>
         PrintScreen = 283,
-        //
-        // Summary:
-        //     The pause key.
+        /// <summary> The pause key. </summary>
         Pause = 284,
-        //
-        // Summary:
-        //     The F1 key.
+        /// <summary> The F1 key. </summary>
         F1 = 290,
-        //
-        // Summary:
-        //     The F2 key.
+        /// <summary> The F2 key. </summary>
         F2 = 291,
-        //
-        // Summary:
-        //     The F3 key.
+        /// <summary> The F3 key. </summary>
         F3 = 292,
-        //
-        // Summary:
-        //     The F4 key.
+        /// <summary> The F4 key. </summary>
         F4 = 293,
-        //
-        // Summary:
-        //     The F5 key.
+        /// <summary> The F5 key. </summary>
         F5 = 294,
-        //
-        // Summary:
-        //     The F6 key.
+        /// <summary> The F6 key. </summary>
         F6 = 295,
-        //
-        // Summary:
-        //     The F7 key.
+        /// <summary> The F7 key. </summary>
         F7 = 296,
-        //
-        // Summary:
-        //     The F8 key.
+        /// <summary> The F8 key. </summary>
         F8 = 297,
-        //
-        // Summary:
-        //     The F9 key.
+        /// <summary> The F9 key. </summary>
         F9 = 298,
-        //
-        // Summary:
-        //     The F10 key.
+        /// <summary> The F10 key. </summary>
         F10 = 299,
-        //
-        // Summary:
-        //     The F11 key.
+        /// <summary> The F11 key. </summary>
         F11 = 300,
-        //
-        // Summary:
-        //     The F12 key.
+        /// <summary> The F12 key. </summary>
         F12 = 301,
-        //
-        // Summary:
-        //     The F13 key.
+        /// <summary> The F13 key. </summary>
         F13 = 302,
-        //
-        // Summary:
-        //     The F14 key.
+        /// <summary> The F14 key. </summary>
         F14 = 303,
-        //
-        // Summary:
-        //     The F15 key.
+        /// <summary> The F15 key. </summary>
         F15 = 304,
-        //
-        // Summary:
-        //     The F16 key.
+        /// <summary> The F16 key. </summary>
         F16 = 305,
-        //
-        // Summary:
-        //     The F17 key.
+        /// <summary> The F17 key. </summary>
         F17 = 306,
-        //
-        // Summary:
-        //     The F18 key.
+        /// <summary> The F18 key. </summary>
         F18 = 307,
-        //
-        // Summary:
-        //     The F19 key.
+        /// <summary> The F19 key. </summary>
         F19 = 308,
-        //
-        // Summary:
-        //     The F20 key.
+        /// <summary> The F20 key. </summary>
         F20 = 309,
-        //
-        // Summary:
-        //     The F21 key.
+        /// <summary> The F21 key. </summary>
         F21 = 310,
-        //
-        // Summary:
-        //     The F22 key.
+        /// <summary> The F22 key. </summary>
         F22 = 311,
-        //
-        // Summary:
-        //     The F23 key.
+        /// <summary> The F23 key. </summary>
         F23 = 312,
-        //
-        // Summary:
-        //     The F24 key.
+        /// <summary> The F24 key. </summary>
         F24 = 313,
-        //
-        // Summary:
-        //     The F25 key.
+        /// <summary> The F25 key. </summary>
         F25 = 314,
-        //
-        // Summary:
-        //     The 0 key on the key pad.
+        /// <summary> The 0 key on the keypad. </summary>
         KeyPad0 = 320,
-        //
-        // Summary:
-        //     The 1 key on the key pad.
+        /// <summary> The 1 key on the keypad. </summary>
         KeyPad1 = 321,
-        //
-        // Summary:
-        //     The 2 key on the key pad.
+        /// <summary> The 2 key on the keypad. </summary>
         KeyPad2 = 322,
-        //
-        // Summary:
-        //     The 3 key on the key pad.
+        /// <summary> The 3 key on the keypad. </summary>
         KeyPad3 = 323,
-        //
-        // Summary:
-        //     The 4 key on the key pad.
+        /// <summary> The 4 key on the keypad. </summary>
         KeyPad4 = 324,
-        //
-        // Summary:
-        //     The 5 key on the key pad.
+        /// <summary> The 5 key on the keypad. </summary>
         KeyPad5 = 325,
-        //
-        // Summary:
-        //     The 6 key on the key pad.
+        /// <summary> The 6 key on the keypad. </summary>
         KeyPad6 = 326,
-        //
-        // Summary:
-        //     The 7 key on the key pad.
+        /// <summary> The 7 key on the keypad. </summary>
         KeyPad7 = 327,
-        //
-        // Summary:
-        //     The 8 key on the key pad.
+        /// <summary> The 8 key on the keypad. </summary>
         KeyPad8 = 328,
-        //
-        // Summary:
-        //     The 9 key on the key pad.
+        /// <summary> The 9 key on the keypad. </summary>
         KeyPad9 = 329,
-        //
-        // Summary:
-        //     The decimal key on the key pad.
+        /// <summary> The decimal key on the keypad. </summary>
         KeyPadDecimal = 330,
-        //
-        // Summary:
-        //     The divide key on the key pad.
+        /// <summary> The divide key on the keypad. </summary>
         KeyPadDivide = 331,
-        //
-        // Summary:
-        //     The multiply key on the key pad.
+        /// <summary> The multiply key on the keypad. </summary>
         KeyPadMultiply = 332,
-        //
-        // Summary:
-        //     The subtract key on the key pad.
+        /// <summary> The subtract key on the keypad. </summary>
         KeyPadSubtract = 333,
-        //
-        // Summary:
-        //     The add key on the key pad.
+        /// <summary> The add key on the keypad. </summary>
         KeyPadAdd = 334,
-        //
-        // Summary:
-        //     The enter key on the key pad.
+        /// <summary> The enter key on the keypad. </summary>
         KeyPadEnter = 335,
-        //
-        // Summary:
-        //     The equal key on the key pad.
+        /// <summary> The equal key on the keypad. </summary>
         KeyPadEqual = 336,
-        //
-        // Summary:
-        //     The left shift key.
+        /// <summary> The left shift key. </summary>
         LeftShift = 340,
-        //
-        // Summary:
-        //     The left control key.
+        /// <summary> The left control key. </summary>
         LeftControl = 341,
-        //
-        // Summary:
-        //     The left alt key.
+        /// <summary> The left alt key. </summary>
         LeftAlt = 342,
-        //
-        // Summary:
-        //     The left super key.
+        /// <summary> The left super key. </summary>
         LeftSuper = 343,
-        //
-        // Summary:
-        //     The right shift key.
+        /// <summary> The right shift key. </summary>
         RightShift = 344,
-        //
-        // Summary:
-        //     The right control key.
+        /// <summary> The right control key. </summary>
         RightControl = 345,
-        //
-        // Summary:
-        //     The right alt key.
+        /// <summary> The right alt key. </summary>
         RightAlt = 346,
-        //
-        // Summary:
-        //     The right super key.
+        /// <summary> The right super key. </summary>
         RightSuper = 347,
-        //
-        // Summary:
-        //     The menu key.
+        /// <summary> The menu key. </summary>
         Menu = 348,
-        //
-        // Summary:
-        //     The last valid key in this enum.
+        /// <summary> The last valid key in this enum. </summary>
         LastKey = 348,
     }
-}

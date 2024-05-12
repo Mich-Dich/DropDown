@@ -3,11 +3,11 @@ namespace Core.render {
 
     using OpenTK.Graphics.OpenGL4;
 
-    public sealed class index_buffer : i_buffer, IDisposable {
+    public sealed class Index_Buffer : I_Buffer, IDisposable {
 
         public int id { get; }
 
-        public index_buffer(uint[] indecies) { 
+        public Index_Buffer(uint[] indecies) { 
             
             id = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, id);
@@ -15,12 +15,12 @@ namespace Core.render {
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }
 
-        public void bind() {
+        public void Bind() {
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, id);
         }
 
-        public void unbind() {
+        public void Unbind() {
             
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }

@@ -67,12 +67,12 @@ namespace Core.controllers.player {
 
     public readonly struct input_event {
 
-        public key_code key             { get; }
+        public Key_Code key             { get; }
         public KeyModifiers modifiers   { get; }
         public key_state key_state      { get; }
         public int repeat_amout         { get; }
 
-        public input_event(key_code key, KeyModifiers modifiers, int repeat_amout, key_state key_state) {
+        public input_event(Key_Code key, KeyModifiers modifiers, int repeat_amout, key_state key_state) {
 
             this.key = key;
             this.modifiers = modifiers;
@@ -83,13 +83,13 @@ namespace Core.controllers.player {
 
     public struct key_binding_detail {
 
-        public key_code key         { get; set; }
+        public Key_Code key         { get; set; }
         public uint reset_flags     { get; set; } = 0;
         public uint trigger_flags   { get; set; } = 0;
         public uint modefier_flags  { get; set; } = 0;
         public MouseButton button   { get; set; } = 0;
 
-        public key_binding_detail(key_code key, reset_flags reset_flags, trigger_flags triggerFlags, key_modefier_flags modifierFlags = key_modefier_flags.axis_1) {
+        public key_binding_detail(Key_Code key, reset_flags reset_flags, trigger_flags triggerFlags, key_modefier_flags modifierFlags = key_modefier_flags.axis_1) {
 
             this.key = key;
             this.reset_flags = (uint)reset_flags;

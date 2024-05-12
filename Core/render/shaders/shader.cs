@@ -3,20 +3,20 @@ using OpenTK.Mathematics;
 
 namespace Core.render.shaders {
 
-    public sealed class shader {
+    public sealed class Shader {
 
         //  ============================================================================== public ============================================================================== 
         public int programm_id { get; private set; }
 
-        public shader(string vert_shader_path, string frag_shader_path, bool compile = true) {
+        public Shader(string vert_shader_path, string frag_shader_path, bool compile = true) {
                         
-            _shader_programm_source = shader.parse_shader(vert_shader_path, frag_shader_path);
+            _shader_programm_source = Shader.parse_shader(vert_shader_path, frag_shader_path);
 
             if(compile)
                 this.compile();
         }
 
-        ~shader() {
+        ~Shader() {
 
             GL.DeleteProgram(programm_id);
         }

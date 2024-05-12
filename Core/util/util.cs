@@ -4,8 +4,16 @@ namespace Core {
     using ImGuiNET;
     using OpenTK.Graphics.OpenGL4;
 
-    public static class utility {
-    
+    /// <summary>
+    /// Contains utility methods for handling OpenGL vertex attribute pointer types and angle conversions.
+    /// </summary>
+    public static class Util {
+
+        /// <summary>
+        /// Retrieves the size of the specified VertexAttribPointerType in bytes.
+        /// </summary>
+        /// <param name="attrib_type">The VertexAttribPointerType to determine the size for.</param>
+        /// <returns>The size of the VertexAttribPointerType in bytes.</returns>
         public static int get_size_of_VertexAttribPointerType(VertexAttribPointerType attrib_type) {
 
             switch (attrib_type) {
@@ -49,36 +57,72 @@ namespace Core {
             }
         }
 
+        /// <summary>
+        /// Converts an angle from radians to degrees.
+        /// </summary>
+        /// <param name="angle">Angle in radians.</param>
+        /// <returns>Angle converted to degrees.</returns>
         public static double radians_to_degree(double angle) { return angle * (180 / Math.PI); }
+
+        /// <summary>
+        /// Converts an angle from degrees to radians.
+        /// </summary>
+        /// <param name="angle">Angle in degrees.</param>
+        /// <returns>Angle converted to radians.</returns>
         public static double degree_to_radians(double angle) { return angle * (Math.PI / 180); }
 
     }
 
-    public sealed class ResourceNotAssignedException : Exception {
-        public ResourceNotAssignedException(string message)
-            : base(message) {
-        }
-    }
-
+    /// <summary>
+    /// Stores ImFontPtr instances for ImGui font management.
+    /// </summary>
     public static class imgui_fonts {
 
+        /// <summary>
+        /// Dictionary to store ImGui fonts by name.
+        /// </summary>
         public static Dictionary<string, ImFontPtr> fonts = new Dictionary<string, ImFontPtr>();
-
     }
 
+    /// <summary>
+    /// Provides a wrapper for referencing elements in a list by index.
+    /// </summary>
+    /// <typeparam name="T">Type of elements in the list.</typeparam>
     public sealed class RefWrapper<T> {
 
         private List<T> list;
         private int index;
 
+        /// <summary>
+        /// Constructs a RefWrapper instance with a list and index.
+        /// </summary>
+        /// <param name="list">The list to reference.</param>
+        /// <param name="index">The index to reference in the list.</param>
         public RefWrapper(List<T> list, int index) {
             this.list = list;
             this.index = index;
         }
 
+        /// <summary>
+        /// Gets or sets the value at the referenced index in the list.
+        /// </summary>
         public T Value {
             get { return list[index]; }
             set { list[index] = value; }
+        }
+    }
+
+    /// <summary>
+    /// Represents an exception thrown when a required resource is not assigned.
+    /// </summary>
+    public sealed class ResourceNotAssignedException : Exception {
+
+        /// <summary>
+        /// Constructs a ResourceNotAssignedException with a specified error message.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        public ResourceNotAssignedException(string message)
+            : base(message) {
         }
     }
 }

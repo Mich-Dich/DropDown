@@ -1,5 +1,5 @@
 
-namespace Core.renderer {
+namespace Core.render {
 
     using Core.physics;
     using Core.render.shaders;
@@ -15,22 +15,22 @@ namespace Core.renderer {
         White,
     }
 
-    public sealed class debug_drawer {
+    public sealed class Debug_Drawer {
         
-        private shader debugShader;
+        private Shader debugShader;
         private int vbo, vao, ebo;
 
         public DebugColor DebugColor { get; set; } = DebugColor.White;
 
-        public debug_drawer() {
-            this.debugShader = resource_manager.get_shader("shaders/debug.vert", "shaders/debug.frag");
+        public Debug_Drawer() {
+            this.debugShader = Resource_Manager.Get_Shader("shaders/debug.vert", "shaders/debug.frag");
 
             this.vbo = GL.GenBuffer();
             this.vao = GL.GenVertexArray();
             this.ebo = GL.GenBuffer();
         }
 
-        public void draw_collision_shape(transform transform, collider collider, DebugColor debugColor) {
+        public void draw_collision_shape(Transform transform, Collider collider, DebugColor debugColor) {
 
             //Console.WriteLine("Drawing collision shape");
             this.DebugColor = debugColor;
@@ -52,10 +52,10 @@ namespace Core.renderer {
             }
             this.debugShader.set_uniform("color", color);
 
-            transform buffer = new transform(transform + collider.offset);
+            Transform buffer = new Transform(transform + collider.offset);
             buffer.size = Vector2.One;
             Matrix4 matrixTransform = buffer.GetTransformationMatrix();
-            Matrix4 finalTransform = matrixTransform * game.instance.camera.get_projection_matrix();
+            Matrix4 finalTransform = matrixTransform * Game.instance.camera.Get_Projection_Matrix();
             this.debugShader.set_matrix_4x4("transform", finalTransform);
 
             if(collider.shape == collision_shape.Circle) {

@@ -3,7 +3,7 @@ namespace Core.render {
 
     using OpenTK.Graphics.OpenGL4;
 
-    public struct buffer_element {
+    public struct Buffer_Element {
 
         public VertexAttribPointerType type;
         public int count;

@@ -14,7 +14,7 @@ using Core.util;
 
             this.frames = new List<Texture>();
             foreach(string imagePath in imagePaths) 
-                this.frames.Add(resource_manager.get_texture(imagePath, isPixelArt));
+                this.frames.Add(Resource_Manager.Get_Texture(imagePath, isPixelArt));
             
         }
 

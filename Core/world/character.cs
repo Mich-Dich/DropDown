@@ -6,43 +6,64 @@ namespace Core.world {
     using ImGuiNET;
     using OpenTK.Mathematics;
 
-    public class character : game_object {
+    public class Character : Game_Object {
 
         public float    movement_speed { get; set; } = 100.0f;
         public float    movement_speed_max { get; set; } = 100.0f;
         public int      health { get; set; } = 100;
         public int      health_max { get; set; } = 100;
 
-        public character() {
+        /// <summary>
+        /// Constructs a new Character instance.
+        /// </summary>
+        public Character() {
 
             //this.set_sprite(new visual.sprite(resource_manager.get_texture("./assets/textures/Spaceship/Spaceship.png")));
         }
 
-        public void set_controller(I_controller controller) {
+        /// <summary>
+        /// Sets the controller for this character.
+        /// </summary>
+        /// <param name="controller">The controller to assign to this character.</param>
+        public void Set_Controller(I_controller controller) {
 
             this.controller = controller;
             controller.character = this;
         }
 
-        public void set_velocity(Vector2 new_velocity) {
+        /// <summary>
+        /// Sets the velocity of the character.
+        /// </summary>
+        /// <param name="new_velocity">The new velocity to set for the character.</param>
+        public void Set_Velocity(Vector2 new_velocity) {
 
             if(this.collider != null)
                 this.collider.velocity = new_velocity;
         }
 
-        public void add_velocity(Vector2 new_velocity) {
+        /// <summary>
+        /// Adds to the current velocity of the character.
+        /// </summary>
+        /// <param name="new_velocity">The additional velocity to add to the character's current velocity.</param>
+        public void Add_Velocity(Vector2 new_velocity) {
 
             if(this.collider != null)
                 this.collider.velocity += new_velocity;
         }
 
-
-        public override void hit(hit_data hit) {
+        /// <summary>
+        /// Handles the character being hit by an external force or attack.
+        /// </summary>
+        /// <param name="hit">Data representing the hit event.</param>
+        public override void Hit(hit_data hit) {
 
             Console.WriteLine($"character [{this}] was hit");
         }
 
-        public void display_helthbar() {
+        /// <summary>
+        /// Displays the health bar of the character using ImGui.
+        /// </summary>
+        public void Display_Healthbar() {
 
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
                 | ImGuiWindowFlags.NoDocking

@@ -11,7 +11,7 @@ namespace Core.physics {
         public Vector2 hit_direction;
         public Vector2 hit_normal;
         public Vector2 hit_impact_point;
-        public game_object hit_object;
+        public Game_Object hit_object;
     }
 
     // first game_object is the main object to consider, the second is the compare and will be set as the hit_object
@@ -19,9 +19,9 @@ namespace Core.physics {
 
         public physics_engine() { }
 
-        public void update(List<game_object> all_objects, float delta_time, float min_distanc_for_collision = 1600) {
+        public void update(List<Game_Object> all_objects, float delta_time, float min_distanc_for_collision = 1600) {
 
-            if(game.instance.show_debug)
+            if(Game.instance.show_debug)
                 debug_data.colidable_objects = all_objects.Count;
 
             hit_data current = new hit_data();
@@ -34,7 +34,7 @@ namespace Core.physics {
                     continue;       // early skip for colliderless objects
 
                 // update position
-                if(obj_X.transform.mobility != mobility.STATIC) {
+                if(obj_X.transform.mobility != Mobility.STATIC) {
 
                     obj_X.collider.velocity /= 1 + obj_X.collider.material.friction * delta_time;
                     obj_X.transform.position += obj_X.collider.velocity * delta_time;
@@ -48,17 +48,17 @@ namespace Core.physics {
                         continue;
 
                     // Skip unneeded
-                    if(obj_X.transform.mobility == mobility.STATIC && obj_Y.transform.mobility == mobility.STATIC)
+                    if(obj_X.transform.mobility == Mobility.STATIC && obj_Y.transform.mobility == Mobility.STATIC)
                         continue;
 
                     if((obj_X.transform.position - obj_Y.transform.position).LengthFast > min_distanc_for_collision)
                         continue;
 
 
-                    if(game.instance.show_debug) {
+                    if(Game.instance.show_debug) {
 
                         debug_data.collision_checks_num++;
-                        if(obj_Y.transform.mobility == mobility.STATIC)
+                        if(obj_Y.transform.mobility == Mobility.STATIC)
                             debug_data.colidable_objects_static++;
                         else
                             debug_data.colidable_objects_dynamic++;
@@ -84,28 +84,30 @@ namespace Core.physics {
 
                     // proccess hit => change position, velocity ...
                     float total_mass = obj_X.collider.mass + obj_Y.collider.mass;
-                    if(obj_X.transform.mobility != mobility.STATIC || obj_X.collider.offset.mobility != mobility.STATIC) {
+                    if(obj_X.transform.mobility != Mobility.STATIC || obj_X.collider.offset.mobility != Mobility.STATIC) {
 
                         obj_X.transform.position -= current.hit_direction; // * (obj_Y.collider.mass / total_mass) * obj_Y.collider.material.bounciness;
                         obj_X.collider.velocity -= current.hit_direction * (obj_Y.collider.mass / total_mass);// * obj_Y.collider.material.bounciness;
-                        obj_X.hit(current);
+                        obj_X.Hit(current);
                     }
 
-                    if(obj_Y.transform.mobility != mobility.STATIC || obj_Y.collider.offset.mobility != mobility.STATIC) {
+                    if(obj_Y.transform.mobility != Mobility.STATIC || obj_Y.collider.offset.mobility != Mobility.STATIC) {
 
                         obj_Y.transform.position += current.hit_direction;// * (obj_X.collider.mass / total_mass) * obj_X.collider.material.bounciness;
                         obj_Y.collider.velocity += current.hit_direction * (obj_X.collider.mass / total_mass);// * obj_X.collider.material.bounciness;
-                        obj_Y.hit(current);
+                        obj_Y.Hit(current);
                     }
                 }
             }
         }
 
-        private hit_data collision_AABB_AABB(game_object AABB, game_object AABB_2) {
+        private hit_data collision_AABB_AABB(Game_Object AABB, Game_Object AABB_2) {
             hit_data hit = new hit_data();
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.     => private function is only called after verifying both Game_Objects have a collider
             Vector2 posA = AABB.transform.position + AABB.collider.offset.position;
             Vector2 posB = AABB_2.transform.position + AABB_2.collider.offset.position;
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
             float overlapX = (AABB.transform.size.X / 2 + AABB_2.transform.size.X / 2) - Math.Abs(posA.X - posB.X);
             float overlapY = (AABB.transform.size.Y / 2 + AABB_2.transform.size.Y / 2) - Math.Abs(posA.Y - posB.Y);
@@ -129,11 +131,13 @@ namespace Core.physics {
             return hit;
         }
 
-        private hit_data collision_circle_circle(game_object circle1, game_object circle2) {
+        private hit_data collision_circle_circle(Game_Object circle1, Game_Object circle2) {
             hit_data hit = new hit_data();
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.     => private function is only called after verifying both Game_Objects have a collider
             Vector2 posA = circle1.transform.position + circle1.collider.offset.position;
             Vector2 posB = circle2.transform.position + circle2.collider.offset.position;
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
             Vector2 intersection_direction = posA - posB;
             float radiusSum = (circle1.transform.size.X / 2) + (circle2.transform.size.X / 2);
@@ -155,12 +159,14 @@ namespace Core.physics {
             return hit;
         }
 
-        private hit_data collision_circle_AABB(game_object circle, game_object AABB) {
+        private hit_data collision_circle_AABB(Game_Object circle, Game_Object AABB) {
 
             hit_data hit = new hit_data();
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.     => private function is only called after verifying both Game_Objects have a collider
             Vector2 posA = circle.transform.position + circle.collider.offset.position;
             Vector2 posB = AABB.transform.position + AABB.collider.offset.position;
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
             float nearest_point_x = Math.Clamp(posA.X,
                 posB.X - (AABB.transform.size.X / 2),

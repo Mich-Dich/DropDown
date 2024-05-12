@@ -1,10 +1,12 @@
 ﻿using Core.controllers.ai;
+using Core.world;
 
 namespace DropDown.enemy {
 
     public class base_ai_controller : ai_controller {
 
-        public base_ai_controller() {
+        public base_ai_controller(Character character) 
+            : base(character) {
         
             
 
@@ -14,7 +16,7 @@ namespace DropDown.enemy {
     }
 
 
-    public class idle : I_AI_state {
+    public class Idle : I_AI_state {
     
         public Type enter(ai_controller ai_controller) {
             throw new NotImplementedException();

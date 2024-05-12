@@ -3,11 +3,11 @@ namespace Core.render {
 
     using OpenTK.Graphics.OpenGL4;
 
-    public sealed class vertex_array : i_buffer, IDisposable {
+    public sealed class Vertex_Array : I_Buffer, IDisposable {
 
         public int id { get; private set; }
 
-        public vertex_array() {
+        public Vertex_Array() {
 
             id = GL.GenVertexArray();
         }
@@ -21,10 +21,10 @@ namespace Core.render {
             disposed = true;
         }
 
-        public void add_buffer(vertex_buffer buffer, buffer_layout layout) {
+        public void Add_Buffer(Vertex_Buffer buffer, Buffer_Layout layout) {
 
-            bind();
-            buffer.bind();
+            Bind();
+            buffer.Bind();
             var elements = layout.get_buffer_elements();
             int offset = 0;
 
@@ -33,16 +33,16 @@ namespace Core.render {
                 var current_element = elements[x];
                 GL.EnableVertexAttribArray(x);
                 GL.VertexAttribPointer(x, current_element.count, current_element.type, current_element.normalized, layout.get_stride(), offset);
-                offset += current_element.count * utility.get_size_of_VertexAttribPointerType(current_element.type);
+                offset += current_element.count * Util.get_size_of_VertexAttribPointerType(current_element.type);
             }
         }
 
-        public void bind() {
+        public void Bind() {
 
             GL.BindVertexArray(id);
         }
 
-        public void unbind() {
+        public void Unbind() {
 
             GL.BindVertexArray(0);
         }

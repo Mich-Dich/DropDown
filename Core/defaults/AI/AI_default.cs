@@ -2,10 +2,4 @@
 
 namespace Core.defaults.AI {
 
-    public class AI_default : ai_controller {
-
-
-
-
-    }
 }
