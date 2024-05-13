@@ -15,7 +15,6 @@ namespace DropDown.enemy {
 
     }
 
-
     public class Idle : I_AI_State {
     
         public Type Enter(AI_Controller aI_Controller) {
