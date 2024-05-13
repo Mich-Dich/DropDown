@@ -85,7 +85,7 @@ namespace DropDown.player {
             character.transform.rotation = -angleRadians + (float.Pi / 2) + (float.Pi/20);
         }
 
-        private float sprint_speed = 250.0f;
+        private float sprint_speed = 350.0f;
 
     }
 }
