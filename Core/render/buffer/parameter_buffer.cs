@@ -15,13 +15,13 @@ namespace Core.render {
             GL.BindBuffer(BufferTarget.ParameterBuffer, 0);
         }
 
-        private bool _disposed = false;
+        private bool _Disposed = false;
         public void Dispose() {
 
-            if(!_disposed)
+            if(!_Disposed)
                 GL.DeleteBuffer(id);
 
-            _disposed = true;
+            _Disposed = true;
         }
 
         public void Bind() {

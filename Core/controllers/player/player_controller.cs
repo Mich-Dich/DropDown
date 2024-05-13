@@ -1,10 +1,9 @@
-﻿
-namespace Core.controllers.player {
+﻿namespace Core.controllers.player {
 
 using Core.world;
 using OpenTK.Mathematics;
 
-    public abstract class player_controller : I_controller {
+    public abstract class Player_Controller : I_Controller {
 
         public Character character { get; set; }
         //public character character { get; set; }
@@ -14,130 +13,130 @@ using OpenTK.Mathematics;
         /// </summary>
         /// <param name="character">The character associated with this controller.</param>
         /// <param name="actions">Optional list of actions to initialize the controller with (default: null).</param>
-        public player_controller(Character character, List<Action>? actions = null) {
+        public Player_Controller(Character character, List<Action>? actions = null) {
 
             this.actions = actions?? new List<Action>();
             this.character = character;
         }
 
-        internal void update_internal(float delta_time, List<input_event> input_event) {
+        internal void Update_Internal(float deltaTime, List<InputEvent> InputEvent) {
 
             // TODO: make input event driven && make movement physics-based
-            //if(input_event.Count == 0)
+            //if(InputEvent.Count == 0)
             //    return;
 
-            for (int x = 0; x < input_event.Count; x++) {
-                input_event loc_event = input_event[x];
+            for (int x = 0; x < InputEvent.Count; x++) {
+                InputEvent loc_event = InputEvent[x];
 
                 for (int y = 0; y < actions.Count; y++) {
                     Action loc_action = actions[y];
 
-                    for (int z = 0; z < loc_action.keys_bindings.Count; z++) {
-                        key_binding_detail key_binding = loc_action.keys_bindings[z];
+                    for (int z = 0; z < loc_action.keysBindings.Count; z++) {
+                        KeyBindingDetail key_binding = loc_action.keysBindings[z];
 
                         if (key_binding.key != loc_event.key)       // skip wrong key bindings
                             continue;
 
-                        bool is_key_active = false;
+                        bool isKeyActive = false;
 
                         // secondary if check to avoid overriding
                         // key_binding can have multiple triggers but only one could be active
                         do {
                             
                             // keyboard flags
-                            if((key_binding.trigger_flags & (uint)trigger_flags.key_down) != 0)
-                                is_key_active = (loc_event.key_state == key_state.Pressed || loc_event.key_state == key_state.Repeat);
+                            if((key_binding.TriggerFlags & (uint)TriggerFlags.key_down) != 0)
+                                isKeyActive = (loc_event.KeyState == KeyState.Pressed || loc_event.KeyState == KeyState.Repeat);
 
-                            if(is_key_active)
+                            if(isKeyActive)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)trigger_flags.key_up) != 0)
-                                is_key_active = (loc_event.key_state == key_state.Release);
+                            if((key_binding.TriggerFlags & (uint)TriggerFlags.key_up) != 0)
+                                isKeyActive = (loc_event.KeyState == KeyState.Release);
 
-                            if(is_key_active)
+                            if(isKeyActive)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)trigger_flags.key_hold) != 0)
-                                is_key_active = (loc_event.key_state == key_state.Repeat);
+                            if((key_binding.TriggerFlags & (uint)TriggerFlags.key_hold) != 0)
+                                isKeyActive = (loc_event.KeyState == KeyState.Repeat);
 
-                            if(is_key_active)
+                            if(isKeyActive)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)trigger_flags.key_tap) != 0)
-                                Console.WriteLine($"Not implemented yet (basicly the same as [trigger_flags.key_move_down] but uses [duration_in_sec])");
+                            if((key_binding.TriggerFlags & (uint)TriggerFlags.key_tap) != 0)
+                                Console.WriteLine($"Not implemented yet (basicly the same as [TriggerFlags.key_move_down] but uses [durationInSec])");
 
-                            if(is_key_active)
+                            if(isKeyActive)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)trigger_flags.key_move_down) != 0)
-                                is_key_active = (loc_event.key_state == key_state.Pressed);
+                            if((key_binding.TriggerFlags & (uint)TriggerFlags.key_move_down) != 0)
+                                isKeyActive = (loc_event.KeyState == KeyState.Pressed);
 
-                            if(is_key_active)
+                            if(isKeyActive)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)trigger_flags.key_move_up) != 0)
-                                is_key_active = (loc_event.key_state == key_state.Release);
+                            if((key_binding.TriggerFlags & (uint)TriggerFlags.key_move_up) != 0)
+                                isKeyActive = (loc_event.KeyState == KeyState.Release);
 
-                            if(is_key_active)
+                            if(isKeyActive)
                                 break;
 
                             // mouse flags
-                            if((key_binding.trigger_flags & (uint)trigger_flags.mouse_positive) != 0)
-                                is_key_active = (loc_event.repeat_amout > 0);
+                            if((key_binding.TriggerFlags & (uint)TriggerFlags.mouse_positive) != 0)
+                                isKeyActive = (loc_event.repeatAmout > 0);
 
-                            if(is_key_active)
+                            if(isKeyActive)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)trigger_flags.mouse_negative) != 0)
-                                is_key_active = (loc_event.repeat_amout < 0);
+                            if((key_binding.TriggerFlags & (uint)TriggerFlags.mouse_negative) != 0)
+                                isKeyActive = (loc_event.repeatAmout < 0);
 
-                            if(is_key_active)
+                            if(isKeyActive)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)trigger_flags.mouse_pos_and_neg) != 0)
-                                is_key_active = true;
+                            if((key_binding.TriggerFlags & (uint)TriggerFlags.mouse_pos_and_neg) != 0)
+                                isKeyActive = true;
 
                         } while(false);
 
 
                         // proccess key_binding modefiers
-                        int payload_buffer = is_key_active? 1 : 0;
+                        int payloadBuffer = isKeyActive? 1 : 0;
 
                         if (key_binding.key == input.Key_Code.CursorPositionX
                             || key_binding.key == input.Key_Code.CursorPositionY
                             || key_binding.key == input.Key_Code.MouseWheelX
                             || key_binding.key == input.Key_Code.MouseWheelY)
-                            payload_buffer = is_key_active ? loc_event.repeat_amout : 0;
+                            payloadBuffer = isKeyActive ? loc_event.repeatAmout : 0;
 
 
-                        if((key_binding.modefier_flags & (uint)key_modefier_flags.negate) != 0)
-                            payload_buffer *= -1;
+                        if((key_binding.modefierFlags & (uint)KeyModefierFlags.negate) != 0)
+                            payloadBuffer *= -1;
 
                         // save value to apropead field
-                        switch(loc_action.action_type) {
+                        switch(loc_action.ActionType) {
 
-                            case action_type.BOOL:
-                            case action_type.VEC_1D: { loc_action.X = payload_buffer; } break;
+                            case ActionType.BOOL:
+                            case ActionType.VEC_1D: { loc_action.X = payloadBuffer; } break;
 
-                            case action_type.VEC_2D: {
+                            case ActionType.VEC_2D: {
 
-                                if((key_binding.modefier_flags & (uint)key_modefier_flags.axis_2) != 0)
-                                    loc_action.Y = payload_buffer;
+                                if((key_binding.modefierFlags & (uint)KeyModefierFlags.axis_2) != 0)
+                                    loc_action.Y = payloadBuffer;
                                 else
-                                    loc_action.X = payload_buffer;
+                                    loc_action.X = payloadBuffer;
 
                             } break;
 
-                            case action_type.VEC_3D: {
+                            case ActionType.VEC_3D: {
 
-                                if((key_binding.modefier_flags & (uint)key_modefier_flags.axis_3) != 0)
-                                    loc_action.Z = payload_buffer;
+                                if((key_binding.modefierFlags & (uint)KeyModefierFlags.axis_3) != 0)
+                                    loc_action.Z = payloadBuffer;
 
-                                if((key_binding.modefier_flags & (uint)key_modefier_flags.axis_2) != 0)
-                                    loc_action.Y = payload_buffer;
+                                if((key_binding.modefierFlags & (uint)KeyModefierFlags.axis_2) != 0)
+                                    loc_action.Y = payloadBuffer;
 
                                 else
-                                    loc_action.X = payload_buffer;
+                                    loc_action.X = payloadBuffer;
                             } break;
 
                         }
@@ -148,16 +147,16 @@ using OpenTK.Mathematics;
 
                     // proccess Action modefiers
 
-                    if((loc_action.modefier_flags & (uint)action_modefier_flags.normalize_vec) != 0) {
+                    if((loc_action.modefierFlags & (uint)Action_ModefierFlags.normalize_vec) != 0) {
 
-                        switch(loc_action.action_type) {
+                        switch(loc_action.ActionType) {
 
-                            case action_type.BOOL: break;
-                            case action_type.VEC_1D: break;
+                            case ActionType.BOOL: break;
+                            case ActionType.VEC_1D: break;
 
-                            case action_type.VEC_2D: {
+                            case ActionType.VEC_2D: {
 
-                                Vector2 buffer = (Vector2)loc_action.get_value();
+                                Vector2 buffer = (Vector2)loc_action.GetValue();
                                 if(buffer.Length <= 1)
                                     break;
 
@@ -168,9 +167,9 @@ using OpenTK.Mathematics;
                                 loc_action.Y = buffer.Y;
                             } break;
 
-                            case action_type.VEC_3D: {
+                            case ActionType.VEC_3D: {
 
-                                Vector3 buffer = (Vector3)loc_action.get_value();
+                                Vector3 buffer = (Vector3)loc_action.GetValue();
                                 if(buffer.Length <= 1)
                                     break;
                             
@@ -187,23 +186,23 @@ using OpenTK.Mathematics;
 
             
             // call client side code befor resetting payload
-            update(delta_time);
+            Update(deltaTime);
 
             // resetting payload if needed
-            for(int x = 0; x < input_event.Count; x++) {
-                input_event loc_event = input_event[x];
+            for(int x = 0; x < InputEvent.Count; x++) {
+                InputEvent loc_event = InputEvent[x];
 
                 for(int y = 0; y < actions.Count; y++) {
                     Action loc_action = actions[y];
 
-                    for(int z = 0; z < loc_action.keys_bindings.Count; z++) {
-                        key_binding_detail key_binding = loc_action.keys_bindings[z];
+                    for(int z = 0; z < loc_action.keysBindings.Count; z++) {
+                        KeyBindingDetail key_binding = loc_action.keysBindings[z];
 
                         if(key_binding.key != loc_event.key)       // skip wrong key bindings
                             continue;
 
                         // exit early if no reset is needed
-                        if(key_binding.reset_flags == (uint)reset_flags.none)
+                        if(key_binding.ResetFlags == (uint)ResetFlags.none)
                             continue;
 
                         bool needs_reset = false;
@@ -213,56 +212,56 @@ using OpenTK.Mathematics;
                         do {
 
                             // keyboard flags
-                            if((key_binding.reset_flags & (uint)reset_flags.reset_on_key_down) != 0)
-                                needs_reset = (loc_event.key_state == key_state.Pressed || loc_event.key_state == key_state.Repeat);
+                            if((key_binding.ResetFlags & (uint)ResetFlags.reset_on_key_down) != 0)
+                                needs_reset = (loc_event.KeyState == KeyState.Pressed || loc_event.KeyState == KeyState.Repeat);
 
                             if(needs_reset)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)reset_flags.reset_on_key_up) != 0)
-                                needs_reset = (loc_event.key_state == key_state.Release);
+                            if((key_binding.TriggerFlags & (uint)ResetFlags.reset_on_key_up) != 0)
+                                needs_reset = (loc_event.KeyState == KeyState.Release);
 
                             if(needs_reset)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)reset_flags.reset_on_key_hold) != 0)
-                                needs_reset = (loc_event.key_state == key_state.Repeat);
+                            if((key_binding.TriggerFlags & (uint)ResetFlags.reset_on_key_hold) != 0)
+                                needs_reset = (loc_event.KeyState == KeyState.Repeat);
 
                             if(needs_reset)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)reset_flags.reset_on_key_tap) != 0)
-                                Console.WriteLine($"Not implemented yet (basicly the same as [trigger_flags.key_move_down] but uses [duration_in_sec])");
+                            if((key_binding.TriggerFlags & (uint)ResetFlags.reset_on_key_tap) != 0)
+                                Console.WriteLine($"Not implemented yet (basicly the same as [TriggerFlags.key_move_down] but uses [durationInSec])");
 
                             if(needs_reset)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)reset_flags.reset_on_key_move_down) != 0)
-                                needs_reset = (loc_event.key_state == key_state.Pressed);
+                            if((key_binding.TriggerFlags & (uint)ResetFlags.reset_on_key_move_down) != 0)
+                                needs_reset = (loc_event.KeyState == KeyState.Pressed);
 
                             if(needs_reset)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)reset_flags.reset_on_key_move_up) != 0)
-                                needs_reset = (loc_event.key_state == key_state.Release);
+                            if((key_binding.TriggerFlags & (uint)ResetFlags.reset_on_key_move_up) != 0)
+                                needs_reset = (loc_event.KeyState == KeyState.Release);
 
                             if(needs_reset)
                                 break;
 
                             // mouse flags
-                            if((key_binding.trigger_flags & (uint)reset_flags.reset_on_mouse_positive) != 0)
-                                needs_reset = (loc_event.repeat_amout > 0);
+                            if((key_binding.TriggerFlags & (uint)ResetFlags.reset_on_mouse_positive) != 0)
+                                needs_reset = (loc_event.repeatAmout > 0);
 
                             if(needs_reset)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)reset_flags.reset_on_mouse_negative) != 0)
-                                needs_reset = (loc_event.repeat_amout < 0);
+                            if((key_binding.TriggerFlags & (uint)ResetFlags.reset_on_mouse_negative) != 0)
+                                needs_reset = (loc_event.repeatAmout < 0);
 
                             if(needs_reset)
                                 break;
 
-                            if((key_binding.trigger_flags & (uint)reset_flags.reset_on_mouse_pos_and_neg) != 0)
+                            if((key_binding.TriggerFlags & (uint)ResetFlags.reset_on_mouse_pos_and_neg) != 0)
                                 needs_reset = true;
 
                         } while(false);
@@ -272,14 +271,14 @@ using OpenTK.Mathematics;
                             continue;
 
                         // save value to apropead field
-                        switch(loc_action.action_type) {
+                        switch(loc_action.ActionType) {
 
-                            case action_type.BOOL:
-                            case action_type.VEC_1D: { loc_action.X = 0; } break;
+                            case ActionType.BOOL:
+                            case ActionType.VEC_1D: { loc_action.X = 0; } break;
 
-                            case action_type.VEC_2D: {
+                            case ActionType.VEC_2D: {
 
-                                if((key_binding.modefier_flags & (uint)key_modefier_flags.axis_2) != 0)
+                                if((key_binding.modefierFlags & (uint)KeyModefierFlags.axis_2) != 0)
                                     loc_action.Y = 0;
                                 else
                                     loc_action.X = 0;
@@ -287,12 +286,12 @@ using OpenTK.Mathematics;
                             }
                             break;
 
-                            case action_type.VEC_3D: {
+                            case ActionType.VEC_3D: {
 
-                                if((key_binding.modefier_flags & (uint)key_modefier_flags.axis_3) != 0)
+                                if((key_binding.modefierFlags & (uint)KeyModefierFlags.axis_3) != 0)
                                     loc_action.Z = 0;
 
-                                if((key_binding.modefier_flags & (uint)key_modefier_flags.axis_2) != 0)
+                                if((key_binding.modefierFlags & (uint)KeyModefierFlags.axis_2) != 0)
                                     loc_action.Y = 0;
 
                                 else
@@ -313,7 +312,7 @@ using OpenTK.Mathematics;
         /// Adds an input Action to the player controller.
         /// </summary>
         /// <param name="action">The input Action to add.</param>
-        public void add_input_action(Action action) {
+        public void AddInputAction(Action action) {
 
             // TODO: (Leonhard) load input data (key_codes) from file
             actions.Add(action);
@@ -324,7 +323,7 @@ using OpenTK.Mathematics;
         /// </summary>
         /// <param name="action">The input Action to remove.</param>
         /// <returns>True if the Action was successfully removed; otherwise, false.</returns>
-        public bool remove_input_action(Action action) {
+        public bool RemoveInputAction(Action action) {
 
             return actions.Remove(action);
         }
@@ -332,7 +331,7 @@ using OpenTK.Mathematics;
         // ============================= protected  ============================= 
 
         protected List<Action> actions { get; set; }
-        protected abstract void update(float delta_time);
+        protected abstract void Update(float deltaTime);
 
     }
 }

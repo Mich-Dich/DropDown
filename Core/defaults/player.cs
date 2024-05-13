@@ -11,7 +11,7 @@ namespace Core.defaults {
             this.transform.rotation = float.Pi;
             Set_Sprite(new Core.render.Sprite(Resource_Manager.Get_Texture("assets/textures/player/00.png")));
             
-            this.movement_speed = 5.0f;
+            this.movementSpeed = 5.0f;
         }
 
     }

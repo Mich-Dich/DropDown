@@ -127,9 +127,9 @@ namespace Core.util {
         public static void Title(string label, bool giant = false) {
 
             if(giant)
-                ImGui.PushFont(imgui_fonts.fonts["giant"]);
+                ImGui.PushFont(Imgui_Fonts.fonts["giant"]);
             else
-                ImGui.PushFont(imgui_fonts.fonts["regular_big"]);
+                ImGui.PushFont(Imgui_Fonts.fonts["regular_big"]);
             ImGui.Text(label);
             ImGui.PopFont();
         }

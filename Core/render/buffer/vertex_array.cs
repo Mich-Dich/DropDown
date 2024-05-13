@@ -12,13 +12,13 @@ namespace Core.render {
             id = GL.GenVertexArray();
         }
 
-        private bool disposed = false;
+        private bool Disposed = false;
         public void Dispose() {
 
-            if(disposed)
+            if(Disposed)
                 GL.DeleteVertexArray(id);
             
-            disposed = true;
+            Disposed = true;
         }
 
         public void Add_Buffer(Vertex_Buffer buffer, Buffer_Layout layout) {
@@ -33,7 +33,7 @@ namespace Core.render {
                 var current_element = elements[x];
                 GL.EnableVertexAttribArray(x);
                 GL.VertexAttribPointer(x, current_element.count, current_element.type, current_element.normalized, layout.get_stride(), offset);
-                offset += current_element.count * Util.get_size_of_VertexAttribPointerType(current_element.type);
+                offset += current_element.count * Util.Get_Size_Of_VertexAttribPointerType(current_element.type);
             }
         }
 

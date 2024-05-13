@@ -8,9 +8,9 @@ namespace Projektarbeit {
     using Core.world;
     using Core.world.map;
     
-    public class base_map : map {
+    public class Base_Map : Map {
 
-        public base_map() {
+        public Base_Map() {
 
         }
 

@@ -14,7 +14,7 @@ namespace Core {
         /// </summary>
         /// <param name="attrib_type">The VertexAttribPointerType to determine the size for.</param>
         /// <returns>The size of the VertexAttribPointerType in bytes.</returns>
-        public static int get_size_of_VertexAttribPointerType(VertexAttribPointerType attrib_type) {
+        public static int Get_Size_Of_VertexAttribPointerType(VertexAttribPointerType attrib_type) {
 
             switch (attrib_type) {
 
@@ -62,21 +62,21 @@ namespace Core {
         /// </summary>
         /// <param name="angle">Angle in radians.</param>
         /// <returns>Angle converted to degrees.</returns>
-        public static double radians_to_degree(double angle) { return angle * (180 / Math.PI); }
+        public static double Radians_To_Degree(double angle) { return angle * (180 / Math.PI); }
 
         /// <summary>
         /// Converts an angle from degrees to radians.
         /// </summary>
         /// <param name="angle">Angle in degrees.</param>
         /// <returns>Angle converted to radians.</returns>
-        public static double degree_to_radians(double angle) { return angle * (Math.PI / 180); }
+        public static double Degree_To_Radians(double angle) { return angle * (Math.PI / 180); }
 
     }
 
     /// <summary>
     /// Stores ImFontPtr instances for ImGui font management.
     /// </summary>
-    public static class imgui_fonts {
+    public static class Imgui_Fonts {
 
         /// <summary>
         /// Dictionary to store ImGui fonts by name.

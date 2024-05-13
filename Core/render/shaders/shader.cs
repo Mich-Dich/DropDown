@@ -6,107 +6,107 @@ namespace Core.render.shaders {
     public sealed class Shader {
 
         //  ============================================================================== public ============================================================================== 
-        public int programm_id { get; private set; }
+        public int programmId { get; private set; }
 
-        public Shader(string vert_shader_path, string frag_shader_path, bool compile = true) {
+        public Shader(string vertShaderPath, string fragShaderPath, bool Compile = true) {
                         
-            _shader_programm_source = Shader.parse_shader(vert_shader_path, frag_shader_path);
+            shaderProgrammSource = Shader.Parse_Shader(vertShaderPath, fragShaderPath);
 
-            if(compile)
-                this.compile();
+            if(Compile)
+                this.Compile();
         }
 
         ~Shader() {
 
-            GL.DeleteProgram(programm_id);
+            GL.DeleteProgram(programmId);
         }
 
-        public bool compile() {
+        public bool Compile() {
 
-            if(_is_compiled) {
+            if(isCompiled) {
                 
-                Console.WriteLine("Shader already compiled");
+                Console.WriteLine("Shader already Compiled");
                 return true;
             }
 
-            if(_shader_programm_source == null) {
+            if(shaderProgrammSource == null) {
 
                 Console.WriteLine("[shader_programm_sorce] is null");
                 return false;
             }
 
             int vert_shader = GL.CreateShader(ShaderType.VertexShader);
-            GL.ShaderSource(vert_shader, _shader_programm_source.vertex_shader_string);
+            GL.ShaderSource(vert_shader, shaderProgrammSource.vertexShaderString);
             GL.CompileShader(vert_shader);
-            GL.GetShader(vert_shader, ShaderParameter.CompileStatus, out var vert_shader_compile_status);
-            if(vert_shader_compile_status != (int)All.True) {
+            GL.GetShader(vert_shader, ShaderParameter.CompileStatus, out var vert_shader_Compile_status);
+            if(vert_shader_Compile_status != (int)All.True) {
                 Console.WriteLine(GL.GetShaderInfoLog(vert_shader));
                 return false;
             }
 
             int frag_shader = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(frag_shader, _shader_programm_source.fragment_shader_string);
+            GL.ShaderSource(frag_shader, shaderProgrammSource.fragmentShaderString);
             GL.CompileShader(frag_shader);
-            GL.GetShader(frag_shader, ShaderParameter.CompileStatus, out var frag_shader_compile_status);
-            if(frag_shader_compile_status != (int)All.True) {
+            GL.GetShader(frag_shader, ShaderParameter.CompileStatus, out var frag_shader_Compile_status);
+            if(frag_shader_Compile_status != (int)All.True) {
                 Console.WriteLine(GL.GetShaderInfoLog(frag_shader));
                 return false;
             }
 
-            programm_id = GL.CreateProgram();
-            GL.AttachShader(programm_id, vert_shader);
-            GL.AttachShader(programm_id, frag_shader);
-            GL.LinkProgram(programm_id);
+            programmId = GL.CreateProgram();
+            GL.AttachShader(programmId, vert_shader);
+            GL.AttachShader(programmId, frag_shader);
+            GL.LinkProgram(programmId);
 
             // free unneeded resources
-            GL.DetachShader(programm_id, vert_shader);
-            GL.DetachShader(programm_id, frag_shader);
+            GL.DetachShader(programmId, vert_shader);
+            GL.DetachShader(programmId, frag_shader);
             GL.DeleteShader(vert_shader);
             GL.DeleteShader(frag_shader);
 
-            GL.GetProgram(programm_id, GetProgramParameterName.ActiveUniforms, out var total_uniforms);
+            GL.GetProgram(programmId, GetProgramParameterName.ActiveUniforms, out var total_uniforms);
             for (int x = 0; x < total_uniforms; x++) {
 
-                string key = GL.GetActiveUniform(programm_id, x, out _, out _);
-                int location = GL.GetUniformLocation(programm_id, key);
+                string key = GL.GetActiveUniform(programmId, x, out _, out _);
+                int location = GL.GetUniformLocation(programmId, key);
                 _uniforms.Add(key, location);
             }
 
-            _is_compiled = true;
+            isCompiled = true;
             return true;
         }
 
         public void Use() {
 
-            if(!_is_compiled) {
+            if(!isCompiled) {
 
-                Console.WriteLine("Shader not compiled");
+                Console.WriteLine("Shader not Compiled");
                 return;
             }
 
-            GL.UseProgram(programm_id);
+            GL.UseProgram(programmId);
         }
         
         public void SetUniform(string name, Vector3 value) {
-            int location = GL.GetUniformLocation(programm_id, name);
+            int location = GL.GetUniformLocation(programmId, name);
             GL.Uniform3(location, value);
         }
 
         public void Set_Uniform(string name, Vector4 value) {
-            int location = GL.GetUniformLocation(programm_id, name);
+            int location = GL.GetUniformLocation(programmId, name);
             GL.Uniform4(location, value);
         }
 
         public void Set_Matrix_4x4(string uniform_name, Matrix4 mat) {
-            int location = GL.GetUniformLocation(programm_id, uniform_name);
-            GL.UniformMatrix4(location, 1, false, get_matrix4_values(mat));
+            int location = GL.GetUniformLocation(programmId, uniform_name);
+            GL.UniformMatrix4(location, 1, false, Get_Matrix4_Values(mat));
         }
 
         public int GetAttribLocation(string attribName) {
-            return GL.GetAttribLocation(programm_id, attribName);
+            return GL.GetAttribLocation(programmId, attribName);
         }
 
-        public float[] get_matrix4_values(Matrix4 mat) {
+        public float[] Get_Matrix4_Values(Matrix4 mat) {
 
             return new float[] {
                 mat.M11, mat.M12, mat.M13, mat.M14,
@@ -116,7 +116,7 @@ namespace Core.render.shaders {
             };
         }
 
-        public static shader_programm_source parse_shader(string vertex_shader_path, string fragment_shader_path) {
+        public static Shader_Programm_Source Parse_Shader(string vertex_shader_path, string fragment_shader_path) {
 
             string vert_path = "assets/" + vertex_shader_path;
             if(!File.Exists(vert_path))
@@ -129,11 +129,11 @@ namespace Core.render.shaders {
             string vert_shader = File.ReadAllText(vert_path );
             string frag_shader = File.ReadAllText(frag_path);
 
-            return new shader_programm_source(vert_shader, frag_shader );
+            return new Shader_Programm_Source(vert_shader, frag_shader );
         }
 
-        public void dispose() {
-            GL.DeleteProgram(programm_id);
+        public void Dispose() {
+            GL.DeleteProgram(programmId);
         }
 
         public void Unbind()
@@ -141,11 +141,11 @@ namespace Core.render.shaders {
             GL.UseProgram(0);
         }
 
-        public int get_uniform_location(string name) => _uniforms[name];
+        public int Get_Uniform_Location(string name) => _uniforms[name];
 
         //  ============================================================================== private ============================================================================== 
         private readonly IDictionary<string, int> _uniforms = new Dictionary<string, int>();
-        private shader_programm_source _shader_programm_source { get; }
-        private bool _is_compiled = false;
+        private Shader_Programm_Source shaderProgrammSource { get; }
+        private bool isCompiled = false;
     }
 }

@@ -1,15 +1,15 @@
 ﻿
 namespace Core.render.shaders {
 
-    public sealed class shader_programm_source {
+    public sealed class Shader_Programm_Source {
 
-        public string vertex_shader_string;
-        public string fragment_shader_string;
+        public string vertexShaderString;
+        public string fragmentShaderString;
 
-        public shader_programm_source(String vertex_shader_string, String fragment_shader_string) {
+        public Shader_Programm_Source(String vertexShaderString, String fragmentShaderString) {
 
-            this.vertex_shader_string = vertex_shader_string;
-            this.fragment_shader_string = fragment_shader_string;
+            this.vertexShaderString = vertexShaderString;
+            this.fragmentShaderString = fragmentShaderString;
         }
     }
 }

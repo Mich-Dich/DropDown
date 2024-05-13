@@ -6,8 +6,8 @@ namespace Projektarbeit {
 
         public static void Main(string[] args) {
 
-            game game = new projektarbeit("Projektarbeit", 1600, 920);
-            game.run();
+            Game game = new projektarbeit("Projektarbeit", 1600, 920);
+            game.Run();
         }
     }
 }

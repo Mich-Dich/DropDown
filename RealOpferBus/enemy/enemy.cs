@@ -19,34 +19,34 @@ namespace Hell {
             this.transform.size = size?? new Vector2(80);
             this.transform.rotation = rotation;
 
-            set_sprite(new sprite().add_animation("assets/textures/Angel-2", true, true, 10, true));
-            add_collider(new collider(collision_shape.Circle, collision_type.None) { Blocking = false }
-                .set_physics_material(new physics_material(0.0f, 0.0f))
-                .set_mass(100));
+            set_sprite(new sprite().Add_Animation("assets/textures/Angel-2", true, true, 10, true));
+            add_collider(new collider(Collision_Shape.Circle, Collision_Type.None) { blocking = false }
+                .Set_Physics_Material(new Physics_Material(0.0f, 0.0f))
+                .Set_Mass(100));
             
             controller = new enemy_controller();
             set_controller(controller);
         }
 
-        public override void hit(hit_data hit)
+        public override void hit(hitData hit)
         {
-            if (hit.hit_object.collider.type == collision_type.player_bullet)
+            if (hit.hitObject.collider.type == Collision_Type.player_bullet)
             {
-                this.Health -= hit.hit_object.collider.damage;
+                this.Health -= hit.hitObject.collider.damage;
 
-                game.instance.active_map.remove_game_object(hit.hit_object);
+                game.instance.activeMap.remove_game_object(hit.hitObject);
 
                 if (this.Health <= 0)
                 {
-                    game.instance.active_map.remove_game_object(this);
+                    game.instance.activeMap.remove_game_object(this);
                     game.instance.score++;
                 }
             }
         }
 
-        public override void update(float delta_time)
+        public override void Update(float deltaTime)
         {
-            controller.update();
+            controller.Update();
         }
 
     }

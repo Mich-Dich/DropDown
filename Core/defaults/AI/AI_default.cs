@@ -1,5 +1,5 @@
 ﻿using Core.controllers.ai;
 
-namespace Core.defaults.AI {
+namespace Core.Defaults.AI {
 
 }

@@ -2,9 +2,7 @@
 
 namespace Core.controllers {
 
-    public interface I_controller {
-
+    public interface I_Controller {
         Character character { get; set; }
-
     }
 }

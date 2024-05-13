@@ -8,12 +8,12 @@ using System;
 using System.Linq;
 
 namespace Hell {
-    public class base_map : map {
+    public class Base_Map : map {
         
 
-        public base_map() {
-            this.cell_size = 32;
-            this.tile_size = 1;
+        public Base_Map() {
+            this.cellSize = 32;
+            this.tileSize = 1;
             string tmxFilePath = "assets/firstLevel/TestLevel.tmx";
             string tsxFilePath = "assets/firstLevel/spr_heaven.tsx";
             string tilesetImageFilePath = "assets/firstLevel/spr_heaven.png";

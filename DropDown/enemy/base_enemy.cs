@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace DropDown.enemy
 {
 
-    public class base_enemy
+    public class Base_Enemy
     {
 
 
 
-        public base_enemy()
+        public Base_Enemy()
         {
 
         }

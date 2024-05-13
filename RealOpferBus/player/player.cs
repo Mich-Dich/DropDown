@@ -24,27 +24,27 @@ namespace Hell
             transform.size = new Vector2(100);
             this.transform.position = playerSpawn;
             set_sprite(new sprite(resource_manager.get_texture("assets/textures/Angel-1/Angel-1.png")));
-            add_collider(new collider(collision_shape.Circle) { Blocking = false })
-                //.set_offset(new transform(Vector2.Zero, new Vector2(-10)))
-                .set_mobility(mobility.DYNAMIC);
+            add_collider(new collider(Collision_Shape.Circle) { blocking = false })
+                //.Set_Offset(new transform(Vector2.Zero, new Vector2(-10)))
+                .Set_Mobility(mobility.DYNAMIC);
 
-            movement_speed = 300.0f;
+            movementSpeed = 300.0f;
             this.health = 100; // Initialize health from the base class
 
             levelFloor = playerSpawn.Y * 1.01f;
         }
 
-        public override void hit(hit_data hit)
+        public override void hit(hitData hit)
         {
-            if (hit.hit_object.collider.type == collision_type.enemy_bullet)
+            if (hit.hitObject.collider.type == Collision_Type.enemy_bullet)
             {
-                this.health -= (int)hit.hit_object.collider.damage; // Use base class health property
+                this.health -= (int)hit.hitObject.collider.damage; // Use base class health property
 
-                game.instance.active_map.remove_game_object(hit.hit_object);
+                game.instance.activeMap.remove_game_object(hit.hitObject);
 
                 if (this.health <= 0) // Use base class health property
                 {
-                    game.instance.active_map.remove_game_object(this);
+                    game.instance.activeMap.remove_game_object(this);
                     Console.WriteLine("Player has died");
                 }
             }
@@ -58,14 +58,14 @@ namespace Hell
                 float speed = 1000f;
 
                 var proj = new projectile((this.transform.position), direction, speed, 5f, new Vector2(20, 60), 25.0f);
-                game.instance.active_map.add_game_object(proj);
+                game.instance.activeMap.add_game_object(proj);
                 lastShootTime = game_time.total;
             }
         }
 
-        public override void update(float delta_time)
+        public override void Update(float deltaTime)
         {
-            base.update(delta_time);
+            base.Update(deltaTime);
 
             this.display_helthbar(this.health); // Use base class health property
 

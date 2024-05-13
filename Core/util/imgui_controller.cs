@@ -10,7 +10,7 @@ namespace Core.util {
     using System.Runtime.CompilerServices;
     using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
 
-    public class Imgui_Controller : IDisposable {
+    public class ImguI_Controller : IDisposable {
 
         private bool _frameBegun;
 
@@ -39,7 +39,7 @@ namespace Core.util {
         /// <summary>
         /// Constructs a new ImGuiController.
         /// </summary>
-        public Imgui_Controller(int width, int height, float scaleFactorX = 1, float scaleFactorY = 1) {
+        public ImguI_Controller(int width, int height, float scaleFactorX = 1, float scaleFactorY = 1) {
 
             _windowWidth = width;
             _windowHeight = height;
@@ -62,16 +62,16 @@ namespace Core.util {
 
             float m_font_size = 15.5f;
             float m_big_font_size = 20.0f;
-            imgui_fonts.fonts.Add("default",        io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf", m_font_size));
-            imgui_fonts.fonts.Add("bold",           io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", m_font_size));
-            imgui_fonts.fonts.Add("italic",         io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Italic.ttf", m_font_size));
+            Imgui_Fonts.fonts.Add("default",        io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf", m_font_size));
+            Imgui_Fonts.fonts.Add("bold",           io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", m_font_size));
+            Imgui_Fonts.fonts.Add("italic",         io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Italic.ttf", m_font_size));
 
-            imgui_fonts.fonts.Add("regular_big",    io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf", m_big_font_size));
-            imgui_fonts.fonts.Add("bold_big",       io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", m_big_font_size));
-            imgui_fonts.fonts.Add("italic_big",     io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Italic.ttf", m_big_font_size));
+            Imgui_Fonts.fonts.Add("regular_big",    io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf", m_big_font_size));
+            Imgui_Fonts.fonts.Add("bold_big",       io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", m_big_font_size));
+            Imgui_Fonts.fonts.Add("italic_big",     io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Italic.ttf", m_big_font_size));
 
-            imgui_fonts.fonts.Add("giant",     io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", 30));
-            //io.FontDefault = imgui_fonts.fonts["default"];
+            Imgui_Fonts.fonts.Add("giant",     io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", 30));
+            //io.FontDefault = Imgui_Fonts.fonts["default"];
 
 
             io.BackendFlags |= ImGuiBackendFlags.PlatformHasViewports;

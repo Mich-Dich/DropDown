@@ -1,4 +1,4 @@
-﻿
+
 namespace DropDown {
 
     using Core.render;
@@ -10,8 +10,8 @@ namespace DropDown {
 
     internal class Drop_Down : Core.Game {
 
-        public Drop_Down(String title, Int32 inital_window_width, Int32 inital_window_height)
-            : base(title, inital_window_width, inital_window_height) {
+        public Drop_Down(String title, Int32 initalWindowWidth, Int32 initalWindowHeight)
+            : base(title, initalWindowWidth, initalWindowHeight) {
         
         }
 
@@ -20,32 +20,32 @@ namespace DropDown {
         private CH_player CH_player;
 
         // ========================================================= functions =========================================================
-        protected override void init() {
+        protected override void Init() {
             
             GL.ClearColor(new Color4(.05f, .05f, .05f, 1f));
-            set_update_frequency(144.0f);
+            Set_Update_Frequency(144.0f);
 #if DEBUG
-            show_debug_data(true);
+            Show_Debug_Data(true);
 #endif
             CH_player = new CH_player();
-            this.player_controller = new PC_default(CH_player);
+            this.playerController = new PC_Default(CH_player);
             this.player = CH_player;
-            this.active_map = new base_map();
+            this.activeMap = new Base_Map();
             this.camera.Set_min_Max_Zoom(0.05f, 10.9f);
 
             //test_cursor_object = new game_object(new Vector2(150, 150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
-            //this.active_map.add_game_object(test_cursor_object);
+            //this.activeMap.add_game_object(test_cursor_object);
 
             //test_cursor_object_2 = new game_object(new Vector2(150, 150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
-            //this.active_map.add_game_object(test_cursor_object_2);
+            //this.activeMap.add_game_object(test_cursor_object_2);
             
-            //this.active_map.add_sprite(new sprite(new Vector2(600, 200), new Vector2(500, 500)).add_animation("assets/textures/explosion", true, false, 60, true));
-            //this.active_map.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).add_animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
+            //this.activeMap.add_sprite(new sprite(new Vector2(600, 200), new Vector2(500, 500)).Add_Animation("assets/textures/explosion", true, false, 60, true));
+            //this.activeMap.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).Add_Animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
         }
 
-        protected override void shutdown() { }
+        protected override void Shutdown() { }
 
-        protected override void update(float delta_time) {
+        protected override void Update(float deltaTime) {
 
             //test_cursor_object.transform.position = this.camera.get_uper_left_screen_corner_in_world_coordinates();
             //test_cursor_object_2.transform.position = this.camera.get_lower_right_screen_corner_in_world_coordinates();
@@ -53,11 +53,11 @@ namespace DropDown {
             //Console.WriteLine($"resultin pos: {test_cursor_object.transform.position}");
         }
 
-        protected override void window_resize() { this.camera.Set_Zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset); }
+        protected override void Window_Resize() { this.camera.Set_Zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset); }
 
-        protected override void render(float delta_time) { }
+        protected override void Render(float deltaTime) { }
         
-        protected override void render_imgui(float delta_time) {
+        protected override void Render_Imgui(float deltaTime) {
 
             //ImGui.ShowStyleEditor();
 
