@@ -13,10 +13,6 @@
     <PackageReference Include="OpenTK" Version="4.8.2" />
     <PackageReference Include="OpenTK.Mathematics" Version="4.8.2" />
     <PackageReference Include="StbImageSharp" Version="2.27.13" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
 
 </Project>

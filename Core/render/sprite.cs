@@ -118,19 +118,19 @@
             float offset_x = 1.0f / ((float)numberOfColumns * 50);
 
             // bottom - right
-            this._verticies[3] = ((float)rowIndex / (float)numberOfRows) + offset_y;
+            this._verticies[3] = ((float)(numberOfRows-rowIndex-1) / (float)numberOfRows) + offset_y;
             this._verticies[2] = ((float)columnIndex / (float)numberOfColumns) + (1.0f / (float)numberOfColumns) - offset_x;
 
             // top - right
-            this._verticies[7] = ((float)rowIndex / (float)numberOfRows) + (1.0f / (float)numberOfRows) - offset_y;
+            this._verticies[7] = ((float)(numberOfRows - rowIndex-1) / (float)numberOfRows) + (1.0f / (float)numberOfRows) - offset_y;
             this._verticies[6] = ((float)columnIndex / (float)numberOfColumns) + (1.0f / (float)numberOfColumns) - offset_x;
 
             // top - left
-            this._verticies[11] = ((float)rowIndex / (float)numberOfRows) + (1.0f / (float)numberOfRows) - offset_y;
+            this._verticies[11] = ((float)(numberOfRows - rowIndex-1) / (float)numberOfRows) + (1.0f / (float)numberOfRows) - offset_y;
             this._verticies[10] = ((float)columnIndex / (float)numberOfColumns) + offset_x;
 
             // bottom - left
-            this._verticies[15] = ((float)rowIndex / (float)numberOfRows) + offset_y;
+            this._verticies[15] = ((float)(numberOfRows - rowIndex-1) / (float)numberOfRows) + offset_y;
             this._verticies[14] = ((float)columnIndex / (float)numberOfColumns) + offset_x;
 
             this.vertexBuffer.Update_content(this._verticies);

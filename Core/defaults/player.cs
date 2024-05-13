@@ -11,7 +11,7 @@
             this.transform.rotation = float.Pi;
             this.Set_Sprite(new Core.render.Sprite(Resource_Manager.Get_Texture("assets/textures/player/00.png")));
 
-            this.movementSpeed = 5.0f;
+            this.movement_speed = 5.0f;
         }
     }
 }

@@ -1,24 +1,23 @@
-﻿namespace Core.world.map
-{
+﻿namespace Core.world.map {
     using Box2DX.Collision;
     using Box2DX.Common;
     using Box2DX.Dynamics;
+    using Core.Controllers.ai;
     using Core.physics;
     using Core.render;
     using Core.util;
     using OpenTK.Mathematics;
     using System.ComponentModel.Design;
 
-    public class Map
-    {
-        public List<Game_Object> allCollidableGameObjects { get; set; } = new List<Game_Object>();
+    public class Map {
 
+        //public List<Game_Object> allCollidableGameObjects { get; set; } = new List<Game_Object>();
+        private List<AI_Controller> all_AI_Controller = new List<AI_Controller>();
         private List<Character> allCharacter { get; set; } = new List<Character>();
-
         private readonly World physicsWorld;
 
-        public Map()
-        {
+        public Map() {
+        
             AABB aabb = new ();
             aabb.LowerBound.Set(-100000, -100000);
             aabb.UpperBound.Set(100000, 100000);
@@ -28,70 +27,62 @@
         }
 
         public int levelWidth { get; set; } = 10000;
-
         public int levelHeight { get; set; } = 10000;
-
         public int tileHeight { get; set; }
-
         public int tileWidth { get; set; }
-
         public int TilesOnScreenWidth { get; set; }
-
         public int TilesOnScreenHeight { get; set; }
 
-        internal struct Tile_Data
-        {
-            public int texture_slot { get; set; }
+        public void add_AI_Controller(AI_Controller ai_Controller) {
 
+            all_AI_Controller.Add(ai_Controller);
+        }
+
+        internal struct Tile_Data {
+
+            public int texture_slot { get; set; }
             public Matrix4 modle_matrix { get; set; }
 
-            public Tile_Data(int texture_slot, Matrix4 modle_matrix)
-            {
+            public Tile_Data(int texture_slot, Matrix4 modle_matrix) {
                 this.texture_slot = texture_slot;
                 this.modle_matrix = modle_matrix;
             }
         }
 
-        public virtual void Draw_Imgui()
-        {
-        }
+        public virtual void Draw_Imgui() { }
 
-        public void Add_Game_Object(Game_Object game_object)
-        {
+        public void Add_Game_Object(Game_Object game_object) {
+
             this.world.Add(game_object);
-            this.allCollidableGameObjects.Add(game_object);
-
+            //this.allCollidableGameObjects.Add(game_object);
             // Console.WriteLine($"Adding game_object [{game_object}] to world. Current count: {world.Count} ");
         }
+        
+        public void Add_Character(AI_Controller ai_controller, Vector2? position = null) {
 
-        public void Add_Character(Character character, Vector2? position = null)
-        {
-            if (position != null)
-            {
+            all_AI_Controller.Add(ai_controller);
+            Add_empty_Character(ai_controller.character, position);
+        }
+
+        public void Add_empty_Character(Character character, Vector2? position = null) {
+        
+            if(position != null)
                 character.transform.position = position.Value;
-            }
 
-<<<<<<< HEAD
             BodyDef def = new BodyDef();
+            def.LinearDamping = 1.0f;
+            def.AllowSleep = false;
             if(position != null)
                 def.Position.Set(position.Value.X, position.Value.Y);
             else
-                def.Position.Set(1,1);
-
-=======
-            BodyDef def = new ();
-            def.Position.Set(1, 1);
->>>>>>> ad36c3a23732774a4c63254368e4374395eb69c4
-            def.LinearDamping = 1.0f;
-            def.AllowSleep = false;
+                def.Position.Set(1, 1);
 
             float radius = Math.Abs(character.transform.size.X / 2);
-            if (character.collider != null)
-            {
+            if(character.collider != null)
                 radius = Math.Abs((character.transform.size.X / 2) + (character.collider.offset.size.X / 2));
-            }
 
-            CircleDef circleDef = new () { Radius = radius };
+            CircleDef circleDef = new CircleDef();
+            circleDef.Radius = radius;
             circleDef.Density = 1f;
             circleDef.Friction = 0.3f;
 
@@ -100,47 +91,40 @@
             body.IsDynamic();
             body.SetMassFromShapes();
 
-            if (character.collider != null)
-            {
+            if(character.collider != null)
                 character.collider.body = body;
-            }
             else
-            {
                 character.Add_Collider(new Collider(body));
-            }
 
             this.allCharacter.Add(character);
             Console.WriteLine($"Adding character [{character}] to map. Current count: {this.allCharacter.Count} ");
         }
 
-        public void Add_Sprite(Sprite sprite)
-        {
+        public void Add_Sprite(Sprite sprite) {
+
             this.backgound.Add(sprite);
         }
 
-        public void Add_Sprite(World_Layer world_Layer, Sprite sprite)
-        {
-            if (sprite == null)
-            {
+        public void Add_Sprite(World_Layer world_Layer, Sprite sprite) {
+            if(sprite == null)
                 return;
-            }
 
-            switch (world_Layer)
-            {
+            switch(world_Layer) {
+
                 case World_Layer.None: break;
                 case World_Layer.world:
                     // Console.WriteLine($"add_sprite() with argument [World_Layer = World_Layer.world] is not implemented yet");
                     // world.Add(new game_object().set_sprite(sprite));
-                break;
+                    break;
 
                 case World_Layer.backgound:
-                this.backgound.Add(sprite);
-                break;
+                    this.backgound.Add(sprite);
+                    break;
             }
         }
 
-        public void Set_Background_Image(string image_path)
-        {
+        public void Set_Background_Image(string image_path) {
+            
             Texture background_texture = Resource_Manager.Get_Texture(image_path, false);
             Vector2 view_size = Game.Instance.camera.Get_View_Size_In_World_Coord();
             Vector2 original_sprite_size = new (background_texture.Width, background_texture.Height);
@@ -154,45 +138,39 @@
             this.backgound.Add(background_sprite);
         }
 
-        public void Add_Background_Sprite(Sprite sprite, Vector2 position, bool use_cellSize = true)
-        {
-            var current_tile = this.Get_Correct_Map_Tile(position);
+        public void Add_Background_Sprite(Sprite sprite, Vector2 position, bool use_cellSize = true) {
 
+            var current_tile = this.Get_Correct_Map_Tile(position);
             sprite.transform.position = position;
-            if (use_cellSize)
-            {
+            if(use_cellSize) 
                 sprite.transform.size = new Vector2(this.cellSize);
-            }
 
             current_tile.background.Add(sprite);
         }
 
-        public void Add_Static_Game_Object(Game_Object new_game_object, Vector2 position, bool use_cellSize = true)
-        {
+        [Obsolete("Use [add_static_collider_AAABB()] instead")]
+        public void Add_Static_Game_Object(Game_Object new_game_object, Vector2 position, bool use_cellSize = true) {
+
             var current_tile = this.Get_Correct_Map_Tile(position);
 
             new_game_object.transform.position = position;
             new_game_object.transform.mobility = Mobility.STATIC;
-            if (new_game_object.collider != null)
-            {
-                new_game_object.collider.offset.mobility = Mobility.STATIC;
-            }
 
-            if (use_cellSize)
-            {
+            if(new_game_object.collider != null) 
+                new_game_object.collider.offset.mobility = Mobility.STATIC;
+
+            if(use_cellSize) 
                 new_game_object.transform.size = new Vector2(this.cellSize);
-            }
 
             current_tile.staticGameObject.Add(new_game_object);
-            this.allCollidableGameObjects.Add(new_game_object);
+            //this.allCollidableGameObjects.Add(new_game_object);
         }
 
-        public void add_static_collider_AAABB(Transform transform, bool use_cell_size = true)
-        {
-            if (use_cell_size)
-            {
+        public void add_static_collider_AAABB(Transform transform, bool use_cell_size = true) {
+
+            if(use_cell_size) 
                 transform.size = new Vector2(this.cellSize);
-            }
+            
 
             BodyDef def = new ();
             def.Position.Set(transform.position.X, transform.position.Y);
@@ -211,18 +189,15 @@
             current_tile.staticColliders.Add(body);
         }
 
-        public void Register_Player_NEW(Character character)
-        {
-        }
+        public void Register_Player_NEW(Character character) { }
 
-        public void Force_Clear_mapTiles()
-        {
+        public void Force_Clear_mapTiles() {
+
             this.mapTiles.Clear();
             DebugData.numOfTiels = 0;
         }
 
-        public Map Generate_Backgound_Tile(int width, int height)
-        {
+        public Map Generate_Backgound_Tile(int width, int height) {
             // ------------------------ SETUP ------------------------
             Texture texture_atlas = Resource_Manager.Get_Texture("assets/textures/terrain.png", false);
 
@@ -233,14 +208,11 @@
             float offset_y = ((float)height - 1) / 2 * this.cellSize;
 
             // Loop through the tiles and add them to the _positions list
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    if (random.NextDouble() < missing_time_rate)
-                    {
+            for(int x = 0; x < width; x++) {
+                for(int y = 0; y < height; y++) {
+
+                    if(random.NextDouble() < missing_time_rate)
                         continue;
-                    }
 
                     Transform loc_trans_buffer = new (new Vector2((x * this.cellSize) - offset_x, (y * this.cellSize) - offset_y),
                         new Vector2(this.cellSize),
@@ -248,30 +220,22 @@
                         Mobility.STATIC);
 
                     // ============================ GRAS FILD ============================
-                    if (random.NextDouble() < 0.01f)
-                    {
+                    if(random.NextDouble() < 0.01f) 
                         this.backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).Select_Texture_Region(32, 64, 3, 30));
-                    }
-                    else if (random.NextDouble() < 0.03f)
-                    {
+                    else if(random.NextDouble() < 0.03f) 
                         this.backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).Select_Texture_Region(32, 64, 5, 26));
-                    }
-                    else if (random.NextDouble() < 0.1f)
-                    {
+                    else if(random.NextDouble() < 0.1f) 
                         this.backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).Select_Texture_Region(32, 64, 10, 5));
-                    }
-                    else
-                    {
+                    else 
                         this.backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).Select_Texture_Region(32, 64, 4, 28));
-                    }
                 }
             }
 
             return this;
         }
 
-        public void Load_Level(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath)
-        {
+        public void Load_Level(string tmxFilePath, string tsxFilePath, string tilesetImageFilePath) {
+
             Level_Data levelData = Level_Parser.Parse_Level(tmxFilePath, tsxFilePath);
             Map_Data mapData = levelData.Map;
             this.levelWidth = mapData.LevelPixelWidth;
@@ -286,23 +250,19 @@
             int textureWidth = tilesetData.ImageWidth;
             int textureHeight = tilesetData.ImageHeight;
 
-            for (int layerIndex = 0; layerIndex < mapData.Layers.Count; layerIndex++)
-            {
-                for (int y = 0; y < mapData.Height; y++)
-                {
-                    for (int x = 0; x < mapData.Width; x++)
-                    {
+            for(int layerIndex = 0; layerIndex < mapData.Layers.Count; layerIndex++) {
+                for(int y = 0; y < mapData.Height; y++) {
+                    for(int x = 0; x < mapData.Width; x++) {
+
                         int tileGID = mapData.Layers[layerIndex].Tiles[x, y];
-                        if (tileGID <= 0)
-                        {
+                        if(tileGID <= 0) 
                             continue;
-                        }
+                        
 
                         int tileIndex = tileGID - tilesetData.FirstGid;
-                        if (tileIndex < 0)
-                        {
+                        if(tileIndex < 0) 
                             continue;
-                        }
+                        
 
                         int tileRow = tileIndex / tilesetColumns;
                         int tileColumn = tileIndex % tilesetColumns;
@@ -316,8 +276,7 @@
                         Sprite tileSprite = new Sprite(tileTransform, tilesetTexture)
                                             .Select_Texture_RegionNew(tilesetColumns, tilesetRows, tileColumn, tileRow, tileGID, textureWidth, textureHeight);
 
-                        if (tilesetData.CollidableTiles.ContainsKey(tileIndex) && tilesetData.CollidableTiles[tileIndex])
-                        {
+                        if(tilesetData.CollidableTiles.ContainsKey(tileIndex) && tilesetData.CollidableTiles[tileIndex]) {
                             Transform buffer = tileColumn == 0 && tileRow == 5
                                 ? new Transform(new Vector2(0, -10), new Vector2(0, -23), 0, Mobility.STATIC)
                                 : new Transform(Vector2.Zero, Vector2.Zero, 0, Mobility.STATIC);
@@ -329,21 +288,17 @@
 
                             this.Add_Static_Game_Object(newGameObject, tileTransform.position);
 
-                            if (layerIndex == 0)
-                            {
+                            if(layerIndex == 0) 
                                 this.Add_Background_Sprite(tileSprite, tileTransform.position);
-                            }
+                            
                         }
-                        else
-                        {
-                            if (layerIndex == 0)
-                            {
+                        else {
+                            if(layerIndex == 0) 
                                 this.Add_Background_Sprite(tileSprite, tileTransform.position);
-                            }
-                            else
-                            {
-                                this.allCollidableGameObjects.Add(new Game_Object(tileTransform).Set_Sprite(tileSprite));
-                            }
+                            
+                            //else 
+                            //    this.allCollidableGameObjects.Add(new Game_Object(tileTransform).Set_Sprite(tileSprite));
+                            
                         }
                     }
                 }
@@ -351,89 +306,79 @@
         }
 
         // ================================================================= internal =================================================================
-        internal void Draw()
-        {
+        internal void Draw() {
+
             Vector2 camera_pos = Game.Instance.camera.transform.position;
             Vector2 camera_size = Game.Instance.camera.Get_View_Size_In_World_Coord() + new Vector2(this.cellSize * 2);
             float tiel_size = this.tileSize * this.cellSize;
 
-            foreach (var tile in this.mapTiles)
-            {
+            foreach(var tile in this.mapTiles) {
+
                 float overlapX = (camera_size.X / 2) + (tiel_size / 2) - Math.Abs(camera_pos.X - tile.Key.X);
                 float overlapY = (camera_size.Y / 2) + (tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
 
-                if (overlapX > 0 && overlapY > 0)
-                {
+                if(overlapX > 0 && overlapY > 0) {
                     DebugData.numOfTielsDisplayed++;
-                    foreach (var sprite in tile.Value.background)
-                    {
+                    foreach(var sprite in tile.Value.background) 
                         sprite.Draw();
-                    }
+                    
                 }
             }
 
-            foreach (var character in this.allCharacter)
-            {
+            foreach(var character in this.allCharacter) 
                 character.Draw();
-            }
+            
 
-            for (int x = 0; x < this.backgound.Count; x++)
-            {
+            for(int x = 0; x < this.backgound.Count; x++) 
                 this.backgound[x].Draw();
-            }
+            
 
-            for (int x = 0; x < this.world.Count; x++)
-            {
+            for(int x = 0; x < this.world.Count; x++) 
                 this.world[x].Draw();
-            }
+            
         }
 
-        internal void Draw_Debug()
-        {
+        internal void Draw_Debug() {
+
             Vector2 camera_pos = Game.Instance.camera.transform.position;
             Vector2 camera_size = Game.Instance.camera.Get_View_Size_In_World_Coord() + new Vector2(300);
             float tiel_size = this.tileSize * this.cellSize;
 
-            foreach (var tile in this.mapTiles)
-            {
+            foreach(var tile in this.mapTiles) {
+
                 float overlapX = (camera_size.X / 2) + (tiel_size / 2) - Math.Abs(camera_pos.X - tile.Key.X);
                 float overlapY = (camera_size.Y / 2) + (tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
 
-                if (overlapX > 0 && overlapY > 0)
-                {
-                    foreach (var game_object in tile.Value.staticGameObject)
-                    {
+                if(overlapX > 0 && overlapY > 0) {
+                    foreach(var game_object in tile.Value.staticGameObject) 
                         game_object.Draw_Debug();
-                    }
+                    
                 }
             }
 
-            foreach (var character in this.allCharacter)
-            {
+            foreach(var character in this.allCharacter) 
                 character.Draw_Debug();
-            }
+            
 
-            for (int x = 0; x < this.world.Count; x++)
-            {
+            for(int x = 0; x < this.world.Count; x++) 
                 this.world[x].Draw_Debug();
-            }
+            
         }
 
         private readonly int velocityIterations = 6;
         private readonly int positionIterations = 1;
 
-        internal void Update(float deltaTime)
-        {
+        internal void Update(float deltaTime) {
+
             this.physicsWorld.Step(deltaTime * 10, this.velocityIterations, this.positionIterations);
 
-            foreach (var character in this.allCharacter)
-            {
+            foreach(var character in this.allCharacter) {
                 character.Update_position();
                 character.Update(deltaTime);
             }
 
-            // for(int x = 0; x < this.all_collidable_game_objects.Count; x++)
-            //    this.all_collidable_game_objects[x].Update(Game_Time.delta);
+            foreach (var AI_Controller in all_AI_Controller)
+                AI_Controller.Update(deltaTime);
         }
 
         // ========================================== private ==========================================
@@ -448,15 +393,15 @@
 
         private Dictionary<Vector2i, Map_Tile> mapTiles { get; set; } = new Dictionary<Vector2i, Map_Tile>();
 
-        private Map_Tile Get_Correct_Map_Tile(Vector2 position)
-        {
+        private Map_Tile Get_Correct_Map_Tile(Vector2 position) {
+
             int final_tileSize = this.tileSize * this.cellSize;
             Vector2i key = new ((int)System.Math.Floor(position.X / final_tileSize), (int)System.Math.Floor(position.Y / final_tileSize));
             key *= final_tileSize;
             key += new Vector2i(final_tileSize / 2, final_tileSize / 3);
 
-            if (!this.mapTiles.ContainsKey(key))
-            {
+            if(!this.mapTiles.ContainsKey(key)) {
+
                 this.mapTiles.Add(key, new Map_Tile(key));
                 DebugData.numOfTiels++;
             }
@@ -466,22 +411,20 @@
         }
     }
 
-    public struct Map_Tile
-    {
+    public struct Map_Tile {
+
         public Vector2 position = new ();
 
         public List<Sprite> background = new ();
         public List<Game_Object> staticGameObject = new ();
         public List<Body> staticColliders = new ();
 
-        public Map_Tile(Vector2 position)
-        {
+        public Map_Tile(Vector2 position) {
             this.position = position;
         }
     }
 
-    public enum World_Layer
-    {
+    public enum World_Layer {
         None = 0,
         backgound = 1,      // will only be drawn (no collision)    eg. background image
         world = 2,          // can Draw/interact/collide            eg. walls/chest

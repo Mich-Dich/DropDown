@@ -1,5 +1,6 @@
-namespace Core
-{
+
+namespace Core {
+
     using System;
     using System.Diagnostics;
     using Core.Controllers.player;
@@ -15,8 +16,8 @@ namespace Core
     using OpenTK.Windowing.Desktop;
     using OpenTK.Windowing.GraphicsLibraryFramework;
 
-    public static class DebugData
-    {
+    public static class DebugData {
+
         public static double workTimeUpdate = 0;
         public static double workTimeRender = 0;
 
@@ -32,8 +33,8 @@ namespace Core
         public static int collisionNum = 0;
 
         // public DebugData() {}
-        public static void Reset()
-        {
+        public static void Reset() {
+        
             workTimeUpdate = 0;
             workTimeRender = 0;
             spriteDrawCallsNum = 0;
@@ -47,11 +48,23 @@ namespace Core
         }
     }
 
-    public abstract class Game
-    {
+    public abstract class Game {
+
         public Shader defaultSpriteShader;
         public bool showDebug = false;
         public ImguI_Controller imguiController;
+        public static Game Instance { get; private set; }
+        public GameWindow window { get; private set; }
+        public Camera camera { get; set; }
+        public Character player { get; set; }
+
+        protected string title { get; set; }
+        protected int initalWindowWidth { get; set; }
+        protected int initalWindowHeight { get; set; }
+        protected Map defaultMap { get; set; }
+        protected Player_Controller playerController { get; set; }
+        protected Map activeMap { get; set; }
+        protected List<InputEvent> inputEvent { get; } = new List<InputEvent>();
 
         private readonly Vector2 cursorPosOffset = new (0, 20);
         private readonly GameWindowSettings gameWindowSettings = GameWindowSettings.Default;
@@ -59,12 +72,10 @@ namespace Core
         private readonly DebugDataViualizer debugDataViualizer = new ();
         private double updateFrequencyBuffer = 0;
 
-        public Game(string title, int initalWindowWidth, int initalWindowHeight)
-        {
-            if (Instance != null)
-            {
+        public Game(string title, int initalWindowWidth, int initalWindowHeight) {
+        
+            if(Instance != null) 
                 throw new Exception("You can only create one instance of Game!");
-            }
 
             Instance = this;
 
@@ -82,76 +93,47 @@ namespace Core
             this.nativeWindowSettings.Flags = ContextFlags.ForwardCompatible;
         }
 
-        public static Game Instance { get; private set; }
-
-        public GameWindow window { get; private set; }
-
-        public Camera camera { get; set; }
-
-        protected string title { get; set; }
-
-        protected int initalWindowWidth { get; set; }
-
-        protected int initalWindowHeight { get; set; }
-
-        protected Map defaultMap { get; set; }
-
-        protected Character player { get; set; }
-
-        protected Player_Controller playerController { get; set; }
-
-        protected Map activeMap { get; set; }
-
-        protected List<InputEvent> inputEvent { get; } = new List<InputEvent>();
-
         // public Physics_Engine       Physics_Engine { get; } = new();
-
         // public DebugData    DebugData { get; set; } = new DebugData();
         // ============================================================================== public ==============================================================================
-        public void Run()
-        {
+        public void Run() {
+
             this.window = new GameWindow(this.gameWindowSettings, this.nativeWindowSettings);
             this.window.CenterWindow();
 
             Stopwatch stopwatch = new ();
 
-            this.window.Load += () =>
-            {
+            this.window.Load += () => {
+
                 // ----------------------------------- defaults -----------------------------------
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
-                this.defaultSpriteShader = new ("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
+                this.defaultSpriteShader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
                 this.defaultSpriteShader.Use();
-                this.camera = new (Vector2.Zero, this.window.Size, 0.5f);
+                this.camera = new(Vector2.Zero, this.window.Size, 0.5f);
                 this.defaultMap = new Map();
 
                 this.Init();
 
                 // ----------------------------------- check for null values -----------------------------------
-                if (this.activeMap == null)
-                {
+                if(this.activeMap == null) 
                     this.activeMap = this.defaultMap;
-                }
 
-                if (this.player == null)
-                {
+                if(this.player == null) 
                     this.player = new Character();
-                }
 
-                if (this.playerController == null)
-                {
+                if(this.playerController == null) 
                     throw new ResourceNotAssignedException("playerController musst be assigned in game class Init() function");
-                }
 
                 // ----------------------------------- finish setup -----------------------------------
                 this.playerController.character = this.player;
-                this.activeMap.Add_Character(this.player);
+                this.activeMap.Add_empty_Character(this.player);
 
                 this.InitImGuiController();
                 this.window.IsVisible = true;
             };
 
-            this.window.Unload += () =>
-            {
+            this.window.Unload += () => {
+                
                 // kill OpenGL
                 GL.BindVertexArray(0);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -161,9 +143,10 @@ namespace Core
             };
 
             // internal game Update
-            this.window.UpdateFrame += (FrameEventArgs eventArgs) =>
-            {
-                stopwatch.Restart();
+            this.window.UpdateFrame += (FrameEventArgs eventArgs) => {
+
+                if(showDebug)
+                    stopwatch.Restart();
 
                 this.Update_Game_Time((float)eventArgs.Time);
                 this.playerController.Update_Internal(Game_Time.delta, this.inputEvent);
@@ -171,24 +154,30 @@ namespace Core
                 this.Update(Game_Time.delta);
                 this.inputEvent.Clear();
 
-                stopwatch.Stop();
-                DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
+                if(showDebug) {
+
+                    stopwatch.Stop();
+                    DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
+                }
             };
 
-            this.window.RenderFrame += (FrameEventArgs eventArgs) =>
-            {
-                stopwatch.Restart();
+            this.window.RenderFrame += (FrameEventArgs eventArgs) => {
+                if(showDebug)
+                    stopwatch.Restart();
 
                 this.window.SwapBuffers();
                 this.Internal_Render();
                 this.Imgui_Render(Game_Time.delta);
 
-                stopwatch.Stop();
-                DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
+                if(showDebug) {
+
+                    stopwatch.Stop();
+                    DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
+                }
             };
 
-            this.window.Resize += (ResizeEventArgs eventArgs) =>
-            {
+            this.window.Resize += (ResizeEventArgs eventArgs) => {
+
                 this.Update_Game_Time((float)this.window.TimeSinceLastUpdate());
                 this.window.ResetTimeSinceLastUpdate();
 
@@ -205,43 +194,45 @@ namespace Core
                 this.window.SwapBuffers();
             };
 
-            this.window.FocusedChanged += (e) =>
-            {
-                if (!e.IsFocused)
-                {
+            this.window.FocusedChanged += (e) => {
+
+                if(!e.IsFocused) {
                     this.updateFrequencyBuffer = this.window.UpdateFrequency;
                     this.window.UpdateFrequency = 30.0f;
                 }
                 else
-                {
                     this.window.UpdateFrequency = this.updateFrequencyBuffer;
-                }
             };
 
-            this.window.Move += (e) =>
-            {
-                stopwatch.Restart();
-                {
-                    this.Update_Game_Time((float)this.window.TimeSinceLastUpdate());
-                    this.window.ResetTimeSinceLastUpdate();
+            this.window.Move += (e) => {
 
-                    this.playerController.Update_Internal(Game_Time.delta, this.inputEvent);
-                    this.activeMap.Update(Game_Time.delta);
-                    this.Update(Game_Time.delta);
-                    this.inputEvent.Clear();
+                if(showDebug)
+                    stopwatch.Restart();
+                
+                this.Update_Game_Time((float)this.window.TimeSinceLastUpdate());
+                this.window.ResetTimeSinceLastUpdate();
+
+                this.playerController.Update_Internal(Game_Time.delta, this.inputEvent);
+                this.activeMap.Update(Game_Time.delta);
+                this.Update(Game_Time.delta);
+                this.inputEvent.Clear();
+                
+                if(showDebug) {
+
+                    stopwatch.Stop();
+                    DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
+                    stopwatch.Restart();
                 }
 
-                stopwatch.Stop();
-                DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
-                stopwatch.Restart();
-                {
-                    this.window.SwapBuffers();
-                    this.Internal_Render();
-                    this.Imgui_Render(Game_Time.delta);
-                }
+                this.window.SwapBuffers();
+                this.Internal_Render();
+                this.Imgui_Render(Game_Time.delta);
 
-                stopwatch.Stop();
-                DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
+                if(showDebug) {
+
+                    stopwatch.Stop();
+                    DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
+                }
             };
 
             // ============================ input ============================
@@ -251,39 +242,31 @@ namespace Core
             this.window.MouseUp += (MouseButtonEventArgs args) => { this.inputEvent.Add(new InputEvent((Key_Code)args.Button, args.Modifiers, args.Action == InputAction.Repeat ? 1 : 0, (KeyState)args.Action)); };
 
             // make two events for X/Y of mouse wheel movement
-            this.window.MouseWheel += (MouseWheelEventArgs args) =>
-            {
-                if (args.OffsetX != 0)
-                {
-                    this.inputEvent.Add(new InputEvent(Key_Code.MouseWheelX, (KeyModifiers)0, (int)args.Offset.X, KeyState.Repeat));
-                }
+            this.window.MouseWheel += (MouseWheelEventArgs args) => {
 
-                if (args.OffsetY != 0)
-                {
+                if(args.OffsetX != 0) 
+                    this.inputEvent.Add(new InputEvent(Key_Code.MouseWheelX, (KeyModifiers)0, (int)args.Offset.X, KeyState.Repeat));
+
+                if(args.OffsetY != 0) 
                     this.inputEvent.Add(new InputEvent(Key_Code.MouseWheelY, (KeyModifiers)0, (int)args.Offset.Y, KeyState.Repeat));
-                }
             };
 
             // make two events for X/Y of mouse movement
-            this.window.MouseMove += (MouseMoveEventArgs args) =>
-            {
-                if (args.DeltaX != 0)
-                {
+            this.window.MouseMove += (MouseMoveEventArgs args) => {
+                
+                if(args.DeltaX != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.CursorPositionX, (KeyModifiers)0, (int)args.X, KeyState.Repeat));
-                }
 
-                if (args.DeltaY != 0)
-                {
+                if(args.DeltaY != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.CursorPositionY, (KeyModifiers)0, (int)args.Y, KeyState.Repeat));
-                }
             };
 
             // collision_engine = new collision_engine();
             this.window.Run();
         }
 
-        public void showDebugData(bool enable)
-        {
+        public void showDebugData(bool enable) {
+
             this.showDebug = enable;
 #if DEBUG
             Console.WriteLine($"Showing debug data");
@@ -293,8 +276,8 @@ namespace Core
 #endif
         }
 
-        public Vector2 Get_Mouse_Relative_Pos()
-        {
+        public Vector2 Get_Mouse_Relative_Pos() {
+
             return this.window.MousePosition - (this.window.Size / 2) + this.cursorPosOffset;
         }
 
@@ -303,62 +286,50 @@ namespace Core
 
         // general
         protected abstract void Init();
-
         protected abstract void Shutdown();
-
         protected abstract void Update(float deltaTime);
-
         protected abstract void Render(float deltaTime);
-
         protected abstract void Render_Imgui(float deltaTime);
+        protected virtual void Window_Resize() { }
 
-        protected virtual void Window_Resize()
-        {
-        }
+        protected void Set_Update_Frequency(double frequency) {
 
-        protected void Set_Update_Frequency(double frequency)
-        {
             this.window.VSync = VSyncMode.Off;
             this.window.UpdateFrequency = frequency;
         }
 
-        protected void ResetInputEvent_List()
-        {
+        protected void ResetInputEvent_List() {
+
             this.inputEvent.Clear();
         }
 
         // ============================================================================== private ==============================================================================
-        private void Internal_Render()
-        {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+        private void Internal_Render() {
 
+            GL.Clear(ClearBufferMask.ColorBufferBit);
             this.defaultSpriteShader.Use();
             this.defaultSpriteShader.Set_Matrix_4x4("projection", this.camera.Get_Projection_Matrix());
 
             this.activeMap.Draw();
-            if (this.showDebug)
-            {
+            if(this.showDebug) 
                 this.activeMap.Draw_Debug();
-            }
 
             this.Render(Game_Time.delta);
         }
 
-        private void Update_Game_Time(float deltaTime)
-        {
+        private void Update_Game_Time(float deltaTime) {
+
             Game_Time.delta = deltaTime;
             Game_Time.total += deltaTime;
         }
 
         // ============================================ IMGUI ============================================
-        private void Imgui_Render(float deltaTime)
-        {
+        private void Imgui_Render(float deltaTime) {
+
             this.imguiController.Update(this.window, (float)Game_Time.delta);
 
-            if (this.showDebug)
-            {
+            if(this.showDebug) 
                 this.debugDataViualizer.Draw();
-            }
 
             this.activeMap.Draw_Imgui();
             this.Render_Imgui(deltaTime);
@@ -368,8 +339,8 @@ namespace Core
             DebugData.Reset();
         }
 
-        private void InitImGuiController()
-        {
+        private void InitImGuiController() {
+
             // Get the FrameBuffer size and compute the scale factor for ImGuiController
             Vector2i fb = this.window.FramebufferSize;
             int scaleFactorX = fb.X / this.window.ClientSize.X;

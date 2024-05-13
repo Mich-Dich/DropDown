@@ -1,14 +1,13 @@
-﻿namespace Core
-{
+﻿namespace Core {
+
     using ImGuiNET;
     using OpenTK.Graphics.OpenGL4;
+    using System;
 
-    public static class Util
-    {
-        public static int Get_Size_Of_VertexAttribPointerType(VertexAttribPointerType attrib_type)
-        {
-            switch (attrib_type)
-            {
+    public static class Util {
+
+        public static int Get_Size_Of_VertexAttribPointerType(VertexAttribPointerType attrib_type) {
+            switch(attrib_type) {
                 case VertexAttribPointerType.Byte:
                 case VertexAttribPointerType.UnsignedByte:
                     return sizeof(byte);
@@ -19,6 +18,7 @@
 
                 case VertexAttribPointerType.Int:
                     return sizeof(int);
+
                 case VertexAttribPointerType.UnsignedInt:
                     return sizeof(uint);
 
@@ -44,49 +44,44 @@
                     return sizeof(int);
 
                 default:
-                    return 0;
+                return 0;
             }
         }
 
-        public static double Radians_To_Degree(double angle)
-        {
-            return angle * (180 / Math.PI);
-        }
+        public static double Radians_To_Degree(double angle) { return angle * (180 / Math.PI); }
 
-        public static double Degree_To_Radians(double angle)
-        {
-            return angle * (Math.PI / 180);
-        }
+        public static double Degree_To_Radians(double angle) { return angle * (Math.PI / 180); }
+
+        public static float Lerp(float a, float b, float t) { return a + (b - a) * Math.Clamp(t, 0, 1); }
     }
 
-    public static class Imgui_Fonts
-    {
+    public static class Imgui_Fonts {
+
         public static Dictionary<string, ImFontPtr> fonts = new ();
     }
 
-    public sealed class RefWrapper<T>
-    {
+    public sealed class RefWrapper<T> {
+
         private readonly List<T> list;
         private readonly int index;
 
-        public RefWrapper(List<T> list, int index)
-        {
+        public RefWrapper(List<T> list, int index) {
+        
             this.list = list;
             this.index = index;
         }
 
-        public T Value
-        {
+        public T Value {
+            
             get { return this.list[this.index]; }
             set { this.list[this.index] = value; }
         }
     }
 
-    public sealed class ResourceNotAssignedException : Exception
-    {
+    public sealed class ResourceNotAssignedException : Exception {
+
         public ResourceNotAssignedException(string message)
-            : base(message)
-            {
+            : base(message) {
         }
     }
 }

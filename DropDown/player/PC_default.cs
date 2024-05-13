@@ -46,7 +46,6 @@ namespace DropDown.player {
                 });
             AddInputAction(look);
 
-
             sprint = new Core.Controllers.player.Action(
                 "shoot",
                 (uint)Action_ModefierFlags.none,
@@ -59,11 +58,13 @@ namespace DropDown.player {
                 });
             AddInputAction(sprint);
 
+            Game.Instance.camera.Add_Zoom_Offset(0.2f);
+            Game.Instance.camera.zoom_offset = 0.2f;
         }
 
         protected override void Update(float deltaTime) {
 
-            float total_speed = character.movementSpeed;
+            float total_speed = character.movement_speed;
             if((bool)sprint.GetValue()) 
                 total_speed += sprint_speed;
 

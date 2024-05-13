@@ -1,40 +1,36 @@
-<<<<<<< HEAD
-﻿
+
 namespace Core.world {
-                                                                            
-=======
-﻿namespace Core.world
-{
->>>>>>> ad36c3a23732774a4c63254368e4374395eb69c4
+
     using Box2DX.Common;
     using Core.Controllers;
+    using Core.Controllers.ai;
     using Core.physics;
     using Core.render;
     using ImGuiNET;
     using OpenTK.Mathematics;
 
-    public class Character : Game_Object
-    {
-        public float movementSpeed { get; set; } = 100.0f;
+    public class Character : Game_Object {
 
-        public float movementSpeed_max { get; set; } = 100.0f;
-
+        public float movement_speed { get; set; } = 100.0f;
+        public float movement_speed_max { get; set; } = 100.0f;
+        public float movement_force { get; set; } = 100000.0f;
+        public float movement_force_max { get; set; } = 100000.0f;
         public int health { get; set; } = 100;
-
         public int health_max { get; set; } = 100;
 
-        public Character()
-        {
+
+
+        public Character() {
+
             // this.set_sprite(new visual.sprite(resource_manager.get_texture("./assets/textures/Spaceship/Spaceship.png")));
         }
 
-        public void Set_Controller(I_Controller controller)
-        {
+        public void Set_Controller(I_Controller controller) {
+
             this.controller = controller;
             controller.character = this;
         }
 
-<<<<<<< HEAD
         public void set_animation(Animation animation) {
 
             if(sprite != null)
@@ -50,53 +46,60 @@ namespace Core.world {
         public void Set_Velocity(Vector2 new_velocity) {
 
             if(this.collider != null)
-=======
-        public void Set_Velocity(Vector2 new_velocity)
-        {
-            if (this.collider != null)
-            {
->>>>>>> ad36c3a23732774a4c63254368e4374395eb69c4
                 this.collider.velocity = new_velocity;
-            }
         }
 
-        public void Add_Linear_Velocity(Vec2 add_velocity)
-        {
-            if (this.collider != null && this.collider.body != null)
-            {
+        public void Add_Linear_Velocity(Vec2 add_velocity) {
+
+            if(this.collider != null && this.collider.body != null) 
                 this.collider.body.SetLinearVelocity(this.collider.body.GetLinearVelocity() + add_velocity);
-            }
         }
 
-        public void Set_Velocity(Vec2 new_velocity)
-        {
-            if (this.collider != null && this.collider.body != null)
-            {
+        public void Set_Velocity(Vec2 new_velocity) {
+
+            if(this.collider != null && this.collider.body != null) 
                 this.collider.body.SetLinearVelocity(new_velocity);
-            }
         }
 
-        public void add_force(Vec2 force)
-        {
-            if (this.collider != null && this.collider.body != null)
-            {
+        public void add_force(Vec2 force) {
+
+            if(this.collider != null && this.collider.body != null) 
                 this.collider.body.ApplyForce(force, Vec2.Zero);
-            }
         }
 
-        public void Update_position()
-        {
+        public void Update_position() {
+
             Vec2 pos = this.collider.body.GetPosition();
             this.transform.position = (pos.X, pos.Y);
         }
 
-        public override void Hit(hitData hit)
-        {
+        public override void Hit(hitData hit) {
+
             Console.WriteLine($"character [{this}] was hit");
         }
+        
+        public void rotate_to_move_dir() {
 
-        public void Display_Healthbar()
-        {
+            Vec2 movement_dir = collider.body.GetLinearVelocity();
+            movement_dir.Normalize();
+            float angleRadians = (float)System.Math.Atan2(movement_dir.X, movement_dir.Y);
+            transform.rotation = -angleRadians + float.Pi;
+        }
+
+        public void rotate_to_vector(Vec2 dir) {
+
+            float angleRadians = (float)System.Math.Atan2(dir.X, dir.Y);
+            transform.rotation = -angleRadians + float.Pi;
+        }
+
+        public void rotate_to_vector(Vector2 dir, float lerp_t = 0.1f) {
+
+            float angleRadians = (float)System.Math.Atan2(dir.X, dir.Y);
+            transform.rotation = Util.Lerp(transform.rotation, -angleRadians + float.Pi, lerp_t);
+        }
+
+        public void Display_Healthbar() {
+
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
                 | ImGuiWindowFlags.NoDocking
                 | ImGuiWindowFlags.AlwaysAutoResize
@@ -114,6 +117,8 @@ namespace Core.world {
         }
 
         // ================================================== private ==================================================
+
         private I_Controller? controller;
+
     }
 }

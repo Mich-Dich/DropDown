@@ -15,8 +15,6 @@ namespace DropDown {
         
         }
 
-        //private game_object test_cursor_object;
-        //private game_object test_cursor_object_2;
         private CH_player CH_player;
 
         // ========================================================= functions =========================================================
@@ -24,34 +22,23 @@ namespace DropDown {
             
             GL.ClearColor(new Color4(.05f, .05f, .05f, 1f));
             Set_Update_Frequency(144.0f);
-#if DEBUG
-            showDebugData(true);
-#endif
             CH_player = new CH_player();
             this.playerController = new PC_Default(CH_player);
             this.player = CH_player;
             this.activeMap = new Base_Map();
-            this.camera.Set_min_Max_Zoom(0.05f, 10.9f);
+            this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
+            this.camera.Set_Zoom(5.0f);
+#if DEBUG
+            showDebugData(true);
+            this.camera.Set_min_Max_Zoom(0.01f, 1.4f);
+#endif
 
-            //test_cursor_object = new game_object(new Vector2(150, 150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
-            //this.activeMap.add_game_object(test_cursor_object);
-
-            //test_cursor_object_2 = new game_object(new Vector2(150, 150)).set_sprite(resource_manager.get_texture("assets/defaults/default_grid_bright.png"));
-            //this.activeMap.add_game_object(test_cursor_object_2);
-            
-            //this.activeMap.add_sprite(new sprite(new Vector2(600, 200), new Vector2(500, 500)).Add_Animation("assets/textures/explosion", true, false, 60, true));
             //this.activeMap.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).Add_Animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
         }
 
         protected override void Shutdown() { }
 
-        protected override void Update(float deltaTime) {
-
-            //test_cursor_object.transform.position = this.camera.get_uper_left_screen_corner_in_world_coordinates();
-            //test_cursor_object_2.transform.position = this.camera.get_lower_right_screen_corner_in_world_coordinates();
-            
-            //Console.WriteLine($"resultin pos: {test_cursor_object.transform.position}");
-        }
+        protected override void Update(float deltaTime) { }
 
         protected override void Window_Resize() { this.camera.Set_Zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset); }
 

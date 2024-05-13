@@ -16,23 +16,13 @@ namespace DropDown {
 
         public Base_Map() {
 
-            //this.generate_backgound_tile(50, 30);
-
-            //Physics_Material ateroid_phys_mat = new Physics_Material(0.0f, 0.1f);
-            //Texture ateroid_texture = resource_manager.get_texture("assets/textures/muzzle_flash.jpg");
-            //this.add_game_object(
-            //    new game_object(new Vector2(550, -350), new Vector2(300, 100))
-            //        .set_sprite(ateroid_texture)
-            //        .Set_Mobility(mobility.STATIC)
-            //        .add_collider(new collider(Collision_Shape.Square)));
-
-
-            //this.add_character(new character().add_collider(new collider()), new Vector2(-300));
-
             this.cellSize = 150;
             this.minDistancForCollision = (float)(this.cellSize * this.tileSize);
             Generate_Bit_Map();
             Generate_Actual_Map();
+
+            for (int x = 0; x < 60; x++)
+                spaw_enemy();
 
         }
 
@@ -176,21 +166,21 @@ namespace DropDown {
                     if(probebilits < 0.05f) {
 
                         this.Add_Background_Sprite(
-                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, 3, 58 ),
+                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, 3, 5 ),
                             new Vector2((y - totalBits/2) * this.cellSize, (x - totalBits/2) * this.cellSize));
                     }
 
                     else if(probebilits < 0.2f) {
 
                         this.Add_Background_Sprite(
-                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, 4, 58),
+                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, 4, 5),
                             new Vector2((y - totalBits / 2) * this.cellSize, (x - totalBits / 2) * this.cellSize));
                     }
                     
                     else {
 
                         this.Add_Background_Sprite(
-                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, 5, 58),
+                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, 5, 5),
                             new Vector2((y - totalBits / 2) * this.cellSize, (x - totalBits / 2) * this.cellSize));
                     }
 
@@ -286,7 +276,6 @@ namespace DropDown {
 
         public void spaw_enemy() {
 
-
             Random random = new Random();
 
             bool found = false;
@@ -294,13 +283,13 @@ namespace DropDown {
 
             while(!found) {
 
-                offset_y = random.Next(6);
-                offset_x = random.Next(6);
-                found = is_coord_in_bit_map_free(29 + offset_x, 29 + offset_y);
+                offset_y = random.Next(64);
+                offset_x = random.Next(64);
+                found = is_coord_in_bit_map_free(offset_x, offset_y);
             }
             
-            this.Add_Character(new Base_Enemy(),
-                new Vector2((offset_x - 3) * this.cellSize, (offset_y - 3) * this.cellSize));
+            this.Add_Character(new Base_AI_Controller(new Base_Enemy()),
+                new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize));
 
         }
 
@@ -387,14 +376,7 @@ namespace DropDown {
                     Iterate_Over_Bit_Map(iterations[x]);
                 }
 
-<<<<<<< HEAD
                 found = is_coord_in_bit_map_free(32, 32);
-=======
-                ulong targetUInt64 = floorLayout[32];
-                ulong mask = (ulong)1 << 32;
-
-                found = (targetUInt64 & mask) == 0;
->>>>>>> ad36c3a23732774a4c63254368e4374395eb69c4
                 bitMapGenerationIteration++;
                 Console.WriteLine($"player loc is empty: {found}");
             }

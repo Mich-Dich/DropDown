@@ -19,7 +19,7 @@ namespace DropDown.player {
             Add_Collider(new Collider(Collision_Shape.Circle)
                 .Set_Offset(new Transform(Vector2.Zero, new Vector2(-10))));
             
-            movementSpeed = 350.0f;
+            movement_speed = 350.0f;
         }
 
         public override void Hit(hitData hit) { }
