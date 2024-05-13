@@ -1,38 +1,39 @@
-﻿
-namespace Core.render {
-
+﻿namespace Core.render
+{
     using OpenTK.Graphics.OpenGL4;
 
-    public sealed class Parameter_Buffer : I_Buffer, IDisposable {
-
+    public sealed class Parameter_Buffer : I_Buffer, IDisposable
+    {
         public int id { get; }
 
-        public Parameter_Buffer(float[] indecies, int stride) { 
-            
-            id = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ParameterBuffer, id);
+        public Parameter_Buffer(float[] indecies, int stride)
+        {
+            this.id = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ParameterBuffer, this.id);
             GL.BufferData(BufferTarget.ParameterBuffer, indecies.Length * stride, indecies, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ParameterBuffer, 0);
         }
 
-        private bool _Disposed = false;
-        public void Dispose() {
+        private bool disposed = false;
 
-            if(!_Disposed)
-                GL.DeleteBuffer(id);
+        public void Dispose()
+        {
+            if (!this.disposed)
+            {
+                GL.DeleteBuffer(this.id);
+            }
 
-            _Disposed = true;
+            this.disposed = true;
         }
 
-        public void Bind() {
-
-            GL.BindBuffer(BufferTarget.ParameterBuffer, id);
+        public void Bind()
+        {
+            GL.BindBuffer(BufferTarget.ParameterBuffer, this.id);
         }
 
-        public void Unbind() {
-            
+        public void Unbind()
+        {
             GL.BindBuffer(BufferTarget.ParameterBuffer, 0);
         }
-
     }
 }

@@ -34,12 +34,12 @@ namespace Hell {
             {
                 this.Health -= hit.hitObject.collider.damage;
 
-                game.instance.activeMap.remove_game_object(hit.hitObject);
+                Game.Instance.activeMap.remove_game_object(hit.hitObject);
 
                 if (this.Health <= 0)
                 {
-                    game.instance.activeMap.remove_game_object(this);
-                    game.instance.score++;
+                    Game.Instance.activeMap.remove_game_object(this);
+                    Game.Instance.score++;
                 }
             }
         }

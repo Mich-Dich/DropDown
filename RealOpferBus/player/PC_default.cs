@@ -1,4 +1,4 @@
-﻿using Core.controllers.player;
+﻿using Core.Controllers.player;
 using Core.defaults;
 using Core.input;
 using OpenTK.Mathematics;

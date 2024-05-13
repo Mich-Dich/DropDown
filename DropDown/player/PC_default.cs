@@ -1,6 +1,6 @@
 using Box2DX.Common;
 using Core;
-using Core.controllers.player;
+using Core.Controllers.player;
 using Core.input;
 using Core.world;
 using OpenTK.Mathematics;
@@ -9,16 +9,16 @@ namespace DropDown.player {
 
     public class PC_Default : Player_Controller {
 
-        public Core.controllers.player.Action move { get; set; }
-        public Core.controllers.player.Action look { get; set; }
-        public Core.controllers.player.Action sprint { get; set; }
+        public Core.Controllers.player.Action move { get; set; }
+        public Core.Controllers.player.Action look { get; set; }
+        public Core.Controllers.player.Action sprint { get; set; }
 
         public PC_Default(Character character)
             : base (character, null) {
 
             actions.Clear();
 
-            move = new Core.controllers.player.Action(
+            move = new Core.Controllers.player.Action(
                 "move",
                 (uint)Action_ModefierFlags.auto_reset,
                 false,
@@ -26,15 +26,15 @@ namespace DropDown.player {
                 0f,
                 new List<KeyBindingDetail> {
 
-                    new KeyBindingDetail(Key_Code.W, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_2 | KeyModefierFlags.negate),
-                    new KeyBindingDetail(Key_Code.S, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_2),
-                    new KeyBindingDetail(Key_Code.D, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_1),
-                    new KeyBindingDetail(Key_Code.A, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_1 | KeyModefierFlags.negate),
+                    new(Key_Code.W, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_2 | KeyModefierFlags.negate),
+                    new(Key_Code.S, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_2),
+                    new(Key_Code.D, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_1),
+                    new(Key_Code.A, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_1 | KeyModefierFlags.negate),
                 });
             AddInputAction(move);
 
 
-            look = new Core.controllers.player.Action(
+            look = new Core.Controllers.player.Action(
                 "look",
                 (uint)Action_ModefierFlags.none,
                 false,
@@ -42,12 +42,12 @@ namespace DropDown.player {
                 0f,
                 new List<KeyBindingDetail> {
 
-                    new KeyBindingDetail(Key_Code.MouseWheelY, ResetFlags.reset_on_key_move_up, TriggerFlags.mouse_pos_and_neg),
+                    new(Key_Code.MouseWheelY, ResetFlags.reset_on_key_move_up, TriggerFlags.mouse_pos_and_neg),
                 });
             AddInputAction(look);
 
 
-            sprint = new Core.controllers.player.Action(
+            sprint = new Core.Controllers.player.Action(
                 "shoot",
                 (uint)Action_ModefierFlags.none,
                 false,
@@ -55,7 +55,7 @@ namespace DropDown.player {
                 0f,
                 new List<KeyBindingDetail> {
 
-                    new KeyBindingDetail(Key_Code.LeftShift, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
+                    new(Key_Code.LeftShift, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
                 });
             AddInputAction(sprint);
 
@@ -75,17 +75,17 @@ namespace DropDown.player {
             }
             
             // camera follows player
-            Game.instance.camera.transform.position = character.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
+            Game.Instance.camera.transform.position = character.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
 
-            Game.instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);
+            Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);
 
             // look at mouse
-            Vector2 screen_look = Game.instance.Get_Mouse_Relative_Pos();
+            Vector2 screen_look = Game.Instance.Get_Mouse_Relative_Pos();
             float angleRadians = (float)System.Math.Atan2(screen_look.X, screen_look.Y);
             character.transform.rotation = -angleRadians + (float.Pi / 2) + (float.Pi/20);
         }
 
-        private float sprint_speed = 350.0f;
+        private readonly float sprint_speed = 350.0f;
 
     }
 }

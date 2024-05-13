@@ -23,7 +23,7 @@ namespace Hell
         protected override void Init()
         {
             Set_Update_Frequency(144.0f);
-            Show_Debug_Data(false);
+            Show_DebugData(false);
 
             // ------------- init map ------------- 
             this.activeMap = new Base_Map();

@@ -1,106 +1,118 @@
-﻿
-namespace Core.render {
-
+﻿namespace Core.render
+{
     using Core.util;
 
-    public sealed class Animation {
-
+    public sealed class Animation
+    {
         public bool Loop;
+        private readonly SpriteBatch? spriteBatch;
+        private readonly Texture? textureAtlas;
+        private readonly int numOfRows;
+        private readonly int numOfColumns;
+        private Sprite sprite;
+        private float frameTime;
+        private bool isPlaying = false;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.        => fields are set in Init()
-        public Animation(Sprite sprite, SpriteBatch sprite_batch, int fps = 30, bool loop = true) {
-
-            this._sprite_batch = sprite_batch;
-            Init(sprite, fps, loop);
+        public Animation(Sprite sprite, SpriteBatch sprite_batch, int fps = 30, bool loop = true)
+        {
+            this.spriteBatch = sprite_batch;
+            this.Init(sprite, fps, loop);
         }
 
-        public Animation(Sprite sprite, Texture texture_atlas, int num_of_columns, int num_of_rows, int fps = 30, bool loop = true) {
-
-            this._texture_atlas = texture_atlas;
-            this._num_of_rows = num_of_rows;
-            this._num_of_columns = num_of_columns;
-            Init(sprite, fps, loop);
+        public Animation(Sprite sprite, Texture texture_atlas, int num_of_columns, int num_of_rows, int fps = 30, bool loop = true)
+        {
+            this.textureAtlas = texture_atlas;
+            this.numOfRows = num_of_rows;
+            this.numOfColumns = num_of_columns;
+            this.Init(sprite, fps, loop);
         }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        public void Update() {
-
-            if(!_is_playing)
+        public void Update()
+        {
+            if (!this.isPlaying)
+            {
                 return;
+            }
 
-            if(Game.instance.show_debug)
-                Debug_Data.playingAnimationNum++;
+            if (Game.Instance.showDebug)
+            {
+                DebugData.playingAnimationNum++;
+            }
 
-            _sprite.animationTimer += Game_Time.delta;
-            int _current_frame_index = (int)(_sprite.animationTimer / _frame_time);
-
+            this.sprite.animationTimer += Game_Time.delta;
+            int current_frame_index = (int)(this.sprite.animationTimer / this.frameTime);
 
             int max_image_index = 0;
-            if(_sprite_batch != null)
-                max_image_index = _sprite_batch.frameCount;
+            if (this.spriteBatch != null)
+            {
+                max_image_index = this.spriteBatch.frameCount;
+            }
+            else if (this.textureAtlas != null)
+            {
+                max_image_index = this.numOfColumns * this.numOfRows;
+            }
 
-            else if(_texture_atlas != null)
-                max_image_index = _num_of_columns * _num_of_rows;
-
-
-            if(_current_frame_index >= max_image_index) {
-
-                if(Loop) {
-                    _current_frame_index = 0;
-                    _sprite.animationTimer = 0;
+            if (current_frame_index >= max_image_index)
+            {
+                if (this.Loop)
+                {
+                    current_frame_index = 0;
+                    this.sprite.animationTimer = 0;
                 }
-                else {
-                    _current_frame_index = max_image_index - 1;
-                    Stop();
+                else
+                {
+                    current_frame_index = max_image_index - 1;
+                    this.Stop();
                 }
             }
 
-            if(_sprite_batch != null)
-                this._sprite.texture = _sprite_batch.GetFrame(_current_frame_index);
-
-            else if(_texture_atlas != null)
-                this._sprite.Select_Texture_Region(_num_of_columns, _num_of_rows, _current_frame_index % _num_of_columns, _current_frame_index / _num_of_columns);
-
+            if (this.spriteBatch != null)
+            {
+                this.sprite.texture = this.spriteBatch.GetFrame(current_frame_index);
+            }
+            else if (this.textureAtlas != null)
+            {
+                this.sprite.Select_Texture_Region(this.numOfColumns, this.numOfRows, current_frame_index % this.numOfColumns, current_frame_index / this.numOfColumns);
+            }
         }
 
-        public void Play() {
-
-            _sprite.animationTimer = 0;
-            _is_playing = true;
-            //_current_frame_index = 0;
+        public void Play()
+        {
+            this.sprite.animationTimer = 0;
+            this.isPlaying = true;
         }
 
-        public void Continue() { _is_playing = true; }
-
-        public void Stop() { _is_playing = false; }
-
-        public void set_speed(int fps) { _frame_time = 1.0f / fps; }
-
-        // ======================================= private ======================================= 
-
-        private Sprite          _sprite;
-        private float           _frame_time;
-        private bool            _is_playing = false;
-
-        private SpriteBatch? _sprite_batch;
-
-        private Texture? _texture_atlas;
-        private int _num_of_rows;
-        private int _num_of_columns;
-
-
-        private void Init(Sprite sprite, int fps = 30, bool loop = true) {
-
-            this._sprite = sprite;
-            _frame_time = 1.0f / fps;
-            Loop = loop;
-
-            if(_sprite_batch != null)
-                this._sprite.texture = _sprite_batch.GetFrame(0);
-            if(_texture_atlas != null)
-                this._sprite.texture = _texture_atlas;
+        public void Continue()
+        {
+            this.isPlaying = true;
         }
 
+        public void Stop()
+        {
+            this.isPlaying = false;
+        }
+
+        public void set_speed(int fps)
+        {
+            this.frameTime = 1.0f / fps;
+        }
+
+        // ======================================= private =======================================
+        private void Init(Sprite sprite, int fps = 30, bool loop = true)
+        {
+            this.sprite = sprite;
+            this.frameTime = 1.0f / fps;
+            this.Loop = loop;
+
+            if (this.spriteBatch != null)
+            {
+                this.sprite.texture = this.spriteBatch.GetFrame(0);
+            }
+
+            if (this.textureAtlas != null)
+            {
+                this.sprite.texture = this.textureAtlas;
+            }
+        }
     }
-
 }

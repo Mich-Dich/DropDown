@@ -47,7 +47,7 @@ namespace DropDown {
         private void Imgui_Diaplay_Level_Bit_Map() {
 
 
-            if(!Game.instance.show_debug)
+            if(!Game.Instance.showDebug)
                 return;
 
             if(!ImGui.Begin("level_bit_map"))
@@ -102,7 +102,7 @@ namespace DropDown {
             for(int x = 0; x < 64; x++) {
                 for(int y = 63; y >= 0 ; y--) {
 
-                    UInt64 currentBit = (floorLayout[x] >> y) & 1;
+                    ulong currentBit = (floorLayout[x] >> y) & 1;
 
                     draw_list.AddRectFilled(
                         wondopw_pos + new System.Numerics.Vector2(y * tileDisplaySize, x * tileDisplaySize),
@@ -154,18 +154,18 @@ namespace DropDown {
 
         private void Generate_Actual_Map() {
 
-            Stopwatch stopwatch = new Stopwatch();
+            Stopwatch stopwatch = new();
             stopwatch.Start();
 
             // --------------------------- spawn sprites --------------------------- 
-            Random rnd = new Random();
+            Random rnd = new();
             Force_Clear_mapTiles();
-            const int totalBits = sizeof(UInt64) * 8;
+            const int totalBits = sizeof(ulong) * 8;
             for(int x = 0; x < totalBits; x++) {
                 for(int y = 0; y < totalBits; y++) {
 
                     // Extract bits of current X
-                    UInt64 currentBit = (floorLayout[x] >> y) & 1;
+                    ulong currentBit = (floorLayout[x] >> y) & 1;
 
                     if(currentBit == 1)
                         continue;
@@ -205,9 +205,9 @@ namespace DropDown {
             for(int x = 0; x < totalBits / tileSize; x++) {
                 for(int y = 0; y < totalBits / tileSize; y++) {
 
-                    Vector2 tile_offset = new Vector2(
-                        ((x- ((totalBits / tileSize)/2)) * (this.tileSize * this.cellSize)),
-                        ((y- ((totalBits / tileSize)/2)) * (this.tileSize * this.cellSize)));
+                    Vector2 tile_offset = new(
+                        (x- (totalBits / tileSize/2)) * (this.tileSize * this.cellSize),
+                        (y- (totalBits / tileSize/2)) * (this.tileSize * this.cellSize));
 
                     // Display each byte in the array as a binary string
                     byte[] current_tile = Get8x8_Block(x, y);
@@ -248,7 +248,7 @@ namespace DropDown {
                             } while((z + row_counter) < current_tile.Length && questionable_count >= column_counter);
                             //Console.WriteLine($"size of collider: {column_counter}/{row_counter}");
 
-                            Vector2 collider_tile_offset = new Vector2(
+                            Vector2 collider_tile_offset = new(
                                 (this.cellSize * -0.5f) + firstOneIndex * this.cellSize,
                                 (this.cellSize * -0.5f) + z * this.cellSize
                                 );
@@ -257,7 +257,7 @@ namespace DropDown {
 
                             this.add_static_collider_AAABB(
                                 new Transform(
-                                    new Vector2((column_counter * this.cellSize) / 2, (row_counter * this.cellSize) / 2) + tile_offset + collider_tile_offset,
+                                    new Vector2(column_counter * this.cellSize / 2, row_counter * this.cellSize / 2) + tile_offset + collider_tile_offset,
                                     new Vector2(column_counter * this.cellSize, row_counter * this.cellSize))
                                 ,false);
 
@@ -312,12 +312,12 @@ namespace DropDown {
         private byte[] Get8x8_Block(int tile_index_x, int tile_index_y) {
 
             const int loc_tileSize = 8;
-            const int totalBits = sizeof(UInt64) * 8;
+            const int totalBits = sizeof(ulong) * 8;
             if(tile_index_x < 0 || tile_index_x > (totalBits/loc_tileSize) || tile_index_y < 0 || tile_index_y > (totalBits/loc_tileSize)) 
                 throw new ArgumentException("Invalid startRow or startCol for extracting 8x8 block.");
 
             // Iterate over the rows of the 8x8 block
-            UInt64 int_buffer = 0;
+            ulong int_buffer = 0;
             byte[] block = new byte[8];
             for(int x = 0; x < 8; x++) {
 
@@ -331,7 +331,7 @@ namespace DropDown {
 
         private void Generate_Bit_Map() {
 
-            Stopwatch stopwatch = new Stopwatch();
+            Stopwatch stopwatch = new();
             stopwatch.Start();
             bitMapGenerationIteration = 0;
 
@@ -346,8 +346,8 @@ namespace DropDown {
                     Iterate_Over_Bit_Map(iterations[x]);
                 }
 
-                UInt64 targetUInt64 = floorLayout[32];
-                UInt64 mask = (UInt64)1 << 32;
+                ulong targetUInt64 = floorLayout[32];
+                ulong mask = (ulong)1 << 32;
 
                 found = (targetUInt64 & mask) == 0;
                 bitMapGenerationIteration++;
@@ -370,10 +370,10 @@ namespace DropDown {
 
         private void Iterate_Over_Bit_Map(int threshhold = 4) {
 
-            floorLayoutBuffer = new UInt64[64];
+            floorLayoutBuffer = new ulong[64];
 
             // Determine the number of bits in UInt64 (64 bits)
-            const int totalBits = sizeof(UInt64) * 8;
+            const int totalBits = sizeof(ulong) * 8;
 
             for(int x = 0;x < totalBits;x++) {
 
@@ -381,30 +381,30 @@ namespace DropDown {
                 for(int y = totalBits - 1; y >= 0; y--) {
 
                     // Extract bits of current X
-                    UInt64 currentBit = (floorLayout[x] >> y) & 1;
-                    UInt64 previousBit = (y > 0) ? ((floorLayout[x] >> (y - 1)) & 1) : 1;
-                    UInt64 nextBit = (y < totalBits - 1) ? ((floorLayout[x] >> (y + 1)) & 1) : 1;
-                    UInt32 combinedBits = (UInt32)((nextBit << 2) | (currentBit << 1) | previousBit);
+                    ulong currentBit = (floorLayout[x] >> y) & 1;
+                    ulong previousBit = (y > 0) ? ((floorLayout[x] >> (y - 1)) & 1) : 1;
+                    ulong nextBit = (y < totalBits - 1) ? ((floorLayout[x] >> (y + 1)) & 1) : 1;
+                    uint combinedBits = (uint)((nextBit << 2) | (currentBit << 1) | previousBit);
 
                     // Extract bits of u64 one above X
-                    UInt64 upper_buffer = ((x - 1) < 0)? UInt64.MaxValue: floorLayout[x - 1];
-                    UInt64 upper_currentBit = (upper_buffer >> y) & 1;
-                    UInt64 upper_previousBit = (y > 0) ? ((upper_buffer >> (y - 1)) & 1) : 1;
-                    UInt64 upper_nextBit = (y < totalBits - 1) ? ((upper_buffer >> (y + 1)) & 1) : 1;
-                    UInt32 upper_combinedBits = (UInt32)((upper_nextBit << 2) | (upper_currentBit << 1) | upper_previousBit);
+                    ulong upper_buffer = ((x - 1) < 0)? ulong.MaxValue: floorLayout[x - 1];
+                    ulong upper_currentBit = (upper_buffer >> y) & 1;
+                    ulong upper_previousBit = (y > 0) ? ((upper_buffer >> (y - 1)) & 1) : 1;
+                    ulong upper_nextBit = (y < totalBits - 1) ? ((upper_buffer >> (y + 1)) & 1) : 1;
+                    uint upper_combinedBits = (uint)((upper_nextBit << 2) | (upper_currentBit << 1) | upper_previousBit);
 
                     // Extract bits of u64 one below X
-                    UInt64 lower_buffer = ((x + 1) > totalBits-1)? UInt64.MaxValue: floorLayout[x + 1];
-                    UInt64 lower_currentBit = (lower_buffer >> y) & 1;
-                    UInt64 lower_previousBit = (y > 0) ? ((lower_buffer >> (y - 1)) & 1) : 1;
-                    UInt64 lower_nextBit = (y < totalBits - 1) ? ((lower_buffer >> (y + 1)) & 1) : 1;
-                    UInt32 lower_combinedBits = (UInt32)((lower_nextBit << 2) | (lower_currentBit << 1) | lower_previousBit);
+                    ulong lower_buffer = ((x + 1) > totalBits-1)? ulong.MaxValue: floorLayout[x + 1];
+                    ulong lower_currentBit = (lower_buffer >> y) & 1;
+                    ulong lower_previousBit = (y > 0) ? ((lower_buffer >> (y - 1)) & 1) : 1;
+                    ulong lower_nextBit = (y < totalBits - 1) ? ((lower_buffer >> (y + 1)) & 1) : 1;
+                    uint lower_combinedBits = (uint)((lower_nextBit << 2) | (lower_currentBit << 1) | lower_previousBit);
 
                     int count = Count_Ones_Exclude_Middle(combinedBits) + Count_Ones(upper_combinedBits) + Count_Ones(lower_combinedBits);
 
                     if(count >= threshhold) {
 
-                        UInt64 mask = (UInt64)1 << y; // Calculate the mask based on MSB index (63 - bitIndex)
+                        ulong mask = (ulong)1 << y; // Calculate the mask based on MSB index (63 - bitIndex)
                         floorLayoutBuffer[x] |= mask;
                     }
 
@@ -431,17 +431,17 @@ namespace DropDown {
 
         private float initalDensity = 0.37f;
         private int[] iterations = new int[] {4,4,4,4,4};
-        private UInt64[] floorLayoutBuffer = new UInt64[64];
-        private UInt64[] floorLayout = new UInt64[64];
-        private Texture textureBuffer = Resource_Manager.Get_Texture("assets/textures/terrain.png");
+        private ulong[] floorLayoutBuffer = new ulong[64];
+        private ulong[] floorLayout = new ulong[64];
+        private readonly Texture textureBuffer = Resource_Manager.Get_Texture("assets/textures/terrain.png");
 
-        private void Log_U64(UInt64 number) {
+        private void Log_U64(ulong number) {
 
             string binaryRepresentation = Convert.ToString((long)number, 2).PadLeft(64, '0');
 
             // Replace '0' with ' ' and '1' with 'X'
             char[] binaryChars = binaryRepresentation.Select(c => c == '0' ? ' ' : 'X').ToArray();
-            string formattedBinary = new string(binaryChars);
+            string formattedBinary = new(binaryChars);
 
             Console.WriteLine($"Map: |{formattedBinary}|");
         }
@@ -470,15 +470,15 @@ namespace DropDown {
         }
 
         // Function to generate a UInt64 value with specified density of bits flipped
-        static UInt64 Generate_Eandom_UInt64_With_Density(double density) {
+        private static ulong Generate_Eandom_UInt64_With_Density(double density) {
 
-            Random random = new Random();
-            UInt64 result = 0;
+            Random random = new();
+            ulong result = 0;
             for(int i = 0; i < 64; i++) {
             
                 double randomValue = random.NextDouble();
                 if(randomValue < density)
-                    result |= (UInt64)1 << i;
+                    result |= (ulong)1 << i;
             }
             return result;
         }

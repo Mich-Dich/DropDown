@@ -19,7 +19,7 @@ namespace Projektarbeit {
             
             GL.ClearColor(new Color4(.05f, .05f, .05f, 1f));
             Set_Update_Frequency(144.0f);
-            Show_Debug_Data(true);
+            Show_DebugData(true);
 
             CH_player = new CH_player();
             this.player = CH_player;

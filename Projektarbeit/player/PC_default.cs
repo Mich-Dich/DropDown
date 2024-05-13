@@ -1,5 +1,5 @@
 ﻿using Core;
-using Core.controllers.player;
+using Core.Controllers.player;
 using Core.input;
 using Core.world;
 using OpenTK.Mathematics;
@@ -9,14 +9,14 @@ namespace Projektarbeit.player {
 
     public class PC_Default : playerController {
 
-        public Core.controllers.player.Action move { get; set; }
-        public Core.controllers.player.Action sprint { get; set; }
+        public Core.Controllers.player.Action move { get; set; }
+        public Core.Controllers.player.Action sprint { get; set; }
 
         public PC_Default(Character character)
             : base (character, null) {
             actions.Clear();
 
-            move = new Core.controllers.player.Action (
+            move = new Core.Controllers.player.Action (
                 "move",
                 (uint)Action_ModefierFlags.auto_reset,
                 false,
@@ -31,7 +31,7 @@ namespace Projektarbeit.player {
                 });
             AddInputAction(move);
 
-            sprint = new Core.controllers.player.Action (
+            sprint = new Core.Controllers.player.Action (
                 "shoot",
                 (uint)Action_ModefierFlags.none,
                 false,
