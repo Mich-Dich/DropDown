@@ -18,13 +18,15 @@ namespace Core.world.map {
         public Map() {
 
             AABB aabb = new AABB();
-            aabb.LowerBound.Set(-levelWidth, -levelHeight);
-            aabb.UpperBound.Set(levelWidth, levelHeight);
-            physics_world = new World(aabb, Vec2.Zero, true);
+            aabb.LowerBound.Set(-100000, -100000);
+            aabb.UpperBound.Set(100000, 100000);
+
+            Vec2 gravity = new Vec2(0.0f, 0.001f);
+            physics_world = new World(aabb, gravity, true);
         }
 
-        public int levelWidth { get; set; }
-        public int levelHeight { get; set; }
+        public int levelWidth { get; set; } = 10000;
+        public int levelHeight { get; set; } = 10000;
         public int tileHeight { get; set; }
         public int tileWidth { get; set; }
         public int TilesOnScreenWidth { get; set; }
@@ -53,7 +55,6 @@ namespace Core.world.map {
         /// <summary>
         /// Adds a game object to the map's world.
         /// </summary>
-        /// <param name="game_object">The game object to add.</param>
         public void Add_Game_Object(Game_Object game_object) {
 
             world.Add(game_object);
@@ -64,42 +65,49 @@ namespace Core.world.map {
         /// <summary>
         /// Adds a character to the map's world.
         /// </summary>
-        /// <param name="character">The character to add.</param>
-        /// <param name="position">The optional position to place the character.</param>
         public void Add_Character(Character character, Vector2? position = null) {
 
             if(position != null)
                 character.transform.position = position.Value;
 
-            CircleDef circleDef = new CircleDef{ Radius = character.transform.size.X };
             BodyDef def = new BodyDef();
-            
+            def.Position.Set(1,1);
+            def.LinearDamping = 1.0f;
+            def.AllowSleep = false;
+
+            float radius = Math.Abs(character.transform.size.X/2);
+            if(character.collider != null)
+                radius = Math.Abs(character.transform.size.X/2 + character.collider.offset.size.X/2);
+
+            CircleDef circleDef = new CircleDef{ Radius = radius };
+            circleDef.Density = 1f;
+            circleDef.Friction = 0.3f;
+
             Body body = physics_world.CreateBody(def);
-            body.IsDynamic();
             body.CreateShape(circleDef);
+            body.IsDynamic();
+            body.SetMassFromShapes();
 
-            
+            if(character.collider != null)
+                character.collider.body = body;
+            else
+                character.Add_Collider(new Collider(body));
 
-            character.collider.body = body;
+
             _all_character.Add(character);
-
-
-
-
-            Console.WriteLine($"Adding character [{character}] to map. Current count: {_all_character.Count} ");
+            //Console.WriteLine($"added body to character. Current count: [{physics_world.GetBodyCount()}]");
+            //Console.WriteLine($"Adding character [{character}] to map. Current count: {_all_character.Count} ");
         }
 
         /// <summary>
         /// Adds a background sprite to the map's background layer.
         /// </summary>
-        /// <param name="sprite">The background sprite to add.</param>
         public void Add_Sprite(Sprite sprite) { backgound.Add(sprite); }
 
         /// <summary>
         /// Adds a sprite to the specified world layer.
         /// </summary>
         /// <param name="world_layer">The world layer to add the sprite to.</param>
-        /// <param name="sprite">The sprite to add.</param>
         public void Add_Sprite(world_layer world_layer, Sprite sprite) {
 
             if(sprite == null)
@@ -206,15 +214,20 @@ namespace Core.world.map {
         /// Updates the map's logic and physics.
         /// </summary>
         /// <param name="delta_time">The time elapsed since the last update.</param>
+        private int velocityIterations = 6;
+        private int positionIterations = 1;
         internal void Update(float delta_time) {
 
-            physics_world.Step(delta_time, 6, 5);
+            physics_world.Step(delta_time*10, velocityIterations, positionIterations);
 
-            foreach(var character in _all_character) {
+            foreach (var character in _all_character) {
                 character.update_position();
+                character.Update(delta_time);
             }
 
-            //game.instance.physics_engine.update(all_collidable_game_objects, game_time.delta, min_distanc_for_collision);
+            for(int x = 0; x < this.all_collidable_game_objects.Count; x++)
+                this.all_collidable_game_objects[x].Update(Game_Time.delta);
+
         }
 
         /// <summary>
@@ -253,6 +266,29 @@ namespace Core.world.map {
 
             current_tile.static_game_object.Add(new_game_object);
             all_collidable_game_objects.Add(new_game_object);
+        }
+
+        public void add_static_collider_AAABB(Transform transform, bool use_cell_size = true) {
+
+            if(use_cell_size)
+                transform.size = new Vector2(cell_size);
+
+            BodyDef def = new BodyDef();
+            def.Position.Set(transform.position.X, transform.position.Y);
+            def.AllowSleep = false;
+            def.FixedRotation = true;
+
+            PolygonDef polygonDef = new PolygonDef();
+            polygonDef.SetAsBox(transform.size.X / 2, transform.size.Y / 2);
+            polygonDef.Density = 1f;
+            
+            Body body = physics_world.CreateBody(def);
+            body.CreateShape(polygonDef);
+            body.IsStatic();
+            
+            var current_tile = Get_Correct_Map_Tile(transform.position);
+            current_tile.static_colliders.Add(body);
+
         }
 
         /// <summary>
@@ -411,6 +447,8 @@ namespace Core.world.map {
 
         public List<Sprite> background = new List<Sprite>();
         public List<Game_Object> static_game_object = new List<Game_Object>();
+        public List<Body>   static_colliders = new List<Body>();
+
 
         public map_tile(Vector2 position) {
 

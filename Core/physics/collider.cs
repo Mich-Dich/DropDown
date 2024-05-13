@@ -12,16 +12,17 @@ namespace Core.physics {
         public physics_material material;
         public hit_data         hit_data;
 
-        public Body?            body { get; set; }
-        public BodyDef          bodyDef;
+        public Body            body { get; set; }
 
         public float            mass;
         public Vector2          velocity {  get; set; }
         public bool Blocking { get; set; } = true;
 
 
-        public Collider(BodyDef body_def) {
+        public Collider(Body body) {
 
+            this.body = body;
+            this.offset = new Transform(Vector2.Zero, Vector2.Zero);
         }
 
 

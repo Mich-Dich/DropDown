@@ -47,25 +47,26 @@ namespace Core.world {
         /// <param name="new_velocity">The additional velocity to add to the character's current velocity.</param>
         public void Add_Linear_Velocity(Vec2 add_velocity) {
             
-            if(this.collider != null && collider.body != null) {
-
+            if(this.collider != null && collider.body != null)
                 collider.body.SetLinearVelocity(collider.body.GetLinearVelocity() + add_velocity);
-            }
         }
 
         public void Set_Velocity(Vec2 new_velocity) {
 
-            if(this.collider != null && collider.body != null) {
-
+            if(this.collider != null && collider.body != null)
                 collider.body.SetLinearVelocity(new_velocity);
-            }
         }
 
+        public void add_force(Vec2 force) {
+
+            if(this.collider != null && collider.body != null)
+                collider.body.ApplyForce(force, Vec2.Zero);
+        }
+        
         public void update_position() {
 
             Vec2 pos = this.collider.body.GetPosition();
-            Vector2 loc_pos = new Vector2(pos.X, pos.Y);
-            this.transform.position = loc_pos;
+            this.transform.position = (pos.X, pos.Y);
         }
 
         /// <summary>

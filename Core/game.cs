@@ -13,6 +13,7 @@ namespace Core {
     using OpenTK.Windowing.Common;
     using OpenTK.Windowing.Desktop;
     using OpenTK.Windowing.GraphicsLibraryFramework;
+    using System;
     using System.Diagnostics;
 
     public abstract class Game {
@@ -22,7 +23,7 @@ namespace Core {
         
         public Shader               default_sprite_shader;
         public static Game          instance { get; private set; }
-        public bool                 show_debug = true;
+        public bool                 show_debug = false;
         public GameWindow           window { get; private set; }
         public Camera               camera { get; set; }
         //public physics_engine       physics_engine { get; } = new();
@@ -76,7 +77,7 @@ namespace Core {
                 init();
 
                 // ----------------------------------- check for null values -----------------------------------
-                if(active_map == null)
+                if (active_map == null)
                     active_map = default_map;
 
                 if(player == null)
@@ -110,13 +111,7 @@ namespace Core {
 
                 update_game_time((float)eventArgs.Time);
                 this.player_controller.update_internal(Game_Time.delta, _input_event);
-
-                for(int x = 0; x < active_map.all_collidable_game_objects.Count; x++)
-                    active_map.all_collidable_game_objects[x].Update(Game_Time.delta);
-
-                //collision_engine.update(active_map.all_collidable_game_objects, game_time.delta);
                 this.active_map.Update(Game_Time.delta);
-
                 update(Game_Time.delta);
                 _input_event.Clear();
 
@@ -154,6 +149,43 @@ namespace Core {
                 window.SwapBuffers();
             };
 
+            window.FocusedChanged += (e) => {
+
+                if(!e.IsFocused) {
+
+                    update_frequency_buffer = window.UpdateFrequency;
+                    window.UpdateFrequency = 30.0f;
+                } else
+                    window.UpdateFrequency = update_frequency_buffer;
+            };
+
+            window.Move += (e) => {
+
+                stopwatch.Restart();
+                
+                {
+                    update_game_time((float)window.TimeSinceLastUpdate());
+                    window.ResetTimeSinceLastUpdate();
+
+                    this.player_controller.update_internal(Game_Time.delta, _input_event);
+                    this.active_map.Update(Game_Time.delta);
+                    update(Game_Time.delta);
+                    _input_event.Clear();
+                }
+
+                stopwatch.Stop();
+                debug_data.work_time_update = stopwatch.Elapsed.TotalMilliseconds;
+                stopwatch.Restart();
+                
+                {
+                    window.SwapBuffers();
+                    internal_render();
+                    imgui_render(Game_Time.delta);
+                }
+
+                stopwatch.Stop();
+                debug_data.work_time_render = stopwatch.Elapsed.TotalMilliseconds;
+            };
 
 
             // ============================ input ============================ 
@@ -185,9 +217,19 @@ namespace Core {
             //collision_engine = new collision_engine();
 
             window.Run();
+
         }
 
-        public void show_debug_data(bool enable) { this.show_debug = enable; }
+        public void show_debug_data(bool enable) {
+
+            this.show_debug = enable;
+#if DEBUG
+            Console.WriteLine($"Showing debug data");
+#else
+            if(enable)
+                Console.WriteLine($"Showing debug data is enabled while building for release");
+#endif
+        }
         public Vector2 get_mouse_relative_pos() { return window.MousePosition - (window.Size / 2) + cursor_pos_offset; }
 
         //  ============================================================================== protected ============================================================================== 
@@ -222,7 +264,7 @@ namespace Core {
         //  ============================================================================== private ============================================================================== 
         private readonly Vector2 cursor_pos_offset = new Vector2(0,20);
         private Debug_Data_Viualizer debug_data_viualizer = new Debug_Data_Viualizer();
-
+        private double update_frequency_buffer = 0;
 
         private void internal_render() {
 

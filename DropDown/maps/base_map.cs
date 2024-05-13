@@ -46,6 +46,10 @@ namespace DropDown {
 
         private void imgui_diaplay_level_bit_map() {
 
+
+            if(!Game.instance.show_debug)
+                return;
+
             if(!ImGui.Begin("level_bit_map"))
                 return;
 
@@ -215,7 +219,7 @@ namespace DropDown {
                             // --------------- find block of ones --------------- 
                             byte buffer = current_tile[z];
                             int firstOneIndex = -1;
-                            int target_count = 0;                               // used as X value of size
+                            int column_counter = 0;                               // used as X value of size
                             int row_counter = 1;                                // used as Y value of size
 
                             // --------------- calc max size.X of collider --------------- 
@@ -224,7 +228,7 @@ namespace DropDown {
                                     continue;
 
                                 firstOneIndex = i;
-                                target_count = count_number_of_following_ones(buffer, firstOneIndex);
+                                column_counter = count_number_of_following_ones(buffer, firstOneIndex);
                                 break;
                             }
                             
@@ -236,13 +240,13 @@ namespace DropDown {
                                     break;
                                 
                                 questionable_count = count_number_of_following_ones(current_tile[z + row_counter], firstOneIndex);
-                                if(questionable_count < target_count)
+                                if(questionable_count < column_counter)
                                     break;
 
                                 row_counter++;
 
-                            } while((z + row_counter) < current_tile.Length && questionable_count >= target_count);
-                            //Console.WriteLine($"size of collider: {target_count}/{row_counter}");
+                            } while((z + row_counter) < current_tile.Length && questionable_count >= column_counter);
+                            //Console.WriteLine($"size of collider: {column_counter}/{row_counter}");
 
                             Vector2 collider_tile_offset = new Vector2(
                                 (this.cell_size * -0.5f) + firstOneIndex * this.cell_size,
@@ -251,16 +255,22 @@ namespace DropDown {
 
                             // --------------- add collider --------------- 
 
-                            this.Add_Static_Game_Object(
-                                new Game_Object(
-                                    null,
-                                    new Vector2(target_count * this.cell_size, row_counter * this.cell_size))
-                                        .Add_Collider(new Collider(collision_shape.Square)),
-                                new Vector2((target_count * this.cell_size) / 2, (row_counter * this.cell_size) / 2) + tile_offset + collider_tile_offset,
-                                false);
+                            this.add_static_collider_AAABB(
+                                new Transform(
+                                    new Vector2((column_counter * this.cell_size) / 2, (row_counter * this.cell_size) / 2) + tile_offset + collider_tile_offset,
+                                    new Vector2(column_counter * this.cell_size, row_counter * this.cell_size))
+                                ,false);
+
+                            //this.Add_Static_Game_Object(
+                            //    new Game_Object(
+                            //        null,
+                            //        new Vector2(column_counter * this.cell_size, row_counter * this.cell_size))
+                            //            .Add_Collider(new Collider(collision_shape.Square)),
+                            //    new Vector2((column_counter * this.cell_size) / 2, (row_counter * this.cell_size) / 2) + tile_offset + collider_tile_offset,
+                            //    false);
 
                             // --------------- set used values to 0 --------------- 
-                            byte reset_mask = SetBits(firstOneIndex, target_count);
+                            byte reset_mask = SetBits(firstOneIndex, column_counter);
                             for(int i = 0; i < row_counter; i++) 
                                 current_tile[z + i] = (byte)(current_tile[z + i] & ~reset_mask);
 

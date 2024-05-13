@@ -129,6 +129,24 @@ namespace Core.util {
             position += velocity;
         }
 
+        public override string ToString() {
+
+            if(parent != null)
+                return $"position: {position} size: {size} rotation: [{rotation}] mobility: [{mobility}]\n" +
+                       $"      parent: [{parent}]";
+            else
+                return $"position: {position} size: {size} rotation: [{rotation}] mobility: [{mobility}]";
+        }
+
+
+        /*
+        public Vector2 size { get; set; } = new Vector2(100, 100);
+        public float rotation { get; set; } = 0;
+        public Mobility mobility { get; set; } = Mobility.DYNAMIC;    // conserning update method
+        public Transform? parent { get; set; }
+        */
+
+
         // ------------------------------------ private ------------------------------------
 
         private Vector2 _position;

@@ -72,7 +72,6 @@ namespace DropDown.player {
 
                 Vector2 direction = Vector2.NormalizeFast((Vector2)move.get_value());
                 character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * delta_time);
-                Console.WriteLine($"direction: {direction * total_speed * delta_time}  Velocity: {character.collider.body.GetLinearVelocity().X}/{character.collider.body.GetLinearVelocity().Y}");
             }
             
             // camera follows player
@@ -86,7 +85,7 @@ namespace DropDown.player {
             character.transform.rotation = -angleRadians + (float.Pi / 2) + (float.Pi/20);
         }
 
-        private float sprint_speed = 5000.0f;
+        private float sprint_speed = 250.0f;
 
     }
 }

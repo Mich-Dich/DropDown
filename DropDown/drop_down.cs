@@ -24,8 +24,9 @@ namespace DropDown {
             
             GL.ClearColor(new Color4(.05f, .05f, .05f, 1f));
             set_update_frequency(144.0f);
+#if DEBUG
             show_debug_data(true);
-
+#endif
             CH_player = new CH_player();
             this.player_controller = new PC_default(CH_player);
             this.player = CH_player;
