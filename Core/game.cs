@@ -77,8 +77,8 @@ namespace Core {
                 Init();
 
                 // ----------------------------------- check for null values -----------------------------------
-                if (active_map == null)
-                    active_map = default_map;
+                if (activeMap == null)
+                    activeMap = defaultMap;
 
                 if(player == null)
                     player = new Character();
@@ -110,10 +110,10 @@ namespace Core {
                 stopwatch.Restart();
 
                 Update_Game_Time((float)eventArgs.Time);
-                this.player_controller.update_internal(Game_Time.delta, _input_event);
-                this.active_map.Update(Game_Time.delta);
-                update(Game_Time.delta);
-                _input_event.Clear();
+                this.playerController.Update_Internal(Game_Time.delta, inputEvent);
+                this.activeMap.Update(Game_Time.delta);
+                Update(Game_Time.delta);
+                inputEvent.Clear();
 
                 stopwatch.Stop();
                 Debug_Data.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
@@ -164,27 +164,27 @@ namespace Core {
                 stopwatch.Restart();
                 
                 {
-                    update_game_time((float)window.TimeSinceLastUpdate());
+                    Update_Game_Time((float)window.TimeSinceLastUpdate());
                     window.ResetTimeSinceLastUpdate();
 
-                    this.player_controller.update_internal(Game_Time.delta, _input_event);
-                    this.active_map.Update(Game_Time.delta);
-                    update(Game_Time.delta);
-                    _input_event.Clear();
+                    this.playerController.Update_Internal(Game_Time.delta, inputEvent);
+                    this.activeMap.Update(Game_Time.delta);
+                    Update(Game_Time.delta);
+                    inputEvent.Clear();
                 }
 
                 stopwatch.Stop();
-                debug_data.work_time_update = stopwatch.Elapsed.TotalMilliseconds;
+                Debug_Data.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
                 stopwatch.Restart();
                 
                 {
                     window.SwapBuffers();
-                    internal_render();
-                    imgui_render(Game_Time.delta);
+                    Internal_Render();
+                    Imgui_Render(Game_Time.delta);
                 }
 
                 stopwatch.Stop();
-                debug_data.work_time_render = stopwatch.Elapsed.TotalMilliseconds;
+                Debug_Data.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
             };
 
 

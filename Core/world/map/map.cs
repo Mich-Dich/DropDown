@@ -220,13 +220,13 @@ namespace Core.world.map {
 
             physics_world.Step(deltaTime*10, velocityIterations, positionIterations);
 
-            foreach (var character in _all_character) {
-                character.update_position();
+            foreach (var character in allCharacter) {
+                character.Update_position();
                 character.Update(deltaTime);
             }
 
-            for(int x = 0; x < this.all_collidable_game_objects.Count; x++)
-                this.all_collidable_game_objects[x].Update(Game_Time.delta);
+            //for(int x = 0; x < this.all_collidable_game_objects.Count; x++)
+            //    this.all_collidable_game_objects[x].Update(Game_Time.delta);
 
         }
 
@@ -271,7 +271,7 @@ namespace Core.world.map {
         public void add_static_collider_AAABB(Transform transform, bool use_cell_size = true) {
 
             if(use_cell_size)
-                transform.size = new Vector2(cell_size);
+                transform.size = new Vector2(cellSize);
 
             BodyDef def = new BodyDef();
             def.Position.Set(transform.position.X, transform.position.Y);

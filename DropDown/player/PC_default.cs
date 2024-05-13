@@ -70,8 +70,8 @@ namespace DropDown.player {
             // simple movement
             if(move.X != 0 || move.Y != 0) {
 
-                Vector2 direction = Vector2.NormalizeFast((Vector2)move.get_value());
-                character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * delta_time);
+                Vector2 direction = Vector2.NormalizeFast((Vector2)move.GetValue());
+                character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * deltaTime);
             }
             
             // camera follows player

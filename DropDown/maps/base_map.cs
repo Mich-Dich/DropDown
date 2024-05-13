@@ -257,8 +257,8 @@ namespace DropDown {
 
                             this.add_static_collider_AAABB(
                                 new Transform(
-                                    new Vector2((column_counter * this.cell_size) / 2, (row_counter * this.cell_size) / 2) + tile_offset + collider_tile_offset,
-                                    new Vector2(column_counter * this.cell_size, row_counter * this.cell_size))
+                                    new Vector2((column_counter * this.cellSize) / 2, (row_counter * this.cellSize) / 2) + tile_offset + collider_tile_offset,
+                                    new Vector2(column_counter * this.cellSize, row_counter * this.cellSize))
                                 ,false);
 
                             //this.Add_Static_Game_Object(
