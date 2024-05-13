@@ -1,37 +1,39 @@
-﻿
-namespace Core.render {
-
+﻿namespace Core.render
+{
     using OpenTK.Graphics.OpenGL4;
 
-    public sealed class Index_Buffer : I_Buffer, IDisposable {
-
+    public sealed class Index_Buffer : I_Buffer, IDisposable
+    {
         public int id { get; }
 
-        public Index_Buffer(uint[] indecies) { 
-            
-            id = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, id);
+        public Index_Buffer(uint[] indecies)
+        {
+            this.id = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.id);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indecies.Length * sizeof(uint), indecies, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }
 
-        public void Bind() {
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, id);
+        public void Bind()
+        {
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.id);
         }
 
-        public void Unbind() {
-            
+        public void Unbind()
+        {
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }
 
-        private bool _Disposed = false;
-        public void Dispose() {
+        private bool disposed = false;
 
-            if (!_Disposed) {
-                GL.DeleteBuffer(id);
+        public void Dispose()
+        {
+            if (!this.disposed)
+            {
+                GL.DeleteBuffer(this.id);
             }
-            _Disposed = true;
+
+            this.disposed = true;
         }
     }
 }

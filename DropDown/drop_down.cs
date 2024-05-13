@@ -10,7 +10,7 @@ namespace DropDown {
 
     internal class Drop_Down : Core.Game {
 
-        public Drop_Down(String title, Int32 initalWindowWidth, Int32 initalWindowHeight)
+        public Drop_Down(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) {
         
         }
@@ -25,7 +25,7 @@ namespace DropDown {
             GL.ClearColor(new Color4(.05f, .05f, .05f, 1f));
             Set_Update_Frequency(144.0f);
 #if DEBUG
-            Show_Debug_Data(true);
+            showDebugData(true);
 #endif
             CH_player = new CH_player();
             this.playerController = new PC_Default(CH_player);

@@ -1,4 +1,4 @@
-﻿using Core.controllers.ai;
+﻿using Core.Controllers.ai;
 using Core.world;
 
 namespace DropDown.enemy {
@@ -14,7 +14,6 @@ namespace DropDown.enemy {
 
 
     }
-
 
     public class Idle : I_AI_State {
     

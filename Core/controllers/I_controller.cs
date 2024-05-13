@@ -1,8 +1,9 @@
-﻿using Core.world;
+﻿namespace Core.Controllers
+{
+    using Core.world;
 
-namespace Core.controllers {
-
-    public interface I_Controller {
+    public interface I_Controller
+    {
         Character character { get; set; }
     }
 }

@@ -1,11 +1,11 @@
-﻿
-namespace Core.input {
-
+﻿#pragma warning disable
+namespace Core.input
+{
     //
     // Summary:
     //     Specifies key codes and modifiers in US keyboard layout.
-    public enum Key_Code {
-
+    public enum Key_Code
+    {
         /// <summary> An unknown key. </summary>
         Unknown = -1,
 
@@ -284,3 +284,4 @@ namespace Core.input {
         LastKey = 348,
     }
 }
+#pragma warning restore

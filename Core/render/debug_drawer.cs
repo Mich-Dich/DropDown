@@ -1,28 +1,28 @@
-
-namespace Core.render {
-
+namespace Core.render
+{
     using Core.physics;
     using Core.render.shaders;
     using Core.util;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
 
-    public enum DebugColor {
-
+    public enum DebugColor
+    {
         Red,
         Green,
         Blue,
         White,
     }
 
-    public sealed class Debug_Drawer {
-        
-        private Shader debugShader;
-        private int vbo, vao, ebo;
+    public sealed class Debug_Drawer
+    {
+        private readonly Shader debugShader;
+        private readonly int vbo;
+        private readonly int vao;
+        private readonly int ebo;
 
-        public DebugColor DebugColor { get; set; } = DebugColor.White;
-
-        public Debug_Drawer() {
+        public Debug_Drawer()
+        {
             this.debugShader = Resource_Manager.Get_Shader("shaders/debug.vert", "shaders/debug.frag");
 
             this.vbo = GL.GenBuffer();
@@ -30,21 +30,17 @@ namespace Core.render {
             this.ebo = GL.GenBuffer();
         }
 
+        public DebugColor DebugColor { get; set; } = DebugColor.White;
+
         // ================================================================= public =================================================================
-
-        /// <summary>
-        /// Draws a collision shape with specified transformation, collider, and debug color.
-        /// </summary>
-        /// <param name="transform">The transformation of the collision shape.</param>
-        /// <param name="collider">The collider representing the shape to Draw.</param>
-        /// <param name="debugColor">The debug color used for drawing (default is DebugColor.White).</param>
-        public void Draw_Collision_Shape(Transform transform, Collider collider, DebugColor debugColor) {
-
-            //Console.WriteLine("Drawing collision shape");
+        public void Draw_Collision_Shape(Transform transform, Collider collider, DebugColor debugColor)
+        {
+            // Console.WriteLine("Drawing collision shape");
             this.DebugColor = debugColor;
             this.debugShader.Use();
             Vector4 color;
-            switch(this.DebugColor) {
+            switch (this.DebugColor)
+            {
                 case DebugColor.Red:
                     color = new Vector4(1.0f, 0.0f, 0.0f, 0.5f);
                     break;
@@ -58,29 +54,30 @@ namespace Core.render {
                     color = new Vector4(1.0f, 1.0f, 1.0f, 0.5f);
                     break;
             }
+
             this.debugShader.Set_Uniform("color", color);
 
-            Transform buffer = new Transform(transform + collider.offset);
+            Transform buffer = new (transform + collider.offset);
             buffer.size = Vector2.One;
             Matrix4 matrixTransform = buffer.GetTransformationMatrix();
-            Matrix4 finalTransform = matrixTransform * Game.instance.camera.Get_Projection_Matrix();
+            Matrix4 finalTransform = matrixTransform * Game.Instance.camera.Get_Projection_Matrix();
             this.debugShader.Set_Matrix_4x4("transform", finalTransform);
 
-            if(collider.shape == Collision_Shape.Circle)
-                this.Draw_Circle(transform.size.X/2 + collider.offset.size.X/2, 20);
-            
-            else if(collider.shape == Collision_Shape.Square)
+            if (collider.shape == Collision_Shape.Circle)
+            {
+                this.Draw_Circle((transform.size.X / 2) + (collider.offset.size.X / 2), 20);
+            }
+            else if (collider.shape == Collision_Shape.Square)
+            {
                 this.Draw_Rectangle(transform.size + collider.offset.size);
-            
+            }
+
             GL.BindVertexArray(0);
             this.debugShader.Unbind();
         }
 
-        /// <summary>
-        /// Disposes of resources used by the debug drawer.
-        /// </summary>
-        public void Dispose() {
-
+        public void Dispose()
+        {
             Console.WriteLine("Disposing debug_drawer");
             this.debugShader.Dispose();
 
@@ -91,14 +88,14 @@ namespace Core.render {
         }
 
         // ================================================================= private =================================================================
-
-        private void Draw_Rectangle(Vector2 size) {
-
-            //Console.WriteLine("Drawing rectangle");
-            float[] vertices = {
+        private void Draw_Rectangle(Vector2 size)
+        {
+            // Console.WriteLine("Drawing rectangle");
+            float[] vertices =
+            {
                 -0.5f * size.X,  0.5f * size.Y, 0.0f,
-                 0.5f * size.X,  0.5f * size.Y, 0.0f,
-                 0.5f * size.X, -0.5f * size.Y, 0.0f,
+                0.5f * size.X,  0.5f * size.Y, 0.0f,
+                0.5f * size.X, -0.5f * size.Y, 0.0f,
                 -0.5f * size.X, -0.5f * size.Y, 0.0f,
             };
 
@@ -107,13 +104,14 @@ namespace Core.render {
             this.Draw_Shape(vertices, indices, PrimitiveType.LineLoop);
         }
 
-        private void Draw_Circle(float radius, int sides) {
+        private void Draw_Circle(float radius, int sides)
+        {
+            // Console.WriteLine("Drawing circle");
+            List<float> vertices = new ();
+            List<uint> indices = new ();
 
-            //Console.WriteLine("Drawing circle");
-            List<float> vertices = new List<float>();
-            List<uint> indices = new List<uint>();
-
-            for(int i = 0; i <= sides; i++) {
+            for (int i = 0; i <= sides; i++)
+            {
                 float theta = 2.0f * MathF.PI * i / sides;
                 float x = radius * MathF.Cos(theta);
                 float y = radius * MathF.Sin(theta);
@@ -126,8 +124,8 @@ namespace Core.render {
             this.Draw_Shape(vertices.ToArray(), indices.ToArray(), PrimitiveType.LineLoop);
         }
 
-        private void Draw_Shape(float[] vertices, uint[] indices, PrimitiveType primitiveType) {
-
+        private void Draw_Shape(float[] vertices, uint[] indices, PrimitiveType primitiveType)
+        {
             GL.BindBuffer(BufferTarget.ArrayBuffer, this.vbo);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
 
@@ -143,6 +141,5 @@ namespace Core.render {
             GL.BindVertexArray(this.vao);
             GL.DrawElements(primitiveType, indices.Length, DrawElementsType.UnsignedInt, 0);
         }
-
     }
 }

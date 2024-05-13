@@ -45,7 +45,7 @@ namespace Hell
 
             if (life_time <= 0)
             {
-                game.instance.activeMap.remove_game_object(this);
+                Game.Instance.activeMap.remove_game_object(this);
             }
         }
 

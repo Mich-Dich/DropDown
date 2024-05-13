@@ -40,11 +40,11 @@ namespace Hell
             {
                 this.health -= (int)hit.hitObject.collider.damage; // Use base class health property
 
-                game.instance.activeMap.remove_game_object(hit.hitObject);
+                Game.Instance.activeMap.remove_game_object(hit.hitObject);
 
                 if (this.health <= 0) // Use base class health property
                 {
-                    game.instance.activeMap.remove_game_object(this);
+                    Game.Instance.activeMap.remove_game_object(this);
                     Console.WriteLine("Player has died");
                 }
             }
@@ -58,7 +58,7 @@ namespace Hell
                 float speed = 1000f;
 
                 var proj = new projectile((this.transform.position), direction, speed, 5f, new Vector2(20, 60), 25.0f);
-                game.instance.activeMap.add_game_object(proj);
+                Game.Instance.activeMap.add_game_object(proj);
                 lastShootTime = game_time.total;
             }
         }

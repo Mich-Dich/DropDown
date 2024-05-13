@@ -1,6 +1,5 @@
-﻿
+﻿﻿
 namespace Core.physics {
-
     using Box2DX.Dynamics;
     using Core.util;
     using Core.world;
@@ -12,27 +11,45 @@ namespace Core.physics {
         public Collision_Type   type;
         public Transform        offset;
 
-        public Body            body { get; set; }
+        public Body body { get; set; }
 
-        public float            mass;
-        public Vector2          velocity {  get; set; }
+        public float mass;
+
+        public Vector2 velocity { get; set; }
+
         public bool blocking { get; set; } = true;
 
+/* Unmerged change from project 'Core (net8.0)'
+Before:
+        public Collider(Body body)
+        {
+            this.body = body;
+            this.offset = new Transform(Vector2.Zero, Vector2.Zero);
+        }
+After:
+        public Collider(Body body)
+        {
+            this.body = body;
+            this.offset = new Transform(Vector2.Zero, Vector2.Zero);
+        }
+*/
 
-        public Collider(Body body) {
-
+        public Collider(Body body)
+        {
             this.body = body;
             this.offset = new Transform(Vector2.Zero, Vector2.Zero);
         }
 
-        public Collider() {
+        public Collider() 
+        {
 
             this.shape = Collision_Shape.Square;
             this.type = Collision_Type.world;
             this.offset = new Transform();
         }
 
-        public Collider(Collision_Shape shape = Collision_Shape.Circle, Collision_Type type = Collision_Type.world, Transform? offset = null, float mass = 100.0f, Vector2? velocity = null) {
+        public Collider(Collision_Shape shape = Collision_Shape.Circle, Collision_Type type = Collision_Type.world, Transform? offset = null, float mass = 100.0f, Vector2? velocity = null) 
+        {
 
             this.shape = shape;
             this.type = type;
@@ -41,36 +58,37 @@ namespace Core.physics {
             this.velocity = velocity == null ? new Vector2() : velocity.Value;
         }
 
-        public Collider Set_Offset(Transform offset) {
-
+        public Collider Set_Offset(Transform offset)
+        {
             this.offset = offset;
             return this;
         }
 
-        public Collider Set_Mass(float mass) {
-
+        public Collider Set_Mass(float mass)
+        {
             this.mass = mass;
             return this;
         }
 
     }
 
-    public enum Collision_Shape {
-
+    public enum Collision_Shape
+    {
         None = 0,
         Circle = 1,
         Square = 2,
     }
 
-    public enum Collision_Type {
+    public enum Collision_Type
+    {
         None = 0,
         world = 1,
         character = 2,
         bullet = 3,
     }
 
-    public struct hitData {
-
+    public struct hitData 
+    {
         public bool isHit;
         public Vector2 hitPosition;
         public Vector2 hitDirection;

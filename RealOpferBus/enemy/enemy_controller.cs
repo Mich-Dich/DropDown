@@ -1,5 +1,5 @@
 using Core;
-using Core.controllers.ai;
+using Core.Controllers.ai;
 using Core.game_objects;
 using Core.util;
 using Core.physics;
@@ -24,7 +24,7 @@ namespace Hell {
         
         public Type execute(aI_Controller aI_Controller)
         {
-            if(!aI_Controller.character.is_in_range(game.instance.player, 200) && aI_Controller.character.is_in_range(game.instance.player, 1000)) {
+            if(!aI_Controller.character.is_in_range(Game.Instance.player, 200) && aI_Controller.character.is_in_range(Game.Instance.player, 1000)) {
                 return typeof(AIS_seek);
             }
 
@@ -57,10 +57,10 @@ namespace Hell {
 
         public Type execute(aI_Controller aI_Controller)
         {
-            if(aI_Controller.character.is_in_range(game.instance.player, 100)) {
+            if(aI_Controller.character.is_in_range(Game.Instance.player, 100)) {
                 return typeof(AIS_idle);
             }
-            Vector2 direction = game.instance.player.transform.position - aI_Controller.character.transform.position;
+            Vector2 direction = Game.Instance.player.transform.position - aI_Controller.character.transform.position;
             direction.Normalize();
             aI_Controller.character.set_velocity(direction * 300);
             return typeof(AIS_seek);
@@ -84,12 +84,12 @@ namespace Hell {
         public Type execute(aI_Controller aI_Controller)
         {
             Vector2 pos = aI_Controller.character.transform.position;
-            Vector2 dir = game.instance.player.transform.position - pos;
+            Vector2 dir = Game.Instance.player.transform.position - pos;
             dir.Normalize();
             var proj = new projectile(pos + 2.0f * dir, dir, 300, 2, new Vector2(10, 10), 10);
             // Set the collision type of the projectile's collider to enemy_bullet
             proj.collider.type = Collision_Type.enemy_bullet;
-            game.instance.activeMap.add_game_object(proj);
+            Game.Instance.activeMap.add_game_object(proj);
             return typeof(AIS_idle);
         }
 
