@@ -160,7 +160,7 @@ namespace Core.world {
         // =============================================== private ==============================================
 
         private Debug_Drawer? debug_drawer { get; set; }
-        private Sprite? sprite;
+        public Sprite? sprite { get; private set; }
 
         private void Init() {
             this.debug_drawer = new Debug_Drawer();

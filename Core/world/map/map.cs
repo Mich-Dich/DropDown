@@ -8,6 +8,7 @@ namespace Core.world.map {
     using Core.render;
     using Core.util;
     using OpenTK.Mathematics;
+    using System.ComponentModel.Design;
 
     public class Map {
 
@@ -71,7 +72,11 @@ namespace Core.world.map {
                 character.transform.position = position.Value;
 
             BodyDef def = new BodyDef();
-            def.Position.Set(1,1);
+            if(position != null)
+                def.Position.Set(position.Value.X, position.Value.Y);
+            else
+                def.Position.Set(1,1);
+
             def.LinearDamping = 1.0f;
             def.AllowSleep = false;
 

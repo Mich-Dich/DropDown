@@ -1,8 +1,10 @@
 ﻿
 namespace Core.world {
+                                                                            
     using Box2DX.Common;
     using Core.controllers;
     using Core.physics;
+    using Core.render;
     using ImGuiNET;
     using OpenTK.Mathematics;
 
@@ -29,6 +31,14 @@ namespace Core.world {
 
             this.controller = controller;
             controller.character = this;
+        }
+
+        public void set_animation(Animation animation) {
+
+            if(sprite != null)
+                sprite.animation = animation;
+
+            sprite.animation.Play();
         }
 
         /// <summary>

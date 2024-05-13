@@ -1,7 +1,9 @@
 ﻿
 namespace Core.physics {
+
     using Box2DX.Dynamics;
     using Core.util;
+    using Core.world;
     using OpenTK.Mathematics;
 
     public sealed class Collider {
@@ -9,8 +11,6 @@ namespace Core.physics {
         public Collision_Shape  shape;
         public Collision_Type   type;
         public Transform        offset;
-        public Physics_Material material;
-        public hitData         hitData;
 
         public Body            body { get; set; }
 
@@ -25,24 +25,19 @@ namespace Core.physics {
             this.offset = new Transform(Vector2.Zero, Vector2.Zero);
         }
 
-
-
-
         public Collider() {
 
             this.shape = Collision_Shape.Square;
             this.type = Collision_Type.world;
             this.offset = new Transform();
-            this.material = new Physics_Material();
         }
 
-        public Collider(Collision_Shape shape = Collision_Shape.Circle, Collision_Type type = Collision_Type.world, Transform? offset = null, Physics_Material? material = null, float mass = 100.0f, Vector2? velocity = null) {
+        public Collider(Collision_Shape shape = Collision_Shape.Circle, Collision_Type type = Collision_Type.world, Transform? offset = null, float mass = 100.0f, Vector2? velocity = null) {
 
             this.shape = shape;
             this.type = type;
             this.mass = mass;
             this.offset = offset == null? new Transform(Vector2.Zero, Vector2.Zero) : offset;
-            this.material = material == null ? new Physics_Material(): material.Value;
             this.velocity = velocity == null ? new Vector2() : velocity.Value;
         }
 
@@ -58,16 +53,6 @@ namespace Core.physics {
             return this;
         }
 
-        public Collider Set_Physics_Material(Physics_Material material) {
-
-            this.material = material;
-            return this;
-        }
-
-        //public collider(Vector2 velocity, Physics_Material Physics_Material) : this() {
-        //    this.velocity = velocity;
-        //    this.material = Physics_Material;
-        //}
     }
 
     public enum Collision_Shape {
@@ -84,4 +69,13 @@ namespace Core.physics {
         bullet = 3,
     }
 
+    public struct hitData {
+
+        public bool isHit;
+        public Vector2 hitPosition;
+        public Vector2 hitDirection;
+        public Vector2 hitNormal;
+        public Vector2 hitImpactPoint;
+        public Game_Object hitObject;
+    }
 }

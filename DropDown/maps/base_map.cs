@@ -7,6 +7,7 @@ namespace DropDown {
     using Core.util;
     using Core.world;
     using Core.world.map;
+    using DropDown.enemy;
     using ImGuiNET;
     using OpenTK.Mathematics;
     using System.Diagnostics;
@@ -58,9 +59,6 @@ namespace DropDown {
             Imgui_Util.Begin_Table("bit_map_generation_data");
             Imgui_Util.Add_Table_Row("inital density", ref initalDensity, 0.0002f, 0f, 1f);
             Imgui_Util.Add_Table_Row("tile display size", ref tileDisplaySize, 0.1f, 3, 10);
-            Imgui_Util.End_Table();
-
-            Imgui_Util.Begin_Table("bit_map_generation_data");
             Imgui_Util.Add_Table_Row("Iterations count", () => { 
                 ImGui.Text($"{iterations.Length}");
                 ImGui.SameLine();
@@ -145,6 +143,9 @@ namespace DropDown {
             Imgui_Util.Add_Table_Row("generation until start_pos empty", $"{bitMapGenerationIteration}");
             Imgui_Util.Add_Table_Row("Total duration", $"{bitMapGenerationDuration + mapGenerationDuration + collisionGenerationDuration} ms");
             Imgui_Util.End_Table();
+
+            if(ImGui.Button("Spawn Enamy"))
+                spaw_enemy();
 
             if(ImGui.Button("Generate actual map from bit-map"))
                 Generate_Actual_Map();
@@ -283,6 +284,46 @@ namespace DropDown {
             collisionGenerationDuration = stopwatch.Elapsed.TotalMilliseconds;
         }
 
+        public void spaw_enemy() {
+
+
+            Random random = new Random();
+
+            bool found = false;
+            int offset_y = 0, offset_x = 0;
+
+            while(!found) {
+
+                offset_y = random.Next(6);
+                offset_x = random.Next(6);
+                found = is_coord_in_bit_map_free(29 + offset_x, 29 + offset_y);
+            }
+            
+            this.Add_Character(new Base_Enemy(),
+                new Vector2((offset_x - 3) * this.cellSize, (offset_y - 3) * this.cellSize));
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         private static byte SetBits(int start_index, int count) {
 
             byte result = 0;
@@ -346,10 +387,7 @@ namespace DropDown {
                     Iterate_Over_Bit_Map(iterations[x]);
                 }
 
-                UInt64 targetUInt64 = floorLayout[32];
-                UInt64 mask = (UInt64)1 << 32;
-
-                found = (targetUInt64 & mask) == 0;
+                found = is_coord_in_bit_map_free(32, 32);
                 bitMapGenerationIteration++;
                 Console.WriteLine($"player loc is empty: {found}");
             }
@@ -357,6 +395,14 @@ namespace DropDown {
             stopwatch.Stop();
             bitMapGenerationDuration = stopwatch.Elapsed.TotalMilliseconds;
 
+        }
+
+        private bool is_coord_in_bit_map_free(int x, int y) {
+
+            UInt64 targetUInt64 = floorLayout[y];
+            UInt64 mask = (UInt64)1 << x;
+
+            return (targetUInt64 & mask) == 0;
         }
 
         private void Generate_Random_64x64_Bit_Map() {
@@ -423,7 +469,7 @@ namespace DropDown {
         }
 
         // imgui Window
-        private float tileDisplaySize = 7;
+        private float tileDisplaySize = 4.5f;
         private double bitMapGenerationDuration = 0;
         private double bitMapGenerationIteration = 0;
         private double mapGenerationDuration = 0;
