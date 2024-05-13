@@ -3,11 +3,11 @@ namespace Core.controllers.ai {
 
 using Core.world;
 
-    public abstract class ai_controller : I_controller {
+    public abstract class AI_Controller : I_Controller {
 
         public Character character { get; set; }
 
-        protected ai_controller(Character character) {
+        protected AI_Controller(Character character) {
 
             this.character = character;
         }
@@ -17,10 +17,10 @@ using Core.world;
         /// </summary>
         /// <param name="states">A list of Type objects representing classes that implement the [I_AI_state] interface.</param>
         /// <exception cref="InvalidOperationException">Thrown when a provided state type does not implement the [I_AI_state] interface.</exception>
-        public void pre_create_states(List<Type> states) {
+        public void Pre_Create_States(List<Type> states) {
 
             foreach(Type state_type in states)
-                create_state_instance(state_type);
+                Create_State_Instance(state_type);
         }
 
         /// <summary>
@@ -28,64 +28,64 @@ using Core.world;
         /// </summary>
         /// <param name="state">The initial state implementing the <see cref="I_AI_state"/> interface.</param>
         /// <exception cref="InvalidOperationException">Thrown when the provided state does not implement the <see cref="I_AI_state"/> interface.</exception>
-        public void set_statup_state(I_AI_state state) {
+        public void Set_Statup_State(I_AI_State state) {
 
             string className = state.GetType().Name;
             Console.WriteLine($"setting startup state: {className}"); // This will print the class name as a string
 
-            if(!_all_states.ContainsKey(className))       // create new states when they are needed
-                create_state_instance(state.GetType());
+            if(!allStates.ContainsKey(className))       // create new states when they are needed
+                Create_State_Instance(state.GetType());
                         
-            current_state = select_state_to_execute(_all_states[className].GetType());
+            currentState = Select_State_To_Execute(allStates[className].GetType());
         }
 
         /// <summary>
         /// Updates the state machine by executing the current state's logic and handling state transitions.
         /// </summary>
-        internal void update() {
+        internal void Update() {
 
-            string new_state = select_state_to_execute(_all_states[current_state].execute(this));
+            string newState = Select_State_To_Execute(allStates[currentState].Execute(this));
 
             // call exit/enter method if switching state
-            if(current_state != new_state) {
+            if(currentState != newState) {
 
-                _all_states[current_state].exit(this);
-                _all_states[new_state].enter(this);
+                allStates[currentState].Exit(this);
+                allStates[newState].Enter(this);
             }
-            current_state = new_state;      // Use updated state in next update
+            currentState = newState;      // Use Updated state in next Update
         }
 
         // ------------------------------------------ private ------------------------------------------
 
-        private string current_state = "";
-        private Dictionary<string, I_AI_state> _all_states = new Dictionary<string, I_AI_state>();
+        private string currentState = "";
+        private Dictionary<string, I_AI_State> allStates = new Dictionary<string, I_AI_State>();
 
         /// <summary>
         /// Selects or creates an instance of a state based on the provided type.
         /// </summary>
         /// <param name="state">The Type of the state to select or create.</param>
         /// <returns>The name of the selected or created state.</returns>
-        private string select_state_to_execute(Type state) {
+        private string Select_State_To_Execute(Type state) {
 
             string className = state.Name;
             Console.WriteLine(className); // This will print the class name as a string
 
-            if(!_all_states.ContainsKey(className))       // create new states when they are needed
-                create_state_instance(state);
+            if(!allStates.ContainsKey(className))       // create new states when they are needed
+                Create_State_Instance(state);
 
             return className;
         }
 
         /// <summary>
-        /// Creates an instance of a state if it implements the I_AI_state interface and adds it to the _all_states dictionary.
+        /// Creates an instance of a state if it implements the I_AI_state interface and adds it to the allStates dictionary.
         /// </summary>
         /// <param name="state">The Type of the state to create.</param>
-        private void create_state_instance(Type state) {
+        private void Create_State_Instance(Type state) {
 
-            if(typeof(I_AI_state).IsAssignableFrom(state)) {    // Ensure the type implements I_AI_state
+            if(typeof(I_AI_State).IsAssignableFrom(state)) {    // Ensure the type implements I_AI_state
 
-                I_AI_state state_instance = (I_AI_state)Activator.CreateInstance(state); // Create an instance of the state class
-                _all_states.Add(state.Name, state_instance);
+                I_AI_State state_instance = (I_AI_State)Activator.CreateInstance(state); // Create an instance of the state class
+                allStates.Add(state.Name, state_instance);
             }
             else
                 throw new InvalidOperationException($"Type [{state.Name}] does not implement [I_AI_state] interface.");

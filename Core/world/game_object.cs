@@ -74,15 +74,15 @@ namespace Core.world {
         }
 
         /// <summary>
-        /// Sets the mobility type of the game object and updates associated components.
+        /// Sets the mobility type of the game object and Updates associated components.
         /// </summary>
         /// <param name="mobility">The new mobility type to set for the game object.</param>
-        /// <returns>The game object with the updated mobility type.</returns>
+        /// <returns>The game object with the Updated mobility type.</returns>
         public Game_Object Set_Mobility(Mobility mobility) {
             
             this.transform.mobility = mobility;
             if (this.sprite != null)
-                this.sprite.set_mobility(mobility);
+                this.sprite.Set_Mobility(mobility);
             if(this.collider != null)
                 this.collider.offset.mobility = mobility;
             return this;
@@ -92,13 +92,13 @@ namespace Core.world {
         /// Handles the game object being hit by an external force or attack.
         /// </summary>
         /// <param name="hit">Data representing the hit event.</param>
-        public virtual void Hit(hit_data hit) { }
+        public virtual void Hit(hitData hit) { }
 
         /// <summary>
         /// Updates the game object's state based on the elapsed time.
         /// </summary>
-        /// <param name="delta_time">The time passed since the last update.</param>
-        public virtual void Update(float delta_time) { }
+        /// <param name="deltaTime">The time passed since the last Update.</param>
+        public virtual void Update(float deltaTime) { }
 
         /// <summary>
         /// Draws the game object, rendering its associated sprite if available.

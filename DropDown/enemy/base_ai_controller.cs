@@ -3,9 +3,9 @@ using Core.world;
 
 namespace DropDown.enemy {
 
-    public class base_ai_controller : ai_controller {
+    public class Base_AI_Controller : AI_Controller {
 
-        public base_ai_controller(Character character) 
+        public Base_AI_Controller(Character character) 
             : base(character) {
         
             
@@ -16,17 +16,17 @@ namespace DropDown.enemy {
     }
 
 
-    public class Idle : I_AI_state {
+    public class Idle : I_AI_State {
     
-        public Type enter(ai_controller ai_controller) {
+        public Type Enter(AI_Controller aI_Controller) {
             throw new NotImplementedException();
         }
 
-        public Type execute(ai_controller ai_controller) {
+        public Type Execute(AI_Controller aI_Controller) {
             throw new NotImplementedException();
         }
 
-        public Type exit(ai_controller ai_controller) {
+        public Type Exit(AI_Controller aI_Controller) {
             throw new NotImplementedException();
         }
     }

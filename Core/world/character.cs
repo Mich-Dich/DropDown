@@ -8,8 +8,8 @@ namespace Core.world {
 
     public class Character : Game_Object {
 
-        public float    movement_speed { get; set; } = 100.0f;
-        public float    movement_speed_max { get; set; } = 100.0f;
+        public float    movementSpeed { get; set; } = 100.0f;
+        public float    movementSpeed_max { get; set; } = 100.0f;
         public int      health { get; set; } = 100;
         public int      health_max { get; set; } = 100;
 
@@ -25,7 +25,7 @@ namespace Core.world {
         /// Sets the controller for this character.
         /// </summary>
         /// <param name="controller">The controller to assign to this character.</param>
-        public void Set_Controller(I_controller controller) {
+        public void Set_Controller(I_Controller controller) {
 
             this.controller = controller;
             controller.character = this;
@@ -61,7 +61,7 @@ namespace Core.world {
             }
         }
 
-        public void update_position() {
+        public void Update_position() {
 
             Vec2 pos = this.collider.body.GetPosition();
             Vector2 loc_pos = new Vector2(pos.X, pos.Y);
@@ -72,7 +72,7 @@ namespace Core.world {
         /// Handles the character being hit by an external force or attack.
         /// </summary>
         /// <param name="hit">Data representing the hit event.</param>
-        public override void Hit(hit_data hit) {
+        public override void Hit(hitData hit) {
 
             Console.WriteLine($"character [{this}] was hit");
         }
@@ -101,7 +101,7 @@ namespace Core.world {
 
         // ================================================== private ==================================================
 
-        private I_controller? controller;
+        private I_Controller? controller;
 
 
 

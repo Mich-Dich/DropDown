@@ -15,16 +15,16 @@ namespace Core.render {
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        private bool _disposed = false;
+        private bool _Disposed = false;
         public void Dispose() {
 
-            if(!_disposed) 
+            if(!_Disposed) 
                 GL.DeleteBuffer(id);
             
-            _disposed = true;
+            _Disposed = true;
         }
 
-        public void update_content(float[] vertices) {
+        public void Update_content(float[] vertices) {
 
             // id = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, id);

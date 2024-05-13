@@ -13,20 +13,20 @@ namespace Hell
         private const int TilesOnScreenWidth = 30;
         private const int TilesOnScreenHeight = 20;
 
-        public Hell(String title, Int32 inital_window_width, Int32 inital_window_height)
-            : base(title, inital_window_width, inital_window_height) { }
+        public Hell(String title, Int32 initalWindowWidth, Int32 initalWindowHeight)
+            : base(title, initalWindowWidth, initalWindowHeight) { }
 
         private game_object test_cursor_object;
 
         // ========================================================= functions =========================================================
 
-        protected override void init()
+        protected override void Init()
         {
-            set_update_frequency(144.0f);
-            show_debug_data(false);
+            Set_Update_Frequency(144.0f);
+            Show_Debug_Data(false);
 
             // ------------- init map ------------- 
-            this.active_map = new base_map();
+            this.activeMap = new Base_Map();
 
 
             /*
@@ -34,11 +34,11 @@ namespace Hell
 
             game_object backgroundGameObject = new game_object(new Vector2(480, 6080));
             backgroundGameObject.set_sprite(new sprite(backgroundImageTexture));
-            backgroundGameObject.set_mobility(mobility.STATIC);
+            backgroundGameObject.Set_Mobility(mobility.STATIC);
             backgroundGameObject.transform.size = new Vector2(2000, 2000);
             backgroundGameObject.get_sprite().transform.size = new Vector2(2000, 2000);
 
-            this.active_map.add_game_object(backgroundGameObject);
+            this.activeMap.add_game_object(backgroundGameObject);
             */
 
             // ------------- init camera ------------- 
@@ -47,15 +47,15 @@ namespace Hell
             this.camera.set_min_max_zoom(0.001f, 1000f);
 
             // ------------- init player ------------- 
-            this.player_controller = new PC_default();
+            this.playerController = new PC_Default();
             this.player = new player();
             test_cursor_object = new game_object(new Vector2(150, 150));
-            this.active_map.add_game_object(test_cursor_object);
+            this.activeMap.add_game_object(test_cursor_object);
         }
 
-        protected override void shutdown() { }
+        protected override void Shutdown() { }
 
-        protected override void update(float delta_time)
+        protected override void Update(float deltaTime)
         {
 
             test_cursor_object.transform.position = this.camera.convertScreenToWorldCoords(0, 0);
@@ -64,28 +64,28 @@ namespace Hell
             this.camera.set_position(cameraPosition);
         }
 
-        protected override void window_resize()
+        protected override void Window_Resize()
         {
             AdjustCameraZoom();
             AdjustCameraPosition();
         }
 
-        protected override void render(float delta_time) { }
+        protected override void Render(float deltaTime) { }
 
-        protected override void render_imgui(float delta_time) { }
+        protected override void Render_Imgui(float deltaTime) { }
 
         //  ================================================ private ================================================ 
 
         private void AdjustCameraPosition()
         {
-            float cameraX = this.active_map.levelWidth / 2f;
-            float cameraY = this.active_map.levelHeight - (TilesOnScreenHeight * this.active_map.tileHeight / 2f);
+            float cameraX = this.activeMap.levelWidth / 2f;
+            float cameraY = this.activeMap.levelHeight - (TilesOnScreenHeight * this.activeMap.tileHeight / 2f);
             this.camera.set_position(new Vector2(cameraX, cameraY));
         }
 
         private void AdjustCameraZoom()
         {
-            float zoomWidth = (float)this.window.Size.X / (TilesOnScreenWidth * this.active_map.tileWidth);
+            float zoomWidth = (float)this.window.Size.X / (TilesOnScreenWidth * this.activeMap.tileWidth);
             this.camera.set_zoom(zoomWidth);
         }
     }

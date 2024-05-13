@@ -8,7 +8,7 @@ namespace Core.util {
 
         public Vector2 size { get; set; } = new Vector2(100, 100);
         public float rotation { get; set; } = 0;
-        public Mobility mobility { get; set; } = Mobility.DYNAMIC;    // conserning update method
+        public Mobility mobility { get; set; } = Mobility.DYNAMIC;
         public Transform? parent { get; set; }
 
         /// <summary>

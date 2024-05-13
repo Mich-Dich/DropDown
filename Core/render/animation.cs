@@ -7,11 +7,11 @@ namespace Core.render {
 
         public bool Loop;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.        => fields are set in init()
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.        => fields are set in Init()
         public Animation(Sprite sprite, SpriteBatch sprite_batch, int fps = 30, bool loop = true) {
 
             this._sprite_batch = sprite_batch;
-            init(sprite, fps, loop);
+            Init(sprite, fps, loop);
         }
 
         public Animation(Sprite sprite, Texture texture_atlas, int num_of_columns, int num_of_rows, int fps = 30, bool loop = true) {
@@ -19,25 +19,25 @@ namespace Core.render {
             this._texture_atlas = texture_atlas;
             this._num_of_rows = num_of_rows;
             this._num_of_columns = num_of_columns;
-            init(sprite, fps, loop);
+            Init(sprite, fps, loop);
         }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        public void update() {
+        public void Update() {
 
             if(!_is_playing)
                 return;
 
             if(Game.instance.show_debug)
-                debug_data.playing_animation_num++;
+                Debug_Data.playingAnimationNum++;
 
-            _sprite.animation_timer += Game_Time.delta;
-            int _current_frame_index = (int)(_sprite.animation_timer / _frame_time);
+            _sprite.animationTimer += Game_Time.delta;
+            int _current_frame_index = (int)(_sprite.animationTimer / _frame_time);
 
 
             int max_image_index = 0;
             if(_sprite_batch != null)
-                max_image_index = _sprite_batch.FrameCount;
+                max_image_index = _sprite_batch.frameCount;
 
             else if(_texture_atlas != null)
                 max_image_index = _num_of_columns * _num_of_rows;
@@ -47,11 +47,11 @@ namespace Core.render {
 
                 if(Loop) {
                     _current_frame_index = 0;
-                    _sprite.animation_timer = 0;
+                    _sprite.animationTimer = 0;
                 }
                 else {
                     _current_frame_index = max_image_index - 1;
-                    stop();
+                    Stop();
                 }
             }
 
@@ -59,20 +59,20 @@ namespace Core.render {
                 this._sprite.texture = _sprite_batch.GetFrame(_current_frame_index);
 
             else if(_texture_atlas != null)
-                this._sprite.select_texture_region(_num_of_columns, _num_of_rows, _current_frame_index % _num_of_columns, _current_frame_index / _num_of_columns);
+                this._sprite.Select_Texture_Region(_num_of_columns, _num_of_rows, _current_frame_index % _num_of_columns, _current_frame_index / _num_of_columns);
 
         }
 
-        public void play() {
+        public void Play() {
 
-            _sprite.animation_timer = 0;
+            _sprite.animationTimer = 0;
             _is_playing = true;
             //_current_frame_index = 0;
         }
 
         public void Continue() { _is_playing = true; }
 
-        public void stop() { _is_playing = false; }
+        public void Stop() { _is_playing = false; }
 
         public void set_speed(int fps) { _frame_time = 1.0f / fps; }
 
@@ -89,7 +89,7 @@ namespace Core.render {
         private int _num_of_columns;
 
 
-        private void init(Sprite sprite, int fps = 30, bool loop = true) {
+        private void Init(Sprite sprite, int fps = 30, bool loop = true) {
 
             this._sprite = sprite;
             _frame_time = 1.0f / fps;

@@ -25,16 +25,16 @@ namespace Core {
         public bool                 show_debug = true;
         public GameWindow           window { get; private set; }
         public Camera               camera { get; set; }
-        //public physics_engine       physics_engine { get; } = new();
+        //public Physics_Engine       Physics_Engine { get; } = new();
         
-        //public debug_data    debug_data { get; set; } = new debug_data();
+        //public Debug_Data    Debug_Data { get; set; } = new Debug_Data();
 
-        public Imgui_Controller      imguiController;
+        public ImguI_Controller      imguiController;
 
         // ============================================================================== public ============================================================================== 
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.   => Value will be set in window.load function
-        public Game(System.String title, Int32 inital_window_width, Int32 inital_window_height) {
+        public Game(System.String title, Int32 initalWindowWidth, Int32 initalWindowHeight) {
 
             if(instance != null)
                 throw new Exception("You can only create one instance of Game!");
@@ -43,10 +43,10 @@ namespace Core {
             //this.ResourceManager = new ResourceManager();
 
             this.title = title;
-            this.inital_window_width = inital_window_width;
-            this.inital_window_height = inital_window_height;
+            this.initalWindowWidth = initalWindowWidth;
+            this.initalWindowHeight = initalWindowHeight;
 
-            _native_window_settings.ClientSize = new Vector2i(inital_window_width, inital_window_height);
+            _native_window_settings.ClientSize = new Vector2i(initalWindowWidth, initalWindowHeight);
             _native_window_settings.Title = title;
             _native_window_settings.StartVisible = false;
             _native_window_settings.StartFocused = true;
@@ -57,7 +57,7 @@ namespace Core {
         }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        public void run() {
+        public void Run() {
 
             window = new GameWindow(_game_window_settings, _native_window_settings);
             window.CenterWindow();
@@ -71,25 +71,25 @@ namespace Core {
                 default_sprite_shader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
                 default_sprite_shader.Use();
                 camera = new(Vector2.Zero, this.window.Size, 0.5f);
-                default_map = new Map();
+                defaultMap = new Map();
 
-                init();
+                Init();
 
                 // ----------------------------------- check for null values -----------------------------------
-                if(active_map == null)
-                    active_map = default_map;
+                if(activeMap == null)
+                    activeMap = defaultMap;
 
                 if(player == null)
                     player = new Character();
 
-                if(player_controller == null)
-                    throw new ResourceNotAssignedException("player_controller musst be assigned in game class init() function");
+                if(playerController == null)
+                    throw new ResourceNotAssignedException("playerController musst be assigned in game class Init() function");
 
                 // ----------------------------------- finish setup -----------------------------------
-                player_controller.character = player;
-                this.active_map.Add_Character(player);
+                playerController.character = player;
+                this.activeMap.Add_Character(player);
 
-                initImGuiController();
+                InitImGuiController();
                 window.IsVisible = true;
             };
 
@@ -100,28 +100,28 @@ namespace Core {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.UseProgram(0);
 
-                shutdown();
+                Shutdown();
             };
 
-            // internal game update
+            // internal game Update
             window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
                 stopwatch.Restart();
 
-                update_game_time((float)eventArgs.Time);
-                this.player_controller.update_internal(Game_Time.delta, _input_event);
+                Update_Game_Time((float)eventArgs.Time);
+                this.playerController.Update_Internal(Game_Time.delta, inputEvent);
 
-                for(int x = 0; x < active_map.all_collidable_game_objects.Count; x++)
-                    active_map.all_collidable_game_objects[x].Update(Game_Time.delta);
+                for(int x = 0; x < activeMap.allCollidableGameObjects.Count; x++)
+                    activeMap.allCollidableGameObjects[x].Update(Game_Time.delta);
 
-                //collision_engine.update(active_map.all_collidable_game_objects, game_time.delta);
-                this.active_map.Update(Game_Time.delta);
+                //collision_engine.Update(activeMap.allCollidableGameObjects, game_time.delta);
+                this.activeMap.Update(Game_Time.delta);
 
-                update(Game_Time.delta);
-                _input_event.Clear();
+                Update(Game_Time.delta);
+                inputEvent.Clear();
 
                 stopwatch.Stop();
-                debug_data.work_time_update = stopwatch.Elapsed.TotalMilliseconds;
+                Debug_Data.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
             };
 
             window.RenderFrame += (FrameEventArgs eventArgs) => {
@@ -129,57 +129,57 @@ namespace Core {
                 stopwatch.Restart();
 
                 window.SwapBuffers();
-                internal_render();
-                imgui_render(Game_Time.delta);
+                Internal_Render();
+                Imgui_Render(Game_Time.delta);
 
                 stopwatch.Stop();
-                debug_data.work_time_render = stopwatch.Elapsed.TotalMilliseconds;
+                Debug_Data.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
             };
 
             window.Resize += (ResizeEventArgs eventArgs) => {
                 
-                update_game_time((float)window.TimeSinceLastUpdate());
+                Update_Game_Time((float)window.TimeSinceLastUpdate());
                 window.ResetTimeSinceLastUpdate();
 
                 // Update the opengl viewport
                 Vector2i fb = this.window.FramebufferSize;
                 GL.Viewport(0, 0, fb.X, fb.Y);
-                window_resize();
+                Window_Resize();
 
                 imguiController.WindowResized(this.window.ClientSize.X, this.window.ClientSize.Y);
 
                 camera.Set_View_Size(window.Size);
-                internal_render();
-                imgui_render(Game_Time.delta);
+                Internal_Render();
+                Imgui_Render(Game_Time.delta);
                 window.SwapBuffers();
             };
 
 
 
             // ============================ input ============================ 
-            window.KeyDown += (KeyboardKeyEventArgs args) => { _input_event.Add(new input_event((Key_Code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Pressed)); };
-            window.KeyUp += (KeyboardKeyEventArgs args) => { _input_event.Add(new input_event((Key_Code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? key_state.Repeat : key_state.Release)); };
-            window.MouseDown += (MouseButtonEventArgs args) => { _input_event.Add(new input_event((Key_Code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (key_state)args.Action)); };
-            window.MouseUp += (MouseButtonEventArgs args) => { _input_event.Add(new input_event((Key_Code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (key_state)args.Action)); };
+            window.KeyDown += (KeyboardKeyEventArgs args) => { inputEvent.Add(new InputEvent((Key_Code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? KeyState.Repeat : KeyState.Pressed)); };
+            window.KeyUp += (KeyboardKeyEventArgs args) => { inputEvent.Add(new InputEvent((Key_Code)args.Key, args.Modifiers, (args.IsRepeat ? 1 : 0), args.IsRepeat ? KeyState.Repeat : KeyState.Release)); };
+            window.MouseDown += (MouseButtonEventArgs args) => { inputEvent.Add(new InputEvent((Key_Code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (KeyState)args.Action)); };
+            window.MouseUp += (MouseButtonEventArgs args) => { inputEvent.Add(new InputEvent((Key_Code)args.Button, args.Modifiers, (args.Action == InputAction.Repeat ? 1 : 0), (KeyState)args.Action)); };
 
             // make two events for X/Y of mouse wheel movement
             window.MouseWheel += (MouseWheelEventArgs args) => {
 
                 if(args.OffsetX != 0)
-                    _input_event.Add(new input_event(Key_Code.MouseWheelX, (KeyModifiers)0, (int)args.Offset.X, key_state.Repeat));
+                    inputEvent.Add(new InputEvent(Key_Code.MouseWheelX, (KeyModifiers)0, (int)args.Offset.X, KeyState.Repeat));
 
                 if(args.OffsetY != 0)
-                    _input_event.Add(new input_event(Key_Code.MouseWheelY, (KeyModifiers)0, (int)args.Offset.Y, key_state.Repeat));
+                    inputEvent.Add(new InputEvent(Key_Code.MouseWheelY, (KeyModifiers)0, (int)args.Offset.Y, KeyState.Repeat));
             };
 
             // make two events for X/Y of mouse movement
             window.MouseMove += (MouseMoveEventArgs args) => {
 
                 if(args.DeltaX != 0)
-                    _input_event.Add(new input_event(Key_Code.CursorPositionX, (KeyModifiers)0, (int)args.X, key_state.Repeat));
+                    inputEvent.Add(new InputEvent(Key_Code.CursorPositionX, (KeyModifiers)0, (int)args.X, KeyState.Repeat));
 
                 if(args.DeltaY != 0)
-                    _input_event.Add(new input_event(Key_Code.CursorPositionY, (KeyModifiers)0, (int)args.Y, key_state.Repeat));
+                    inputEvent.Add(new InputEvent(Key_Code.CursorPositionY, (KeyModifiers)0, (int)args.Y, KeyState.Repeat));
             };
 
             //collision_engine = new collision_engine();
@@ -187,91 +187,91 @@ namespace Core {
             window.Run();
         }
 
-        public void show_debug_data(bool enable) { this.show_debug = enable; }
-        public Vector2 get_mouse_relative_pos() { return window.MousePosition - (window.Size / 2) + cursor_pos_offset; }
+        public void Show_Debug_Data(bool enable) { this.show_debug = enable; }
+        public Vector2 Get_Mouse_Relative_Pos() { return window.MousePosition - (window.Size / 2) + cursorPosOffset; }
 
         //  ============================================================================== protected ============================================================================== 
         protected string title { get; set; }
-        protected int inital_window_width { get; set; }
-        protected int inital_window_height { get; set; }
+        protected int initalWindowWidth { get; set; }
+        protected int initalWindowHeight { get; set; }
 
-        protected Map default_map { get; set; }
+        protected Map defaultMap { get; set; }
         protected Character player { get; set; }
-        protected player_controller player_controller { get; set; }
-        protected Map active_map { get; set; }
-        //protected List<map> active_maps { get; set; }     // TODO: add array of maps to enable DROP into new level
+        protected Player_Controller playerController { get; set; }
+        protected Map activeMap { get; set; }
+        //protected List<map> activeMaps { get; set; }     // TODO: add array of maps to enable DROP into new level
 
         // general
-        protected abstract void init();
-        protected abstract void shutdown();
-        protected abstract void update(float delta_time);
-        protected abstract void render(float delta_time);
-        protected abstract void render_imgui(float delta_time);
-        protected virtual void window_resize() { }
+        protected abstract void Init();
+        protected abstract void Shutdown();
+        protected abstract void Update(float deltaTime);
+        protected abstract void Render(float deltaTime);
+        protected abstract void Render_Imgui(float deltaTime);
+        protected virtual void Window_Resize() { }
 
-        protected void set_update_frequency(double frequency) {
+        protected void Set_Update_Frequency(double frequency) {
 
             window.VSync = VSyncMode.Off;
             window.UpdateFrequency = frequency;
         }
 
         // input system
-        protected List<input_event> _input_event { get; } = new List<input_event>();
-        protected void reset_input_event_list() { _input_event.Clear(); }
+        protected List<InputEvent> inputEvent { get; } = new List<InputEvent>();
+        protected void ResetInputEvent_List() { inputEvent.Clear(); }
 
         //  ============================================================================== private ============================================================================== 
-        private readonly Vector2 cursor_pos_offset = new Vector2(0,20);
-        private Debug_Data_Viualizer debug_data_viualizer = new Debug_Data_Viualizer();
+        private readonly Vector2 cursorPosOffset = new Vector2(0,20);
+        private DebugDataViualizer debugDataViualizer = new DebugDataViualizer();
 
 
-        private void internal_render() {
+        private void Internal_Render() {
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             default_sprite_shader.Use();
             default_sprite_shader.Set_Matrix_4x4("projection", camera.Get_Projection_Matrix());
 
-            active_map.Draw();
+            activeMap.Draw();
             //player.Draw();
 
             if(show_debug) {
 
                 //default_sprite_shader.Set_Matrix_4x4("projection", camera.get_projection_matrix());
-                active_map.Draw_Debug();
+                activeMap.Draw_Debug();
             }
 
             // client side code
-            render(Game_Time.delta);
+            Render(Game_Time.delta);
         }
 
-        private void update_game_time(float delta_time) {
+        private void Update_Game_Time(float deltaTime) {
 
-            Game_Time.delta = delta_time;
-            Game_Time.total += delta_time;
+            Game_Time.delta = deltaTime;
+            Game_Time.total += deltaTime;
 
         }
 
         // ============================================ IMGUI ============================================
 
-        private void imgui_render(float delta_time) {
+        private void Imgui_Render(float deltaTime) {
 
             imguiController.Update(this.window, (float)Game_Time.delta);
 
             if(show_debug)
-                debug_data_viualizer.Draw();
+                debugDataViualizer.Draw();
 
-            active_map.Draw_Imgui();
-            render_imgui(delta_time);     // client side imgui code
+            activeMap.Draw_Imgui();
+            Render_Imgui(deltaTime);     // client side imgui code
             //ImGui.ShowDemoWindow();
 
             imguiController.Render();
-            Imgui_Controller.CheckGLError("End of frame");
+            ImguI_Controller.CheckGLError("End of frame");
 
-            debug_data.reset();
-            //debug_data = new debug_data();  // reset debug infos
+            Debug_Data.Reset();
+            //Debug_Data = new Debug_Data();  // reset debug infos
         }
 
-        private void initImGuiController() {
+        private void InitImGuiController() {
 
             // Get the FrameBuffer size and compute the scale factor for ImGuiController
             Vector2i fb = this.window.FramebufferSize;
@@ -279,40 +279,40 @@ namespace Core {
             int scaleFactorY = fb.Y / this.window.ClientSize.Y;
 
             // Instanciate the ImGuiController with the right Scale Factor
-            imguiController = new Imgui_Controller(this.window.ClientSize.X, this.window.ClientSize.Y, scaleFactorX, scaleFactorY);
+            imguiController = new ImguI_Controller(this.window.ClientSize.X, this.window.ClientSize.Y, scaleFactorX, scaleFactorY);
         }
     }
 
-    public static class debug_data {
+    public static class Debug_Data {
 
-        public static double work_time_update = 0;
-        public static double work_time_render = 0;
+        public static double workTimeUpdate = 0;
+        public static double workTimeRender = 0;
 
-        public static int sprite_draw_calls_num = 0;
-        public static int num_of_tiels = 0;
-        public static int num_of_tiels_displayed = 0;
-        public static int playing_animation_num = 0;
+        public static int spriteDrawCallsNum = 0;
+        public static int numOfTiels = 0;
+        public static int numOfTiels_Displayed = 0;
+        public static int playingAnimationNum = 0;
         
-        public static int collision_checks_num = 0;
-        public static int colidable_objects = 0;
-        public static int colidable_objects_static = 0;
-        public static int colidable_objects_dynamic = 0;
-        public static int collision_num = 0;
+        public static int collisionChecksNum = 0;
+        public static int colidableObjects = 0;
+        public static int colidableObjects_Static = 0;
+        public static int colidableObjects_Dynamic = 0;
+        public static int collisionNum = 0;
 
-        //public debug_data() {}
+        //public Debug_Data() {}
 
-        public static void reset() {
+        public static void Reset() {
 
-            work_time_update = 0;
-            work_time_render = 0;
-            sprite_draw_calls_num = 0;
-            num_of_tiels_displayed = 0;
-            playing_animation_num = 0;
-            collision_checks_num = 0;
-            colidable_objects = 0;
-            colidable_objects_static = 0;
-            colidable_objects_dynamic = 0;
-            collision_num = 0;
+            workTimeUpdate = 0;
+            workTimeRender = 0;
+            spriteDrawCallsNum = 0;
+            numOfTiels_Displayed = 0;
+            playingAnimationNum = 0;
+            collisionChecksNum = 0;
+            colidableObjects = 0;
+            colidableObjects_Static = 0;
+            colidableObjects_Dynamic = 0;
+            collisionNum = 0;
         }
 
     }

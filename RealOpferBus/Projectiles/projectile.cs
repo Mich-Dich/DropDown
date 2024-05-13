@@ -29,27 +29,27 @@ namespace Hell
             this.transform.size = size;
 
             set_sprite(new sprite(resource_manager.get_texture("assets/textures/Beam/Beam.png", false)));
-            add_collider(new collider(collision_shape.Square, collision_type.player_bullet)
-                { Blocking = false }
-                .set_physics_material(new physics_material(0.05f, 0.1f))
+            add_collider(new collider(Collision_Shape.Square, Collision_Type.player_bullet)
+                { blocking = false }
+                .Set_Physics_Material(new Physics_Material(0.05f, 0.1f))
                 .set_damage_value(damage));
         }
 
-        public override void update(float delta_time)
+        public override void Update(float deltaTime)
         {
-            base.update(delta_time);
+            base.Update(deltaTime);
 
-            this.transform.position += direction * speed * delta_time;
+            this.transform.position += direction * speed * deltaTime;
 
-            life_time -= delta_time;
+            life_time -= deltaTime;
 
             if (life_time <= 0)
             {
-                game.instance.active_map.remove_game_object(this);
+                game.instance.activeMap.remove_game_object(this);
             }
         }
 
-        public override void hit(hit_data hit)
+        public override void hit(hitData hit)
         {
 
             base.hit(hit);

@@ -33,7 +33,7 @@ using Core.util;
         /// <summary>
         /// Gets the number of textures (frames) in the batch.
         /// </summary>
-        public int FrameCount { get { return this.frames.Count; } }
+        public int frameCount { get { return this.frames.Count; } }
 
         // ================================================================= private =================================================================
 

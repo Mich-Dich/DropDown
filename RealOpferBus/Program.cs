@@ -7,7 +7,7 @@ namespace Hell {
         private static void Main(string[] args) {
             
             game game = new Hell("hell", 1280, 720);
-            game.run();
+            game.Run();
 
         }
     }

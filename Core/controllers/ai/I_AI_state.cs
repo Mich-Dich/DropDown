@@ -1,17 +1,17 @@
 
 namespace Core.controllers.ai {
 
-    public interface I_AI_state {
+    public interface I_AI_State {
 
         /// <summary>
         /// Executes internal logic for the AI controller and returns the next state Type to transition to.
         /// </summary>
-        /// <param name="ai_controller">The AI controller instance that manages the state execution.</param>
+        /// <param name="aiController">The AI controller instance that manages the state execution.</param>
         /// <returns>The Type of the next state to transition to (e.g., typeof(ThisState), typeof(WalkState), etc.).</returns>
-        Type execute(ai_controller ai_controller);
+        Type Execute(AI_Controller aiController);
 
-        Type exit(ai_controller ai_controller);
+        Type Exit(AI_Controller aiController);
 
-        Type enter(ai_controller ai_controller);
+        Type Enter(AI_Controller aiController);
     }
 }

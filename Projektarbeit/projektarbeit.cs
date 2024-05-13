@@ -5,44 +5,45 @@ namespace Projektarbeit {
     using ImGuiNET;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
+    using Core;
 
-    internal class projektarbeit : Core.game {
+    internal class projektarbeit : Game {
 
-        public projektarbeit(String title, Int32 inital_window_width, Int32 inital_window_height)
-            : base(title, inital_window_width, inital_window_height) { }
+        public projektarbeit(String title, Int32 initalWindowWidth, Int32 initalWindowHeight)
+            : base(title, initalWindowWidth, initalWindowHeight) { }
 
         private CH_player CH_player;
 
         // ========================================================= functions =========================================================
-        protected override void init() {
+        protected override void Init() {
             
             GL.ClearColor(new Color4(.05f, .05f, .05f, 1f));
-            set_update_frequency(144.0f);
-            show_debug_data(true);
-
-            this.player_controller = new PC_default();
+            Set_Update_Frequency(144.0f);
+            Show_Debug_Data(true);
 
             CH_player = new CH_player();
             this.player = CH_player;
 
-            this.active_map = new base_map();
-            this.active_map.set_background_image("assets/textures/background/background.png");
+            this.playerController = new PC_Default(CH_player);
 
-            this.camera.set_min_max_zoom(0.05f, 10.9f);
+            this.activeMap = new Base_Map();
+            this.activeMap.Set_Background_Image("assets/textures/background/background.png");
+
+            this.camera.Set_min_Max_Zoom(0.05f, 10.9f);
         }
 
-        protected override void shutdown() { }
+        protected override void Shutdown() { }
 
-        protected override void update(float delta_time) { }
+        protected override void Update(float deltaTime) { }
 
-        protected override void window_resize() {
+        protected override void Window_Resize() {
 
-            this.camera.set_zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset);
+            this.camera.Set_Zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset);
         }
 
-        protected override void render(float delta_time) { }
+        protected override void Render(float deltaTime) { }
         
-        protected override void render_imgui(float delta_time) {
+        protected override void Render_Imgui(float deltaTime) {
             // HUD
             ImGuiIOPtr io = ImGui.GetIO();
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration

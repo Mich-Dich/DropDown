@@ -66,10 +66,10 @@ namespace Core.render {
             Matrix4 finalTransform = matrixTransform * Game.instance.camera.Get_Projection_Matrix();
             this.debugShader.Set_Matrix_4x4("transform", finalTransform);
 
-            if(collider.shape == collision_shape.Circle)
+            if(collider.shape == Collision_Shape.Circle)
                 this.Draw_Circle(transform.size.X/2 + collider.offset.size.X/2, 20);
             
-            else if(collider.shape == collision_shape.Square)
+            else if(collider.shape == Collision_Shape.Square)
                 this.Draw_Rectangle(transform.size + collider.offset.size);
             
             GL.BindVertexArray(0);
@@ -82,7 +82,7 @@ namespace Core.render {
         public void Dispose() {
 
             Console.WriteLine("Disposing debug_drawer");
-            this.debugShader.dispose();
+            this.debugShader.Dispose();
 
             // Delete the VBO, VAO, and EBO
             GL.DeleteBuffer(this.vbo);

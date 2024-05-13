@@ -57,7 +57,7 @@ namespace DropDown.weapon {
             if(magazin_capazity <= 0)
                 return;
 
-            _muzzle_flash?.animation?.play();
+            _muzzle_flash?.animation?.Play();
             magazin_capazity--;
 
 

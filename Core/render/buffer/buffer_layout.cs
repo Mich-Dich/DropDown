@@ -15,7 +15,7 @@ namespace Core.render {
             if(!_typemap.TryGetValue(typeof(T), out var vertex_type))
                 throw new NotSupportedException($"type {typeof(T)} is not supported.");
 
-            _stride += Util.get_size_of_VertexAttribPointerType(vertex_type) * count;
+            _stride += Util.Get_Size_Of_VertexAttribPointerType(vertex_type) * count;
             _elements.Add(new Buffer_Element { type = vertex_type, count = count, normalized = normalized });
             return this;
         }

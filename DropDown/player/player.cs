@@ -16,14 +16,14 @@ namespace DropDown.player {
             
             transform.size = new Vector2(100);
             Set_Sprite(new Sprite(Resource_Manager.Get_Texture("assets/textures/player/00.png")));
-            Add_Collider(new Collider(collision_shape.Circle)
-                .set_offset(new Transform(Vector2.Zero, new Vector2(-10)))
-                .set_physics_material(new physics_material(10.05f, 0.1f)));
+            Add_Collider(new Collider(Collision_Shape.Circle)
+                .Set_Offset(new Transform(Vector2.Zero, new Vector2(-10)))
+                .Set_Physics_Material(new Physics_Material(10.05f, 0.1f)));
             
-            movement_speed = 500.0f;
+            movementSpeed = 500.0f;
         }
 
-        public override void Hit(hit_data hit) { }
+        public override void Hit(hitData hit) { }
 
 
 

@@ -7,7 +7,7 @@ using OpenTK.Mathematics;
 
 namespace Hell {
 
-    public class enemy_controller : ai_controller {
+    public class enemy_controller : aI_Controller {
 
         public enemy_controller(float cooldown = 3) {
             
@@ -22,9 +22,9 @@ namespace Hell {
         private float lastFire = 0;
         private float fireCooldown = 3;
         
-        public Type execute(ai_controller ai_controller)
+        public Type execute(aI_Controller aI_Controller)
         {
-            if(!ai_controller.character.is_in_range(game.instance.player, 200) && ai_controller.character.is_in_range(game.instance.player, 1000)) {
+            if(!aI_Controller.character.is_in_range(game.instance.player, 200) && aI_Controller.character.is_in_range(game.instance.player, 1000)) {
                 return typeof(AIS_seek);
             }
 
@@ -35,16 +35,16 @@ namespace Hell {
 
             float side = MathF.Sin(game_time.total + offset * 2.5f);
             float up = MathF.Sin((game_time.total + offset * 1.5f) * 4.0f);
-            ai_controller.character.set_velocity(new Vector2(150 * side, 60 * up));
+            aI_Controller.character.set_velocity(new Vector2(150 * side, 60 * up));
             return typeof(AIS_idle);
         }
 
-        public Type exit(ai_controller ai_controller)
+        public Type exit(aI_Controller aI_Controller)
         {
             return typeof(AIS_idle);
         }
 
-        public Type enter(ai_controller ai_controller)
+        public Type enter(aI_Controller aI_Controller)
         {
             offset = game_time.total * 10;
 
@@ -55,24 +55,24 @@ namespace Hell {
 
     public class AIS_seek : I_AI_state {
 
-        public Type execute(ai_controller ai_controller)
+        public Type execute(aI_Controller aI_Controller)
         {
-            if(ai_controller.character.is_in_range(game.instance.player, 100)) {
+            if(aI_Controller.character.is_in_range(game.instance.player, 100)) {
                 return typeof(AIS_idle);
             }
-            Vector2 direction = game.instance.player.transform.position - ai_controller.character.transform.position;
+            Vector2 direction = game.instance.player.transform.position - aI_Controller.character.transform.position;
             direction.Normalize();
-            ai_controller.character.set_velocity(direction * 300);
+            aI_Controller.character.set_velocity(direction * 300);
             return typeof(AIS_seek);
         }
 
-        public Type exit(ai_controller ai_controller)
+        public Type exit(aI_Controller aI_Controller)
         {
-            ai_controller.character.set_velocity(new Vector2());
+            aI_Controller.character.set_velocity(new Vector2());
             return typeof(AIS_seek);
         }
 
-        public Type enter(ai_controller ai_controller)
+        public Type enter(aI_Controller aI_Controller)
         {
             return typeof(AIS_seek);
         }
@@ -81,24 +81,24 @@ namespace Hell {
 
     public class AIS_fire : I_AI_state {
 
-        public Type execute(ai_controller ai_controller)
+        public Type execute(aI_Controller aI_Controller)
         {
-            Vector2 pos = ai_controller.character.transform.position;
+            Vector2 pos = aI_Controller.character.transform.position;
             Vector2 dir = game.instance.player.transform.position - pos;
             dir.Normalize();
             var proj = new projectile(pos + 2.0f * dir, dir, 300, 2, new Vector2(10, 10), 10);
             // Set the collision type of the projectile's collider to enemy_bullet
-            proj.collider.type = collision_type.enemy_bullet;
-            game.instance.active_map.add_game_object(proj);
+            proj.collider.type = Collision_Type.enemy_bullet;
+            game.instance.activeMap.add_game_object(proj);
             return typeof(AIS_idle);
         }
 
-        public Type exit(ai_controller ai_controller)
+        public Type exit(aI_Controller aI_Controller)
         {
             return typeof(AIS_fire);
         }
 
-        public Type enter(ai_controller ai_controller)
+        public Type enter(aI_Controller aI_Controller)
         {
             return typeof(AIS_fire);
         }
