@@ -123,8 +123,8 @@ namespace Core.render {
 
             Console.WriteLine("Drawing Line");
             float[] vertices = {
-                -0.5f * start.X,  0.5f * start.Y, 0.0f,
-                0.5f * end.X,  0.5f * end.Y, 0.0f,
+                start.X, start.Y, 0.0f,
+                end.X, end.Y, 0.0f,
             };
 
             uint[] indices = { 0, 1 };
