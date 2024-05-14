@@ -88,6 +88,11 @@ namespace Core.world.map {
 
         [Obsolete("")]
         public void Add_Game_Object(Game_Object game_object) { this.world.Add(game_object); }
+
+        public void Remove_Game_Object(Game_Object game_object) {
+            this.world.Remove(game_object);
+            this.physicsWorld.DestroyBody(game_object.collider.body);
+        }
         
         public void Add_Character(AI_Controller ai_controller, Vector2? position = null, float rotation = 0) {
 

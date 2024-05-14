@@ -1,21 +1,21 @@
 using Box2DX.Collision;
 using Box2DX.Common;
 using Box2DX.Dynamics;
-using Core;
 using Core.physics;
 using Core.render;
 using Core.world;
 using OpenTK.Mathematics;
-using Core;
 using System;
 
-namespace Hell.weapon {
-    public class Projectile : Game_Object {
+namespace Core.util {
+    public abstract class Projectile : Game_Object {
 
         public float Speed { get; set; }
         public float Damage { get; set; }
         public bool Bounce { get; set; }
         public Sprite Sprite { get; set; }
+        public float Lifetime { get; set; } = 5f;
+        public DateTime CreationTime { get; set; }
 
         public Projectile(Vector2 position, Vector2 direction, float speed = 10f, float damage = 1f, bool bounce = false, Collision_Shape shape = Collision_Shape.Square) : base(position) {
 
@@ -53,9 +53,14 @@ namespace Hell.weapon {
             collider.body.ApplyForce(new Vec2(collider.velocity.X, collider.velocity.Y) * Speed, collider.body.GetWorldCenter());
 
             rotate_to_vector(direction);
+            CreationTime = DateTime.Now;
         }
 
-        public override void Update(float deltaTime) { }
+        public override void Update(float deltaTime) {
+            if ((DateTime.Now - CreationTime).TotalSeconds > Lifetime) {
+                Game.Instance.get_active_map().Remove_Game_Object(this);
+            }
+        }
 
         public override void Hit(hitData hit) {
             if(Bounce) {
