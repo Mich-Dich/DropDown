@@ -12,6 +12,7 @@ namespace Core.world {
         public Game_Object? parent { get; private set; }
         public List<Game_Object> children { get; } = new List<Game_Object>();
         public Collider? collider { get; set; }
+        public float rotation_offset { get; set; } = 0;
 
         public Game_Object(Transform transform) {
         
@@ -61,6 +62,67 @@ namespace Core.world {
 
             return this;
         }
+
+        public void rotate_to_move_dir() {
+
+            Box2DX.Common.Vec2 movement_dir = collider.body.GetLinearVelocity();
+            movement_dir.Normalize();
+            float angleRadians = (float)System.Math.Atan2(movement_dir.X, movement_dir.Y);
+            transform.rotation = -angleRadians + rotation_offset;
+        }
+
+        public void rotate_to_move_dir_smooth() {
+
+            Box2DX.Common.Vec2 movement_dir = collider.body.GetLinearVelocity();
+            movement_dir.Normalize();
+            float target_angle = (float)System.Math.Atan2(-movement_dir.Y, movement_dir.X);
+
+            float current_angle = -transform.rotation + rotation_offset;
+            while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
+            while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
+
+            float new_angle = Util.Lerp(current_angle, target_angle, 0.1f);
+            transform.rotation = -new_angle + rotation_offset;
+        }
+
+        public void rotate_to_vector(Box2DX.Common.Vec2 dir) {
+
+            float angleRadians = Util.angle_from_vec(dir);
+            transform.rotation = -angleRadians + rotation_offset;
+        }
+
+        public void rotate_to_vector(Vector2 dir) {
+
+            float angleRadians = Util.angle_from_vec(dir);
+            transform.rotation = -angleRadians + rotation_offset;
+        }
+
+        public void rotate_to_vector_smooth(Vector2 dir) {
+
+            dir.NormalizeFast();
+            float target_angle = (float)System.Math.Atan2(-dir.Y, dir.X); // Invert Y-coordinate
+
+            float current_angle = -transform.rotation + rotation_offset;
+            while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
+            while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
+
+            float new_angle = Util.Lerp(current_angle, target_angle, 0.1f);
+            transform.rotation = -new_angle + rotation_offset;
+        }
+
+        public void rotate_to_vector_smooth(Box2DX.Common.Vec2 dir) {
+
+            dir.Normalize();
+            float target_angle = (float)System.Math.Atan2(-dir.Y, dir.X); // Invert Y-coordinate
+
+            float current_angle = -transform.rotation + rotation_offset;
+            while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
+            while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
+
+            float new_angle = Util.Lerp(current_angle, target_angle, 0.1f);
+            transform.rotation = -new_angle + rotation_offset;
+        }
+
 
         public virtual void Hit(hitData hit) { }
 

@@ -17,7 +17,6 @@ namespace Core.world {
         public float movement_force_max { get; set; } = 100000.0f;
         public float health { get; set; } = 100;
         public float health_max { get; set; } = 100;
-        public float rotation_offset { get; set; } = 0;
 
         public Character() {
 
@@ -71,66 +70,6 @@ namespace Core.world {
             Console.WriteLine($"character [{this}] was hit");
         }
         
-        public void rotate_to_move_dir() {
-
-            Vec2 movement_dir = collider.body.GetLinearVelocity();
-            movement_dir.Normalize();
-            float angleRadians = (float)System.Math.Atan2(movement_dir.X, movement_dir.Y);
-            transform.rotation = -angleRadians + rotation_offset;
-        }
-
-        public void rotate_to_move_dir_smooth() {
-
-            Vec2 movement_dir = collider.body.GetLinearVelocity();
-            movement_dir.Normalize();
-            float target_angle = (float)System.Math.Atan2(-movement_dir.Y, movement_dir.X);
-
-            float current_angle = -transform.rotation + rotation_offset;
-            while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
-            while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
-
-            float new_angle = Lerp(current_angle, target_angle, 0.1f);
-            transform.rotation = -new_angle + rotation_offset;
-        }
-
-        public void rotate_to_vector(Vec2 dir) {
-
-            float angleRadians = Util.angle_from_vec(dir);
-            transform.rotation = -angleRadians + rotation_offset;
-        }
-
-        public void rotate_to_vector(Vector2 dir) {
-
-            float angleRadians = Util.angle_from_vec(dir);
-            transform.rotation = -angleRadians + rotation_offset;
-        }
-
-        public void rotate_to_vector_smooth(Vector2 dir) {
-
-            dir.NormalizeFast();
-            float target_angle = (float)System.Math.Atan2(-dir.Y, dir.X); // Invert Y-coordinate
-
-            float current_angle = -transform.rotation + rotation_offset;
-            while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
-            while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
-
-            float new_angle = Lerp(current_angle, target_angle, 0.1f);
-            transform.rotation = -new_angle + rotation_offset;
-        }
-
-        public void rotate_to_vector_smooth(Vec2 dir) {
-
-            dir.Normalize();
-            float target_angle = (float)System.Math.Atan2(-dir.Y, dir.X); // Invert Y-coordinate
-
-            float current_angle = -transform.rotation + rotation_offset;
-            while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
-            while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
-
-            float new_angle = Lerp(current_angle, target_angle, 0.1f);
-            transform.rotation = -new_angle + rotation_offset;
-        }
-
         public void perception_check(ref List<Type> intersected_game_objects, int num_of_rays = 6, float angle = float.Pi, float look_distance = 800) {
 
             float angle_per_ray = angle / (float)(num_of_rays-1);

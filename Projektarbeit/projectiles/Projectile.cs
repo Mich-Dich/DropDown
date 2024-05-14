@@ -52,7 +52,6 @@ namespace Hell.weapon {
 
             collider.body.ApplyForce(new Vec2(collider.velocity.X, collider.velocity.Y) * Speed, collider.body.GetWorldCenter());
 
-
             float angleRadians = Util.angle_from_vec(direction);
             transform.rotation = -angleRadians;
         }
