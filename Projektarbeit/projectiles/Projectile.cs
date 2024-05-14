@@ -26,6 +26,7 @@ namespace Hell.weapon {
             Damage = damage;
             Bounce = bounce;
             Add_Collider(new Collider(shape, Collision_Type.bullet, null, 1f, direction * speed));
+            direction.Normalize();
             collider.velocity = direction * speed;
             Sprite = new Sprite();
             Set_Sprite(Sprite);
@@ -53,6 +54,12 @@ namespace Hell.weapon {
         }
 
         public override void Update(float deltaTime) {
+            Vector2 direction = new Vector2(collider.velocity.X, collider.velocity.Y);
+            float angle = MathF.Atan2(-direction.X, direction.Y);
+
+            angle = angle % (2 * MathF.PI);
+
+            transform.rotation = MathHelper.RadiansToDegrees(angle);
 
             Console.WriteLine($"pos: {collider.body.GetPosition().X}, {collider.body.GetPosition().Y}");
         }

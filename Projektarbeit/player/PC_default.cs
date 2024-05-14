@@ -2,7 +2,9 @@ using Box2DX.Common;
 using Core;
 using Core.Controllers.player;
 using Core.input;
+using Core.util;
 using Core.world;
+using Hell.weapon;
 using OpenTK.Mathematics;
 
 namespace Hell.player {
@@ -11,6 +13,11 @@ namespace Hell.player {
 
         public Core.Controllers.player.Action move { get; set; }
         public Core.Controllers.player.Action look { get; set; }
+        public Core.Controllers.player.Action fire { get; set; }
+
+        private float fireDelay = 0.5f; // Delay in seconds
+        private float lastFireTime = 0f;
+
 
         public PC_Default(Character character)
             : base (character, null) {
@@ -45,6 +52,17 @@ namespace Hell.player {
                 });
             AddInputAction(look);
 
+            fire = new Core.Controllers.player.Action(
+                "fire",
+                (uint)Action_ModefierFlags.auto_reset,
+                false,
+                ActionType.BOOL,
+                0f,
+                new List<KeyBindingDetail> {
+                    new(Key_Code.Space, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
+                });
+            AddInputAction(fire);
+
             Game.Instance.camera.Add_Zoom_Offset(0.2f);
             Game.Instance.camera.zoom_offset = 0.2f;
         }
@@ -62,6 +80,14 @@ namespace Hell.player {
             
             character.rotate_to_move_dir_smooth();
 
+            if((bool)fire.GetValue() && Game_Time.total - lastFireTime >= fireDelay) {
+                Vector2 playerLocation = character.transform.position;
+                Vec2 playerDirectionVec2 = character.collider.body.GetLinearVelocity();
+                playerDirectionVec2.Normalize();
+                Vector2 playerDirection = new Vector2(playerDirectionVec2.X, playerDirectionVec2.Y);
+                Game.Instance.get_active_map().Add_Game_Object(new TestProjectile(playerLocation, playerDirection));
+                lastFireTime = Game_Time.total;
+            }
         }
     }
 }

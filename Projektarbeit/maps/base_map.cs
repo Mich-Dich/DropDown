@@ -17,10 +17,5 @@ namespace Hell {
 
         public Base_Map() {
         }
-
-        public void InitializeProjectiles() {
-            // Create the TestProjectile here instead
-            this.Add_Game_Object(new TestProjectile(new Vector2(0, 300), new Vector2(0, -1)));
-        }
     }
 }

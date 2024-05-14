@@ -30,8 +30,6 @@ namespace Hell {
             this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
             this.camera.Set_Zoom(5.0f);
             this.activeMap.Set_Background_Image("assets/textures/background/Background.png");
-
-            ((Base_Map)this.activeMap).InitializeProjectiles();
 #if DEBUG
             showDebugData(true);
             this.camera.Set_min_Max_Zoom(0.01f, 1.4f);
