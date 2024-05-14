@@ -25,10 +25,13 @@ namespace Hell {
             CH_player = new CH_player();
             this.playerController = new PC_Default(CH_player);
             this.player = CH_player;
+            
             this.activeMap = new Base_Map();
             this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
             this.camera.Set_Zoom(5.0f);
             this.activeMap.Set_Background_Image("assets/textures/background/Background.png");
+
+            ((Base_Map)this.activeMap).InitializeProjectiles();
 #if DEBUG
             showDebugData(true);
             this.camera.Set_min_Max_Zoom(0.01f, 1.4f);
