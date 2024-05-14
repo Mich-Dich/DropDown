@@ -44,3 +44,9 @@ dotnet_diagnostic.SA1201.severity = none
 
 # SA0001: XML comment analysis is disabled due to project configuration
 dotnet_diagnostic.SA0001.severity = none
+
+# CS0618: 'Map.Add_Static_Game_Object(Game_Object, Vector2, bool)' is obsolete: 'Use [add_static_collider_AAABB()] instead'
+dotnet_diagnostic.CS0618.severity = none
+
+# CS8981: The type name 'idle' only contains lower-cased ascii characters. Such names may become reserved for the language.
+dotnet_diagnostic.CS8981.severity = none
