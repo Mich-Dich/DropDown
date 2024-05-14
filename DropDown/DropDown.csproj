@@ -912,6 +912,15 @@
     <None Update="assets\animation\small_bug\walk\0030.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\animation\spider\attack_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\animation\spider\idle.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\animation\spider\idle_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\animation\spider\walk.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

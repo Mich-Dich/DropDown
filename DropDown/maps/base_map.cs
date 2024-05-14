@@ -21,6 +21,8 @@ namespace DropDown {
 
             for(int x = 0; x < 50; x++)
                 spaw_enemy();
+            for(int x = 0; x < 20; x++)
+                spaw_enemy_2();
 
         }
 
@@ -286,11 +288,32 @@ namespace DropDown {
                 found = is_coord_in_bit_map_free(offset_x, offset_y);
             }
 
-            this.Add_Character(new Base_AI_Controller(new Base_Enemy()),
+            this.Add_Character(new AIC_simple(new CH_small_bug()),
                 new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
                 random.NextSingle() * (float.Pi * 2));
 
         }
+
+        public void spaw_enemy_2() {
+
+            Random random = new Random();
+
+            bool found = false;
+            int offset_y = 0, offset_x = 0;
+
+            while(!found) {
+
+                offset_y = random.Next(64);
+                offset_x = random.Next(64);
+                found = is_coord_in_bit_map_free(offset_x, offset_y);
+            }
+
+            this.Add_Character(new AIC_simple(new CH_spider()),
+                new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
+                random.NextSingle() * (float.Pi * 2));
+
+        }
+
 
 
 
