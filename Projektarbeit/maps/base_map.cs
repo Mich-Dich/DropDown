@@ -20,7 +20,7 @@ namespace Hell {
 
         public void InitializeProjectiles() {
             // Create the TestProjectile here instead
-            this.Add_Game_Object(new TestProjectile(new Vector2(0, 0), new Vector2(1, 0)));
+            this.Add_Game_Object(new TestProjectile(new Vector2(0, 300), new Vector2(0, -1)));
         }
     }
 }

@@ -3,7 +3,6 @@ namespace Core.world {
 
     using Box2DX.Common;
     using Core.Controllers;
-    using Core.Controllers.ai;
     using Core.physics;
     using Core.render;
     using ImGuiNET;
@@ -65,12 +64,6 @@ namespace Core.world {
 
             if(this.collider != null && this.collider.body != null) 
                 this.collider.body.ApplyForce(force, Vec2.Zero);
-        }
-
-        public void Update_position() {
-
-            Vec2 pos = this.collider.body.GetPosition();
-            this.transform.position = (pos.X, pos.Y);
         }
 
         public override void Hit(hitData hit) {

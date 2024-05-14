@@ -15,6 +15,10 @@ namespace Core.world.map {
         //public List<Game_Object> allCollidableGameObjects { get; set; } = new List<Game_Object>();
         private List<AI_Controller> all_AI_Controller = new List<AI_Controller>();
         private List<Character> allCharacter { get; set; } = new List<Character>();
+        private List<Game_Object> projectils { get; set; } = new List<Game_Object>();
+
+
+
         public readonly World physicsWorld;
 
         public Map() {
@@ -27,19 +31,38 @@ namespace Core.world.map {
             physicsWorld = new World(aabb, gravity, true);
         }
 
-        public bool ray_cast(Vector2 start, Vector2 end, out Vec2 intersection_point, out float distance, out Game_Object intersected_game_object) {
+        public bool ray_cast(Vector2 start, Vector2 end, out Vec2 normal, out float distance, out Game_Object? intersected_game_object, bool draw_debug = false, float duration_in_sec = 2.0f) {
 
             Segment ray = new Segment{
                 P1 = new Vec2(start.X, start.Y),
                 P2 = new Vec2(end.X, end.Y),
             };
 
-            var shape = physicsWorld.RaycastOne(ray, out distance, out intersection_point, false, null);
+            var shape = physicsWorld.RaycastOne(ray, out distance, out normal, false, null);
 
             if(shape != null) 
                 intersected_game_object = (Game_Object)shape.GetBody().GetUserData();
             else
                 intersected_game_object = null;
+
+            if(draw_debug) {
+
+                if(shape == null)
+                    Game.Instance.draw_debug_line(start, end, duration_in_sec, DebugColor.Red);
+                else {
+
+                    Vector2 direaction = start - end;
+                    
+                    Console.WriteLine($"normal: {normal}");
+
+                    Game.Instance.draw_debug_line(start, start + (direaction * distance), duration_in_sec, DebugColor.Red);    // start - hit
+                    Game.Instance.draw_debug_line(start + (direaction * distance), end, duration_in_sec, DebugColor.Green);    // hit - end
+                    Game.Instance.draw_debug_line(start, end, duration_in_sec, DebugColor.Blue);    // normal
+                }
+
+
+                //duration_in_sec
+            }
 
             return shape != null;
         }
@@ -66,6 +89,7 @@ namespace Core.world.map {
 
         public virtual void Draw_Imgui() { }
 
+        [Obsolete("")]
         public void Add_Game_Object(Game_Object game_object) { this.world.Add(game_object); }
         
         public void Add_Character(AI_Controller ai_controller, Vector2? position = null) {
@@ -316,6 +340,7 @@ namespace Core.world.map {
         }
 
         // ================================================================= internal =================================================================
+
         internal void Draw() {
 
             Vector2 camera_pos = Game.Instance.camera.transform.position;
@@ -358,20 +383,15 @@ namespace Core.world.map {
                 if(overlapX > 0 && overlapY > 0) {
                     foreach(var game_object in tile.Value.staticGameObject) 
                         game_object.Draw_Debug();
-                    
                 }
             }
 
             foreach(var character in this.allCharacter) 
                 character.Draw_Debug();
-            
 
             for(int x = 0; x < this.world.Count; x++) 
                 this.world[x].Draw_Debug();
         }
-
-        private readonly int velocityIterations = 6;
-        private readonly int positionIterations = 1;
 
         internal void Update(float deltaTime) {
 
@@ -384,13 +404,26 @@ namespace Core.world.map {
 
             foreach (var AI_Controller in all_AI_Controller)
                 AI_Controller.Update(deltaTime);
+
+            Console.WriteLine($"world count: {world.Count}");
+            for (int x = 0; x < this.world.Count; x++) {
+
+                if(world[x].collider != null) {
+                    if(world[x].collider.body != null) {
+
+                        world[x].Update_position();
+                    }
+                }
+                world[x].Update(deltaTime);
+            }
         }
 
         // ========================================== private ==========================================
         private List<Sprite> backgound { get; set; } = new List<Sprite>();       // change to list of lists => to reduce drawcalls
-
         private List<Game_Object> world { get; set; } = new List<Game_Object>();
-
+        private readonly int velocityIterations = 6;
+        private readonly int positionIterations = 1;
+        
         // ------------------------------------------ tiles ------------------------------------------
         protected float minDistancForCollision = 1600;
         protected int cellSize = 200;

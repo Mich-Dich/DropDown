@@ -22,13 +22,15 @@ namespace Core.render {
         public Vector2 end;
         public double time_stamp;
         public double display_duration;
+        public DebugColor debugColor;
 
-        public debug_line(Vector2 start, Vector2 end, Double time_stamp = 0, Double display_duration = 0) {
+        public debug_line(Vector2 start, Vector2 end, Double time_stamp, Double display_duration, DebugColor debugColor = DebugColor.Red) {
 
             this.start = start;
             this.end = end;
             this.time_stamp = time_stamp;
             this.display_duration = display_duration;
+            this.debugColor = debugColor;
         }
     }
 
@@ -39,17 +41,31 @@ namespace Core.render {
         public void draw() {
 
             basic_drawer.debugShader.Use();
-            Vector4 color = new Vector4(0.0f, 1.0f, 0.0f, 0.5f);
-            basic_drawer.debugShader.Set_Uniform("color", color);
-
             Matrix4 matrixTransform = new Transform().GetTransformationMatrix();
             Matrix4 finalTransform = matrixTransform * Game.Instance.camera.Get_Projection_Matrix();
             basic_drawer.debugShader.Set_Matrix_4x4("transform", finalTransform);
+            Vector4 color;
 
-            Console.WriteLine($"lines: [{lines.Count}]");
+            //Console.WriteLine($"lines: [{lines.Count}]");
             foreach(debug_line line in lines) {
-                draw_line(line.start, line.end);
 
+                switch(line.debugColor) {
+                    case DebugColor.Red:
+                        color = new Vector4(1.0f, 0.0f, 0.0f, 0.5f);
+                        break;
+                    case DebugColor.Green:
+                        color = new Vector4(0.0f, 1.0f, 0.0f, 0.5f);
+                        break;
+                    case DebugColor.Blue:
+                        color = new Vector4(0.0f, 0.0f, 1.0f, 0.5f);
+                        break;
+                    default:
+                        color = new Vector4(1.0f, 1.0f, 1.0f, 0.5f);
+                        break;
+                }
+                basic_drawer.debugShader.Set_Uniform("color", color);
+            
+                draw_line(line.start, line.end);
             }
 
             // clean up list

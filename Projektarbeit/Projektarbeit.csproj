@@ -285,5 +285,8 @@
     <None Update="assets\textures\player\Angel-1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\textures\projectiles\beam\beam.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

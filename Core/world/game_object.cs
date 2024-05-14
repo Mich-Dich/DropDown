@@ -95,6 +95,12 @@ namespace Core.world {
             return distance <= range;
         }
 
+        public void Update_position() {
+
+            Box2DX.Common.Vec2 pos = this.collider.body.GetPosition();
+            this.transform.position = (pos.X, pos.Y);
+        }
+
         // =============================================== internal ==============================================
         internal void Draw_Debug() {
 

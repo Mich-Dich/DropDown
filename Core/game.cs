@@ -267,10 +267,9 @@ namespace Core {
             this.window.Run();
         }
 
-        public void draw_debug_line(Vector2 start, Vector2 end, float duration_in_sec = 2.0f) {
+        public void draw_debug_line(Vector2 start, Vector2 end, float duration_in_sec = 2.0f, DebugColor debugColor = DebugColor.Red) {
 
-
-            global_Debug_Drawer.lines.Add(new debug_line(start, end, Game_Time.total, duration_in_sec));
+            global_Debug_Drawer.lines.Add(new debug_line(start, end, Game_Time.total, duration_in_sec, debugColor));
         }
 
         public void showDebugData(bool enable) {

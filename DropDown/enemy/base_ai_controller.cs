@@ -80,9 +80,7 @@ namespace DropDown.enemy {
                 Vector2 start = aI_Controller.character.transform.position + (look_dir * (aI_Controller.character.transform.size.X/2));
                 Vector2 end = start + (look_dir * 150);
 
-                Game.Instance.draw_debug_line(start, end, 0.5f);
-
-                bool hit = Game.Instance.get_active_map().ray_cast(start, end, out Vec2 intersection_point, out float distance, out Game_Object intersected_game_object);
+                bool hit = Game.Instance.get_active_map().ray_cast(start, end, out Vec2 intersection_point, out float distance, out Game_Object intersected_game_object, true, 0.5f);
 
                 if (hit) {
 
