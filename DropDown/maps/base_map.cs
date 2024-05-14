@@ -2,10 +2,8 @@
 namespace DropDown {
 
     using Core;
-    using Core.physics;
     using Core.render;
     using Core.util;
-    using Core.world;
     using Core.world.map;
     using DropDown.enemy;
     using ImGuiNET;

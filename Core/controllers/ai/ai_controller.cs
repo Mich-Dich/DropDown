@@ -23,8 +23,6 @@ namespace Core.Controllers.ai {
         public void Set_Statup_State(Type state) {
 
             string className = state.Name;
-            Console.WriteLine($"setting startup state: {className}");
-
             if(!this.allStates.ContainsKey(className))
                 this.Create_State_Instance(state);
 
@@ -35,11 +33,7 @@ namespace Core.Controllers.ai {
 
         internal void Update(float delta_time) {
             
-            // call exit/enter method if switching state
             string newState = this.Select_State_To_Execute(this.allStates[this.currentState].Execute(this));
-
-            //Console.WriteLine($"state: [{newState}]");
-
             if (this.currentState != newState) {
                 this.allStates[this.currentState].Exit(this);
                 this.allStates[newState].Enter(this);
@@ -53,8 +47,6 @@ namespace Core.Controllers.ai {
         private string Select_State_To_Execute(Type state) {
 
             string className = state.Name;
-            //Console.WriteLine(className);
-
             if(!this.allStates.ContainsKey(className))
                 this.Create_State_Instance(state);
 

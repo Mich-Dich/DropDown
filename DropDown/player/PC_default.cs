@@ -81,9 +81,8 @@ namespace DropDown.player {
             Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);
 
             // look at mouse
-            Vector2 screen_look = Game.Instance.Get_Mouse_Relative_Pos();
-            float angleRadians = (float)System.Math.Atan2(screen_look.X, screen_look.Y);
-            character.transform.rotation = -angleRadians + (float.Pi / 2) + (float.Pi/20);
+            character.rotate_to_vector(Game.Instance.Get_Mouse_Relative_Pos());
+
         }
 
         private readonly float sprint_speed = 350.0f;

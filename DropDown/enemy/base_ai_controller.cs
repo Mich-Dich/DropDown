@@ -1,6 +1,6 @@
 ﻿
 namespace DropDown.enemy {
-    using Box2DX.Common;
+
     using Core;
     using Core.Controllers.ai;
     using Core.util;
@@ -14,7 +14,6 @@ namespace DropDown.enemy {
 
             Set_Statup_State(typeof(idle));
         }
-
     }
 
 
@@ -22,7 +21,7 @@ namespace DropDown.enemy {
     
         public bool Enter(AI_Controller aI_Controller) {
 
-            aI_Controller.character.sprite.Add_Animation("assets/animation/small_bug/idle_01.png", 16, 10, true, false, 30, true);
+            aI_Controller.character.sprite.set_animation("assets/animation/small_bug/idle_01.png", 16, 10, true, false, 30, true);
             return true;
         }
 
@@ -44,7 +43,7 @@ namespace DropDown.enemy {
 
         public bool Enter(AI_Controller aI_Controller) {
 
-            aI_Controller.character.sprite.Add_Animation("assets/animation/small_bug/walk.png", 8, 4, true, false, 80, true);
+            aI_Controller.character.sprite.set_animation("assets/animation/small_bug/walk.png", 8, 4, true, false, 80, true);
             return true;
         }
 
@@ -62,7 +61,7 @@ namespace DropDown.enemy {
                 return typeof(attack_player);
 
             player_vec.NormalizeFast();
-            aI_Controller.character.add_force(new Vec2(player_vec.X, player_vec.Y) * aI_Controller.character.movement_force * Game_Time.delta);
+            aI_Controller.character.add_force(new Box2DX.Common.Vec2(player_vec.X, player_vec.Y) * aI_Controller.character.movement_force * Game_Time.delta);
 
             aI_Controller.character.rotate_to_vector(player_vec, 0.05f);
 
@@ -76,7 +75,8 @@ namespace DropDown.enemy {
 
         public bool Enter(AI_Controller aI_Controller) {
 
-            aI_Controller.character.sprite.Add_Animation("assets/animation/small_bug/attack_01.png", 8, 3, true, false, 30, true);
+            aI_Controller.character.sprite.set_animation("assets/animation/small_bug/attack_01.png", 8, 3, true, false, 30, true);
+            aI_Controller.character.sprite.animation.add_animation_notification(21, () => { Game.Instance.player.Hit(new Core.physics.hitData(5.0f)); });
             return true;
         }
 
@@ -92,17 +92,10 @@ namespace DropDown.enemy {
                 return typeof(pursue_player);
 
             player_vec.NormalizeFast();
-            //aI_Controller.character.add_force(new Vec2(player_vec.X, player_vec.Y) * aI_Controller.character.movement_force * Game_Time.delta);
-            aI_Controller.character.rotate_to_vector(player_vec, 0.05f);
-
+            aI_Controller.character.rotate_to_vector(player_vec);
 
             return typeof(attack_player);
         }
     }
 
 }
-
-
-/*
-
-*/

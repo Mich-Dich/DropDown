@@ -15,9 +15,9 @@ namespace Core.world {
         public float movement_speed_max { get; set; } = 100.0f;
         public float movement_force { get; set; } = 100000.0f;
         public float movement_force_max { get; set; } = 100000.0f;
-        public int health { get; set; } = 100;
-        public int health_max { get; set; } = 100;
-
+        public float health { get; set; } = 100;
+        public float health_max { get; set; } = 100;
+        public float rotation_offset { get; set; } = 0;
 
 
         public Character() {
@@ -83,19 +83,30 @@ namespace Core.world {
             Vec2 movement_dir = collider.body.GetLinearVelocity();
             movement_dir.Normalize();
             float angleRadians = (float)System.Math.Atan2(movement_dir.X, movement_dir.Y);
-            transform.rotation = -angleRadians + float.Pi;
+            transform.rotation = -angleRadians + rotation_offset;
         }
 
         public void rotate_to_vector(Vec2 dir) {
 
-            float angleRadians = (float)System.Math.Atan2(dir.X, dir.Y);
-            transform.rotation = -angleRadians + float.Pi;
+            float angleRadians = Util.angle_from_vec(dir);
+            transform.rotation = -angleRadians + rotation_offset;
         }
 
-        public void rotate_to_vector(Vector2 dir, float lerp_t = 0.1f) {
+        public void rotate_to_vector(Vector2 dir) {
 
-            float angleRadians = (float)System.Math.Atan2(dir.X, dir.Y);
-            transform.rotation = Util.Lerp(transform.rotation, -angleRadians + float.Pi, lerp_t);
+            float angleRadians = Util.angle_from_vec(dir);
+            transform.rotation = -angleRadians + rotation_offset;
+        }
+
+
+        public void rotate_to_vector(Vector2 dir, float lerp_t) {
+
+            float angleRadians = Util.angle_from_vec(dir);
+
+            if(Math.Abs(transform.rotation - (angleRadians + rotation_offset)) < (2*float.Pi - 1f))
+                transform.rotation = Util.Lerp(transform.rotation, -angleRadians + rotation_offset, lerp_t);
+            else
+                transform.rotation = -angleRadians + rotation_offset;
         }
 
         public void Display_Healthbar() {

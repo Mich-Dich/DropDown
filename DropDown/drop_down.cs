@@ -33,7 +33,7 @@ namespace DropDown {
             this.camera.Set_min_Max_Zoom(0.01f, 1.4f);
 #endif
 
-            //this.activeMap.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).Add_Animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
+            //this.activeMap.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).set_animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
         }
 
         protected override void Shutdown() { }
@@ -66,6 +66,7 @@ namespace DropDown {
             uint col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.8f, 1));
             uint col_black = ImGui.GetColorU32(new System.Numerics.Vector4(0f, 0f, 0f, 1f));
 
+            Console.WriteLine($"CH_player.health {CH_player.health} CH_player.health_max: {CH_player.health_max}");
             Imgui_Util.Progress_Bar_Stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.32f, 0.28f, 0.6f);
             ImGui.Spacing();
             Imgui_Util.Progress_Bar_Stylised(1f, new System.Numerics.Vector2(250, 15), col_blue, col_black, 0.32f, 0.28f, 0.6f);

@@ -1,4 +1,5 @@
-﻿namespace Core {
+﻿
+namespace Core {
 
     using ImGuiNET;
     using OpenTK.Graphics.OpenGL4;
@@ -53,6 +54,13 @@
         public static double Degree_To_Radians(double angle) { return angle * (Math.PI / 180); }
 
         public static float Lerp(float a, float b, float t) { return a + (b - a) * Math.Clamp(t, 0, 1); }
+
+        public static float angle_from_vec(OpenTK.Mathematics.Vector2 dir) { return (float)Math.Atan2(dir.X, dir.Y); }
+
+        public static float angle_from_vec(Box2DX.Common.Vec2 dir) { return (float)Math.Atan2(dir.X, dir.Y); }
+
+        public static OpenTK.Mathematics.Vector2 vector_from_angle(float angle_radians) { return new OpenTK.Mathematics.Vector2((float)Math.Cos(angle_radians), (float)Math.Sin(angle_radians)); }
+
     }
 
     public static class Imgui_Fonts {
