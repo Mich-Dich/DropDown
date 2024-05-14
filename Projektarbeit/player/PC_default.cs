@@ -11,7 +11,6 @@ namespace Hell.player {
 
         public Core.Controllers.player.Action move { get; set; }
         public Core.Controllers.player.Action look { get; set; }
-        public Core.Controllers.player.Action sprint { get; set; }
 
         public PC_Default(Character character)
             : base (character, null) {
@@ -46,18 +45,6 @@ namespace Hell.player {
                 });
             AddInputAction(look);
 
-            sprint = new Core.Controllers.player.Action(
-                "shoot",
-                (uint)Action_ModefierFlags.none,
-                false,
-                ActionType.BOOL,
-                0f,
-                new List<KeyBindingDetail> {
-
-                    new(Key_Code.LeftShift, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
-                });
-            AddInputAction(sprint);
-
             Game.Instance.camera.Add_Zoom_Offset(0.2f);
             Game.Instance.camera.zoom_offset = 0.2f;
         }
@@ -65,8 +52,6 @@ namespace Hell.player {
         protected override void Update(float deltaTime) {
 
             float total_speed = character.movement_speed;
-            if((bool)sprint.GetValue()) 
-                total_speed += sprint_speed;
 
             // simple movement
             if(move.X != 0 || move.Y != 0) {
@@ -75,13 +60,8 @@ namespace Hell.player {
                 character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * deltaTime);
             }
             
-            // look at mouse
-            Vector2 screen_look = Game.Instance.Get_Mouse_Relative_Pos();
-            float angleRadians = (float)System.Math.Atan2(screen_look.X, screen_look.Y);
-            character.transform.rotation = -angleRadians + (float.Pi / 2) + (float.Pi/20);
+                character.rotate_to_move_dir_smooth();
+
         }
-
-        private readonly float sprint_speed = 450.0f;
-
     }
 }
