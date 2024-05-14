@@ -17,8 +17,6 @@ namespace Core.world.map {
         private List<Character> allCharacter { get; set; } = new List<Character>();
         private List<Game_Object> projectils { get; set; } = new List<Game_Object>();
 
-
-
         public readonly World physicsWorld;
 
         public Map() {

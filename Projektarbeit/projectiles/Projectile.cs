@@ -40,6 +40,7 @@ namespace Hell.weapon {
             polygonDef.Density = 1f;
             polygonDef.Density = 1f;
             polygonDef.Friction = 0.3f;
+            polygonDef.IsSensor = true;
 
             collider.body = Game.Instance.get_active_map().physicsWorld.CreateBody(def);
             collider.body.CreateShape(polygonDef);
