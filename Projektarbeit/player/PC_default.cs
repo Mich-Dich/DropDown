@@ -60,7 +60,7 @@ namespace Hell.player {
                 character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * deltaTime);
             }
             
-                character.rotate_to_move_dir_smooth();
+            character.rotate_to_move_dir_smooth();
 
         }
     }

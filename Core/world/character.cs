@@ -87,17 +87,19 @@ namespace Core.world {
         }
 
         public void rotate_to_move_dir_smooth() {
+
             Vec2 movement_dir = collider.body.GetLinearVelocity();
             movement_dir.Normalize();
-            float target_angle = (float)System.Math.Atan2(movement_dir.X, movement_dir.Y);
+            float target_angle = (float)System.Math.Atan2(-movement_dir.Y, movement_dir.X); // Invert Y-coordinate
 
-            float current_angle = transform.rotation;
-            while (target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
-            while (target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
+            float current_angle = -transform.rotation + rotation_offset;
+            while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
+            while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
 
-            float new_angle = Lerp(current_angle, -target_angle + MathF.PI, 0.1f);
-            transform.rotation = new_angle;
+            float new_angle = Lerp(current_angle, target_angle, 0.1f);
+            transform.rotation = -new_angle + rotation_offset;
         }
+
 
         public void rotate_to_vector(Vec2 dir) {
 

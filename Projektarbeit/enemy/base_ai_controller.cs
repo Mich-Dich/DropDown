@@ -76,7 +76,6 @@ namespace Hell.enemy {
         public bool Enter(AI_Controller aI_Controller) {
 
             aI_Controller.character.sprite.set_animation("assets/animation/small_bug/attack_01.png", 8, 3, true, false, 30, true);
-            aI_Controller.character.sprite.animation.add_animation_notification(21, () => { Game.Instance.player.Hit(new Core.physics.hitData(5.0f)); });
             return true;
         }
 

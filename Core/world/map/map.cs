@@ -24,6 +24,9 @@
 
             Vec2 gravity = new (0.0f, 0.001f);
             this.physicsWorld = new World(aabb, gravity, true);
+
+            
+            //DebugDraw debug_Drawer = new DebugDraw();
         }
 
         public int levelWidth { get; set; } = 10000;
@@ -33,10 +36,7 @@
         public int TilesOnScreenWidth { get; set; }
         public int TilesOnScreenHeight { get; set; }
 
-        public void add_AI_Controller(AI_Controller ai_Controller) {
-
-            all_AI_Controller.Add(ai_Controller);
-        }
+        public void add_AI_Controller(AI_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
 
         internal struct Tile_Data {
 
@@ -51,12 +51,7 @@
 
         public virtual void Draw_Imgui() { }
 
-        public void Add_Game_Object(Game_Object game_object) {
-
-            this.world.Add(game_object);
-            //this.allCollidableGameObjects.Add(game_object);
-            // Console.WriteLine($"Adding game_object [{game_object}] to world. Current count: {world.Count} ");
-        }
+        public void Add_Game_Object(Game_Object game_object) { this.world.Add(game_object); }
         
         public void Add_Character(AI_Controller ai_controller, Vector2? position = null) {
 
