@@ -52,13 +52,10 @@ namespace Hell.weapon {
 
             collider.body.ApplyForce(new Vec2(collider.velocity.X, collider.velocity.Y) * Speed, collider.body.GetWorldCenter());
 
-            float angleRadians = Util.angle_from_vec(direction);
-            transform.rotation = -angleRadians;
+            rotate_to_vector(direction);
         }
 
-        public override void Update(float deltaTime) {
-
-        }
+        public override void Update(float deltaTime) { }
 
         public override void Hit(hitData hit) {
             if(Bounce) {
