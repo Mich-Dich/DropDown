@@ -326,6 +326,7 @@ namespace Core.world.map {
 
         // ================================================================= internal =================================================================
         internal void Draw() {
+
             Vector2 camera_pos = Game.Instance.camera.transform.position;
             Vector2 camera_size = Game.Instance.camera.Get_View_Size_In_World_Coord() + new Vector2(this.cellSize * 2);
             float tiel_size = this.tileSize * this.cellSize;

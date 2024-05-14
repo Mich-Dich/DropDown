@@ -53,10 +53,18 @@ namespace Core.render {
 
         public void draw() {
 
+            this.debugShader.Use();
+            Vector4 color = new Vector4(0.0f, 1.0f, 0.0f, 0.5f);
+            this.debugShader.Set_Uniform("color", color);
+
             Console.WriteLine($"lines: [{lines.Count}]");
-            foreach (debug_line line in lines) {
+            foreach(debug_line line in lines) {
                 draw_line(line.start, line.end);
             }
+                        
+            GL.BindVertexArray(0);
+            this.debugShader.Unbind();
+
         }
 
         // ================================================================= public =================================================================
@@ -113,7 +121,7 @@ namespace Core.render {
 
         private void draw_line(Vector2 start, Vector2 end) {
 
-            // Console.WriteLine("Drawing Line");
+            Console.WriteLine("Drawing Line");
             float[] vertices = {
                 -0.5f * start.X,  0.5f * start.Y, 0.0f,
                 0.5f * end.X,  0.5f * end.Y, 0.0f,

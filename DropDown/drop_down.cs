@@ -34,7 +34,7 @@ namespace DropDown {
 #endif
 
 
-            this.get_active_map().Debug_Drawer.lines.Add(new debug_line(new Vector2(-100), new Vector2(100)));
+            this.get_active_map().Debug_Drawer.lines.Add(new debug_line(new Vector2(-100, -100), new Vector2(100, 100)));
 
 
 
