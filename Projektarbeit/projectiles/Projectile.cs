@@ -5,6 +5,7 @@ using Box2DX.Common;
 using Box2DX.Dynamics;
 using OpenTK.Mathematics;
 using Core;
+using System;
 
 namespace Hell.weapon {
     public class Projectile : Game_Object {
@@ -22,6 +23,7 @@ namespace Hell.weapon {
             Damage = damage;
             Bounce = bounce;
             collider = new Collider(shape, Collision_Type.bullet, null, 1f, direction * speed);
+            collider.velocity = direction * speed;
             Sprite = new Sprite();
             Set_Sprite(Sprite);
 
@@ -30,10 +32,11 @@ namespace Hell.weapon {
             def.AllowSleep = false;
             Body = Game.Instance.get_active_map().physicsWorld.CreateBody(def);
             Body.IsBullet();
+
+            Body.ApplyForce(new Vec2(direction.X, direction.Y) * speed, Body.GetWorldCenter());
         }
 
         public override void Update(float deltaTime) {
-            Body.SetLinearVelocity(new Vec2(collider.velocity.X, collider.velocity.Y) * Speed * deltaTime);
         }
 
         public override void Hit(hitData hit) {
