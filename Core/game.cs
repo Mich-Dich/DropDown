@@ -64,6 +64,8 @@ namespace Core {
         protected Map defaultMap { get; set; }
         protected Player_Controller playerController { get; set; }
         protected Map activeMap { get; set; }
+        public Map get_active_map() { return activeMap; }
+
         protected List<InputEvent> inputEvent { get; } = new List<InputEvent>();
 
         private readonly Vector2 cursorPosOffset = new (0, 20);

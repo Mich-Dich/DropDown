@@ -113,15 +113,30 @@ namespace Core.world {
             transform.rotation = -angleRadians + rotation_offset;
         }
 
+        public void rotate_to_vector_smooth(Vector2 dir) {
 
-        public void rotate_to_vector(Vector2 dir, float lerp_t) {
+            dir.NormalizeFast();
+            float target_angle = (float)System.Math.Atan2(-dir.Y, dir.X); // Invert Y-coordinate
 
-            float angleRadians = Util.angle_from_vec(dir);
+            float current_angle = -transform.rotation + rotation_offset;
+            while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
+            while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
 
-            if(Math.Abs(transform.rotation - (angleRadians + rotation_offset)) < (2*float.Pi - 1f))
-                transform.rotation = Util.Lerp(transform.rotation, -angleRadians + rotation_offset, lerp_t);
-            else
-                transform.rotation = -angleRadians + rotation_offset;
+            float new_angle = Lerp(current_angle, target_angle, 0.1f);
+            transform.rotation = -new_angle + rotation_offset;
+        }
+
+        public void rotate_to_vector_smooth(Vec2 dir) {
+
+            dir.Normalize();
+            float target_angle = (float)System.Math.Atan2(-dir.Y, dir.X); // Invert Y-coordinate
+
+            float current_angle = -transform.rotation + rotation_offset;
+            while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
+            while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
+
+            float new_angle = Lerp(current_angle, target_angle, 0.1f);
+            transform.rotation = -new_angle + rotation_offset;
         }
 
         public void Display_Healthbar() {

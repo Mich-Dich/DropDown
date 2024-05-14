@@ -1,30 +1,49 @@
-namespace Core.render
-{
+
+namespace Core.render {
+
     using Core.physics;
     using Core.render.shaders;
     using Core.util;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
+    using System.Drawing;
 
-    public enum DebugColor
-    {
+    public enum DebugColor {
+        
         Red,
         Green,
         Blue,
         White,
     }
 
-    public sealed class Debug_Drawer
-    {
+    public struct debug_line {
+
+        public Vector2 start;
+        public Vector2 end;
+        public double time_stamp;
+        public double display_duration;
+
+        public debug_line(Vector2 start, Vector2 end, Double time_stamp = 0, Double display_duration = 0) {
+
+            this.start = start;
+            this.end = end;
+            this.time_stamp = time_stamp;
+            this.display_duration = display_duration;
+        }
+    }
+
+    public sealed class Debug_Drawer {
+
+        public List<debug_line> lines = new List<debug_line>();
+
         private readonly Shader debugShader;
         private readonly int vbo;
         private readonly int vao;
         private readonly int ebo;
 
-        public Debug_Drawer()
-        {
-            this.debugShader = Resource_Manager.Get_Shader("shaders/debug.vert", "shaders/debug.frag");
+        public Debug_Drawer() {
 
+            this.debugShader = Resource_Manager.Get_Shader("shaders/debug.vert", "shaders/debug.frag");
             this.vbo = GL.GenBuffer();
             this.vao = GL.GenVertexArray();
             this.ebo = GL.GenBuffer();
@@ -32,15 +51,22 @@ namespace Core.render
 
         public DebugColor DebugColor { get; set; } = DebugColor.White;
 
+        public void draw() {
+
+            Console.WriteLine($"lines: [{lines.Count}]");
+            foreach (debug_line line in lines) {
+                draw_line(line.start, line.end);
+            }
+        }
+
         // ================================================================= public =================================================================
-        public void Draw_Collision_Shape(Transform transform, Collider collider, DebugColor debugColor)
-        {
+        public void Draw_Collision_Shape(Transform transform, Collider collider, DebugColor debugColor) {
+
             // Console.WriteLine("Drawing collision shape");
             this.DebugColor = debugColor;
             this.debugShader.Use();
             Vector4 color;
-            switch (this.DebugColor)
-            {
+            switch(this.DebugColor) {
                 case DebugColor.Red:
                     color = new Vector4(1.0f, 0.0f, 0.0f, 0.5f);
                     break;
@@ -63,21 +89,17 @@ namespace Core.render
             Matrix4 finalTransform = matrixTransform * Game.Instance.camera.Get_Projection_Matrix();
             this.debugShader.Set_Matrix_4x4("transform", finalTransform);
 
-            if (collider.shape == Collision_Shape.Circle)
-            {
+            if(collider.shape == Collision_Shape.Circle)
                 this.Draw_Circle((transform.size.X / 2) + (collider.offset.size.X / 2), 20);
-            }
-            else if (collider.shape == Collision_Shape.Square)
-            {
+            else if(collider.shape == Collision_Shape.Square)
                 this.Draw_Rectangle(transform.size + collider.offset.size);
-            }
 
             GL.BindVertexArray(0);
             this.debugShader.Unbind();
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
+
             Console.WriteLine("Disposing debug_drawer");
             this.debugShader.Dispose();
 
@@ -88,11 +110,23 @@ namespace Core.render
         }
 
         // ================================================================= private =================================================================
-        private void Draw_Rectangle(Vector2 size)
-        {
+
+        private void draw_line(Vector2 start, Vector2 end) {
+
+            // Console.WriteLine("Drawing Line");
+            float[] vertices = {
+                -0.5f * start.X,  0.5f * start.Y, 0.0f,
+                0.5f * end.X,  0.5f * end.Y, 0.0f,
+            };
+
+            uint[] indices = { 0, 1 };
+            this.Draw_Shape(vertices, indices, PrimitiveType.Lines);
+        }
+
+        private void Draw_Rectangle(Vector2 size) {
+
             // Console.WriteLine("Drawing rectangle");
-            float[] vertices =
-            {
+            float[] vertices = {
                 -0.5f * size.X,  0.5f * size.Y, 0.0f,
                 0.5f * size.X,  0.5f * size.Y, 0.0f,
                 0.5f * size.X, -0.5f * size.Y, 0.0f,
@@ -104,14 +138,13 @@ namespace Core.render
             this.Draw_Shape(vertices, indices, PrimitiveType.LineLoop);
         }
 
-        private void Draw_Circle(float radius, int sides)
-        {
+        private void Draw_Circle(float radius, int sides) {
+
             // Console.WriteLine("Drawing circle");
             List<float> vertices = new ();
             List<uint> indices = new ();
 
-            for (int i = 0; i <= sides; i++)
-            {
+            for(int i = 0; i <= sides; i++) {
                 float theta = 2.0f * MathF.PI * i / sides;
                 float x = radius * MathF.Cos(theta);
                 float y = radius * MathF.Sin(theta);
@@ -124,8 +157,8 @@ namespace Core.render
             this.Draw_Shape(vertices.ToArray(), indices.ToArray(), PrimitiveType.LineLoop);
         }
 
-        private void Draw_Shape(float[] vertices, uint[] indices, PrimitiveType primitiveType)
-        {
+        private void Draw_Shape(float[] vertices, uint[] indices, PrimitiveType primitiveType) {
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, this.vbo);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
 

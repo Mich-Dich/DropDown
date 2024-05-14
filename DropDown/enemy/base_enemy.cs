@@ -15,7 +15,7 @@ namespace DropDown.enemy {
             movement_speed = 500;
             movement_speed_max = 1000;
             movement_force = 5000000;
-            rotation_offset = float.Pi;
+            rotation_offset = float.Pi/2;
 
             Add_Collider(new Collider(Collision_Shape.Circle));
 

@@ -63,7 +63,7 @@ namespace Hell.enemy {
             player_vec.NormalizeFast();
             aI_Controller.character.add_force(new Box2DX.Common.Vec2(player_vec.X, player_vec.Y) * aI_Controller.character.movement_force * Game_Time.delta);
 
-            aI_Controller.character.rotate_to_vector(player_vec, 0.05f);
+            aI_Controller.character.rotate_to_vector_smooth(player_vec);
 
 
             return typeof(pursue_player);

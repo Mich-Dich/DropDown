@@ -1,4 +1,6 @@
-﻿namespace Core.world.map {
+﻿
+namespace Core.world.map {
+
     using Box2DX.Collision;
     using Box2DX.Common;
     using Box2DX.Dynamics;
@@ -7,7 +9,6 @@
     using Core.render;
     using Core.util;
     using OpenTK.Mathematics;
-    using System.ComponentModel.Design;
 
     public class Map {
 
@@ -15,6 +16,7 @@
         private List<AI_Controller> all_AI_Controller = new List<AI_Controller>();
         private List<Character> allCharacter { get; set; } = new List<Character>();
         private readonly World physicsWorld;
+        public Debug_Drawer Debug_Drawer;
 
         public Map() {
         
@@ -23,10 +25,32 @@
             aabb.UpperBound.Set(100000, 100000);
 
             Vec2 gravity = new (0.0f, 0.001f);
-            this.physicsWorld = new World(aabb, gravity, true);
+            physicsWorld = new World(aabb, gravity, true);
 
-            
-            //DebugDraw debug_Drawer = new DebugDraw();
+            Debug_Drawer = new Debug_Drawer();
+        }
+
+        public bool ray_cast(Vector2 start, Vector2 end, out Vec2 intersection_point, out float distance, out Game_Object intersected_game_object) {
+
+            Segment ray = new Segment{
+                P1 = new Vec2(start.X, start.Y),
+                P2 = new Vec2(end.X, end.Y),
+            };
+
+            var shape = physicsWorld.RaycastOne(ray, out distance, out intersection_point, false, null);
+
+            if(shape != null) {
+
+                Console.WriteLine($"hit shape NOT null");
+                intersected_game_object = (Game_Object)shape.GetBody().GetUserData();
+            }
+            else {
+
+                Console.WriteLine($"hit shape null => no collision");
+                intersected_game_object = null;
+            }
+
+            return shape != null;
         }
 
         public int levelWidth { get; set; } = 10000;
@@ -85,6 +109,7 @@
             body.CreateShape(circleDef);
             body.IsDynamic();
             body.SetMassFromShapes();
+            body.SetUserData(character);
 
             if(character.collider != null)
                 character.collider.body = body;
@@ -351,7 +376,8 @@
 
             for(int x = 0; x < this.world.Count; x++) 
                 this.world[x].Draw_Debug();
-            
+
+            Debug_Drawer.draw();
         }
 
         private readonly int velocityIterations = 6;
