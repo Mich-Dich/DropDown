@@ -6,11 +6,8 @@ using Core.physics;
 using Core.render;
 using Core.world;
 using OpenTK.Mathematics;
-<<<<<<< Updated upstream
 using Core;
 using System;
-=======
->>>>>>> Stashed changes
 
 namespace Hell.weapon {
     public class Projectile : Game_Object {
@@ -28,11 +25,7 @@ namespace Hell.weapon {
             Speed = speed;
             Damage = damage;
             Bounce = bounce;
-<<<<<<< Updated upstream
-            collider = new Collider(shape, Collision_Type.bullet, null, 1f, direction * speed);
-=======
             Add_Collider(new Collider(shape, Collision_Type.bullet, null, 1f, direction * speed));
->>>>>>> Stashed changes
             collider.velocity = direction * speed;
             Sprite = new Sprite();
             Set_Sprite(Sprite);
@@ -40,15 +33,6 @@ namespace Hell.weapon {
             BodyDef def = new BodyDef();
             def.Position.Set(position.X, position.Y);
             def.AllowSleep = false;
-<<<<<<< Updated upstream
-            Body = Game.Instance.get_active_map().physicsWorld.CreateBody(def);
-            Body.IsBullet();
-
-            Body.ApplyForce(new Vec2(direction.X, direction.Y) * speed, Body.GetWorldCenter());
-        }
-
-        public override void Update(float deltaTime) {
-=======
             def.LinearDamping = 0f;
 
             PolygonDef polygonDef = new ();
@@ -70,7 +54,6 @@ namespace Hell.weapon {
         public override void Update(float deltaTime) {
 
             Console.WriteLine($"pos: {collider.body.GetPosition().X}, {collider.body.GetPosition().Y}");
->>>>>>> Stashed changes
         }
 
         public override void Hit(hitData hit) {
