@@ -1,11 +1,11 @@
 ﻿
 namespace DropDown.enemy {
-    using Box2DX.Common;
+
     using Core;
     using Core.Controllers.ai;
-    using Core.render;
     using Core.util;
     using Core.world;
+    using Core.render;
     using OpenTK.Mathematics;
 
     public class Base_AI_Controller : AI_Controller {
@@ -19,7 +19,10 @@ namespace DropDown.enemy {
 
 
     public class idle : I_AI_State {
-    
+
+        List<Type> intersected_game_objects = new List<Type>();
+        float auto_detection_range = 400;
+
         public bool Exit(AI_Controller aI_Controller) { return true; }
         public bool Enter(AI_Controller aI_Controller) {
 
@@ -29,17 +32,49 @@ namespace DropDown.enemy {
 
         public Type Execute(AI_Controller aI_Controller) {
 
-            // look for player distance
-            float player_distance = (Game.Instance.player.transform.position - aI_Controller.character.transform.position).LengthFast;
-            if(player_distance < 700)
+            intersected_game_objects.Clear();
+            aI_Controller.character.perception_check(ref intersected_game_objects, 14, float.Pi/2, 800);
+            if (intersected_game_objects.Contains(Game.Instance.player.GetType()))
                 return typeof(pursue_player);
 
+            float player_distance = (Game.Instance.player.transform.position - aI_Controller.character.transform.position).LengthFast;
+            if(player_distance < auto_detection_range)
+                return typeof(pursue_player);
+
+            if(Game.Instance.showDebug) {
+                basic_drawer.Draw_Circle(aI_Controller.character.transform.position, auto_detection_range);   
+            }
+            
             return typeof(idle);
         }
     }
 
 
+    //public class search : I_AI_State {
+
+    //    public bool Exit(AI_Controller aI_Controller) { return true; }
+    //    public bool Enter(AI_Controller aI_Controller) {
+
+    //        aI_Controller.character.sprite.set_animation("assets/animation/small_bug/idle_01.png", 16, 10, true, false, 30, true);
+    //        return true;
+    //    }
+
+    //    public Type Execute(AI_Controller aI_Controller) {
+
+    //        // look for player distance
+    //        float player_distance = (Game.Instance.player.transform.position - aI_Controller.character.transform.position).LengthFast;
+    //        if(player_distance < 700)
+    //            return typeof(pursue_player);
+
+    //        return typeof(idle);
+    //    }
+    //}
+
+
     public class pursue_player : I_AI_State {
+        
+        List<Type> intersected_game_objects = new List<Type>();
+        float auto_detection_range = 400;
 
         public bool Exit(AI_Controller aI_Controller) { return true; }
         public bool Enter(AI_Controller aI_Controller) {
@@ -52,12 +87,20 @@ namespace DropDown.enemy {
 
             // look for player distance
             Vector2 player_vec = Game.Instance.player.transform.position - aI_Controller.character.transform.position;
-
             float player_distance = player_vec.LengthFast;
-            if(player_distance > 700)
+
+            intersected_game_objects.Clear();
+            aI_Controller.character.perception_check(ref intersected_game_objects, 14, float.Pi / 2, 800);
+            if(!intersected_game_objects.Contains(Game.Instance.player.GetType())
+                && player_distance > auto_detection_range)
                 return typeof(idle);
+
             if(player_distance < 150)
                 return typeof(attack_player);
+
+            if(Game.Instance.showDebug) {
+                basic_drawer.Draw_Circle(aI_Controller.character.transform.position, auto_detection_range);
+            }
 
             player_vec.NormalizeFast();
             aI_Controller.character.add_force(new Box2DX.Common.Vec2(player_vec.X, player_vec.Y) * aI_Controller.character.movement_force * Game_Time.delta);
@@ -80,14 +123,8 @@ namespace DropDown.enemy {
                 Vector2 start = aI_Controller.character.transform.position + (look_dir * (aI_Controller.character.transform.size.X/2));
                 Vector2 end = start + (look_dir * (150 - (aI_Controller.character.transform.size.X/2)));
 
-                bool hit = Game.Instance.get_active_map().ray_cast(start, end, out Vec2 intersection_point, out float distance, out Game_Object intersected_game_object, true, 0.5f);
-
-                if (hit) {
-
+                if (Game.Instance.get_active_map().ray_cast(start, end, out Box2DX.Common.Vec2 intersection_point, out float distance, out Game_Object intersected_game_object, true, 0.5f))
                     intersected_game_object.Hit(new Core.physics.hitData(5.0f));
-                }
-
-
             });
             return true;
         }

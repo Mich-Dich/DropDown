@@ -6,7 +6,6 @@ namespace Core.render {
     using Core.util;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
-    using System.Drawing;
 
     public enum DebugColor {
         
@@ -184,7 +183,7 @@ namespace Core.render {
     }
 
 
-    internal static class basic_drawer {
+    public static class basic_drawer {
 
         public static readonly Shader debugShader = Resource_Manager.Get_Shader("shaders/debug.vert", "shaders/debug.frag");
         private static readonly int vbo = GL.GenBuffer();
@@ -208,6 +207,86 @@ namespace Core.render {
             GL.BindVertexArray(vao);
             GL.DrawElements(primitiveType, indices.Length, DrawElementsType.UnsignedInt, 0);
         }
+
+
+        public static void Draw_Rectangle(Vector2 position, Vector2 size) {
+
+            // Console.WriteLine("Drawing rectangle");
+            float[] vertices = {
+                -0.5f * size.X,  0.5f * size.Y, 0.0f,
+                 0.5f * size.X,  0.5f * size.Y, 0.0f,
+                 0.5f * size.X, -0.5f * size.Y, 0.0f,
+                -0.5f * size.X, -0.5f * size.Y, 0.0f,
+            };
+
+            uint[] indices = { 0, 1, 2, 3 };
+
+            Draw_Shape(vertices, indices, PrimitiveType.LineLoop);
+            cleanup();
+        }
+
+        public static void Draw_Circle(Vector2 position, float radius, DebugColor debugColor = DebugColor.Red, int sides = 20) {
+
+            setup_render(debugColor, new Transform(position));
+
+            // Console.WriteLine("Drawing circle");
+            List<float> vertices = new ();
+            List<uint> indices = new ();
+
+            for(int i = 0; i <= sides; i++) {
+                float theta = 2.0f * MathF.PI * i / sides;
+                float x = radius * MathF.Cos(theta);
+                float y = radius * MathF.Sin(theta);
+                vertices.Add(x);
+                vertices.Add(y);
+                vertices.Add(0.0f);
+                indices.Add((uint)i);
+            }
+
+            Draw_Shape(vertices.ToArray(), indices.ToArray(), PrimitiveType.LineLoop);
+            cleanup();
+        }
+
+
+        private static void setup_render(DebugColor debugColor, Transform transform) {
+
+            debugShader.Use();
+            Vector4 color;
+            switch(debugColor) {
+                case DebugColor.Red:
+                    color = new Vector4(1.0f, 0.0f, 0.0f, 0.5f);
+                    break;
+                case DebugColor.Green:
+                    color = new Vector4(0.0f, 1.0f, 0.0f, 0.5f);
+                    break;
+                case DebugColor.Blue:
+                    color = new Vector4(0.0f, 0.0f, 1.0f, 0.5f);
+                    break;
+                default:
+                    color = new Vector4(1.0f, 1.0f, 1.0f, 0.5f);
+                    break;
+            }
+            debugShader.Set_Uniform("color", color);
+
+            transform.size = Vector2.One;
+            Matrix4 matrixTransform = transform.GetTransformationMatrix();
+            Matrix4 finalTransform = matrixTransform * Game.Instance.camera.Get_Projection_Matrix();
+            debugShader.Set_Matrix_4x4("transform", finalTransform);
+
+            //if(collider.shape == Collision_Shape.Circle)
+            //    this.Draw_Circle((transform.size.X / 2) + (collider.offset.size.X / 2), 20);
+            //else if(collider.shape == Collision_Shape.Square)
+            //    this.Draw_Rectangle(transform.size + collider.offset.size);
+
+        }
+
+        private static void cleanup() {
+
+            GL.BindVertexArray(0);
+            debugShader.Unbind();
+        }
+
+
     }
 
 }

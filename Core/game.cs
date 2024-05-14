@@ -52,6 +52,7 @@ namespace Core {
 
         public Shader defaultSpriteShader;
         public bool showDebug = false;
+        public bool show_performance = false;
         public ImguI_Controller imguiController;
         public static Game Instance { get; private set; }
         public GameWindow window { get; private set; }
@@ -147,7 +148,7 @@ namespace Core {
             // internal game Update
             this.window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
-                if(showDebug)
+                if(show_performance)
                     stopwatch.Restart();
 
                 this.Update_Game_Time((float)eventArgs.Time);
@@ -156,7 +157,7 @@ namespace Core {
                 this.Update(Game_Time.delta);
                 this.inputEvent.Clear();
 
-                if(showDebug) {
+                if(show_performance) {
 
                     stopwatch.Stop();
                     DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
@@ -164,14 +165,15 @@ namespace Core {
             };
 
             this.window.RenderFrame += (FrameEventArgs eventArgs) => {
-                if(showDebug)
+
+                if(show_performance)
                     stopwatch.Restart();
 
                 this.window.SwapBuffers();
                 this.Internal_Render();
                 this.Imgui_Render(Game_Time.delta);
 
-                if(showDebug) {
+                if(show_performance) {
 
                     stopwatch.Stop();
                     DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
@@ -208,7 +210,7 @@ namespace Core {
 
             this.window.Move += (e) => {
 
-                if(showDebug)
+                if(show_performance)
                     stopwatch.Restart();
                 
                 this.Update_Game_Time((float)this.window.TimeSinceLastUpdate());
@@ -219,7 +221,7 @@ namespace Core {
                 this.Update(Game_Time.delta);
                 this.inputEvent.Clear();
                 
-                if(showDebug) {
+                if(show_performance) {
 
                     stopwatch.Stop();
                     DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
@@ -230,7 +232,7 @@ namespace Core {
                 this.Internal_Render();
                 this.Imgui_Render(Game_Time.delta);
 
-                if(showDebug) {
+                if(show_performance) {
 
                     stopwatch.Stop();
                     DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
@@ -269,7 +271,8 @@ namespace Core {
 
         public void draw_debug_line(Vector2 start, Vector2 end, float duration_in_sec = 2.0f, DebugColor debugColor = DebugColor.Red) {
 
-            global_Debug_Drawer.lines.Add(new debug_line(start, end, Game_Time.total, duration_in_sec, debugColor));
+            if(showDebug && global_Debug_Drawer != null)
+                global_Debug_Drawer.lines.Add(new debug_line(start, end, Game_Time.total, duration_in_sec, debugColor));
         }
 
         public void showDebugData(bool enable) {
@@ -277,7 +280,7 @@ namespace Core {
             this.showDebug = enable;
             if(showDebug && global_Debug_Drawer == null)
                 global_Debug_Drawer = new global_debug_drawer();
-            
+
 #if DEBUG
             Console.WriteLine($"Showing debug data");
 #else
@@ -286,15 +289,12 @@ namespace Core {
 #endif
         }
 
-        public Vector2 Get_Mouse_Relative_Pos() {
+        public void Show_Performance(bool enable) { show_performance = enable; }
 
-            return this.window.MousePosition - (this.window.Size / 2) + this.cursorPosOffset;
-        }
+        public Vector2 Get_Mouse_Relative_Pos() { return this.window.MousePosition - (this.window.Size / 2) + this.cursorPosOffset; }
 
         // ============================================================================== protected ==============================================================================
-        // protected List<map> activeMaps { get; set; }     // TODO: add array of maps to enable DROP into new level
 
-        // general
         protected abstract void Init();
         protected abstract void Shutdown();
         protected abstract void Update(float deltaTime);
@@ -341,7 +341,7 @@ namespace Core {
 
             this.imguiController.Update(this.window, (float)Game_Time.delta);
 
-            if(this.showDebug) 
+            if(this.show_performance) 
                 this.debugDataViualizer.Draw();
 
             this.activeMap.Draw_Imgui();

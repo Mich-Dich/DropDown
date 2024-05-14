@@ -175,7 +175,7 @@ namespace Core.render {
                 throw new NotImplementedException("Neither a texture nor an animation is assigned to the sprite. The sprite cannot be rendered.");
 
             // -------------------------------------- select display mode --------------------------------------
-            if(Game.Instance.showDebug) 
+            if(Game.Instance.show_performance) 
                 DebugData.spriteDrawCallsNum++;
 
             if(this.animation != null) 

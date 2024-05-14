@@ -3,6 +3,7 @@ namespace Core.world {
 
     using Box2DX.Common;
     using Core.Controllers;
+    using Core.Controllers.ai;
     using Core.physics;
     using Core.render;
     using ImGuiNET;
@@ -17,7 +18,6 @@ namespace Core.world {
         public float health { get; set; } = 100;
         public float health_max { get; set; } = 100;
         public float rotation_offset { get; set; } = 0;
-
 
         public Character() {
 
@@ -93,7 +93,6 @@ namespace Core.world {
             transform.rotation = -new_angle + rotation_offset;
         }
 
-
         public void rotate_to_vector(Vec2 dir) {
 
             float angleRadians = Util.angle_from_vec(dir);
@@ -130,6 +129,24 @@ namespace Core.world {
 
             float new_angle = Lerp(current_angle, target_angle, 0.1f);
             transform.rotation = -new_angle + rotation_offset;
+        }
+
+        public void perception_check(ref List<Type> intersected_game_objects, int num_of_rays = 6, float angle = float.Pi, float look_distance = 800) {
+
+            float angle_per_ray = angle / (float)(num_of_rays-1);
+            for(int x = 0; x < num_of_rays; x++) {
+
+                var look_dir = Util.vector_from_angle(transform.rotation - rotation_offset - (angle/2) + (angle_per_ray * x));
+                Vector2 start = transform.position + (look_dir * (transform.size.X/2));
+                Vector2 end = start + (look_dir * look_distance);
+
+                if(!Game.Instance.get_active_map().ray_cast(start, end, out Box2DX.Common.Vec2 intersection_point, out float distance, out var buffer, true, 0))
+                    continue;
+                    
+                if(buffer != null)
+                    intersected_game_objects.Add(buffer.GetType());
+            }
+
         }
 
         public void Display_Healthbar() {

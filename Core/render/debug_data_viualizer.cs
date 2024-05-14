@@ -1,17 +1,16 @@
-﻿namespace Core.render
-{
+﻿
+namespace Core.render {
+
     using System.Numerics;
     using Core.util;
     using ImGuiNET;
 
-    public sealed class DebugDataViualizer
-    {
-        public DebugDataViualizer()
-        {
-        }
+    public sealed class DebugDataViualizer {
 
-        public void Draw()
-        {
+        public DebugDataViualizer() { }
+         
+        public void Draw() {
+
             ImGuiIOPtr io = ImGui.GetIO();
 
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration

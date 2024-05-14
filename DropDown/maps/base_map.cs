@@ -285,9 +285,10 @@ namespace DropDown {
                 offset_x = random.Next(64);
                 found = is_coord_in_bit_map_free(offset_x, offset_y);
             }
-            
+
             this.Add_Character(new Base_AI_Controller(new Base_Enemy()),
-                new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize));
+                new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
+                random.NextSingle() * (float.Pi * 2));
 
         }
 
@@ -384,13 +385,7 @@ namespace DropDown {
 
         }
 
-        private bool is_coord_in_bit_map_free(int x, int y) {
-
-            UInt64 targetUInt64 = floorLayout[y];
-            UInt64 mask = (UInt64)1 << x;
-
-            return (targetUInt64 & mask) == 0;
-        }
+        private bool is_coord_in_bit_map_free(int x, int y) { return (floorLayout[y] & (UInt64)1 << x) == 0; }
 
         private void Generate_Random_64x64_Bit_Map() {
 
@@ -440,18 +435,8 @@ namespace DropDown {
                         ulong mask = (ulong)1 << y; // Calculate the mask based on MSB index (63 - bitIndex)
                         floorLayoutBuffer[x] |= mask;
                     }
-
-                    //Console.Write($"{count} ");
-
                 }
-                //Console.WriteLine();
             }
-
-
-            //for(int x = 0; x < 64; x++)
-            //    Log_U64(bit_map_buffer[x]);
-
-            //Console.WriteLine();
             floorLayout = floorLayoutBuffer;
         }
 

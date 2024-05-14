@@ -26,7 +26,7 @@ namespace Core.render {
             if(!this.isPlaying) 
                 return;
 
-            if(Game.Instance.showDebug) 
+            if(Game.Instance.show_performance) 
                 DebugData.playingAnimationNum++;
 
             this.sprite.animationTimer += Game_Time.delta;

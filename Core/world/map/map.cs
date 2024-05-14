@@ -52,8 +52,6 @@ namespace Core.world.map {
                     Vector2 direaction = end-start;
                     Vector2 normal_display = new Vector2(normal.X, normal.Y)*10;
 
-                    Console.WriteLine($"normal: {normal}");
-
                     Game.Instance.draw_debug_line(start, start + (direaction * distance), duration_in_sec, DebugColor.Red);    // start - hit
                     Game.Instance.draw_debug_line(start + (direaction * distance), end, duration_in_sec, DebugColor.Green);    // hit - end
                     Game.Instance.draw_debug_line(start + (direaction * distance), start + (direaction * distance) + normal_display, duration_in_sec, DebugColor.Blue);    // normal
@@ -91,10 +89,11 @@ namespace Core.world.map {
         [Obsolete("")]
         public void Add_Game_Object(Game_Object game_object) { this.world.Add(game_object); }
         
-        public void Add_Character(AI_Controller ai_controller, Vector2? position = null) {
+        public void Add_Character(AI_Controller ai_controller, Vector2? position = null, float rotation = 0) {
 
             all_AI_Controller.Add(ai_controller);
             Add_empty_Character(ai_controller.character, position);
+            ai_controller.character.transform.rotation = rotation;
         }
 
         public void Add_empty_Character(Character character, Vector2? position = null) {
@@ -227,7 +226,9 @@ namespace Core.world.map {
         public void Force_Clear_mapTiles() {
 
             this.mapTiles.Clear();
-            DebugData.numOfTiels = 0;
+
+            if(Game.Instance.show_performance) 
+                DebugData.numOfTiels = 0;
         }
 
         public Map Generate_Backgound_Tile(int width, int height) {
@@ -351,7 +352,9 @@ namespace Core.world.map {
                 float overlapY = (camera_size.Y / 2) + (tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
 
                 if(overlapX > 0 && overlapY > 0) {
-                    DebugData.numOfTielsDisplayed++;
+
+                    if(Game.Instance.show_performance)
+                        DebugData.numOfTielsDisplayed++;
                     foreach(var sprite in tile.Value.background) 
                         sprite.Draw();
                 }
@@ -439,7 +442,9 @@ namespace Core.world.map {
             if(!this.mapTiles.ContainsKey(key)) {
 
                 this.mapTiles.Add(key, new Map_Tile(key));
-                DebugData.numOfTiels++;
+
+                if(Game.Instance.show_performance)
+                    DebugData.numOfTiels++;
             }
 
             this.mapTiles.TryGetValue(key, out Map_Tile current_tile);
