@@ -49,13 +49,14 @@ namespace Core.world.map {
                     Game.Instance.draw_debug_line(start, end, duration_in_sec, DebugColor.Red);
                 else {
 
-                    Vector2 direaction = start - end;
-                    
+                    Vector2 direaction = end-start;
+                    Vector2 normal_display = new Vector2(normal.X, normal.Y)*10;
+
                     Console.WriteLine($"normal: {normal}");
 
                     Game.Instance.draw_debug_line(start, start + (direaction * distance), duration_in_sec, DebugColor.Red);    // start - hit
                     Game.Instance.draw_debug_line(start + (direaction * distance), end, duration_in_sec, DebugColor.Green);    // hit - end
-                    Game.Instance.draw_debug_line(start, end, duration_in_sec, DebugColor.Blue);    // normal
+                    Game.Instance.draw_debug_line(start + (direaction * distance), start + (direaction * distance) + normal_display, duration_in_sec, DebugColor.Blue);    // normal
                 }
 
 
@@ -345,10 +346,6 @@ namespace Core.world.map {
             Vector2 camera_size = Game.Instance.camera.Get_View_Size_In_World_Coord() + new Vector2(this.cellSize * 2);
             float tiel_size = this.tileSize * this.cellSize;
 
-            // Draw the background first
-            for(int x = 0; x < this.backgound.Count; x++) 
-                this.backgound[x].Draw();
-
             foreach(var tile in this.mapTiles) {
                 float overlapX = (camera_size.X / 2) + (tiel_size / 2) - Math.Abs(camera_pos.X - tile.Key.X);
                 float overlapY = (camera_size.Y / 2) + (tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
@@ -359,6 +356,10 @@ namespace Core.world.map {
                         sprite.Draw();
                 }
             }
+
+            // Draw the background first
+            for(int x = 0; x < this.backgound.Count; x++)
+                this.backgound[x].Draw();
 
             foreach(var character in this.allCharacter) 
                 character.Draw();
@@ -403,7 +404,6 @@ namespace Core.world.map {
             foreach (var AI_Controller in all_AI_Controller)
                 AI_Controller.Update(deltaTime);
 
-            Console.WriteLine($"world count: {world.Count}");
             for (int x = 0; x < this.world.Count; x++) {
 
                 if(world[x].collider != null) {

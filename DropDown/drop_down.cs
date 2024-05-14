@@ -30,7 +30,9 @@ namespace DropDown {
             showDebugData(true);
             this.camera.Set_min_Max_Zoom(0.01f, 1.4f);
 #endif
-            
+
+            activeMap.Add_Sprite(new Sprite(new Vector2(300, 300), new Vector2(180, 180)).set_animation("assets/animation/spider/walk.png", 8, 4, true, true, 60, true));
+
         }
 
         protected override void Shutdown() { }

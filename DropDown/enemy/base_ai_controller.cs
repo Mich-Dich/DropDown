@@ -78,7 +78,7 @@ namespace DropDown.enemy {
 
                 var look_dir = Util.vector_from_angle(aI_Controller.character.transform.rotation - aI_Controller.character.rotation_offset);
                 Vector2 start = aI_Controller.character.transform.position + (look_dir * (aI_Controller.character.transform.size.X/2));
-                Vector2 end = start + (look_dir * 150);
+                Vector2 end = start + (look_dir * (150 - (aI_Controller.character.transform.size.X/2)));
 
                 bool hit = Game.Instance.get_active_map().ray_cast(start, end, out Vec2 intersection_point, out float distance, out Game_Object intersected_game_object, true, 0.5f);
 
