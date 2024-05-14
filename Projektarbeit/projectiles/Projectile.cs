@@ -47,21 +47,18 @@ namespace Hell.weapon {
             collider.body.CreateShape(polygonDef);
             collider.body.SetMassFromShapes();
             collider.body.IsDynamic();
-            //collider.body.IsBullet();
+            collider.body.IsBullet();
             collider.body.SetUserData(this);
 
             collider.body.ApplyForce(new Vec2(collider.velocity.X, collider.velocity.Y) * Speed, collider.body.GetWorldCenter());
+
+
+            float angleRadians = Util.angle_from_vec(direction);
+            transform.rotation = -angleRadians;
         }
 
         public override void Update(float deltaTime) {
-            Vector2 direction = new Vector2(collider.velocity.X, collider.velocity.Y);
-            float angle = MathF.Atan2(-direction.X, direction.Y);
 
-            angle = angle % (2 * MathF.PI);
-
-            transform.rotation = MathHelper.RadiansToDegrees(angle);
-
-            Console.WriteLine($"pos: {collider.body.GetPosition().X}, {collider.body.GetPosition().Y}");
         }
 
         public override void Hit(hitData hit) {

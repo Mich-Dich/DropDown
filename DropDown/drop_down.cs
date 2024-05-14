@@ -28,7 +28,7 @@ namespace DropDown {
             this.camera.Set_Zoom(5.0f);
 #if DEBUG
             Show_Performance(true);
-            showDebugData(true);
+            showDebugData(false);
             this.camera.Set_min_Max_Zoom(0.01f, 1.4f);
 #endif
 

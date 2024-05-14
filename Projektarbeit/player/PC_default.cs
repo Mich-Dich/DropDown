@@ -81,6 +81,7 @@ namespace Hell.player {
             character.rotate_to_move_dir_smooth();
 
             if((bool)fire.GetValue() && Game_Time.total - lastFireTime >= fireDelay) {
+
                 Vector2 playerLocation = character.transform.position;
                 Vec2 playerDirectionVec2 = character.collider.body.GetLinearVelocity();
                 playerDirectionVec2.Normalize();
