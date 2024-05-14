@@ -3,6 +3,7 @@ namespace DropDown.enemy {
     using Box2DX.Common;
     using Core;
     using Core.Controllers.ai;
+    using Core.render;
     using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
@@ -75,20 +76,17 @@ namespace DropDown.enemy {
             aI_Controller.character.sprite.set_animation("assets/animation/small_bug/attack_01.png", 8, 3, true, false, 30, true);
             aI_Controller.character.sprite.animation.add_animation_notification(21, () => {
 
-                var look_dir = Util.vector_from_angle(aI_Controller.character.transform.rotation);
+                var look_dir = Util.vector_from_angle(aI_Controller.character.transform.rotation - aI_Controller.character.rotation_offset);
                 Vector2 start = aI_Controller.character.transform.position + (look_dir * (aI_Controller.character.transform.size.X/2));
                 Vector2 end = start + (look_dir * 150);
 
-                Console.WriteLine($"start: {start}, end: {end}");
+                Game.Instance.draw_debug_line(start, end, 0.5f);
 
                 bool hit = Game.Instance.get_active_map().ray_cast(start, end, out Vec2 intersection_point, out float distance, out Game_Object intersected_game_object);
-
-                Console.WriteLine($"intersection_point: {intersection_point}, distance: {distance}, intersected_game_object: {intersected_game_object}");
 
                 if (hit) {
 
                     intersected_game_object.Hit(new Core.physics.hitData(5.0f));
-                    //Game.Instance.player.Hit(new Core.physics.hitData(5.0f));
                 }
 
 

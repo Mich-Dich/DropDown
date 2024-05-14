@@ -57,6 +57,7 @@ namespace Core {
         public GameWindow window { get; private set; }
         public Camera camera { get; set; }
         public Character player { get; set; }
+        private global_debug_drawer global_Debug_Drawer { get; set; }
 
         protected string title { get; set; }
         protected int initalWindowWidth { get; set; }
@@ -73,6 +74,7 @@ namespace Core {
         private readonly NativeWindowSettings nativeWindowSettings = NativeWindowSettings.Default;
         private readonly DebugDataViualizer debugDataViualizer = new ();
         private double updateFrequencyBuffer = 0;
+        public Debug_Drawer Debug_Drawer;
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight) {
         
@@ -95,8 +97,6 @@ namespace Core {
             this.nativeWindowSettings.Flags = ContextFlags.ForwardCompatible;
         }
 
-        // public Physics_Engine       Physics_Engine { get; } = new();
-        // public DebugData    DebugData { get; set; } = new DebugData();
         // ============================================================================== public ==============================================================================
         public void Run() {
 
@@ -267,9 +267,18 @@ namespace Core {
             this.window.Run();
         }
 
+        public void draw_debug_line(Vector2 start, Vector2 end, float duration_in_sec = 2.0f) {
+
+
+            global_Debug_Drawer.lines.Add(new debug_line(start, end, Game_Time.total, duration_in_sec));
+        }
+
         public void showDebugData(bool enable) {
 
             this.showDebug = enable;
+            if(showDebug && global_Debug_Drawer == null)
+                global_Debug_Drawer = new global_debug_drawer();
+            
 #if DEBUG
             Console.WriteLine($"Showing debug data");
 #else
@@ -313,8 +322,11 @@ namespace Core {
             this.defaultSpriteShader.Set_Matrix_4x4("projection", this.camera.Get_Projection_Matrix());
 
             this.activeMap.Draw();
-            if(this.showDebug) 
+            if(this.showDebug) {
+
                 this.activeMap.Draw_Debug();
+                global_Debug_Drawer.draw();
+            }
 
             this.Render(Game_Time.delta);
         }

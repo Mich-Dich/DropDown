@@ -16,7 +16,6 @@ namespace Core.world.map {
         private List<AI_Controller> all_AI_Controller = new List<AI_Controller>();
         private List<Character> allCharacter { get; set; } = new List<Character>();
         private readonly World physicsWorld;
-        public Debug_Drawer Debug_Drawer;
 
         public Map() {
         
@@ -26,8 +25,6 @@ namespace Core.world.map {
 
             Vec2 gravity = new (0.0f, 0.001f);
             physicsWorld = new World(aabb, gravity, true);
-
-            Debug_Drawer = new Debug_Drawer();
         }
 
         public bool ray_cast(Vector2 start, Vector2 end, out Vec2 intersection_point, out float distance, out Game_Object intersected_game_object) {
@@ -39,16 +36,10 @@ namespace Core.world.map {
 
             var shape = physicsWorld.RaycastOne(ray, out distance, out intersection_point, false, null);
 
-            if(shape != null) {
-
-                Console.WriteLine($"hit shape NOT null");
+            if(shape != null) 
                 intersected_game_object = (Game_Object)shape.GetBody().GetUserData();
-            }
-            else {
-
-                Console.WriteLine($"hit shape null => no collision");
+            else
                 intersected_game_object = null;
-            }
 
             return shape != null;
         }
@@ -377,8 +368,6 @@ namespace Core.world.map {
 
             for(int x = 0; x < this.world.Count; x++) 
                 this.world[x].Draw_Debug();
-
-            Debug_Drawer.draw();
         }
 
         private readonly int velocityIterations = 6;

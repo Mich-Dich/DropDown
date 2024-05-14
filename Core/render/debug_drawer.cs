@@ -32,40 +32,58 @@ namespace Core.render {
         }
     }
 
-    public sealed class Debug_Drawer {
+    public sealed class global_debug_drawer {
 
         public List<debug_line> lines = new List<debug_line>();
 
-        private readonly Shader debugShader;
-        private readonly int vbo;
-        private readonly int vao;
-        private readonly int ebo;
-
-        public Debug_Drawer() {
-
-            this.debugShader = Resource_Manager.Get_Shader("shaders/debug.vert", "shaders/debug.frag");
-            this.vbo = GL.GenBuffer();
-            this.vao = GL.GenVertexArray();
-            this.ebo = GL.GenBuffer();
-        }
-
-        public DebugColor DebugColor { get; set; } = DebugColor.White;
-
         public void draw() {
 
-            this.debugShader.Use();
+            basic_drawer.debugShader.Use();
             Vector4 color = new Vector4(0.0f, 1.0f, 0.0f, 0.5f);
-            this.debugShader.Set_Uniform("color", color);
+            basic_drawer.debugShader.Set_Uniform("color", color);
+
+            Matrix4 matrixTransform = new Transform().GetTransformationMatrix();
+            Matrix4 finalTransform = matrixTransform * Game.Instance.camera.Get_Projection_Matrix();
+            basic_drawer.debugShader.Set_Matrix_4x4("transform", finalTransform);
 
             Console.WriteLine($"lines: [{lines.Count}]");
             foreach(debug_line line in lines) {
                 draw_line(line.start, line.end);
-            }
-                        
-            GL.BindVertexArray(0);
-            this.debugShader.Unbind();
 
+            }
+
+            // clean up list
+            for(int x = 0; x < lines.Count; x++) {
+
+                if((lines[x].time_stamp + lines[x].display_duration) < Game_Time.total)
+                    lines.RemoveAt(x);
+            }
+
+            GL.BindVertexArray(0);
+            basic_drawer.debugShader.Unbind();
         }
+
+
+        private void draw_line(Vector2 start, Vector2 end) {
+
+            // Console.WriteLine("Drawing Line");
+            float[] vertices = {
+                start.X/100, start.Y/100, 0.0f,
+                end.X/100, end.Y/100, 0.0f,
+            };
+
+            uint[] indices = { 0, 1 };
+            basic_drawer.Draw_Shape(vertices, indices, PrimitiveType.Lines);
+        }
+
+    }
+
+    public sealed class Debug_Drawer {
+
+        private readonly Shader debugShader;
+        public DebugColor DebugColor { get; set; } = DebugColor.White;
+
+        public Debug_Drawer() { this.debugShader = Resource_Manager.Get_Shader("shaders/debug.vert", "shaders/debug.frag"); }
 
         // ================================================================= public =================================================================
         public void Draw_Collision_Shape(Transform transform, Collider collider, DebugColor debugColor) {
@@ -110,26 +128,9 @@ namespace Core.render {
 
             Console.WriteLine("Disposing debug_drawer");
             this.debugShader.Dispose();
-
-            // Delete the VBO, VAO, and EBO
-            GL.DeleteBuffer(this.vbo);
-            GL.DeleteVertexArray(this.vao);
-            GL.DeleteBuffer(this.ebo);
         }
 
         // ================================================================= private =================================================================
-
-        private void draw_line(Vector2 start, Vector2 end) {
-
-            Console.WriteLine("Drawing Line");
-            float[] vertices = {
-                start.X, start.Y, 0.0f,
-                end.X, end.Y, 0.0f,
-            };
-
-            uint[] indices = { 0, 1 };
-            this.Draw_Shape(vertices, indices, PrimitiveType.Lines);
-        }
 
         private void Draw_Rectangle(Vector2 size) {
 
@@ -143,7 +144,7 @@ namespace Core.render {
 
             uint[] indices = { 0, 1, 2, 3 };
 
-            this.Draw_Shape(vertices, indices, PrimitiveType.LineLoop);
+            basic_drawer.Draw_Shape(vertices, indices, PrimitiveType.LineLoop);
         }
 
         private void Draw_Circle(float radius, int sides) {
@@ -162,25 +163,35 @@ namespace Core.render {
                 indices.Add((uint)i);
             }
 
-            this.Draw_Shape(vertices.ToArray(), indices.ToArray(), PrimitiveType.LineLoop);
+            basic_drawer.Draw_Shape(vertices.ToArray(), indices.ToArray(), PrimitiveType.LineLoop);
         }
+    }
 
-        private void Draw_Shape(float[] vertices, uint[] indices, PrimitiveType primitiveType) {
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, this.vbo);
+    internal static class basic_drawer {
+
+        public static readonly Shader debugShader = Resource_Manager.Get_Shader("shaders/debug.vert", "shaders/debug.frag");
+        private static readonly int vbo = GL.GenBuffer();
+        private static readonly int vao = GL.GenVertexArray();
+        private static readonly int ebo = GL.GenBuffer();
+
+        internal static void Draw_Shape(float[] vertices, uint[] indices, PrimitiveType primitiveType) {
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
 
-            GL.BindVertexArray(this.vao);
+            GL.BindVertexArray(vao);
 
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.ebo);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
-            int positionLocation = this.debugShader.GetAttribLocation("aPosition");
+            int positionLocation = debugShader.GetAttribLocation("aPosition");
             GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(positionLocation);
 
-            GL.BindVertexArray(this.vao);
+            GL.BindVertexArray(vao);
             GL.DrawElements(primitiveType, indices.Length, DrawElementsType.UnsignedInt, 0);
         }
     }
+
 }

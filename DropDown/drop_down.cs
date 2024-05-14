@@ -11,9 +11,7 @@ namespace DropDown {
     internal class Drop_Down : Core.Game {
 
         public Drop_Down(string title, int initalWindowWidth, int initalWindowHeight)
-            : base(title, initalWindowWidth, initalWindowHeight) {
-        
-        }
+            : base(title, initalWindowWidth, initalWindowHeight) { }
 
         private CH_player CH_player;
 
@@ -32,13 +30,7 @@ namespace DropDown {
             showDebugData(true);
             this.camera.Set_min_Max_Zoom(0.01f, 1.4f);
 #endif
-
-
-            this.get_active_map().Debug_Drawer.lines.Add(new debug_line(new Vector2(-100, -100), new Vector2(100, 100)));
-
-
-
-            //this.activeMap.add_sprite(new sprite(new Vector2(-400, -200), new Vector2(300, 300)).set_animation("assets/textures/FX_explosion/animation_explosion.png", 8, 6, true, false, 60, true));
+            
         }
 
         protected override void Shutdown() { }
