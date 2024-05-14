@@ -7,7 +7,7 @@ using Core.world;
 using OpenTK.Mathematics;
 using System;
 
-namespace Core.util {
+namespace Core.defaults {
     public abstract class Projectile : Game_Object {
 
         public float Speed { get; set; }
