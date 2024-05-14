@@ -124,11 +124,10 @@
         }
 
         public void Set_Background_Image(string image_path) {
-            
             Texture background_texture = Resource_Manager.Get_Texture(image_path, false);
             Vector2 view_size = Game.Instance.camera.Get_View_Size_In_World_Coord();
             Vector2 original_sprite_size = new (background_texture.Width, background_texture.Height);
-            Vector2 scale_factor = view_size / original_sprite_size;
+            Vector2 scale_factor = view_size / original_sprite_size * Game.Instance.camera.GetScale();
             Vector2 sprite_size = original_sprite_size * scale_factor;
             Vector2 sprite_position = Vector2.Zero;
             Transform background_transform = new (sprite_position, sprite_size, 0, Mobility.STATIC);
@@ -307,13 +306,15 @@
 
         // ================================================================= internal =================================================================
         internal void Draw() {
-
             Vector2 camera_pos = Game.Instance.camera.transform.position;
             Vector2 camera_size = Game.Instance.camera.Get_View_Size_In_World_Coord() + new Vector2(this.cellSize * 2);
             float tiel_size = this.tileSize * this.cellSize;
 
-            foreach(var tile in this.mapTiles) {
+            // Draw the background first
+            for(int x = 0; x < this.backgound.Count; x++) 
+                this.backgound[x].Draw();
 
+            foreach(var tile in this.mapTiles) {
                 float overlapX = (camera_size.X / 2) + (tiel_size / 2) - Math.Abs(camera_pos.X - tile.Key.X);
                 float overlapY = (camera_size.Y / 2) + (tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
 
@@ -321,21 +322,14 @@
                     DebugData.numOfTielsDisplayed++;
                     foreach(var sprite in tile.Value.background) 
                         sprite.Draw();
-                    
                 }
             }
 
             foreach(var character in this.allCharacter) 
                 character.Draw();
-            
-
-            for(int x = 0; x < this.backgound.Count; x++) 
-                this.backgound[x].Draw();
-            
 
             for(int x = 0; x < this.world.Count; x++) 
                 this.world[x].Draw();
-            
         }
 
         internal void Draw_Debug() {

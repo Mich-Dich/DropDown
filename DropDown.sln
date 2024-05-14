@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DropDown", "DropDown\DropDown.csproj", "{9EF13788-31F2-4C81-AF70-02EAC36FFE0F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Projektarbeit", "Projektarbeit\Projektarbeit.csproj", "{9EF13788-31F2-4C81-AF70-02EAC36FFE0F}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{91B9A14E-5CA8-4774-969D-F0AC51A34F7C}"
 EndProject
 Global

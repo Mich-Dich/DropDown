@@ -1,5 +1,5 @@
 ﻿
-namespace Projektarbeit {
+namespace Hell {
 
     using Core;
     using Core.physics;
@@ -7,7 +7,11 @@ namespace Projektarbeit {
     using Core.util;
     using Core.world;
     using Core.world.map;
-    
+    using Hell.enemy;
+    using ImGuiNET;
+    using OpenTK.Mathematics;
+    using System.Diagnostics;
+
     public class Base_Map : Map {
 
         public Base_Map() {

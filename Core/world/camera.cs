@@ -118,6 +118,10 @@ namespace Core.world {
                 camera_view_max.Y - camera_view_min.Y);
         }
 
+        public float GetScale() {
+            return this.scale;
+        }
+
         // ========================================== private ==========================================
         private void Calc_Scale() {
 
