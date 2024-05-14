@@ -90,7 +90,7 @@ namespace Core.world {
 
             Vec2 movement_dir = collider.body.GetLinearVelocity();
             movement_dir.Normalize();
-            float target_angle = (float)System.Math.Atan2(-movement_dir.Y, movement_dir.X); // Invert Y-coordinate
+            float target_angle = (float)System.Math.Atan2(-movement_dir.Y, movement_dir.X);
 
             float current_angle = -transform.rotation + rotation_offset;
             while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;

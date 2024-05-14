@@ -67,9 +67,9 @@ namespace Hell {
             Imgui_Util.Progress_Bar_Stylised(1f, new System.Numerics.Vector2(250, 15), col_blue, col_black, 0.32f, 0.28f, 0.6f);
 
             ImGui.Spacing();
-            Imgui_Util.Title("{weapon image}");
+            Imgui_Util.Title("Score");
             ImGui.SameLine();
-            Imgui_Util.Title("10/10");
+            Imgui_Util.Title("0");
 
             ImGui.End();
 
