@@ -2,7 +2,7 @@
 namespace Core.defaults {
 
     using Core.Controllers.player;
-    using Core.input;
+    using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
 

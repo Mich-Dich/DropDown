@@ -72,20 +72,6 @@ namespace Core.world {
             return orthographic_matrix * zoom_matrix;
         }
 
-        public Vector2 Convert_Screen_To_World_Coords(float x, float y) {
-
-            Vector2 result = new ();
-            Vector2 default_offset = new (17, 40);
-            Vector2 mouse_position = new (x, y);
-
-            result = this.transform.position * this.scale;
-            result += mouse_position - (Game.Instance.window.Size / 2);
-            result += default_offset * (mouse_position / Game.Instance.window.Size);
-            result /= this.scale;
-
-            return result;
-        }
-
         public Vector2 Get_Uper_Left_Screen_Corner_In_World_Coordinates() {
 
             Vector2 result = new ();

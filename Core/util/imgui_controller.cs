@@ -1,5 +1,5 @@
-namespace Core.util
-{
+namespace Core.util {
+
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
     using ImGuiNET;

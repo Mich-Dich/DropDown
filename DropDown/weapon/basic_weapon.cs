@@ -1,5 +1,6 @@
 ﻿
-namespace DropDown.weapon {
+namespace DropDown.weapon
+{
 
     using Core.world;
     using Core.render;

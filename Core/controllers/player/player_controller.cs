@@ -76,29 +76,19 @@ public abstract class Player_Controller : I_Controller
                             }
 
                             if ((key_binding.TriggerFlags & (uint)TriggerFlags.key_hold) != 0)
-                            {
                                 isKeyActive = loc_event.KeyState == KeyState.Repeat;
-                            }
 
                             if (isKeyActive)
-                            {
                                 break;
-                            }
 
                             if ((key_binding.TriggerFlags & (uint)TriggerFlags.key_tap) != 0)
-                            {
                                 Console.WriteLine($"Not implemented yet (basicly the same as [TriggerFlags.key_move_down] but uses [durationInSec])");
-                            }
 
                             if (isKeyActive)
-                            {
                                 break;
-                            }
 
                             if ((key_binding.TriggerFlags & (uint)TriggerFlags.key_move_down) != 0)
-                            {
                                 isKeyActive = loc_event.KeyState == KeyState.Pressed;
-                            }
 
                             if (isKeyActive)
                             {

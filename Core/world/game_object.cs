@@ -81,19 +81,19 @@ namespace Core.world {
             while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
             while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
 
-            float new_angle = Util.Lerp(current_angle, target_angle, 0.1f);
+            float new_angle = util.Lerp(current_angle, target_angle, 0.1f);
             transform.rotation = -new_angle + rotation_offset;
         }
 
         public void rotate_to_vector(Box2DX.Common.Vec2 dir) {
 
-            float angleRadians = Util.angle_from_vec(dir);
+            float angleRadians = util.angle_from_vec(dir);
             transform.rotation = -angleRadians + rotation_offset;
         }
 
         public void rotate_to_vector(Vector2 dir) {
 
-            float angleRadians = Util.angle_from_vec(dir);
+            float angleRadians = util.angle_from_vec(dir);
             transform.rotation = -angleRadians + rotation_offset;
         }
 
@@ -106,7 +106,7 @@ namespace Core.world {
             while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
             while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
 
-            float new_angle = Util.Lerp(current_angle, target_angle, 0.1f);
+            float new_angle = util.Lerp(current_angle, target_angle, 0.1f);
             transform.rotation = -new_angle + rotation_offset;
         }
 
@@ -119,7 +119,7 @@ namespace Core.world {
             while(target_angle - current_angle > MathF.PI) target_angle -= 2 * MathF.PI;
             while(target_angle - current_angle < -MathF.PI) target_angle += 2 * MathF.PI;
 
-            float new_angle = Util.Lerp(current_angle, target_angle, 0.1f);
+            float new_angle = util.Lerp(current_angle, target_angle, 0.1f);
             transform.rotation = -new_angle + rotation_offset;
         }
 
@@ -167,14 +167,14 @@ namespace Core.world {
         internal void Draw_Debug() {
 
             if(collider != null)
-                debug_drawer?.Draw_Collision_Shape(this.transform, this.collider, DebugColor.Red);
+                debug_drawer?.Draw_Collision_Shape(this.transform, this.collider, Core.render.DebugColor.Red);
         }
 
         // =============================================== private ==============================================
-        private Debug_Drawer? debug_drawer { get; set; }
+        private Core.render.Debug_Drawer? debug_drawer { get; set; }
         public Sprite? sprite { get; private set; }
 
-        private void Init() { debug_drawer = new Debug_Drawer(); }
+        private void Init() { debug_drawer = new Core.render.Debug_Drawer(); }
     }
 
     public enum Mobility {

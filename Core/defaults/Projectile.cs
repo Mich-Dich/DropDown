@@ -1,13 +1,13 @@
-using Box2DX.Collision;
-using Box2DX.Common;
-using Box2DX.Dynamics;
-using Core.physics;
-using Core.render;
-using Core.world;
-using OpenTK.Mathematics;
-using System;
 
 namespace Core.defaults {
+
+    using Box2DX.Collision;
+    using Box2DX.Common;
+    using Box2DX.Dynamics;
+    using Core.physics;
+    using Core.world;
+    using OpenTK.Mathematics;
+
     public abstract class Projectile : Game_Object {
 
         public float Speed { get; set; }

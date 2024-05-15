@@ -1,5 +1,6 @@
 ﻿
 namespace Core.util {
+
     using ImGuiNET;
 
     public static class Imgui_Util {

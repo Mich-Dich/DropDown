@@ -59,11 +59,11 @@ namespace DropDown.enemy {
         public int fps = 30;
         public bool loop = false;
 
-        public animation_data(String path_to_texture_atlas, Int32 num_of_rows, Int32 num_of_columns, Boolean start_playing, Boolean is_pixel_art, Int32 fps, Boolean loop) {
+        public animation_data(String path_to_texture_atlas, Int32 num_of_colums, Int32 num_of_rows, Boolean start_playing, Boolean is_pixel_art, Int32 fps, Boolean loop) {
 
             this.path_to_texture_atlas = path_to_texture_atlas;
-            this.num_of_rows = num_of_rows;
-            this.num_of_columns = num_of_columns;
+            this.num_of_rows = num_of_colums;
+            this.num_of_columns = num_of_rows;
             this.start_playing = start_playing;
             this.is_pixel_art = is_pixel_art;
             this.fps = fps;

@@ -93,10 +93,8 @@ namespace Core.physics {
         public Vector2 hit_impact_point;
         public Game_Object hit_object;
 
-        public hitData(Single hit_force) : this() {
+        public hitData(Single hit_force) : this() { this.hit_force = hit_force; }
 
-            this.hit_force = hit_force;
-        }
         public hitData(Boolean is_hit, Single hit_force, Vector2 hit_position, Vector2 hit_direction, Vector2 hit_normal, Vector2 hit_impact_point) : this() {
 
             this.is_hit = is_hit;

@@ -1,11 +1,8 @@
 ﻿#pragma warning disable
-namespace Core.input
-{
-    //
-    // Summary:
-    //     Specifies key codes and modifiers in US keyboard layout.
-    public enum Key_Code
-    {
+namespace Core.util {
+
+    public enum Key_Code {
+
         /// <summary> An unknown key. </summary>
         Unknown = -1,
 

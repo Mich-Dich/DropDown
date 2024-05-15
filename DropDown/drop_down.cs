@@ -7,6 +7,7 @@ namespace DropDown {
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
 
+
     internal class Drop_Down : Core.Game {
 
         public Drop_Down(string title, int initalWindowWidth, int initalWindowHeight)
@@ -27,10 +28,9 @@ namespace DropDown {
             this.camera.Set_Zoom(5.0f);
 #if DEBUG
             Show_Performance(true);
-            showDebugData(false);
+            showDebugData(true);
             this.camera.Set_min_Max_Zoom(0.01f, 1.4f);
 #endif
-
         }
 
         protected override void Shutdown() { }

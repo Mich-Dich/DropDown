@@ -2,7 +2,9 @@ using Box2DX.Common;
 using Core;
 using Core.Controllers.player;
 using Core.input;
+using Core.util;
 using Core.world;
+using Microsoft.VisualBasic;
 using OpenTK.Mathematics;
 
 namespace DropDown.player {
@@ -12,6 +14,7 @@ namespace DropDown.player {
         public Core.Controllers.player.Action move { get; set; }
         public Core.Controllers.player.Action look { get; set; }
         public Core.Controllers.player.Action sprint { get; set; }
+        public Core.Controllers.player.Action interact { get; set; }
 
         public PC_Default(Character character)
             : base (character, null) {
@@ -58,6 +61,20 @@ namespace DropDown.player {
                 });
             AddInputAction(sprint);
 
+            
+            interact = new Core.Controllers.player.Action(
+                "shoot",
+                (uint)Action_ModefierFlags.auto_reset,
+                false,
+                ActionType.BOOL,
+                0f,
+                new List<KeyBindingDetail> {
+
+                    new(Key_Code.LeftMouseButton, ResetFlags.reset_on_key_down, TriggerFlags.key_down),
+                });
+            AddInputAction(interact);
+
+
             Game.Instance.camera.Add_Zoom_Offset(0.2f);
             Game.Instance.camera.zoom_offset = 0.2f;
         }
@@ -82,6 +99,20 @@ namespace DropDown.player {
 
             // look at mouse
             character.rotate_to_vector(Game.Instance.Get_Mouse_Relative_Pos());
+
+
+            if((bool)interact.GetValue()) {
+
+                List<Game_Object> intersected_game_objects = new List<Game_Object>();
+                character.perception_check(ref intersected_game_objects, (float.Pi/2),  16, 2, 60, true, 1.5f);
+                Console.WriteLine($"hit objects count: {intersected_game_objects.Count}");
+
+                foreach(var obj in intersected_game_objects) {
+
+                    Character buffer = (Character)(obj);
+                }
+
+            }
 
         }
 

@@ -2,6 +2,7 @@
 namespace Core.render {
 
     using Core.util;
+    using Core.world;
 
     public sealed class Animation {
 

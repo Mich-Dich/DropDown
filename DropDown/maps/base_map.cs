@@ -19,7 +19,7 @@ namespace DropDown {
             Generate_Bit_Map();
             Generate_Actual_Map();
 
-            for(int x = 0; x < 50; x++)
+            for(int x = 0; x < 150; x++)
                 spaw_enemy();
             for(int x = 0; x < 20; x++)
                 spaw_enemy_2();

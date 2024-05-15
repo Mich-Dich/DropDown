@@ -3,7 +3,6 @@ namespace Core.world {
 
     using Box2DX.Common;
     using Core.Controllers;
-    using Core.Controllers.ai;
     using Core.physics;
     using Core.render;
     using ImGuiNET;
@@ -65,21 +64,22 @@ namespace Core.world {
 
             Console.WriteLine($"character [{this}] was hit");
         }
-        
-        public void perception_check(ref List<Type> intersected_game_objects, int num_of_rays = 6, float angle = float.Pi, float look_distance = 800) {
+
+        public void perception_check(ref List<Game_Object> intersected_game_objects, float check_direction = 0, int num_of_rays = 6, float angle = float.Pi, float look_distance = 800, bool display_debug = false, float display_duration = 1f) {
 
             float angle_per_ray = angle / (float)(num_of_rays-1);
             for(int x = 0; x < num_of_rays; x++) {
 
-                var look_dir = Util.vector_from_angle(transform.rotation - rotation_offset - (angle/2) + (angle_per_ray * x));
+                var look_dir = Core.util.util.vector_from_angle(transform.rotation - rotation_offset + check_direction - (angle/2) + (angle_per_ray * x));
                 Vector2 start = transform.position + (look_dir * (transform.size.X/2));
                 Vector2 end = start + (look_dir * look_distance);
 
-                if(!Game.Instance.get_active_map().ray_cast(start, end, out Box2DX.Common.Vec2 intersection_point, out float distance, out var buffer, true, 0))
+                if(!Game.Instance.get_active_map().ray_cast(start, end, out Box2DX.Common.Vec2 intersection_point, out float distance, out var buffer, display_debug, display_duration))
                     continue;
                     
                 if(buffer != null)
-                    intersected_game_objects.Add(buffer.GetType());
+                    if(!intersected_game_objects.Contains(buffer))
+                        intersected_game_objects.Add(buffer);
             }
 
         }
@@ -94,7 +94,8 @@ namespace Core.world {
                 | ImGuiWindowFlags.NoNav
                 | ImGuiWindowFlags.NoMove;
 
-            ImGui.SetNextWindowPos(new System.Numerics.Vector2(665, 350));
+            System.Numerics.Vector2 position = Core.util.util.convert_Vector(Core.util.util.Convert_World_To_Screen_Coords(transform.position));
+            ImGui.SetNextWindowPos(position);
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(0));
             ImGui.Begin("test_helth_bar", window_flags);
             ImGui.ProgressBar(0.8f, new System.Numerics.Vector2(60, 5), string.Empty);
@@ -103,10 +104,8 @@ namespace Core.world {
         }
 
         // ================================================== private ==================================================
-        private float Lerp(float a, float b, float t)
-        {
-            return (1 - t) * a + t * b;
-        }
+        private float Lerp(float a, float b, float t) { return (1 - t) * a + t * b; }
+
         private I_Controller? controller;
 
     }

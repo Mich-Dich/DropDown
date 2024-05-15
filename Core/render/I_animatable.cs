@@ -1,9 +1,10 @@
-namespace Core.render
-{
-    public interface I_animatable
-    {
-        Animation? animation { get; set; }
+using Core.world;
 
+namespace Core.render {
+
+    public interface I_animatable {
+
+        Animation? animation { get; set; }
         float animationTimer { get; set; }
 
         /// <summary>

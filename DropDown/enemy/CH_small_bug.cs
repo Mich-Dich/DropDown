@@ -22,5 +22,12 @@ namespace DropDown.enemy {
             walk_anim = new animation_data("assets/animation/small_bug/walk.png", 8, 4, true, false, 80, true);
             idle_anim = new animation_data("assets/animation/small_bug/idle_01.png", 16, 10, true, false, 30, true);
         }
+
+        public override void Draw() {
+            base.Draw();
+
+            Display_Healthbar();
+        }
+
     }
 }

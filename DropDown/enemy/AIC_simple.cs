@@ -19,7 +19,7 @@ namespace DropDown.enemy {
 
     public class idle : I_AI_State {
 
-        List<Type> intersected_game_objects = new List<Type>();
+        List<Game_Object> intersected_game_objects = new List<Game_Object>();
         CH_base_NPC character;
 
         public bool Exit(AI_Controller aI_Controller) { return true; }
@@ -33,8 +33,8 @@ namespace DropDown.enemy {
         public Type Execute(AI_Controller aI_Controller) {
 
             intersected_game_objects.Clear();
-            character.perception_check(ref intersected_game_objects, character.ray_number, character.ray_cast_angle, character.ray_cast_range);
-            if (intersected_game_objects.Contains(Game.Instance.player.GetType()))
+            character.perception_check(ref intersected_game_objects, 0, character.ray_number, character.ray_cast_angle, character.ray_cast_range);
+            if (intersected_game_objects.Contains(Game.Instance.player))
                 return typeof(pursue_player);
 
             float player_distance = (Game.Instance.player.transform.position - character.transform.position).LengthFast;
@@ -51,7 +51,7 @@ namespace DropDown.enemy {
 
     public class pursue_player : I_AI_State {
         
-        List<Type> intersected_game_objects = new List<Type>();
+        List<Game_Object> intersected_game_objects = new List<Game_Object>();
         CH_base_NPC character;
 
         public bool Exit(AI_Controller aI_Controller) { return true; }
@@ -69,17 +69,16 @@ namespace DropDown.enemy {
             float player_distance = player_vec.LengthFast;
 
             intersected_game_objects.Clear();
-            character.perception_check(ref intersected_game_objects, character.ray_number, character.ray_cast_angle, character.ray_cast_range);
-            if(!intersected_game_objects.Contains(Game.Instance.player.GetType())
+            character.perception_check(ref intersected_game_objects, 0, character.ray_number, character.ray_cast_angle, character.ray_cast_range);
+            if(!intersected_game_objects.Contains(Game.Instance.player)
                 && player_distance > character.auto_detection_range)
                 return typeof(idle);
 
             if(player_distance < character.attack_range)
                 return typeof(attack_player);
 
-            if(Game.Instance.showDebug) {
+            if(Game.Instance.showDebug) 
                 basic_drawer.Draw_Circle(character.transform.position, character.auto_detection_range);
-            }
 
             player_vec.NormalizeFast();
             character.add_force(new Box2DX.Common.Vec2(player_vec.X, player_vec.Y) * character.movement_force * Game_Time.delta);
@@ -99,9 +98,9 @@ namespace DropDown.enemy {
 
             character = (CH_base_NPC)aI_Controller.character;
             character.set_animation_from_anim_data(character.attack_anim);
-            character.sprite.animation.add_animation_notification(character.attack_anim_notify_frame_index, () => {
+            character.sprite.animation.add_animation_notification(21, () => {
 
-                var look_dir = Util.vector_from_angle(character.transform.rotation - character.rotation_offset);
+                var look_dir = util.vector_from_angle(character.transform.rotation - character.rotation_offset);
                 Vector2 start = character.transform.position + (look_dir * (character.transform.size.X/2));
                 Vector2 end = start + (look_dir * (character.attack_range - (character.transform.size.X/2)));
 

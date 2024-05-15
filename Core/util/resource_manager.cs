@@ -1,5 +1,5 @@
-﻿namespace Core.util
-{
+﻿namespace Core.util {
+    using Core.render;
     using Core.render.shaders;
 
     public static class Resource_Manager

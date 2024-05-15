@@ -1,6 +1,6 @@
 ﻿
-namespace Core {
-
+namespace Core.render {
+    
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using StbImageSharp;
@@ -21,18 +21,18 @@ namespace Core {
                 throw new FileNotFoundException($"The file at path {path} could not be found. Current working directory is {workingDirectory}.");
             }
 
-            this.IsPixelArt = isPixelArt;
-            this.Handle = GL.GenTexture();
+            IsPixelArt = isPixelArt;
+            Handle = GL.GenTexture();
             StbImage.stbi_set_flip_vertically_on_load(1);
             ImageResult image = ImageResult.FromStream(File.OpenRead(path), ColorComponents.RedGreenBlueAlpha);
 
-            GL.BindTexture(TextureTarget.Texture2D, this.Handle);
+            GL.BindTexture(TextureTarget.Texture2D, Handle);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, image.Width, image.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, image.Data);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
-            if(this.IsPixelArt) {
+            if(IsPixelArt) {
 
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
@@ -45,17 +45,17 @@ namespace Core {
 
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            this.Width = image.Width;
-            this.Height = image.Height;
-            this.imageData = image.Data;
+            Width = image.Width;
+            Height = image.Height;
+            imageData = image.Data;
         }
 
         public Texture(Texture source, Vector2 min, Vector2 max) {
 
-            this.Width = (int)((max.X - min.X) * source.Width);
-            this.Height = (int)((max.Y - min.Y) * source.Height);
-            this.IsPixelArt = source.IsPixelArt;
-            this.Handle = source.Handle;
+            Width = (int)((max.X - min.X) * source.Width);
+            Height = (int)((max.Y - min.Y) * source.Height);
+            IsPixelArt = source.IsPixelArt;
+            Handle = source.Handle;
 
             int startX = (int)(min.X * source.Width);
             int startY = (int)(min.Y * source.Height);
@@ -63,33 +63,31 @@ namespace Core {
             int endY = (int)(max.Y * source.Height);
             int subImageWidth = endX - startX;
             int subImageHeight = endY - startY;
-            this.imageData = new byte[subImageWidth * subImageHeight * 4];
+            imageData = new byte[subImageWidth * subImageHeight * 4];
 
             byte[] sourceImageData = source.GetImageData();
-            for(int y = startY; y < endY; y++) {
-                for(int x = startX; x < endX; x++) {
+            for(int y = startY; y < endY; y++) for(int x = startX; x < endX; x++) {
 
-                    int sourceIndex = ((y * source.Width) + x) * 4;
-                    int subImageIndex = (((y - startY) * subImageWidth) + (x - startX)) * 4;
-                    Array.Copy(sourceImageData, sourceIndex, this.imageData, subImageIndex, 4);
+                    int sourceIndex = (y * source.Width + x) * 4;
+                    int subImageIndex = ((y - startY) * subImageWidth + (x - startX)) * 4;
+                    Array.Copy(sourceImageData, sourceIndex, imageData, subImageIndex, 4);
                 }
-            }
         }
 
         // ================================================================= public =================================================================
-        public void Dispose() { GL.DeleteTexture(this.Handle); }
+        public void Dispose() { GL.DeleteTexture(Handle); }
 
         public void Unbind() { GL.BindTexture(TextureTarget.Texture2D, 0); }
 
         public void Use(TextureUnit unit = TextureUnit.Texture0) {
 
             GL.ActiveTexture(unit);
-            GL.BindTexture(TextureTarget.Texture2D, this.Handle);
+            GL.BindTexture(TextureTarget.Texture2D, Handle);
         }
 
         // ================================================================= private =================================================================
-        
-        private byte[] GetImageData() { return this.imageData; }
+
+        private byte[] GetImageData() { return imageData; }
 
     }
 }
