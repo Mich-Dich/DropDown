@@ -37,10 +37,6 @@ namespace Core.world {
             sprite.animation.Play();
         }
 
-        /// <summary>
-        /// Sets the velocity of the character.
-        /// </summary>
-        /// <param name="new_velocity">The new velocity to set for the character.</param>
         public void Set_Velocity(Vector2 new_velocity) {
 
             if(this.collider != null)

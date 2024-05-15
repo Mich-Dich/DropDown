@@ -26,9 +26,9 @@ namespace Hell {
             this.playerController = new PC_Default(CH_player);
             this.player = CH_player;
             
-            this.activeMap = new Base_Map();
             this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
             this.camera.Set_Zoom(5.0f);
+            this.activeMap = new Base_Map(this.camera);
             this.activeMap.Set_Background_Image("assets/textures/background/Background.png");
 #if DEBUG
             showDebugData(true);
@@ -53,19 +53,17 @@ namespace Hell {
                 | ImGuiWindowFlags.NoSavedSettings
                 | ImGuiWindowFlags.NoFocusOnAppearing
                 | ImGuiWindowFlags.NoNav
-                | ImGuiWindowFlags.NoMove;
+                | ImGuiWindowFlags.NoMove
+                | ImGuiWindowFlags.NoBackground;
 
-            ImGui.SetNextWindowBgAlpha(1f);
-            ImGui.SetNextWindowPos(new System.Numerics.Vector2(-2, this.window.Size.Y-38), ImGuiCond.Always, new System.Numerics.Vector2(0,1));
-            ImGui.Begin("HUD_BotomLeft", window_flags);
+            ImGui.SetNextWindowBgAlpha(0f);
+            ImGui.SetNextWindowPos(new System.Numerics.Vector2(10, 10), ImGuiCond.Always, new System.Numerics.Vector2(0,0));
+            ImGui.Begin("HUD_TopLeft", window_flags);
 
             uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
-            uint col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.8f, 1));
-            uint col_black = ImGui.GetColorU32(new System.Numerics.Vector4(0f, 0f, 0f, 1f));
+            uint transparentColor = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
 
-            Imgui_Util.Progress_Bar_Stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.32f, 0.28f, 0.6f);
-            ImGui.Spacing();
-            Imgui_Util.Progress_Bar_Stylised(1f, new System.Numerics.Vector2(250, 15), col_blue, col_black, 0.32f, 0.28f, 0.6f);
+            Imgui_Util.Progress_Bar_Stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, transparentColor, 0.32f, 0.28f, 0.6f);
 
             ImGui.Spacing();
             Imgui_Util.Title("Score");
@@ -73,8 +71,6 @@ namespace Hell {
             Imgui_Util.Title("0");
 
             ImGui.End();
-
         }
-
     }
 }

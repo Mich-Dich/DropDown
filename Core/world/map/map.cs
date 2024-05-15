@@ -14,7 +14,7 @@ namespace Core.world.map {
 
         //public List<Game_Object> allCollidableGameObjects { get; set; } = new List<Game_Object>();
         private List<AI_Controller> all_AI_Controller = new List<AI_Controller>();
-        private List<Character> allCharacter { get; set; } = new List<Character>();
+        public List<Character> allCharacter { get; set; } = new List<Character>();
         private List<Game_Object> projectils { get; set; } = new List<Game_Object>();
 
         public readonly World physicsWorld;

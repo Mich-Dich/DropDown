@@ -10,19 +10,35 @@
     using Hell.weapon;
     using ImGuiNET;
     using OpenTK.Mathematics;
-    using System.Diagnostics;
+    using System;
+    using System.Timers;
 
     public class Base_Map : Map {
+        private Camera camera;
+        private Timer enemySpawnTimer;
+        private Random random;
 
-        public Base_Map() {
-            Base_Enemy enemy = new Base_Enemy();
-            Base_AI_Controller aiController = new Base_AI_Controller(enemy);
+        public Base_Map(Camera camera) {
+            this.camera = camera;
+            this.random = new Random();
 
-            Random random = new Random();
-            int offset_x = random.Next(64);
-            int offset_y = random.Next(64);
+            this.enemySpawnTimer = new Timer(random.Next(1000, 5000));
+            this.enemySpawnTimer.Elapsed += SpawnEnemy;
+            this.enemySpawnTimer.AutoReset = true;
+            this.enemySpawnTimer.Start();
+        }
 
-            this.Add_Character(aiController, new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize), 0);
+        private void SpawnEnemy(object sender, ElapsedEventArgs e) {
+            Vector2 viewSize = camera.Get_View_Size_In_World_Coord();
+
+            int offset_y = random.Next((int)viewSize.Y);
+            int offset_x = random.Next((int)viewSize.X);
+           
+            this.Add_Character(new AIC_simple(new CH_test_enemy()),
+                new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
+                random.NextSingle() * (float)Math.PI * 2);
+
+            this.enemySpawnTimer.Interval = random.Next(1000, 5000);
         }
     }
 }

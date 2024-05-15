@@ -17,7 +17,6 @@ namespace DropDown.enemy {
         }
     }
 
-
     public class idle : I_AI_State {
 
         List<Type> intersected_game_objects = new List<Type>();
@@ -49,28 +48,6 @@ namespace DropDown.enemy {
             return typeof(idle);
         }
     }
-
-
-    //public class search : I_AI_State {
-
-    //    public bool Exit(AI_Controller aI_Controller) { return true; }
-    //    public bool Enter(AI_Controller aI_Controller) {
-
-    //        aI_Controller.character.sprite.set_animation("assets/animation/small_bug/idle_01.png", 16, 10, true, false, 30, true);
-    //        return true;
-    //    }
-
-    //    public Type Execute(AI_Controller aI_Controller) {
-
-    //        // look for player distance
-    //        float player_distance = (Game.Instance.player.transform.position - aI_Controller.character.transform.position).LengthFast;
-    //        if(player_distance < 700)
-    //            return typeof(pursue_player);
-
-    //        return typeof(idle);
-    //    }
-    //}
-
 
     public class pursue_player : I_AI_State {
         
