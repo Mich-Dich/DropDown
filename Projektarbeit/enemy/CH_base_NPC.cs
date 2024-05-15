@@ -1,12 +1,8 @@
 ﻿
 namespace Hell.enemy {
 
-    using Box2DX.Common;
-    using Core;
     using Core.physics;
-    using Core.util;
     using Core.world;
-    using Hell.weapon;
     using OpenTK.Mathematics;
 
     public class CH_base_NPC : Character{
@@ -25,6 +21,19 @@ namespace Hell.enemy {
 
         }
 
+        public override void draw_imgui() {
+            base.draw_imgui();
+
+            if((health / health_max) < 1 && health > 0)
+                Display_Healthbar();
+        }
+
+        public override void Hit(hitData hit) {
+            health -= hit.hit_force;
+
+            base.Hit(hit);
+        }
+
         public float damage = 15;
         public int ray_number = 15;
         public float ray_cast_range = 800;
@@ -32,13 +41,12 @@ namespace Hell.enemy {
         public float auto_detection_range = 400;
         public float attack_range = 150;
 
-        private float last_shoot_time = 0f;
-        private float shoot_interval = 0.4f; // Interval in seconds
-
-        public animation_data attack_anim = new animation_data("assets/animation/enemy/enemy.png", 1, 5, true, false, 10, true);
-        public animation_data walk_anim = new animation_data("assets/animation/enemy/enemy.png", 1, 5, true, false, 10, true);
-        public animation_data idle_anim = new animation_data("assets/animation/enemy/enemy.png", 1, 5, true, false, 10, true);
-
+        public int attack_anim_notify_frame_index = 21;
+        public animation_data attack_anim = new animation_data("assets/animation/small_bug/attack_01.png", 8, 3, true, false, 30, true);
+        public animation_data walk_anim = new animation_data("assets/animation/small_bug/walk.png", 8, 4, true, false, 80, true);
+        public animation_data idle_anim = new animation_data("assets/animation/small_bug/idle_01.png", 16, 10, true, false, 30, true);
+        public animation_data death_anim = new animation_data("assets/animation/small_bug/idle_01.png", 16, 10, false, false, 30, true);
+        
         public void set_animation_from_anim_data(animation_data animation_data) {
 
             sprite.set_animation(
@@ -51,51 +59,7 @@ namespace Hell.enemy {
                 animation_data.loop);
         }
 
-        public virtual void shoot_bullet_pattern() {
-            try {
-                if(Game_Time.total - last_shoot_time >= shoot_interval) {
-                
-                    Vector2 npcLocation = this.transform.position;
-                    Vec2 npcDirectionVec2 = this.collider.body.GetLinearVelocity();
-                    npcDirectionVec2.Normalize();
-                    Vector2 npcDirection = new Vector2(npcDirectionVec2.X, npcDirectionVec2.Y);
-                    Game.Instance.get_active_map().Add_Game_Object(new TestProjectile(npcLocation, npcDirection));
-                    last_shoot_time = Game_Time.total;
-                }
-            } catch (Exception ex) {
-                Console.WriteLine($"An error occurred in shoot_bullet_pattern: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
-            }
-        }
-
-        public virtual void execute_movement_pattern(float deltaTime) {
-            try {
-                float radius = 100;
-                float speed = 1;
-                float newAngle = (speed * deltaTime) % (2 * MathF.PI);
-
-                Vector2 newPosition = new Vector2(
-                    this.transform.position.X + radius * MathF.Cos(newAngle),
-                    this.transform.position.Y + radius * MathF.Sin(newAngle)
-                );
-
-                this.transform.position = newPosition;
-            } catch (Exception ex) {
-                Console.WriteLine($"An error occurred in execute_movement_pattern: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
-            }
-        }
-
-        public virtual bool ready_to_exit_screen() {
-            return this.health <= 0;
-        }
-
-        public virtual void execute_exit_screen_movement(float deltaTime) {
-            this.transform.position = new Vector2(this.transform.position.X - this.movement_speed * deltaTime, this.transform.position.Y);
-        }
     }
-
-    
 
     public struct animation_data {
 
@@ -107,11 +71,11 @@ namespace Hell.enemy {
         public int fps = 30;
         public bool loop = false;
 
-        public animation_data(String path_to_texture_atlas, Int32 num_of_rows, Int32 num_of_columns, Boolean start_playing, Boolean is_pixel_art, Int32 fps, Boolean loop) {
+        public animation_data(String path_to_texture_atlas, Int32 num_of_colums, Int32 num_of_rows, Boolean start_playing, Boolean is_pixel_art, Int32 fps, Boolean loop) {
 
             this.path_to_texture_atlas = path_to_texture_atlas;
-            this.num_of_rows = num_of_rows;
-            this.num_of_columns = num_of_columns;
+            this.num_of_rows = num_of_colums;
+            this.num_of_columns = num_of_rows;
             this.start_playing = start_playing;
             this.is_pixel_art = is_pixel_art;
             this.fps = fps;
