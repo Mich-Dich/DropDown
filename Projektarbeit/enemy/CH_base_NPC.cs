@@ -52,30 +52,38 @@ namespace Hell.enemy {
         }
 
         public virtual void shoot_bullet_pattern() {
-
-            if(Game_Time.total - last_shoot_time >= shoot_interval) {
-            
-                Vector2 npcLocation = this.transform.position;
-                Vec2 npcDirectionVec2 = this.collider.body.GetLinearVelocity();
-                npcDirectionVec2.Normalize();
-                Vector2 npcDirection = new Vector2(npcDirectionVec2.X, npcDirectionVec2.Y);
-                Game.Instance.get_active_map().Add_Game_Object(new TestProjectile(npcLocation, npcDirection));
-                last_shoot_time = Game_Time.total;
+            try {
+                if(Game_Time.total - last_shoot_time >= shoot_interval) {
+                
+                    Vector2 npcLocation = this.transform.position;
+                    Vec2 npcDirectionVec2 = this.collider.body.GetLinearVelocity();
+                    npcDirectionVec2.Normalize();
+                    Vector2 npcDirection = new Vector2(npcDirectionVec2.X, npcDirectionVec2.Y);
+                    Game.Instance.get_active_map().Add_Game_Object(new TestProjectile(npcLocation, npcDirection));
+                    last_shoot_time = Game_Time.total;
+                }
+            } catch (Exception ex) {
+                Console.WriteLine($"An error occurred in shoot_bullet_pattern: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
             }
         }
 
         public virtual void execute_movement_pattern(float deltaTime) {
+            try {
+                float radius = 100;
+                float speed = 1;
+                float newAngle = (speed * deltaTime) % (2 * MathF.PI);
 
-            float radius = 100;
-            float speed = 1;
-            float newAngle = (speed * deltaTime) % (2 * MathF.PI);
+                Vector2 newPosition = new Vector2(
+                    this.transform.position.X + radius * MathF.Cos(newAngle),
+                    this.transform.position.Y + radius * MathF.Sin(newAngle)
+                );
 
-            Vector2 newPosition = new Vector2(
-                this.transform.position.X + radius * MathF.Cos(newAngle),
-                this.transform.position.Y + radius * MathF.Sin(newAngle)
-            );
-
-            this.transform.position = newPosition;
+                this.transform.position = newPosition;
+            } catch (Exception ex) {
+                Console.WriteLine($"An error occurred in execute_movement_pattern: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+            }
         }
 
         public virtual bool ready_to_exit_screen() {

@@ -11,8 +11,12 @@ namespace Hell.enemy {
 
         public AIC_simple(Character character)
             : base(character) {
-
-            Set_Statup_State(typeof(EnterScreen));
+            try {
+                Set_Statup_State(typeof(EnterScreen));
+            } catch (Exception ex) {
+                Console.WriteLine($"An error occurred in AIC_simple constructor: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+            }
         }
     }
 
