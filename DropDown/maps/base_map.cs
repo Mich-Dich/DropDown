@@ -4,6 +4,7 @@ namespace DropDown {
     using Core;
     using Core.render;
     using Core.util;
+    using Core.world;
     using Core.world.map;
     using DropDown.enemy;
     using ImGuiNET;
@@ -19,7 +20,7 @@ namespace DropDown {
             Generate_Bit_Map();
             Generate_Actual_Map();
 
-            for(int x = 0; x < 150; x++)
+            for(int x = 0; x < 80; x++)
                 spaw_enemy();
             for(int x = 0; x < 20; x++)
                 spaw_enemy_2();
@@ -31,6 +32,7 @@ namespace DropDown {
         }
 
         public override void Draw_Imgui() {
+            base.Draw_Imgui();
 
             Imgui_Diaplay_Level_Bit_Map();
         }
@@ -164,7 +166,7 @@ namespace DropDown {
 
                     double probebilits = rnd.NextDouble();
                     if(probebilits < 0.05f) {
-
+                        
                         this.Add_Background_Sprite(
                             new Sprite(textureBuffer).Select_Texture_Region(32, 64, 3, 5 ),
                             new Vector2((y - totalBits/2) * this.cellSize, (x - totalBits/2) * this.cellSize));

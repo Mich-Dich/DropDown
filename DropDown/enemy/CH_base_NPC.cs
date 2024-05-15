@@ -1,11 +1,9 @@
 ﻿
-using Core.physics;
-using Core.render;
-using Core.util;
-using Core.world;
-using OpenTK.Mathematics;
-
 namespace DropDown.enemy {
+
+    using Core.physics;
+    using Core.world;
+    using OpenTK.Mathematics;
 
     public class CH_base_NPC : Character{
 
@@ -23,6 +21,19 @@ namespace DropDown.enemy {
 
         }
 
+        public override void draw_imgui() {
+            base.draw_imgui();
+
+            if((health / health_max) < 1 && health > 0)
+                Display_Healthbar();
+        }
+
+        public override void Hit(hitData hit) {
+            health -= hit.hit_force;
+
+            base.Hit(hit);
+        }
+
         public float damage = 15;
         public int ray_number = 15;
         public float ray_cast_range = 800;
@@ -34,6 +45,7 @@ namespace DropDown.enemy {
         public animation_data attack_anim = new animation_data("assets/animation/small_bug/attack_01.png", 8, 3, true, false, 30, true);
         public animation_data walk_anim = new animation_data("assets/animation/small_bug/walk.png", 8, 4, true, false, 80, true);
         public animation_data idle_anim = new animation_data("assets/animation/small_bug/idle_01.png", 16, 10, true, false, 30, true);
+        public animation_data death_anim = new animation_data("assets/animation/small_bug/idle_01.png", 16, 10, false, false, 30, true);
         
         public void set_animation_from_anim_data(animation_data animation_data) {
 

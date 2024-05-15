@@ -1,7 +1,6 @@
 using Box2DX.Common;
 using Core;
 using Core.Controllers.player;
-using Core.input;
 using Core.util;
 using Core.world;
 using Hell.weapon;

@@ -1,14 +1,13 @@
 ﻿
-using Core.physics;
-using Core.render;
-using Core.util;
-using Core.world;
-using Core;
-using Box2DX.Common;
-using Hell.weapon;
-using OpenTK.Mathematics;
-
 namespace Hell.enemy {
+
+    using Box2DX.Common;
+    using Core;
+    using Core.physics;
+    using Core.util;
+    using Core.world;
+    using Hell.weapon;
+    using OpenTK.Mathematics;
 
     public class CH_base_NPC : Character{
 
@@ -53,7 +52,9 @@ namespace Hell.enemy {
         }
 
         public virtual void shoot_bullet_pattern() {
+
             if(Game_Time.total - last_shoot_time >= shoot_interval) {
+            
                 Vector2 npcLocation = this.transform.position;
                 Vec2 npcDirectionVec2 = this.collider.body.GetLinearVelocity();
                 npcDirectionVec2.Normalize();
@@ -64,9 +65,9 @@ namespace Hell.enemy {
         }
 
         public virtual void execute_movement_pattern(float deltaTime) {
+
             float radius = 100;
             float speed = 1;
-
             float newAngle = (speed * deltaTime) % (2 * MathF.PI);
 
             Vector2 newPosition = new Vector2(

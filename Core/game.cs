@@ -4,7 +4,6 @@ namespace Core {
     using System;
     using System.Diagnostics;
     using Core.Controllers.player;
-    using Core.input;
     using Core.render;
     using Core.render.shaders;
     using Core.util;

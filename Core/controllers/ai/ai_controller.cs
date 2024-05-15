@@ -43,6 +43,16 @@ namespace Core.Controllers.ai {
             this.character.Update(delta_time);
         }
 
+        public void force_set_state(Type state) {
+
+            string newState = this.Select_State_To_Execute(state);
+            if(this.currentState != newState) {
+                this.allStates[this.currentState].Exit(this);
+                this.allStates[newState].Enter(this);
+            }
+            this.currentState = newState;
+        }
+
         // ------------------------------------------ private ------------------------------------------
         private string Select_State_To_Execute(Type state) {
 

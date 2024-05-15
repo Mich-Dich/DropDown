@@ -93,8 +93,9 @@ namespace Core.util {
             System.Numerics.Vector2 loc_size = size ?? new System.Numerics.Vector2(150, 20);
 
             ImGui.PushStyleColor(ImGuiCol.PlotHistogram, color);
+            ImGui.PushStyleColor(ImGuiCol.FrameBg, background_color);
             ImGui.ProgressBar(ratio, loc_size, string.Empty);
-            ImGui.PopStyleColor();
+            ImGui.PopStyleColor(2);
 
             float partial_height = loc_size.Y * height_of_mini_bar;
             float partial_width = loc_size.X * length_of_mini_bar;

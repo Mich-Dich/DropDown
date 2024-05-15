@@ -93,6 +93,9 @@
     <None Update="assets\animation\small_bug\attack_01\0024.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\animation\small_bug\death.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\animation\small_bug\idle.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -913,6 +916,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="assets\animation\spider\attack_01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\animation\spider\death.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="assets\animation\spider\idle.png">

@@ -2,7 +2,6 @@
 namespace DropDown.player {
 
     using Core.physics;
-    using Core.render;
     using Core.util;
     using Core.world;
     using OpenTK.Mathematics;

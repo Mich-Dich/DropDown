@@ -128,6 +128,8 @@ namespace Core.world {
 
         public virtual void Update(float deltaTime) { }
 
+        public virtual void draw_imgui() { }
+
         public virtual void Draw() {
 
             if(this.sprite == null) 

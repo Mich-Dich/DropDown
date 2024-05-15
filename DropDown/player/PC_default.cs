@@ -1,13 +1,13 @@
-using Box2DX.Common;
-using Core;
-using Core.Controllers.player;
-using Core.input;
-using Core.util;
-using Core.world;
-using Microsoft.VisualBasic;
-using OpenTK.Mathematics;
 
 namespace DropDown.player {
+
+    using Box2DX.Common;
+    using Core;
+    using Core.Controllers.player;
+    using Core.physics;
+    using Core.util;
+    using Core.world;
+    using OpenTK.Mathematics;
 
     public class PC_Default : Player_Controller {
 
@@ -91,14 +91,15 @@ namespace DropDown.player {
                 Vector2 direction = Vector2.NormalizeFast((Vector2)move.GetValue());
                 character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * deltaTime);
             }
-            
             // camera follows player
             Game.Instance.camera.transform.position = character.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
-
-            Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);
-
+            
             // look at mouse
             character.rotate_to_vector(Game.Instance.Get_Mouse_Relative_Pos());
+            
+            // set zoom
+            Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);
+
 
 
             if((bool)interact.GetValue()) {
@@ -110,6 +111,7 @@ namespace DropDown.player {
                 foreach(var obj in intersected_game_objects) {
 
                     Character buffer = (Character)(obj);
+                    buffer.Hit(new hitData(20));
                 }
 
             }

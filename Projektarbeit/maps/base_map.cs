@@ -1,14 +1,7 @@
 ﻿namespace Hell {
-
-    using Core;
-    using Core.physics;
-    using Core.render;
-    using Core.util;
     using Core.world;
     using Core.world.map;
     using Hell.enemy;
-    using Hell.weapon;
-    using ImGuiNET;
     using OpenTK.Mathematics;
     using System;
     using System.Timers;
@@ -35,10 +28,11 @@
             int offset_x = random.Next((int)viewSize.X);
            
             this.Add_Character(new AIC_simple(new CH_test_enemy()),
-                new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
+                new Vector2(100, 100),
                 random.NextSingle() * (float)Math.PI * 2);
 
             this.enemySpawnTimer.Interval = random.Next(1000, 5000);
         }
+
     }
 }

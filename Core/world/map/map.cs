@@ -85,7 +85,15 @@ namespace Core.world.map {
             }
         }
 
-        public virtual void Draw_Imgui() { }
+        public virtual void Draw_Imgui() {
+
+
+            foreach(var character in this.allCharacter)
+                character.draw_imgui();
+
+            for(int x = 0; x < this.world.Count; x++)
+                this.world[x].draw_imgui();
+        }
 
         [Obsolete("")]
         public void Add_Game_Object(Game_Object game_object) { this.world.Add(game_object); }

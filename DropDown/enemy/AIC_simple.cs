@@ -5,7 +5,6 @@ namespace DropDown.enemy {
     using Core.Controllers.ai;
     using Core.util;
     using Core.world;
-    using Core.render;
     using OpenTK.Mathematics;
 
     public class AIC_simple : AI_Controller {
@@ -14,7 +13,26 @@ namespace DropDown.enemy {
             : base(character) {
 
             Set_Statup_State(typeof(idle));
+         
+            character.death_callback = () => { force_set_state(typeof(death)); };
         }
+    }
+
+
+    public class death : I_AI_State {
+
+        CH_base_NPC character;
+
+        public bool Exit(AI_Controller aI_Controller) { return true; }
+        public bool Enter(AI_Controller aI_Controller) {
+
+            Console.WriteLine($"DEATH");
+            character = (CH_base_NPC)aI_Controller.character;
+            character.set_animation_from_anim_data(character.death_anim);
+            return true;
+        }
+
+        public Type Execute(AI_Controller aI_Controller) { return typeof(death); }
     }
 
     public class idle : I_AI_State {
@@ -41,9 +59,8 @@ namespace DropDown.enemy {
             if(player_distance < character.auto_detection_range)
                 return typeof(pursue_player);
 
-            if(Game.Instance.showDebug) {
-                basic_drawer.Draw_Circle(character.transform.position, character.auto_detection_range);   
-            }
+            //if(Game.Instance.showDebug) 
+            //    basic_drawer.Draw_Circle(character.transform.position, character.auto_detection_range);   
             
             return typeof(idle);
         }
@@ -77,8 +94,8 @@ namespace DropDown.enemy {
             if(player_distance < character.attack_range)
                 return typeof(attack_player);
 
-            if(Game.Instance.showDebug) 
-                basic_drawer.Draw_Circle(character.transform.position, character.auto_detection_range);
+            //if(Game.Instance.showDebug) 
+            //    basic_drawer.Draw_Circle(character.transform.position, character.auto_detection_range);
 
             player_vec.NormalizeFast();
             character.add_force(new Box2DX.Common.Vec2(player_vec.X, player_vec.Y) * character.movement_force * Game_Time.delta);

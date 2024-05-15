@@ -1,7 +1,8 @@
 
 namespace DropDown {
-
+    using Core;
     using Core.util;
+    using DropDown.enemy;
     using DropDown.player;
     using ImGuiNET;
     using OpenTK.Graphics.OpenGL4;
@@ -29,7 +30,7 @@ namespace DropDown {
 #if DEBUG
             Show_Performance(true);
             showDebugData(true);
-            this.camera.Set_min_Max_Zoom(0.01f, 1.4f);
+            this.camera.Set_min_Max_Zoom(0.03f, 1.4f);
 #endif
         }
 
@@ -74,7 +75,48 @@ namespace DropDown {
 
             ImGui.End();
 
+            //{
+
+            //    ImGui.Begin("progress bar test variable");
+            //    Imgui_Util.Begin_Table("sdfgsdfg");
+            //    Imgui_Util.Add_Table_Row("fraction", ref test_fraction, 0.1f, 0, 1);
+            //    Imgui_Util.Add_Table_Row("width", ref test_width, 1, 0, 200);
+            //    Imgui_Util.Add_Table_Row("height", ref test_height, 1, 0, 200);
+
+            //    Imgui_Util.Add_Table_Row("length_of_mini_bar", ref test_length_of_mini_bar, 0.01f, 0, 1);
+            //    Imgui_Util.Add_Table_Row("height_of_mini_bar", ref test_height_of_mini_bar, 0.01f, 0, 1);
+            //    Imgui_Util.Add_Table_Row("slope", ref test_slope, 0.01f, 0, 1);
+            //    Imgui_Util.End_Table();
+            //    ImGui.End();
+
+            //    string UniqueId = $"Helthbar_for_character_{this.GetHashCode()}";
+            //    System.Numerics.Vector2 display_size = new System.Numerics.Vector2(test_width, test_height);
+
+            //    ImGuiWindowFlags window_flagsasdasd = ImGuiWindowFlags.NoDecoration
+            //    | ImGuiWindowFlags.NoDocking
+            //    | ImGuiWindowFlags.AlwaysAutoResize
+            //    | ImGuiWindowFlags.NoSavedSettings
+            //    | ImGuiWindowFlags.NoFocusOnAppearing
+            //    | ImGuiWindowFlags.NoNav;
+
+            //    ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(5));
+            //    ImGui.Begin(UniqueId, window_flagsasdasd);
+
+            //    Imgui_Util.Progress_Bar_Stylised(test_fraction, display_size, col_red, col_black, test_length_of_mini_bar, test_height_of_mini_bar, test_slope);
+
+            //    ImGui.End();
+            //    ImGui.PopStyleVar();
+            //}
         }
+
+        //public float test_fraction = 0.8f;
+        //public float test_width = 110;
+        //public float test_height = 12;
+        //public float test_length_of_mini_bar = 0f;
+        //public float test_height_of_mini_bar= 0f;
+        //public float test_slope= 0.3f;
+
+        // length_of_mini_bar = 0.3f, float height_of_mini_bar = 0.3f, float slope
 
     }
 }

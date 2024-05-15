@@ -5,6 +5,7 @@ namespace Core.world {
     using Core.Controllers;
     using Core.physics;
     using Core.render;
+    using Core.util;
     using ImGuiNET;
     using OpenTK.Mathematics;
 
@@ -16,11 +17,9 @@ namespace Core.world {
         public float movement_force_max { get; set; } = 100000.0f;
         public float health { get; set; } = 100;
         public float health_max { get; set; } = 100;
+        public Action death_callback { get; set; }
 
-        public Character() {
-
-            // this.set_sprite(new visual.sprite(resource_manager.get_texture("./assets/textures/Spaceship/Spaceship.png")));
-        }
+        public Character() { }
 
         public void Set_Controller(I_Controller controller) {
 
@@ -62,7 +61,8 @@ namespace Core.world {
 
         public override void Hit(hitData hit) {
 
-            Console.WriteLine($"character [{this}] was hit");
+            if(health <= 0 && death_callback != null)
+                death_callback();
         }
 
         public void perception_check(ref List<Game_Object> intersected_game_objects, float check_direction = 0, int num_of_rays = 6, float angle = float.Pi, float look_distance = 800, bool display_debug = false, float display_duration = 1f) {
@@ -84,7 +84,11 @@ namespace Core.world {
 
         }
 
-        public void Display_Healthbar() {
+        public void Display_Healthbar(System.Numerics.Vector2? display_size = null) {
+
+            string UniqueId = $"Helthbar_for_character_{this.GetHashCode()}";
+            if (display_size == null)
+                display_size = new System.Numerics.Vector2(healthbar_width, healthbar_height);
 
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
                 | ImGuiWindowFlags.NoDocking
@@ -95,16 +99,34 @@ namespace Core.world {
                 | ImGuiWindowFlags.NoMove;
 
             System.Numerics.Vector2 position = Core.util.util.convert_Vector(Core.util.util.Convert_World_To_Screen_Coords(transform.position));
-            ImGui.SetNextWindowPos(position);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(0));
-            ImGui.Begin("test_helth_bar", window_flags);
-            ImGui.ProgressBar(0.8f, new System.Numerics.Vector2(60, 5), string.Empty);
+            ImGui.SetNextWindowPos(position - (display_size.Value/2));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(4));
+            ImGui.Begin(UniqueId, window_flags);
+
+            Imgui_Util.Progress_Bar_Stylised(health / health_max, 
+                display_size,
+                (health / health_max) > 0.3f ? healthbar_col_default : healthbar_col_almost_dead,
+                healthbar_col_background,
+                healthbar_length_of_mini_bar,
+                healthbar_height_of_mini_bar,
+                healthbar_slope);
+
             ImGui.End();
             ImGui.PopStyleVar();
         }
 
+        // healthbar
+        public float healthbar_width = 110;
+        public float healthbar_height = 10;
+        public float healthbar_length_of_mini_bar = 0f;
+        public float healthbar_height_of_mini_bar= 0f;
+        public float healthbar_slope= 0.35f;
+
+        uint healthbar_col_default = 4291572531;         // BLUE    => 0.2f,    0.2f,   0.8f,   1f
+        uint healthbar_col_almost_dead = 4281545702;     // RED     => 0.9f,    0.2f,   0.2f,   1f
+        uint healthbar_col_background = 4278190080;      // BLACK   => 0f,      0f,     0f,     1f
+
         // ================================================== private ==================================================
-        private float Lerp(float a, float b, float t) { return (1 - t) * a + t * b; }
 
         private I_Controller? controller;
 
