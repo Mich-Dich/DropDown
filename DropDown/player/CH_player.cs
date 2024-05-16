@@ -15,6 +15,7 @@ namespace DropDown.player {
 
             health = 100;
             health_max = 100;
+            auto_heal_amout = 4;
 
             transform.size = new Vector2(100);
             Set_Sprite(new Sprite(Resource_Manager.Get_Texture("assets/textures/player/00.png")));

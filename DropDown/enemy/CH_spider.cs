@@ -16,6 +16,7 @@ namespace DropDown.enemy {
             movement_force = 80000000;
             damage = 15;
 
+            auto_heal_amout = 2;
             health = 160;
             health_max = 160;
             

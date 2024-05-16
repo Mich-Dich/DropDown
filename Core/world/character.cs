@@ -119,11 +119,8 @@ namespace Core.world {
         public override void Update(Single deltaTime) {
             base.Update(deltaTime);
 
-            if(health < health_max) {
-
+            if(health < health_max)
                 health += (auto_heal_amout * deltaTime);
-                Console.WriteLine($"healing");
-            }
         }
 
         // healthbar

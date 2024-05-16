@@ -116,6 +116,7 @@ namespace Core {
                 this.camera = new(Vector2.Zero, this.window.Size, 0.5f);
                 this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
                 this.camera.Set_Zoom(5.0f);
+                this.InitImGuiController();
 
                 this.Init();
 
@@ -133,8 +134,6 @@ namespace Core {
                 // ----------------------------------- finish setup -----------------------------------
                 this.playerController.character = this.player;
                 this.activeMap.Add_empty_Character(this.player);
-
-                this.InitImGuiController();
                 this.window.IsVisible = true;
             };
 
