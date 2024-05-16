@@ -13,7 +13,12 @@ namespace DropDown.enemy {
             : base(character) {
 
             Set_Statup_State(typeof(idle));
-            character.death_callback = () => { force_set_state(typeof(death)); };
+            character.death_callback = () => { 
+                
+                force_set_state(typeof(death)); 
+                character.health = 0;
+                character.auto_heal_amout = 0;
+            };
         }
     }
 

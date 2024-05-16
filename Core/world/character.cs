@@ -15,6 +15,7 @@ namespace Core.world {
         public float movement_speed_max { get; set; } = 100.0f;
         public float movement_force { get; set; } = 100000.0f;
         public float movement_force_max { get; set; } = 100000.0f;
+        public float auto_heal_amout { get; set; } = 5;
         public float health { get; set; } = 100;
         public float health_max { get; set; } = 100;
         public Action death_callback { get; set; }
@@ -113,6 +114,16 @@ namespace Core.world {
 
             ImGui.End();
             ImGui.PopStyleVar();
+        }
+
+        public override void Update(Single deltaTime) {
+            base.Update(deltaTime);
+
+            if(health < health_max) {
+
+                health += (auto_heal_amout * deltaTime);
+                Console.WriteLine($"healing");
+            }
         }
 
         // healthbar

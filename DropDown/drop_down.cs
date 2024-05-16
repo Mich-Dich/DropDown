@@ -1,13 +1,13 @@
 
 namespace DropDown {
+
     using Core;
+    using Core.render;
     using Core.util;
-    using DropDown.enemy;
     using DropDown.player;
     using ImGuiNET;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
-
 
     internal class Drop_Down : Core.Game {
 
@@ -15,16 +15,19 @@ namespace DropDown {
             : base(title, initalWindowWidth, initalWindowHeight) { }
 
         private CH_player CH_player;
+        private Texture image;
+
+        private System.Numerics.Vector2 screen_size_buffer;
 
         // ========================================================= functions =========================================================
         protected override void Init() {
-            
+
             GL.ClearColor(new Color4(.05f, .05f, .05f, 1f));
             Set_Update_Frequency(144.0f);
             CH_player = new CH_player();
             this.playerController = new PC_Default(CH_player);
             this.player = CH_player;
-            this.activeMap = new Base_Map();
+            this.activeMap = new MAP_base();
             this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
             this.camera.Set_Zoom(5.0f);
 #if DEBUG
@@ -32,19 +35,26 @@ namespace DropDown {
             showDebugData(true);
             this.camera.Set_min_Max_Zoom(0.03f, 1.4f);
 #endif
+            image = Resource_Manager.Get_Texture("assets/textures/BloodOverlay.png");
         }
 
         protected override void Shutdown() { }
 
         protected override void Update(float deltaTime) { }
 
-        protected override void Window_Resize() { this.camera.Set_Zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset); }
+        protected override void Window_Resize() {
+
+            base.Window_Resize();
+            screen_size_buffer = util.convert_Vector(Game.Instance.window.ClientSize + new Vector2(3));
+        }
 
         protected override void Render(float deltaTime) { }
-        
+
         protected override void Render_Imgui(float deltaTime) {
 
-            //ImGui.ShowStyleEditor();
+            display_blood_overlay(deltaTime);
+
+            ImGui.ShowStyleEditor();
 
             // HUD
             ImGuiIOPtr io = ImGui.GetIO();
@@ -57,66 +67,67 @@ namespace DropDown {
                 | ImGuiWindowFlags.NoMove;
 
             ImGui.SetNextWindowBgAlpha(1f);
-            ImGui.SetNextWindowPos(new System.Numerics.Vector2(-2, this.window.Size.Y-38), ImGuiCond.Always, new System.Numerics.Vector2(0,1));
+            ImGui.SetNextWindowPos(new System.Numerics.Vector2(-2, this.window.Size.Y - 38), ImGuiCond.Always, new System.Numerics.Vector2(0, 1));
             ImGui.Begin("HUD_BotomLeft", window_flags);
+            {
+                uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
+                uint col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.8f, 1));
+                uint col_black = ImGui.GetColorU32(new System.Numerics.Vector4(0f, 0f, 0f, 1f));
 
-            uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
-            uint col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.8f, 1));
-            uint col_black = ImGui.GetColorU32(new System.Numerics.Vector4(0f, 0f, 0f, 1f));
+                Imgui_Util.Progress_Bar_Stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.32f, 0.28f, 0.6f);
+                ImGui.Spacing();
+                Imgui_Util.Progress_Bar_Stylised(1f, new System.Numerics.Vector2(250, 15), col_blue, col_black, 0.32f, 0.28f, 0.6f);
 
-            Imgui_Util.Progress_Bar_Stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.32f, 0.28f, 0.6f);
-            ImGui.Spacing();
-            Imgui_Util.Progress_Bar_Stylised(1f, new System.Numerics.Vector2(250, 15), col_blue, col_black, 0.32f, 0.28f, 0.6f);
-
-            ImGui.Spacing();
-            Imgui_Util.Title("{weapon image}");
-            ImGui.SameLine();
-            Imgui_Util.Title("10/10");
-
+                ImGui.Spacing();
+                Imgui_Util.Title("{weapon image}");
+                ImGui.SameLine();
+                Imgui_Util.Title("10/10");
+            }
             ImGui.End();
 
-            //{
-
-            //    ImGui.Begin("progress bar test variable");
-            //    Imgui_Util.Begin_Table("sdfgsdfg");
-            //    Imgui_Util.Add_Table_Row("fraction", ref test_fraction, 0.1f, 0, 1);
-            //    Imgui_Util.Add_Table_Row("width", ref test_width, 1, 0, 200);
-            //    Imgui_Util.Add_Table_Row("height", ref test_height, 1, 0, 200);
-
-            //    Imgui_Util.Add_Table_Row("length_of_mini_bar", ref test_length_of_mini_bar, 0.01f, 0, 1);
-            //    Imgui_Util.Add_Table_Row("height_of_mini_bar", ref test_height_of_mini_bar, 0.01f, 0, 1);
-            //    Imgui_Util.Add_Table_Row("slope", ref test_slope, 0.01f, 0, 1);
-            //    Imgui_Util.End_Table();
-            //    ImGui.End();
-
-            //    string UniqueId = $"Helthbar_for_character_{this.GetHashCode()}";
-            //    System.Numerics.Vector2 display_size = new System.Numerics.Vector2(test_width, test_height);
-
-            //    ImGuiWindowFlags window_flagsasdasd = ImGuiWindowFlags.NoDecoration
-            //    | ImGuiWindowFlags.NoDocking
-            //    | ImGuiWindowFlags.AlwaysAutoResize
-            //    | ImGuiWindowFlags.NoSavedSettings
-            //    | ImGuiWindowFlags.NoFocusOnAppearing
-            //    | ImGuiWindowFlags.NoNav;
-
-            //    ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(5));
-            //    ImGui.Begin(UniqueId, window_flagsasdasd);
-
-            //    Imgui_Util.Progress_Bar_Stylised(test_fraction, display_size, col_red, col_black, test_length_of_mini_bar, test_height_of_mini_bar, test_slope);
-
-            //    ImGui.End();
-            //    ImGui.PopStyleVar();
-            //}
         }
 
-        //public float test_fraction = 0.8f;
-        //public float test_width = 110;
-        //public float test_height = 12;
-        //public float test_length_of_mini_bar = 0f;
-        //public float test_height_of_mini_bar= 0f;
-        //public float test_slope= 0.3f;
+        // blood overlay
+        private float _boold_overlay_decreace_amout = 1.5f;
+        private float _boold_overlay_intencity = 0.0f;
+        public void flash_blood_overlay() { 
+            
+            if((CH_player.health / CH_player.health_max) <= 0.65f)
+                _boold_overlay_intencity += 0.3f;
+        }
+        private void display_blood_overlay(float deltaTime) {
 
-        // length_of_mini_bar = 0.3f, float height_of_mini_bar = 0.3f, float slope
+            float lower_limit = 1-((CH_player.health/ CH_player.health_max) * 2);
+            Console.WriteLine($"lower_limit: {lower_limit}");
+            if (lower_limit <= 0 && _boold_overlay_intencity <= 0)
+                return;
+
+            if(_boold_overlay_intencity > lower_limit)
+                _boold_overlay_intencity -= deltaTime * _boold_overlay_decreace_amout;
+
+            ImGuiWindowFlags window_flags_overlay = ImGuiWindowFlags.NoDecoration
+                | ImGuiWindowFlags.NoDocking
+                | ImGuiWindowFlags.NoSavedSettings
+                | ImGuiWindowFlags.NoFocusOnAppearing
+                | ImGuiWindowFlags.NoBringToFrontOnFocus
+                | ImGuiWindowFlags.NoNav
+                | ImGuiWindowFlags.NoMove;
+
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, ImGui.GetColorU32(new System.Numerics.Vector4(0f, 0f, 0f, 0f)));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, System.Numerics.Vector2.Zero);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0);
+            ImGui.PushStyleVar(ImGuiStyleVar.Alpha, _boold_overlay_intencity);
+
+            ImGui.SetNextWindowPos(System.Numerics.Vector2.Zero);
+            ImGui.SetNextWindowSize(screen_size_buffer);
+            ImGui.Begin("Screen_overlay", window_flags_overlay);
+                ImGui.Image(image.Handle, screen_size_buffer);
+            ImGui.End();
+
+            ImGui.PopStyleVar(3);
+            ImGui.PopStyleColor();
+
+        }
 
     }
 }
