@@ -33,7 +33,7 @@ namespace Projektarbeit.Levels {
             if((time_stamp + time_interval) <= Game_Time.total) {
 
                 if(!is_running) {
-                    Add_Character(new TestEnemyController(), new Vector2(100, 100), 0);
+                    add_AI_Controller(new TestEnemyController());
                     time_stamp = Game_Time.total;
                     time_interval = random.Next(2, 4);
                     is_running = true;

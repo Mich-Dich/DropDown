@@ -51,13 +51,6 @@
             this.currentState = newState;
         }
 
-        // Add a method to add characters to the map
-        protected void AddCharactersToMap() {
-            foreach (var character in characters) {
-                Game.Instance.get_active_map().Add_Character(this, new Vector2(100, 100), 0);
-            }
-        }
-
         // ------------------------------------------ private ------------------------------------------
         private string Select_State_To_Execute(Type state) {
             string className = state.Name;
