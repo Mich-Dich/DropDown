@@ -104,13 +104,6 @@ namespace Core.world.map {
             this.world.Remove(game_object);
             this.physicsWorld.DestroyBody(game_object.collider.body);
         }
-        
-        public void Add_Character(AI_Controller ai_controller, Vector2? position = null, float rotation = 0) {
-
-            all_AI_Controller.Add(ai_controller);
-            Add_empty_Character(ai_controller.character, position);
-            ai_controller.character.transform.rotation = rotation;
-        }
 
         public void Add_empty_Character(Character character, Vector2? position = null) {
         
