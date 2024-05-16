@@ -1,6 +1,6 @@
 
 namespace DropDown.player {
-
+    using Core;
     using Core.physics;
     using Core.util;
     using Core.world;
@@ -28,6 +28,7 @@ namespace DropDown.player {
         public override void Hit(hitData hit) {
 
             health -= hit.hit_force;
+            ((Drop_Down)Game.Instance).flash_blood_overlay();
         }
 
     }

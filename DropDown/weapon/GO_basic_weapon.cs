@@ -5,11 +5,11 @@ namespace DropDown.weapon
     using Core.world;
     using Core.render;
 
-    public abstract class Base_Weapon : Game_Object {
+    public abstract class GO_basic_weapon : Game_Object {
 
         public Type projectile;
 
-        protected Base_Weapon(Sprite weapon_sprite, Type projectile, Sprite? muzzle_flash, int magazin_capazity, int magazin_capazity_max) {
+        protected GO_basic_weapon(Sprite weapon_sprite, Type projectile, Sprite? muzzle_flash, int magazin_capazity, int magazin_capazity_max) {
 
             Set_Sprite(weapon_sprite);
             _muzzle_flash = muzzle_flash;
