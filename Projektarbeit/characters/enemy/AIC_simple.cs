@@ -38,23 +38,4 @@
         return typeof(EnterScreen);
     }
 }
-
-    public class EnterScreen : I_AI_State {
-
-        public bool Exit(AI_Controller aI_Controller) { return true; }
-
-        public bool Enter(AI_Controller aI_Controller) {
-            foreach (var character in aI_Controller.characters) {
-                ((CH_base_NPC)character).set_animation_from_anim_data(((CH_base_NPC)character).idle_anim);
-            }
-            return true;
-        }
-
-        public Type Execute(AI_Controller aI_Controller) {
-            foreach (var character in aI_Controller.characters) {
-                Console.WriteLine($"position Length: {((CH_base_NPC)character).transform.position.LengthFast}");
-            }
-            return typeof(EnterScreen);
-        }
-    }
 }

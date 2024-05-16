@@ -6,6 +6,7 @@
     public abstract class AI_Controller {
 
         private readonly Dictionary<string, I_AI_State> allStates = new ();
+        public Vector2 Origin { get; set; } = Vector2.Zero;
         private string currentState = string.Empty;
 
         // Add a list to hold the characters
