@@ -39,6 +39,9 @@ namespace Core.render {
 
         public void draw() {
 
+            if(Game.Instance.show_performance) 
+                DebugData.debug_lines = lines.Count;
+
             basic_drawer.debugShader.Use();
             Matrix4 matrixTransform = new Transform().GetTransformationMatrix();
             Matrix4 finalTransform = matrixTransform * Game.Instance.camera.Get_Projection_Matrix();
@@ -98,11 +101,11 @@ namespace Core.render {
         private readonly Shader debugShader;
         public DebugColor DebugColor { get; set; } = DebugColor.White;
 
-        public Debug_Drawer() { this.debugShader = Resource_Manager.Get_Shader("shaders/debug.vert", "shaders/debug.frag"); }
+        public Debug_Drawer() { this.debugShader = Resource_Manager.Get_Shader("defaults/shaders/debug.vert", "defaults/shaders/debug.frag"); }
 
         // ================================================================= public =================================================================
         public void Draw_Collision_Shape(Transform transform, Collider collider, DebugColor debugColor) {
-
+            
             // Console.WriteLine("Drawing collision shape");
             this.DebugColor = debugColor;
             this.debugShader.Use();
@@ -149,6 +152,9 @@ namespace Core.render {
 
         private void Draw_Rectangle(Vector2 size) {
 
+            if(Game.Instance.show_performance)
+                DebugData.debug_rectangle++;
+
             // Console.WriteLine("Drawing rectangle");
             float[] vertices = {
                 -0.5f * size.X,  0.5f * size.Y, 0.0f,
@@ -163,6 +169,9 @@ namespace Core.render {
         }
 
         private void Draw_Circle(float radius, int sides) {
+
+            if(Game.Instance.show_performance)
+                DebugData.debug_circle++;
 
             // Console.WriteLine("Drawing circle");
             List<float> vertices = new ();
@@ -185,7 +194,7 @@ namespace Core.render {
 
     public static class basic_drawer {
 
-        public static readonly Shader debugShader = Resource_Manager.Get_Shader("shaders/debug.vert", "shaders/debug.frag");
+        public static readonly Shader debugShader = Resource_Manager.Get_Shader("defaults/shaders/debug.vert", "defaults/shaders/debug.frag");
         private static readonly int vbo = GL.GenBuffer();
         private static readonly int vao = GL.GenVertexArray();
         private static readonly int ebo = GL.GenBuffer();

@@ -1,12 +1,11 @@
-﻿using Core;
+﻿
+namespace Projektarbeit {
 
-namespace Hell {
+    internal class Programm {
 
-    public class Programm {
+        private static void Main(string[] args) {
 
-        public static void Main(string[] args) {
-
-            Game game = new Projektarbeit("Projektarbeit", 1600, 920);
+            Core.Game game = new Game("Texture_test", 1600, 920);
             game.Run();
         }
     }

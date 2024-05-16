@@ -21,16 +21,15 @@ namespace Core.render.shaders {
 
         public static Shader_Programm_Source Parse_Shader(string vertex_shader_path, string fragment_shader_path) {
             
-            string vert_path = "assets/" + vertex_shader_path;
-            if(!File.Exists(vert_path))
-                throw new FileNotFoundException(vert_path);
+            // assets/
+            if(!File.Exists(vertex_shader_path))
+                throw new FileNotFoundException(vertex_shader_path);
 
-            string frag_path = "assets/" + fragment_shader_path;
-            if(!File.Exists(frag_path))
-                throw new FileNotFoundException(frag_path);
+            if(!File.Exists(fragment_shader_path))
+                throw new FileNotFoundException(fragment_shader_path);
 
-            string vert_shader = File.ReadAllText(vert_path);
-            string frag_shader = File.ReadAllText(frag_path);
+            string vert_shader = File.ReadAllText(vertex_shader_path);
+            string frag_shader = File.ReadAllText(fragment_shader_path);
             return new Shader_Programm_Source(vert_shader, frag_shader);
         }
 

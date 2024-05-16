@@ -1,23 +1,23 @@
-
-namespace DropDown.player {
+﻿
+namespace Projektarbeit.characters.player {
 
     using Box2DX.Common;
-    using Core;
     using Core.Controllers.player;
-    using Core.physics;
     using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
 
-    public class PC_Default : Player_Controller {
+    internal class PC_main : Player_Controller {
 
         public Action move { get; set; }
         public Action look { get; set; }
-        public Action sprint { get; set; }
-        public Action interact { get; set; }
+        public Action fire { get; set; }
 
-        public PC_Default(Character character)
-            : base (character, null) {
+        private float fireDelay = 0.5f; // Delay in seconds
+        private float lastFireTime = 0f;
+
+        public PC_main(Character character)
+            : base(character, null) {
 
             actions.Clear();
 
@@ -49,31 +49,16 @@ namespace DropDown.player {
                 });
             AddInputAction(look);
 
-            sprint = new Action(
-                "shoot",
-                (uint)Action_ModefierFlags.none,
-                false,
-                ActionType.BOOL,
-                0f,
-                new List<KeyBindingDetail> {
-
-                    new(Key_Code.LeftShift, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
-                });
-            AddInputAction(sprint);
-
-            
-            interact = new Action(
-                "shoot",
+            fire = new Action(
+                "fire",
                 (uint)Action_ModefierFlags.auto_reset,
                 false,
                 ActionType.BOOL,
                 0f,
                 new List<KeyBindingDetail> {
-
-                    new(Key_Code.LeftMouseButton, ResetFlags.reset_on_key_down, TriggerFlags.key_down),
+                    new(Key_Code.Space, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
                 });
-            AddInputAction(interact);
-
+            AddInputAction(fire);
 
             Game.Instance.camera.Add_Zoom_Offset(0.2f);
             Game.Instance.camera.zoom_offset = 0.2f;
@@ -82,8 +67,6 @@ namespace DropDown.player {
         protected override void Update(float deltaTime) {
 
             float total_speed = character.movement_speed;
-            if((bool)sprint.GetValue()) 
-                total_speed += sprint_speed;
 
             // simple movement
             if(move.X != 0 || move.Y != 0) {
@@ -91,34 +74,18 @@ namespace DropDown.player {
                 Vector2 direction = Vector2.NormalizeFast((Vector2)move.GetValue());
                 character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * deltaTime);
             }
-            // camera follows player
-            Game.Instance.camera.transform.position = character.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
             
-            // look at mouse
-            character.rotate_to_vector(Game.Instance.Get_Mouse_Relative_Pos());
-            
-            // set zoom
-            Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);
+            character.rotate_to_move_dir_smooth();
 
+            //if((bool)fire.GetValue() && Game_Time.total - lastFireTime >= fireDelay) {
 
-
-            if((bool)interact.GetValue()) {
-
-                List<Game_Object> intersected_game_objects = new List<Game_Object>();
-                character.perception_check(ref intersected_game_objects, (float.Pi/2),  16, 2, 60, true, 1.5f);
-                Console.WriteLine($"hit objects count: {intersected_game_objects.Count}");
-
-                foreach(var obj in intersected_game_objects) {
-
-                    Character buffer = (Character)(obj);
-                    buffer.Hit(new hitData(20));
-                }
-
-            }
-
+            //    Vector2 playerLocation = character.transform.position;
+            //    Vec2 playerDirectionVec2 = character.collider.body.GetLinearVelocity();
+            //    playerDirectionVec2.Normalize();
+            //    Vector2 playerDirection = new Vector2(playerDirectionVec2.X, playerDirectionVec2.Y);
+            //    Game.Instance.get_active_map().Add_Game_Object(new TestProjectile(playerLocation, playerDirection));
+            //    lastFireTime = Game_Time.total;
+            //}
         }
-
-        private readonly float sprint_speed = 350.0f;
-
     }
 }

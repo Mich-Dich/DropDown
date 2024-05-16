@@ -2,6 +2,7 @@
 namespace DropDown.enemy {
 
     using Core.physics;
+    using Core.render;
     using Core.world;
     using OpenTK.Mathematics;
 
@@ -33,7 +34,7 @@ namespace DropDown.enemy {
 
             base.Hit(hit);
         }
-
+        
         public float damage = 15;
         public int ray_number = 15;
         public float ray_cast_range = 800;
@@ -59,28 +60,6 @@ namespace DropDown.enemy {
                 animation_data.loop);
         }
 
-    }
-
-    public struct animation_data {
-
-        public string path_to_texture_atlas = "assets/defaults/default_grid.png";
-        public int num_of_rows = 1;
-        public int num_of_columns = 1;
-        public bool start_playing = false;
-        public bool is_pixel_art = false;
-        public int fps = 30;
-        public bool loop = false;
-
-        public animation_data(String path_to_texture_atlas, Int32 num_of_colums, Int32 num_of_rows, Boolean start_playing, Boolean is_pixel_art, Int32 fps, Boolean loop) {
-
-            this.path_to_texture_atlas = path_to_texture_atlas;
-            this.num_of_rows = num_of_colums;
-            this.num_of_columns = num_of_rows;
-            this.start_playing = start_playing;
-            this.is_pixel_art = is_pixel_art;
-            this.fps = fps;
-            this.loop = loop;
-        }
     }
 
 }

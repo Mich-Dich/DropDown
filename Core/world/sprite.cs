@@ -248,7 +248,7 @@ namespace Core.world {
                 modelMatrix = Calc_Modle_Matrix();
 
             if (texture == null)
-                texture = Resource_Manager.Get_Texture("assets/defaults/default_grid.png");
+                texture = Resource_Manager.Get_Texture("defaults/textures/default_grid.png");
 
             return this;
         }

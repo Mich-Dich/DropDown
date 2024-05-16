@@ -416,7 +416,7 @@ namespace DropDown {
 
             for(int x = 0; x < 64; x++) {
 
-                floorLayout[x] = Generate_Eandom_UInt64_With_Density(initalDensity);
+                floorLayout[x] = generate_random_UInt64_with_density(initalDensity);
             }
 
         }
@@ -513,7 +513,7 @@ namespace DropDown {
         }
 
         // Function to generate a UInt64 value with specified density of bits flipped
-        private static ulong Generate_Eandom_UInt64_With_Density(double density) {
+        private static ulong generate_random_UInt64_with_density(double density) {
 
             Random random = new();
             ulong result = 0;

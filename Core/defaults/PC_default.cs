@@ -2,11 +2,17 @@
 namespace Core.defaults {
 
     using Core.Controllers.player;
+    using Core.physics;
     using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
 
     public class PC_Default : Player_Controller {
+
+        public Action move { get; set; }
+        public Action look { get; set; }
+        public Action sprint { get; set; }
+        public Action interact { get; set; }
 
         public PC_Default(Character character)
             : base(character, null) {
@@ -19,46 +25,92 @@ namespace Core.defaults {
                 false,
                 ActionType.VEC_2D,
                 0f,
-                new List<KeyBindingDetail>
-                {
-                    new (Key_Code.W, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_2 | KeyModefierFlags.negate),
-                    new (Key_Code.S, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_2),
-                    new (Key_Code.D, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_1),
-                    new (Key_Code.A, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_1 | KeyModefierFlags.negate),
+                new List<KeyBindingDetail> {
+
+                    new(Key_Code.W, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_2 | KeyModefierFlags.negate),
+                    new(Key_Code.S, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_2),
+                    new(Key_Code.D, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_1),
+                    new(Key_Code.A, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_1 | KeyModefierFlags.negate),
                 });
             AddInputAction(move);
+
 
             look = new Action(
                 "look",
                 (uint)Action_ModefierFlags.none,
                 false,
-                ActionType.VEC_2D,
+                ActionType.VEC_1D,
                 0f,
-                new List<KeyBindingDetail>
-                {
-                    new (Key_Code.CursorPositionX, ResetFlags.none, TriggerFlags.mouse_pos_and_neg, KeyModefierFlags.axis_1),
-                    new (Key_Code.CursorPositionY, ResetFlags.none, TriggerFlags.mouse_pos_and_neg, KeyModefierFlags.axis_2),
+                new List<KeyBindingDetail> {
+
+                    new(Key_Code.MouseWheelY, ResetFlags.reset_on_key_move_up, TriggerFlags.mouse_pos_and_neg),
                 });
             AddInputAction(look);
-        }
 
-        public Action move { get; set; }
-        public Action look { get; set; }
+
+            sprint = new Action(
+                "shoot",
+                (uint)Action_ModefierFlags.none,
+                false,
+                ActionType.BOOL,
+                0f,
+                new List<KeyBindingDetail> {
+
+                    new(Key_Code.LeftShift, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
+                });
+            AddInputAction(sprint);
+
+
+            interact = new Action(
+                "shoot",
+                (uint)Action_ModefierFlags.auto_reset,
+                false,
+                ActionType.BOOL,
+                0f,
+                new List<KeyBindingDetail> {
+
+                    new(Key_Code.LeftMouseButton, ResetFlags.reset_on_key_down, TriggerFlags.key_down),
+                });
+            AddInputAction(interact);
+
+
+            Game.Instance.camera.Add_Zoom_Offset(0.2f);
+            Game.Instance.camera.zoom_offset = 0.2f;
+        }
 
         protected override void Update(float deltaTime) {
 
+            float total_speed = character.movement_speed;
+            if((bool)sprint.GetValue())
+                total_speed += sprint_speed;
+
             // simple movement
-            character.transform.position += (Vector2)move.GetValue() * character.movement_speed;
+            if(move.X != 0 || move.Y != 0) {
 
-            // Console.WriteLine($"pos: {player.transform.position}");
-            Game.Instance.camera.transform.position = character.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
+                Vector2 direction = Vector2.NormalizeFast((Vector2)move.GetValue());
+                character.Add_Linear_Velocity(new Box2DX.Common.Vec2(direction.X, direction.Y) * total_speed * deltaTime);
+            }
+           
+            character.rotate_to_vector(Game.Instance.Get_Mouse_Relative_Pos());         // look at mouse
+            Game.Instance.camera.transform.position = character.transform.position;     // camera follows player
+            Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);          // change zoom
 
-            // transform screen_coord into world_coord
-            Vector2 screen_look = (Vector2)look.GetValue() - (Game.Instance.camera.transform.size / 2);
+            if((bool)interact.GetValue()) {
 
-            // look at mouse
-            float angleRadians = (float)Math.Atan2(screen_look.X, screen_look.Y);
-            character.transform.rotation = -angleRadians + (float.Pi / 2);
+                List<Game_Object> intersected_game_objects = new List<Game_Object>();
+                character.perception_check(ref intersected_game_objects, (float.Pi / 2), 16, 2, 60, true, 1.5f);
+                Console.WriteLine($"hit objects count: {intersected_game_objects.Count}");
+
+                foreach(var obj in intersected_game_objects) {
+
+                    Character buffer = (Character)(obj);
+                    buffer.Hit(new hitData(20));
+                }
+            }
+
         }
+
+        private readonly float sprint_speed = 350.0f;
+
     }
 }

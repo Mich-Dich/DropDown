@@ -30,6 +30,8 @@ namespace Core.world.map {
             physicsWorld = new World(aabb, gravity, true);
         }
 
+        public virtual void update(float deltaTime) { }
+
         public bool ray_cast(Vector2 start, Vector2 end, out Vec2 normal, out float distance, out Game_Object? intersected_game_object, bool draw_debug = false, float duration_in_sec = 2.0f) {
 
             Segment ray = new Segment{
@@ -171,6 +173,7 @@ namespace Core.world.map {
         }
 
         public void Set_Background_Image(string image_path) {
+
             Texture background_texture = Resource_Manager.Get_Texture(image_path, false);
             Vector2 view_size = Game.Instance.camera.Get_View_Size_In_World_Coord();
             Vector2 original_sprite_size = new (background_texture.Width, background_texture.Height);
@@ -234,8 +237,6 @@ namespace Core.world.map {
             var current_tile = this.Get_Correct_Map_Tile(transform.position);
             current_tile.staticColliders.Add(body);
         }
-
-        public void Register_Player_NEW(Character character) { }
 
         public void Force_Clear_mapTiles() {
 
@@ -361,6 +362,10 @@ namespace Core.world.map {
             Vector2 camera_size = Game.Instance.camera.Get_View_Size_In_World_Coord() + new Vector2(this.cellSize * 2);
             float tiel_size = this.tileSize * this.cellSize;
 
+            // Draw the background first
+            for(int x = 0; x < this.backgound.Count; x++)
+                this.backgound[x].Draw();
+
             foreach(var tile in this.mapTiles) {
                 float overlapX = (camera_size.X / 2) + (tiel_size / 2) - Math.Abs(camera_pos.X - tile.Key.X);
                 float overlapY = (camera_size.Y / 2) + (tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
@@ -373,10 +378,6 @@ namespace Core.world.map {
                         sprite.Draw();
                 }
             }
-
-            // Draw the background first
-            for(int x = 0; x < this.backgound.Count; x++)
-                this.backgound[x].Draw();
 
             foreach(var character in this.allCharacter) 
                 character.Draw();
@@ -409,7 +410,7 @@ namespace Core.world.map {
                 this.world[x].Draw_Debug();
         }
 
-        internal void Update(float deltaTime) {
+        internal void update_internal(float deltaTime) {
 
             this.physicsWorld.Step(deltaTime * 10, this.velocityIterations, this.positionIterations);
 
@@ -431,6 +432,8 @@ namespace Core.world.map {
                 }
                 world[x].Update(deltaTime);
             }
+
+            update(deltaTime);
         }
 
         // ========================================== private ==========================================

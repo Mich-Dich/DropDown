@@ -4,11 +4,13 @@ namespace Core {
     using System;
     using System.Diagnostics;
     using Core.Controllers.player;
+    using Core.defaults;
     using Core.render;
     using Core.render.shaders;
     using Core.util;
     using Core.world;
     using Core.world.map;
+    using DropDown;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using OpenTK.Windowing.Common;
@@ -25,11 +27,12 @@ namespace Core {
         public static int numOfTielsDisplayed = 0;
         public static int playingAnimationNum = 0;
 
-        public static int collisionChecksNum = 0;
-        public static int colidableObjects = 0;
         public static int colidableObjectsStatic = 0;
         public static int colidableObjectsDynamic = 0;
-        public static int collisionNum = 0;
+
+        public static int debug_lines = 0;
+        public static int debug_circle = 0;
+        public static int debug_rectangle = 0;
 
         // public DebugData() {}
         public static void Reset() {
@@ -39,11 +42,11 @@ namespace Core {
             spriteDrawCallsNum = 0;
             numOfTielsDisplayed = 0;
             playingAnimationNum = 0;
-            collisionChecksNum = 0;
-            colidableObjects = 0;
             colidableObjectsStatic = 0;
             colidableObjectsDynamic = 0;
-            collisionNum = 0;
+            debug_lines = 0;
+            debug_circle = 0;
+            debug_rectangle = 0;
         }
     }
 
@@ -62,7 +65,6 @@ namespace Core {
         protected string title { get; set; }
         protected int initalWindowWidth { get; set; }
         protected int initalWindowHeight { get; set; }
-        protected Map defaultMap { get; set; }
         protected Player_Controller playerController { get; set; }
         protected Map activeMap { get; set; }
         public Map get_active_map() { return activeMap; }
@@ -109,22 +111,24 @@ namespace Core {
 
                 // ----------------------------------- defaults -----------------------------------
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
-                this.defaultSpriteShader = new("shaders/texture_vert.glsl", "shaders/texture_frag.glsl", true);
+                this.defaultSpriteShader = new("defaults/shaders/texture_vert.glsl", "defaults/shaders/texture_frag.glsl", true);
                 this.defaultSpriteShader.Use();
                 this.camera = new(Vector2.Zero, this.window.Size, 0.5f);
-                this.defaultMap = new Map();
+                this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
+                this.camera.Set_Zoom(5.0f);
 
                 this.Init();
 
                 // ----------------------------------- check for null values -----------------------------------
-                if(this.activeMap == null) 
-                    this.activeMap = this.defaultMap;
+                if(this.activeMap == null)
+                    this.activeMap = new MAP_default();
 
                 if(this.player == null) 
-                    this.player = new Character();
+                    this.player = new CH_default_player();
 
-                if(this.playerController == null) 
-                    throw new ResourceNotAssignedException("playerController musst be assigned in game class Init() function");
+                if(this.playerController == null)
+                    this.playerController = new PC_Default(player);
+
 
                 // ----------------------------------- finish setup -----------------------------------
                 this.playerController.character = this.player;
@@ -144,7 +148,7 @@ namespace Core {
                 this.Shutdown();
             };
 
-            // internal game Update
+            // internal game update_internal
             this.window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
                 if(show_performance)
@@ -152,7 +156,7 @@ namespace Core {
 
                 this.Update_Game_Time((float)eventArgs.Time);
                 this.playerController.Update_Internal(Game_Time.delta, this.inputEvent);
-                this.activeMap.Update(Game_Time.delta);
+                this.activeMap.update_internal(Game_Time.delta);
                 this.Update(Game_Time.delta);
                 this.inputEvent.Clear();
 
@@ -184,7 +188,7 @@ namespace Core {
                 this.Update_Game_Time((float)this.window.TimeSinceLastUpdate());
                 this.window.ResetTimeSinceLastUpdate();
 
-                // Update the opengl viewport
+                // update_internal the opengl viewport
                 Vector2i fb = this.window.FramebufferSize;
                 GL.Viewport(0, 0, fb.X, fb.Y);
                 this.Window_Resize();
@@ -216,7 +220,7 @@ namespace Core {
                 this.window.ResetTimeSinceLastUpdate();
 
                 this.playerController.Update_Internal(Game_Time.delta, this.inputEvent);
-                this.activeMap.Update(Game_Time.delta);
+                this.activeMap.update_internal(Game_Time.delta);
                 this.Update(Game_Time.delta);
                 this.inputEvent.Clear();
                 
@@ -299,7 +303,7 @@ namespace Core {
         protected abstract void Update(float deltaTime);
         protected abstract void Render(float deltaTime);
         protected abstract void Render_Imgui(float deltaTime);
-        protected virtual void Window_Resize() { }
+        protected virtual void Window_Resize() { this.camera.Set_Zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset); }
 
         protected void Set_Update_Frequency(double frequency) {
 
