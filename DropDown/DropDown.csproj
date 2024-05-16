@@ -933,6 +933,9 @@
     <None Update="assets\animation\spider\walk.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\textures\BloodOverlay.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\textures\explosion\00.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -11,9 +11,9 @@ namespace DropDown {
     using OpenTK.Mathematics;
     using System.Diagnostics;
 
-    public class Base_Map : Map {
+    public class MAP_base : Map {
 
-        public Base_Map() {
+        public MAP_base() {
 
             this.cellSize = 150;
             this.minDistancForCollision = (float)(this.cellSize * this.tileSize);
