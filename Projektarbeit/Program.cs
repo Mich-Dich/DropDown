@@ -5,7 +5,7 @@ namespace Projektarbeit {
 
         private static void Main(string[] args) {
 
-            Core.Game game = new Game("Texture_test", 1600, 920);
+            Core.Game game = new Game("Projektarbeit", 1600, 920);
             game.Run();
         }
     }

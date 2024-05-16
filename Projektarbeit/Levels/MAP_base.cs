@@ -5,7 +5,7 @@ namespace Projektarbeit.Levels {
     using Core.world;
     using Core.world.map;
     using OpenTK.Mathematics;
-    using Projektarbeit.characters.enemy;
+    using Hell.enemy;
 
     internal class MAP_base : Map {
 
@@ -29,7 +29,7 @@ namespace Projektarbeit.Levels {
 
             if((time_stamp + time_interval) <= Game_Time.total) {
 
-                Add_Character(new AIC_simple(new CH_base_NPC()), new Vector2(100, 100), 0);
+                Add_Character(new TestEnemyController(new TestEnemy()), new Vector2(100, 100), 0);
                 time_stamp = Game_Time.total;
                 time_interval = random.Next(2, 4);
             }
