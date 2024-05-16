@@ -24,7 +24,7 @@ namespace Hell.enemy {
             Vector2 direction = new Vector2(1, 0);
             float swarmPatternFactor = 1.0f;
             float randomnessFactor = 0.5f;
-            Set_Statup_State(new EnterScreen(direction, swarmPatternFactor, randomnessFactor));
+            Set_Statup_State(typeof(EnterScreen));
         }
 
         public override bool Exit() {
@@ -40,15 +40,9 @@ namespace Hell.enemy {
         }
     }
     public class EnterScreen : I_AI_State {
-        private Vector2 direction;
-        private float swarmPatternFactor;
-        private float randomnessFactor;
-
-        public EnterScreen(Vector2 direction, float swarmPatternFactor, float randomnessFactor) {
-            this.direction = direction;
-            this.swarmPatternFactor = swarmPatternFactor;
-            this.randomnessFactor = randomnessFactor;
-        }
+        private Vector2 direction = new Vector2(0, 1);
+        private float swarmPatternFactor = 0.5f;
+        private float randomnessFactor = 0.2f;
 
         public Type Execute(AI_Controller aiController) {
             foreach (var character in aiController.characters) {
@@ -59,7 +53,7 @@ namespace Hell.enemy {
                 Box2DX.Common.Vec2 directionToTargetBox2D = new Box2DX.Common.Vec2(directionToTarget.X, directionToTarget.Y);
                 npc.Add_Linear_Velocity(directionToTargetBox2D);
             }
-            return null;
+            return typeof(EnterScreen);
         }
 
         public bool Exit(AI_Controller aiController) {
