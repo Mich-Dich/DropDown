@@ -1,11 +1,11 @@
 ﻿
 namespace Projektarbeit.Levels {
+
     using Core.util;
     using Core.world;
     using Core.world.map;
     using OpenTK.Mathematics;
     using Projektarbeit.characters.enemy;
-    using System.Timers;
 
     internal class MAP_base : Map {
 
