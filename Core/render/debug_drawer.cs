@@ -101,7 +101,7 @@ namespace Core.render {
         private readonly Shader debugShader;
         public DebugColor DebugColor { get; set; } = DebugColor.White;
 
-        public Debug_Drawer() { this.debugShader = Resource_Manager.Get_Shader("defaults/shaders/debug.vert", "defaults/shaders/debug.frag"); }
+        public Debug_Drawer() { this.debugShader = Resource_Manager.Get_Shader("Core.defaults.shaders.debug.vert", "Core.defaults.shaders.debug.frag"); }
 
         // ================================================================= public =================================================================
         public void Draw_Collision_Shape(Transform transform, Collider collider, DebugColor debugColor) {
@@ -194,7 +194,7 @@ namespace Core.render {
 
     public static class basic_drawer {
 
-        public static readonly Shader debugShader = Resource_Manager.Get_Shader("defaults/shaders/debug.vert", "defaults/shaders/debug.frag");
+        public static readonly Shader debugShader = Resource_Manager.Get_Shader("Core.defaults.shaders.debug.vert", "Core.defaults.shaders.debug.frag");
         private static readonly int vbo = GL.GenBuffer();
         private static readonly int vao = GL.GenVertexArray();
         private static readonly int ebo = GL.GenBuffer();

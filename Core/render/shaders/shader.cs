@@ -1,4 +1,4 @@
-﻿
+﻿using System.Reflection;
 namespace Core.render.shaders {
 
     using OpenTK.Graphics.OpenGL4;
@@ -20,16 +20,22 @@ namespace Core.render.shaders {
         ~Shader() { GL.DeleteProgram(this.programmId); }
 
         public static Shader_Programm_Source Parse_Shader(string vertex_shader_path, string fragment_shader_path) {
-            
-            // assets/
-            if(!File.Exists(vertex_shader_path))
+            var assembly = Assembly.GetExecutingAssembly();
+
+            using Stream vertStream = assembly.GetManifestResourceStream(vertex_shader_path);
+            using Stream fragStream = assembly.GetManifestResourceStream(fragment_shader_path);
+
+            if(vertStream == null)
                 throw new FileNotFoundException(vertex_shader_path);
 
-            if(!File.Exists(fragment_shader_path))
+            if(fragStream == null)
                 throw new FileNotFoundException(fragment_shader_path);
 
-            string vert_shader = File.ReadAllText(vertex_shader_path);
-            string frag_shader = File.ReadAllText(fragment_shader_path);
+            using StreamReader vertReader = new StreamReader(vertStream);
+            using StreamReader fragReader = new StreamReader(fragStream);
+
+            string vert_shader = vertReader.ReadToEnd();
+            string frag_shader = fragReader.ReadToEnd();
             return new Shader_Programm_Source(vert_shader, frag_shader);
         }
 

@@ -1,4 +1,5 @@
-﻿
+﻿using Core.render;
+using System.Reflection;
 namespace DropDown {
     using Core.util;
     using Core.world.map;
@@ -13,16 +14,22 @@ namespace DropDown {
         }
 
         public void generate_grid(int size_x = 10, int size_y = 10) {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "Core.defaults.textures.default_grid_bright.png";
 
-            for(int x = -(size_x/2)+1; x < (size_x / 2); x++) {
-                for(int y = -(size_y / 2)+1; y < (size_y / 2); y++) {
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream == null) return;
+                var texture = new Texture(stream);
 
-                    this.Add_Background_Sprite(
-                        new Core.world.Sprite(Resource_Manager.Get_Texture("defaults/textures/default_grid_bright.png")),
-                        new OpenTK.Mathematics.Vector2(x * cellSize, y * cellSize));
+                for(int x = -(size_x/2)+1; x < (size_x / 2); x++) {
+                    for(int y = -(size_y / 2)+1; y < (size_y / 2); y++) {
+                        this.Add_Background_Sprite(
+                            new Core.world.Sprite(texture),
+                            new OpenTK.Mathematics.Vector2(x * cellSize, y * cellSize));
+                    }
                 }
             }
-
         }
 
     }

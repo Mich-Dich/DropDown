@@ -111,7 +111,7 @@ namespace Core {
 
                 // ----------------------------------- defaults -----------------------------------
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
-                this.defaultSpriteShader = new("defaults/shaders/texture_vert.glsl", "defaults/shaders/texture_frag.glsl", true);
+                this.defaultSpriteShader = new("Core.defaults.shaders.texture_vert.glsl", "Core.defaults.shaders.texture_frag.glsl", true);
                 this.defaultSpriteShader.Use();
                 this.camera = new(Vector2.Zero, this.window.Size, 0.5f);
                 this.camera.Set_min_Max_Zoom(0.7f, 1.4f);

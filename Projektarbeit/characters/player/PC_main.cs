@@ -5,6 +5,7 @@ namespace Projektarbeit.characters.player {
     using Core.Controllers.player;
     using Core.util;
     using Core.world;
+    using Hell.weapon;
     using OpenTK.Mathematics;
 
     internal class PC_main : Player_Controller {
@@ -77,15 +78,15 @@ namespace Projektarbeit.characters.player {
             
             character.rotate_to_move_dir_smooth();
 
-            //if((bool)fire.GetValue() && Game_Time.total - lastFireTime >= fireDelay) {
+            if((bool)fire.GetValue() && Game_Time.total - lastFireTime >= fireDelay) {
 
-            //    Vector2 playerLocation = character.transform.position;
-            //    Vec2 playerDirectionVec2 = character.collider.body.GetLinearVelocity();
-            //    playerDirectionVec2.Normalize();
-            //    Vector2 playerDirection = new Vector2(playerDirectionVec2.X, playerDirectionVec2.Y);
-            //    Game.Instance.get_active_map().Add_Game_Object(new TestProjectile(playerLocation, playerDirection));
-            //    lastFireTime = Game_Time.total;
-            //}
+                Vector2 playerLocation = character.transform.position;
+                Vec2 playerDirectionVec2 = character.collider.body.GetLinearVelocity();
+                playerDirectionVec2.Normalize();
+                Vector2 playerDirection = new Vector2(playerDirectionVec2.X, playerDirectionVec2.Y);
+                Game.Instance.get_active_map().Add_Game_Object(new TestProjectile(playerLocation, playerDirection));
+                lastFireTime = Game_Time.total;
+            }
         }
     }
 }

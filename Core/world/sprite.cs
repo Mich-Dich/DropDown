@@ -8,6 +8,8 @@ namespace Core.world {
     using Core.util;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
+    using System.Reflection;
+
 
     public sealed class Sprite : I_animatable {
 
@@ -247,8 +249,15 @@ namespace Core.world {
             if (transform.mobility == Mobility.STATIC)
                 modelMatrix = Calc_Modle_Matrix();
 
-            if (texture == null)
-                texture = Resource_Manager.Get_Texture("defaults/textures/default_grid.png");
+            if (texture == null) {
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceName = "Core.defaults.textures.default_grid.png";
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    if (stream == null) return this;
+                    texture = new Texture(stream);
+                }
+            }
 
             return this;
         }

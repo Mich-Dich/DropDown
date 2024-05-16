@@ -16,6 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
+      <EmbeddedResource Include="defaults\shaders\**\*.glsl" />
+      <EmbeddedResource Include="defaults\shaders\**\*.frag" />
+      <EmbeddedResource Include="defaults\shaders\**\*.vert" />
+      <EmbeddedResource Include="defaults\textures\**\*.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="defaults\fonts\Open_Sans\OFL.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
