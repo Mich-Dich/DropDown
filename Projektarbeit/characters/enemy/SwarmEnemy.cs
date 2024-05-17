@@ -6,8 +6,10 @@ namespace Hell.enemy {
 
     public class SwarmEnemy : CH_base_NPC {
 
-        private const float StopDistance = 350f; // Distance at which the enemy stops pursuing the player
-        private const float PursueSpeed = 60; // Speed at which the enemy pursues the player
+        private const float StopDistance = 200f;
+        private const float PursueSpeed = 60;
+        public float DetectionRange { get; set; } = 200f;
+        public SwarmEnemyController Controller { get; set; }
 
         public SwarmEnemy() : base() {
             transform.size = new Vector2(40);
@@ -30,6 +32,22 @@ namespace Hell.enemy {
             idle_anim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
         }
 
+        public bool IsPlayerInRange() {
+            Vector2 playerPosition = Game.Instance.player.transform.position;
+            float distanceToPlayer = (playerPosition - transform.position).Length;
+            return distanceToPlayer <= DetectionRange;
+        }
+
+        public bool IsPlayerInAttackRange() {
+            Vector2 playerPosition = Game.Instance.player.transform.position;
+            float distanceToPlayer = (playerPosition - transform.position).Length;
+            return distanceToPlayer <= attack_range;
+        }
+
+        public bool IsHealthLow() {
+            return health <= health_max * 0.2;
+        }
+
         public void Move() {
             Vector2 direction = new Vector2(0, -1);
             Random random = new Random();
@@ -47,7 +65,7 @@ namespace Hell.enemy {
             rotate_to_vector_smooth(direction);
         }
 
-        public void Pursue() {
+       public void Pursue() {
             Vector2 playerPosition = Game.Instance.player.transform.position;
             Vector2 direction = playerPosition - transform.position;
 
@@ -67,11 +85,29 @@ namespace Hell.enemy {
 
             Add_Linear_Velocity(velocity);
             rotate_to_vector_smooth(direction);
+
+            // Separation behavior
+            Random random = new Random();
+            float SeparationDistance = 60f + (float)random.NextDouble() * 20f;
+            float SeparationSpeed = 10f + (float)random.NextDouble() * 10f;
+            foreach (var other in Controller.characters) {
+                if (other == this) continue;
+                float distance = (other.transform.position - transform.position).Length;
+                if (distance < SeparationDistance) {
+                    Vector2 separationDirection = transform.position - other.transform.position;
+                    separationDirection.NormalizeFast();
+                    separationDirection *= SeparationSpeed;
+                    Box2DX.Common.Vec2 separationVelocity = new Box2DX.Common.Vec2(separationDirection.X, separationDirection.Y) * Game_Time.delta;
+                    Add_Linear_Velocity(separationVelocity);
+                }
+            }
         }
 
         public void Attack() {
             // Specific attack logic for SwarmEnemy
         }
+
+        public void Retreat() { }
 
         public void Die() {
             // Specific dying logic for SwarmEnemy
