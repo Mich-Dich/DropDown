@@ -51,18 +51,18 @@ namespace Hell.enemy {
 
     public class Pursue : I_AI_State {
         public Type Execute(AI_Controller aiController) {
-            foreach (var character in aiController.characters) {
-                SwarmEnemy enemy = (SwarmEnemy)character;
-                enemy.Pursue();
-                if (enemy.IsPlayerInAttackRange()) {
-                    return typeof(Attack);
+                foreach (var character in aiController.characters) {
+                    SwarmEnemy enemy = (SwarmEnemy)character;
+                    enemy.Pursue();
+                    if (enemy.IsPlayerInAttackRange()) {
+                        return typeof(Attack);
+                    }
+                    if (enemy.IsHealthLow()) {
+                        return typeof(Retreat);
+                    }
                 }
-                if (enemy.IsHealthLow()) {
-                    return typeof(Retreat);
-                }
+                return typeof(Pursue);
             }
-            return typeof(Pursue);
-        }
 
         public bool Exit(AI_Controller aiController) {
             return true;
@@ -78,18 +78,18 @@ namespace Hell.enemy {
 
     public class Attack : I_AI_State {
         public Type Execute(AI_Controller aiController) {
-            foreach (var character in aiController.characters) {
-                SwarmEnemy enemy = (SwarmEnemy)character;
-                enemy.Attack();
-                if (!enemy.IsPlayerInAttackRange()) {
-                    return typeof(Pursue);
+                foreach (var character in aiController.characters) {
+                    SwarmEnemy enemy = (SwarmEnemy)character;
+                    enemy.Attack();
+                    if (!enemy.IsPlayerInAttackRange()) {
+                        return typeof(Pursue);
+                    }
+                    if (enemy.IsHealthLow()) {
+                        return typeof(Retreat);
+                    }
                 }
-                if (enemy.IsHealthLow()) {
-                    return typeof(Retreat);
-                }
+                return typeof(Attack);
             }
-            return typeof(Attack);
-        }
 
         public bool Exit(AI_Controller aiController) {
             return true;
@@ -104,17 +104,16 @@ namespace Hell.enemy {
     }
 
     public class Retreat : I_AI_State {
-
         public Type Execute(AI_Controller aiController) {
-            foreach (var character in aiController.characters) {
-                SwarmEnemy enemy = (SwarmEnemy)character;
-                enemy.Retreat();
-                if (!enemy.IsHealthLow()) {
-                    return typeof(Pursue);
+                foreach (var character in aiController.characters) {
+                    SwarmEnemy enemy = (SwarmEnemy)character;
+                    enemy.Retreat();
+                    if (!enemy.IsHealthLow()) {
+                        return typeof(Pursue);
+                    }
                 }
+                return typeof(Retreat);
             }
-            return typeof(Retreat);
-        }
 
         public bool Exit(AI_Controller aiController) {
             return true;

@@ -3,13 +3,17 @@ namespace Hell.enemy {
     using Core.render;
     using Core;
     using Core.util;
+    using Hell.weapon;
 
     public class SwarmEnemy : CH_base_NPC {
 
         private const float StopDistance = 200f;
         private const float PursueSpeed = 60;
-        public float DetectionRange { get; set; } = 200f;
+        public float DetectionRange { get; set; } = 400f;
         public SwarmEnemyController Controller { get; set; }
+        public float lastFireTime { get; set; }
+        public float fireDelay { get; set; } = 1f;
+
 
         public SwarmEnemy() : base() {
             transform.size = new Vector2(40);
@@ -41,7 +45,7 @@ namespace Hell.enemy {
         public bool IsPlayerInAttackRange() {
             Vector2 playerPosition = Game.Instance.player.transform.position;
             float distanceToPlayer = (playerPosition - transform.position).Length;
-            return distanceToPlayer <= attack_range;
+            return distanceToPlayer <= StopDistance;
         }
 
         public bool IsHealthLow() {
@@ -65,7 +69,7 @@ namespace Hell.enemy {
             rotate_to_vector_smooth(direction);
         }
 
-       public void Pursue() {
+        public void Pursue() {
             Vector2 playerPosition = Game.Instance.player.transform.position;
             Vector2 direction = playerPosition - transform.position;
 
@@ -86,6 +90,42 @@ namespace Hell.enemy {
             Add_Linear_Velocity(velocity);
             rotate_to_vector_smooth(direction);
 
+            ApplySeparation();
+        }
+
+        public void Attack() {
+            if(Game_Time.total - lastFireTime >= fireDelay) {
+                Vector2 enemyLocation = this.transform.position;
+                Vector2 playerPosition = Game.Instance.player.transform.position;
+                Vector2 direction = (playerPosition - enemyLocation).Normalized();
+                Game.Instance.get_active_map().Add_Game_Object(new EnemyTestProjectile(enemyLocation, direction));
+                lastFireTime = Game_Time.total;
+            }
+
+            ApplySeparation();
+        }
+
+        public void Retreat() {
+            Vector2 playerPosition = Game.Instance.player.transform.position;
+            Vector2 direction = transform.position - playerPosition;
+            direction.NormalizeFast();
+            direction *= movement_speed;
+            Box2DX.Common.Vec2 velocity = new Box2DX.Common.Vec2(direction.X, direction.Y) * Game_Time.delta;
+            if (velocity.Length() > movement_speed_max) {
+                velocity.Normalize();
+                velocity *= movement_speed_max;
+            }
+            Add_Linear_Velocity(velocity);
+            rotate_to_vector_smooth(direction);
+
+            ApplySeparation();
+        }
+
+        public void Die() {
+            // Specific dying logic for SwarmEnemy
+        }
+
+        private void ApplySeparation() {
             // Separation behavior
             Random random = new Random();
             float SeparationDistance = 60f + (float)random.NextDouble() * 20f;
@@ -101,16 +141,6 @@ namespace Hell.enemy {
                     Add_Linear_Velocity(separationVelocity);
                 }
             }
-        }
-
-        public void Attack() {
-            // Specific attack logic for SwarmEnemy
-        }
-
-        public void Retreat() { }
-
-        public void Die() {
-            // Specific dying logic for SwarmEnemy
         }
     }
 }
