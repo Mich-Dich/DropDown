@@ -19,9 +19,9 @@ namespace Hell.enemy {
                 float radius = (float)random.NextDouble() * clusterRadius;
                 Vector2 position = this.Origin + new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * radius;
                 Game.Instance.get_active_map().Add_empty_Character(enemy, position);
-                this.characters.Add(enemy); // Add this line
+                this.characters.Add(enemy);
             }
-            Set_Statup_State(typeof(EnterScreen));
+            Set_Statup_State(typeof(Pursue));
         }
 
         public override bool Exit() {
@@ -39,7 +39,7 @@ namespace Hell.enemy {
     public class EnterScreen : I_AI_State {
         public Type Execute(AI_Controller aiController) {
             foreach (var character in aiController.characters) {
-                CH_base_NPC npc = (CH_base_NPC)character;
+                SwarmEnemy npc = (SwarmEnemy)character;
                 npc.Move();
             }
             return typeof(EnterScreen);
@@ -57,14 +57,13 @@ namespace Hell.enemy {
         }
     }
     public class Pursue : I_AI_State {
-        private Game_Object player;
-
-        public Pursue(Game_Object player) {
-            this.player = player;
-        }
 
         public Type Execute(AI_Controller aiController) {
-            return null;
+            foreach (var character in aiController.characters) {
+                SwarmEnemy enemy = (SwarmEnemy)character;
+                enemy.Pursue();
+            }
+            return typeof(Pursue);
         }
 
         public bool Exit(AI_Controller aiController) {

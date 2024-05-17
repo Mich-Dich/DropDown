@@ -22,12 +22,6 @@
         protected float last_shoot_time;
         protected float shoot_interval;
 
-        public abstract void Move();
-
-        public abstract void Attack();
-
-        public abstract void Die();
-
         public animation_data attack_anim;
         public animation_data walk_anim;
         public animation_data idle_anim;

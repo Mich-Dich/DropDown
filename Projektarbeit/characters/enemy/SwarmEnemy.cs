@@ -6,6 +6,9 @@ namespace Hell.enemy {
 
     public class SwarmEnemy : CH_base_NPC {
 
+        private const float StopDistance = 350f; // Distance at which the enemy stops pursuing the player
+        private const float PursueSpeed = 60; // Speed at which the enemy pursues the player
+
         public SwarmEnemy() : base() {
             transform.size = new Vector2(40);
             movement_speed = 10;
@@ -27,11 +30,11 @@ namespace Hell.enemy {
             idle_anim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
         }
 
-        public override void Move() {
+        public void Move() {
             Vector2 direction = new Vector2(0, -1);
             Random random = new Random();
             float offset = (float)(random.NextDouble() - 0.5) * 2;
-            direction += new Vector2(offset, offset);
+            direction += new Vector2(offset, 0);
             direction.NormalizeFast();
             direction *= movement_speed;
             movement_force = random.Next((int)movement_speed, (int)movement_speed_max);
@@ -44,11 +47,33 @@ namespace Hell.enemy {
             rotate_to_vector_smooth(direction);
         }
 
-        public override void Attack() {
+        public void Pursue() {
+            Vector2 playerPosition = Game.Instance.player.transform.position;
+            Vector2 direction = playerPosition - transform.position;
+
+            if (direction.Length < StopDistance) {
+                // If the enemy is close enough to the player, stop moving
+                return;
+            }
+
+            direction.NormalizeFast();
+            direction *= PursueSpeed;
+
+            Box2DX.Common.Vec2 velocity = new Box2DX.Common.Vec2(direction.X, direction.Y) * Game_Time.delta;
+            if (velocity.Length() > movement_speed_max) {
+                velocity.Normalize();
+                velocity *= movement_speed_max;
+            }
+
+            Add_Linear_Velocity(velocity);
+            rotate_to_vector_smooth(direction);
+        }
+
+        public void Attack() {
             // Specific attack logic for SwarmEnemy
         }
 
-        public override void Die() {
+        public void Die() {
             // Specific dying logic for SwarmEnemy
         }
     }
