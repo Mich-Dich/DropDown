@@ -126,6 +126,7 @@ namespace Core.world.map {
             circleDef.Radius = radius;
             circleDef.Density = 1f;
             circleDef.Friction = 0.3f;
+            circleDef.IsSensor = true; // To Test
 
             Body body = this.physicsWorld.CreateBody(def);
             body.CreateShape(circleDef);

@@ -1,14 +1,15 @@
 namespace Hell.enemy {
     using OpenTK.Mathematics;
     using Core.render;
+    using Core;
+    using Core.util;
 
     public class SwarmEnemy : CH_base_NPC {
 
         public SwarmEnemy() : base() {
             transform.size = new Vector2(40);
-            movement_speed = 500;
-            movement_speed_max = 1000;
-            movement_force = 5000000;
+            movement_speed = 10;
+            movement_speed_max = 20;
             rotation_offset = float.Pi / 2;
 
             damage = 5;
@@ -27,8 +28,20 @@ namespace Hell.enemy {
         }
 
         public override void Move() {
-            // Specific movement logic for SwarmEnemy
-            // For example, move in a sine wave pattern
+            Vector2 direction = new Vector2(0, -1);
+            Random random = new Random();
+            float offset = (float)(random.NextDouble() - 0.5) * 2;
+            direction += new Vector2(offset, offset);
+            direction.NormalizeFast();
+            direction *= movement_speed;
+            movement_force = random.Next((int)movement_speed, (int)movement_speed_max);
+            Box2DX.Common.Vec2 velocity = new Box2DX.Common.Vec2(direction.X, direction.Y) * movement_force * Game_Time.delta;
+            if (velocity.Length() > movement_speed_max) {
+                velocity.Normalize();
+                velocity *= movement_speed_max;
+            }
+            Add_Linear_Velocity(velocity);
+            rotate_to_vector_smooth(direction);
         }
 
         public override void Attack() {

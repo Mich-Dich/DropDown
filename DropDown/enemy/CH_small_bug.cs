@@ -20,6 +20,5 @@ namespace DropDown.enemy {
             idle_anim = new animation_data("assets/animation/small_bug/idle_01.png", 16, 10, true, false, 35, true);
             death_anim = new animation_data("assets/animation/small_bug/death.png", 4, 3, true, false, 30, false);
         }
-
     }
 }

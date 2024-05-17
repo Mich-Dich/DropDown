@@ -19,11 +19,8 @@ namespace Hell.enemy {
                 float radius = (float)random.NextDouble() * clusterRadius;
                 Vector2 position = this.Origin + new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * radius;
                 Game.Instance.get_active_map().Add_empty_Character(enemy, position);
+                this.characters.Add(enemy); // Add this line
             }
-
-            Vector2 direction = new Vector2(1, 0);
-            float swarmPatternFactor = 1.0f;
-            float randomnessFactor = 0.5f;
             Set_Statup_State(typeof(EnterScreen));
         }
 
@@ -40,18 +37,10 @@ namespace Hell.enemy {
         }
     }
     public class EnterScreen : I_AI_State {
-        private Vector2 direction = new Vector2(0, 1);
-        private float swarmPatternFactor = 0.5f;
-        private float randomnessFactor = 0.2f;
-
         public Type Execute(AI_Controller aiController) {
             foreach (var character in aiController.characters) {
                 CH_base_NPC npc = (CH_base_NPC)character;
-                Vector2 directionToTarget = direction - npc.transform.position;
-                directionToTarget.Normalize();
-                directionToTarget *= npc.movement_speed;
-                Box2DX.Common.Vec2 directionToTargetBox2D = new Box2DX.Common.Vec2(directionToTarget.X, directionToTarget.Y);
-                npc.Add_Linear_Velocity(directionToTargetBox2D);
+                npc.Move();
             }
             return typeof(EnterScreen);
         }
