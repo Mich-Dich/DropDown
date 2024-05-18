@@ -1,4 +1,3 @@
-
 namespace Hell.enemy {
 
     using Core;
@@ -42,6 +41,9 @@ namespace Hell.enemy {
                 if(npc.IsPlayerInRange())
                     return typeof(Pursue);
             }
+
+            aiController.characters.RemoveAll(character => (character as SwarmEnemy).IsDead);
+
             return typeof(EnterScreen);
         }
 
@@ -73,6 +75,9 @@ namespace Hell.enemy {
                     return typeof(Retreat);
                 }
             }
+
+            aiController.characters.RemoveAll(character => (character as SwarmEnemy).IsDead);
+
             return typeof(Pursue);
         }
 
@@ -96,6 +101,9 @@ namespace Hell.enemy {
                 if(enemy.IsHealthLow()) 
                     return typeof(Retreat);
             }
+
+            aiController.characters.RemoveAll(character => (character as SwarmEnemy).IsDead);
+
             return typeof(Attack);
         }
 
@@ -119,6 +127,9 @@ namespace Hell.enemy {
                 if(!enemy.IsHealthLow())
                     return typeof(Pursue);
             }
+
+            aiController.characters.RemoveAll(character => (character as SwarmEnemy).IsDead);
+
             return typeof(Retreat);
         }
 
