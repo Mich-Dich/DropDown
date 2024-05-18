@@ -123,9 +123,7 @@ namespace Core.world {
             transform.rotation = -new_angle + rotation_offset;
         }
 
-        public virtual void Hit(hitData hit) {
-            Console.WriteLine("hit");
-        }
+        public virtual void Hit(hitData hit) { }
 
         public virtual void Update(float deltaTime) { }
 

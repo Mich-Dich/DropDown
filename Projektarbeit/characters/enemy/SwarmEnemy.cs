@@ -4,6 +4,7 @@ namespace Hell.enemy {
     using Core;
     using Core.util;
     using Hell.weapon;
+    using Core.physics;
 
     public class SwarmEnemy : CH_base_NPC {
 
@@ -124,6 +125,14 @@ namespace Hell.enemy {
 
         public void Die() {
             // Specific dying logic for SwarmEnemy
+        }
+
+        public override void Hit(hitData hit) {
+            if(hit.hit_object is TestProjectile) {
+                Console.WriteLine("Hit by a TestProjectile!");
+            } else {
+                base.Hit(hit);
+            }
         }
 
         private void ApplySeparation() {

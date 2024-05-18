@@ -129,7 +129,7 @@ namespace Core.world.map {
             circleDef.Radius = radius;
             circleDef.Density = 1f;
             circleDef.Friction = 0.3f;
-            circleDef.IsSensor = IsSensor; // To Test
+            circleDef.IsSensor = IsSensor;
 
             Body body = this.physicsWorld.CreateBody(def);
             body.CreateShape(circleDef);
@@ -137,10 +137,14 @@ namespace Core.world.map {
             body.SetMassFromShapes();
             body.SetUserData(character);
 
-            if(character.collider != null)
+            if(character.collider != null) {
                 character.collider.body = body;
-            else
-                character.Add_Collider(new Collider(body));
+                character.collider.SetupCollisionDetection(character);
+            } else {
+                Collider newCollider = new Collider(body);
+                newCollider.SetupCollisionDetection(character);
+                character.Add_Collider(newCollider);
+            }
 
             this.allCharacter.Add(character);
             Console.WriteLine($"Adding character [{character}] to map. Current count: {this.allCharacter.Count} ");

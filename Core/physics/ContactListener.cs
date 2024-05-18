@@ -2,10 +2,10 @@ namespace Core.physics {
     using Box2DX.Dynamics;
     using Core.world;
     using OpenTK.Mathematics;
-    public class EnemyContactListener : ContactListener {
+    public class GameObjectContactListener : ContactListener {
         private Game_Object owner;
 
-        public EnemyContactListener(Game_Object owner) {
+        public GameObjectContactListener(Game_Object owner) {
             this.owner = owner;
         }
 
@@ -22,6 +22,7 @@ namespace Core.physics {
                 hit.hit_object = objectB;
 
                 this.owner.Hit(hit);
+                objectB.Hit(hit);
             }
         }
     }

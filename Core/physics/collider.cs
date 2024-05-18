@@ -68,11 +68,10 @@ namespace Core.physics {
 
         public void SetupCollisionDetection(Game_Object owner) {
             if (Game.Instance.get_active_map().physicsWorld != null) {
-                EnemyContactListener contactListener = new EnemyContactListener(owner);
+                GameObjectContactListener contactListener = new GameObjectContactListener(owner);
                 Game.Instance.get_active_map().physicsWorld.SetContactListener(contactListener);
             }
         }
-
     }
 
     public enum Collision_Shape {

@@ -70,7 +70,6 @@ namespace Core.world {
         }
 
         public override void Hit(hitData hit) {
-            Console.WriteLine("Hit");
             if(health <= 0 && death_callback != null)
                 death_callback();
         }
