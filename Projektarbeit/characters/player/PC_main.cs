@@ -1,5 +1,5 @@
 ﻿
-namespace Projektarbeit.characters.player {
+namespace Hell.player {
 
     using Box2DX.Common;
     using Core.Controllers.player;

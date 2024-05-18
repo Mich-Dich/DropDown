@@ -1,5 +1,5 @@
 ﻿
-namespace Projektarbeit.characters.player {
+namespace Hell.player {
 
     using Core.physics;
     using Core.util;

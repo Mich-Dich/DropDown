@@ -1,5 +1,5 @@
 ﻿
-namespace Projektarbeit.Levels {
+namespace Hell.Levels {
 
     using Core.util;
     using Core.world;
