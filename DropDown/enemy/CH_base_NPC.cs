@@ -19,7 +19,6 @@ namespace DropDown.enemy {
             Add_Collider(new Collider(Collision_Shape.Circle));
 
             this.Set_Sprite(new Sprite());
-
         }
 
         public override void draw_imgui() {
@@ -30,8 +29,8 @@ namespace DropDown.enemy {
         }
 
         public override void Hit(hitData hit) {
-            health -= hit.hit_force;
 
+            health -= hit.hit_force;
             base.Hit(hit);
         }
         

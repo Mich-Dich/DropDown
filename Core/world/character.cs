@@ -2,7 +2,9 @@
 namespace Core.world {
 
     using Box2DX.Common;
+    using Core.controllers;
     using Core.Controllers;
+    using Core.Controllers.ai;
     using Core.physics;
     using Core.render;
     using Core.util;
@@ -22,10 +24,17 @@ namespace Core.world {
 
         public Character() { }
 
-        public void Set_Controller(I_Controller controller) {
+        // ------------- controller -------------
+        public void Set_Controller(AI_Controller controller) {
 
             this.controller = controller;
             controller.character = this;
+        }
+
+        public void Set_Controller(AI_Swarm_Controller controller) {
+
+            this.controller = controller;
+            controller.characters.Add(this);
         }
 
         public void set_animation(Animation animation) {

@@ -2,7 +2,8 @@
     using Core.world;
     using OpenTK.Mathematics;
 
-    public abstract class Player_Controller : I_Controller {
+    public abstract class Player_Controller {
+
         public Character character { get; set; }
 
         // public character character { get; set; }

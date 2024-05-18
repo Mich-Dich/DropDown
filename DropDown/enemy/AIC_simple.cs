@@ -12,10 +12,10 @@ namespace DropDown.enemy {
         public AIC_simple(Character character) 
             : base(character) {
 
-            Set_Statup_State(typeof(idle));
-            character.death_callback = () => { 
-                
-                force_set_state(typeof(death)); 
+            get_state_machine().Set_Statup_State(typeof(idle));
+            character.death_callback = () => {
+
+                get_state_machine().force_set_state(typeof(death)); 
                 character.health = 0;
                 character.auto_heal_amout = 0;
             };
@@ -23,12 +23,12 @@ namespace DropDown.enemy {
     }
 
 
-    public class death : I_AI_State {
+    public class death : I_state<AI_Controller> {
 
         CH_base_NPC character;
 
-        public bool Exit(AI_Controller aI_Controller) { return true; }
-        public bool Enter(AI_Controller aI_Controller) {
+        public bool exit(AI_Controller aI_Controller) { return true; }
+        public bool enter(AI_Controller aI_Controller) {
 
             Console.WriteLine($"DEATH");
             character = (CH_base_NPC)aI_Controller.character;
@@ -36,23 +36,23 @@ namespace DropDown.enemy {
             return true;
         }
 
-        public Type Execute(AI_Controller aI_Controller) { return typeof(death); }
+        public Type execute(AI_Controller aI_Controller, float delta_time) { return typeof(death); }
     }
 
-    public class idle : I_AI_State {
+    public class idle : I_state<AI_Controller> {
 
         List<Game_Object> intersected_game_objects = new List<Game_Object>();
         CH_base_NPC character;
 
-        public bool Exit(AI_Controller aI_Controller) { return true; }
-        public bool Enter(AI_Controller aI_Controller) {
+        public bool exit(AI_Controller aI_Controller) { return true; }
+        public bool enter(AI_Controller aI_Controller) {
 
             character = (CH_base_NPC)aI_Controller.character;
             character.set_animation_from_anim_data(character.idle_anim);
             return true;
         }
 
-        public Type Execute(AI_Controller aI_Controller) {
+        public Type execute(AI_Controller aI_Controller, float delta_time) {
 
             intersected_game_objects.Clear();
             character.perception_check(ref intersected_game_objects, 0, character.ray_number, character.ray_cast_angle, character.ray_cast_range);
@@ -70,20 +70,20 @@ namespace DropDown.enemy {
         }
     }
 
-    public class pursue_player : I_AI_State {
-        
+    public class pursue_player : I_state<AI_Controller> {
+
         List<Game_Object> intersected_game_objects = new List<Game_Object>();
         CH_base_NPC character;
 
-        public bool Exit(AI_Controller aI_Controller) { return true; }
-        public bool Enter(AI_Controller aI_Controller) {
+        public bool exit(AI_Controller aI_Controller) { return true; }
+        public bool enter(AI_Controller aI_Controller) {
 
             character = (CH_base_NPC)aI_Controller.character;
             character.set_animation_from_anim_data(character.walk_anim);
             return true;
         }
 
-        public Type Execute(AI_Controller aI_Controller) {
+        public Type execute(AI_Controller aI_Controller, float delta_time) {
 
             // look for player distance
             Vector2 player_vec = Game.Instance.player.transform.position - character.transform.position;
@@ -110,12 +110,12 @@ namespace DropDown.enemy {
     }
 
 
-    public class attack_player : I_AI_State {
-        
+    public class attack_player : I_state<AI_Controller> {
+
         CH_base_NPC character;
 
-        public bool Exit(AI_Controller aI_Controller) { return true; }
-        public bool Enter(AI_Controller aI_Controller) {
+        public bool exit(AI_Controller aI_Controller) { return true; }
+        public bool enter(AI_Controller aI_Controller) {
 
             character = (CH_base_NPC)aI_Controller.character;
             character.set_animation_from_anim_data(character.attack_anim);
@@ -131,7 +131,7 @@ namespace DropDown.enemy {
             return true;
         }
 
-        public Type Execute(AI_Controller aI_Controller) {
+        public Type execute(AI_Controller aI_Controller, float delta_time) {
 
             // look for player distance
             Vector2 player_vec = Game.Instance.player.transform.position - character.transform.position;

@@ -290,10 +290,10 @@ namespace DropDown {
                 found = is_coord_in_bit_map_free(offset_x, offset_y);
             }
 
-            this.Add_Character(new AIC_simple(new CH_small_bug()),
-                new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
-                random.NextSingle() * (float.Pi * 2));
-
+            this.add_AI_Controller(new AIC_simple(
+                Add_empty_Character(new CH_small_bug(),
+                    new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
+                    random.NextSingle() * (float.Pi * 2))));
         }
 
         public void spaw_enemy_2() {
@@ -310,10 +310,10 @@ namespace DropDown {
                 found = is_coord_in_bit_map_free(offset_x, offset_y);
             }
 
-            this.Add_Character(new AIC_simple(new CH_spider()),
-                new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
-                random.NextSingle() * (float.Pi * 2));
-
+            this.add_AI_Controller(new AIC_simple(
+                Add_empty_Character(new CH_spider(),
+                    new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
+                    random.NextSingle() * (float.Pi * 2))));
         }
 
 

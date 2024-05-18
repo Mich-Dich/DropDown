@@ -4,6 +4,7 @@ namespace Core.world.map {
     using Box2DX.Collision;
     using Box2DX.Common;
     using Box2DX.Dynamics;
+    using Core.controllers;
     using Core.Controllers.ai;
     using Core.physics;
     using Core.render;
@@ -14,7 +15,7 @@ namespace Core.world.map {
     public class Map {
 
         //public List<Game_Object> allCollidableGameObjects { get; set; } = new List<Game_Object>();
-        private List<AI_Controller> all_AI_Controller = new List<AI_Controller>();
+        private List<I_Controller> all_AI_Controller = new List<I_Controller>();
         public List<Character> allCharacter { get; set; } = new List<Character>();
         private List<Game_Object> projectils { get; set; } = new List<Game_Object>();
 
@@ -74,8 +75,6 @@ namespace Core.world.map {
         public int TilesOnScreenWidth { get; set; }
         public int TilesOnScreenHeight { get; set; }
 
-        public void add_AI_Controller(AI_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
-
         internal struct Tile_Data {
 
             public int texture_slot { get; set; }
@@ -105,7 +104,10 @@ namespace Core.world.map {
             this.physicsWorld.DestroyBody(game_object.collider.body);
         }
 
-        public void Add_empty_Character(Character character, Vector2? position = null) {
+        public void add_AI_Controller(AI_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
+        public void add_AI_Controller(AI_Swarm_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
+
+        public Character Add_empty_Character(Character character, Vector2? position = null, Single rotation = 0.0f, bool IsSensor = false) {
         
             if(position != null)
                 character.transform.position = position.Value;
@@ -113,6 +115,7 @@ namespace Core.world.map {
             BodyDef def = new BodyDef();
             def.LinearDamping = 1.0f;
             def.AllowSleep = false;
+            def.Angle = rotation;
             if(position != null)
                 def.Position.Set(position.Value.X, position.Value.Y);
             else
@@ -126,7 +129,7 @@ namespace Core.world.map {
             circleDef.Radius = radius;
             circleDef.Density = 1f;
             circleDef.Friction = 0.3f;
-            circleDef.IsSensor = true; // To Test
+            circleDef.IsSensor = IsSensor; // To Test
 
             Body body = this.physicsWorld.CreateBody(def);
             body.CreateShape(circleDef);
@@ -141,6 +144,8 @@ namespace Core.world.map {
 
             this.allCharacter.Add(character);
             Console.WriteLine($"Adding character [{character}] to map. Current count: {this.allCharacter.Count} ");
+
+            return character;
         }
 
         public void Add_Sprite(Sprite sprite) {

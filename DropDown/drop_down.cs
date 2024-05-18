@@ -84,9 +84,9 @@ namespace DropDown {
             ImGui.Begin("HUD_BotomLeft", window_flags);
             {
 
-                Imgui_Util.Progress_Bar_Stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.32f, 0.28f, 0.6f);
+                Imgui_Util.Progress_Bar_Stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.35f, 0.28f, 0.6f);
                 ImGui.Spacing();
-                Imgui_Util.Progress_Bar_Stylised(1f, new System.Numerics.Vector2(250, 15), col_blue, col_black, 0.32f, 0.28f, 0.6f);
+                Imgui_Util.Progress_Bar_Stylised(1f, new System.Numerics.Vector2(210, 12), col_blue, col_black, 0.24f, 0.28f, 0.6f);
 
                 ImGui.Spacing();
                 Imgui_Util.Title("{weapon image}");

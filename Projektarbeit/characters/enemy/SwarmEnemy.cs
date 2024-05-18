@@ -16,6 +16,7 @@ namespace Hell.enemy {
 
 
         public SwarmEnemy() : base() {
+
             transform.size = new Vector2(40);
             movement_speed = 10;
             movement_speed_max = 20;

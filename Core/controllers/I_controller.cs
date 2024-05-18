@@ -1,10 +1,12 @@
-﻿
-namespace Core.Controllers {
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-    using Core.world;
+namespace Core.controllers {
 
     public interface I_Controller {
-
-        Character character { get; set; }
+        public void Update(float delta_time);
     }
 }

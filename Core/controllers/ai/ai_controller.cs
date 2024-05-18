@@ -1,73 +1,61 @@
-﻿namespace Core.Controllers.ai {
+﻿
+namespace Core.Controllers.ai {
+
+    using Core.controllers;
+    using Core.util;
     using Core.world;
-    using OpenTK.Mathematics;
-    using System.Collections.Generic;
 
-    public abstract class AI_Controller {
+    public abstract class AI_Controller : I_Controller {
 
-        private readonly Dictionary<string, I_AI_State> allStates = new ();
-        public Vector2 Origin { get; set; } = Vector2.Zero;
-        protected string currentState = string.Empty;
+        public Character character { get; set; } = new Character();
 
-        // Add a list to hold the characters
-        public List<Character> characters = new List<Character>();
+        public AI_Controller(Character character) {
 
-        protected AI_Controller() {
+            this.character = character;
+            state_machine = new state_machine<AI_Controller>(this);
         }
 
-        public void Pre_Create_States(List<Type> states) {
-            foreach(Type state_type in states)
-                this.Create_State_Instance(state_type);
+        public virtual void Update(float delta_time) {
+
+            state_machine.Update(delta_time);
+            character.Update(delta_time);
         }
 
-        public void Set_Statup_State(Type state) {
-            string className = state.Name;
-            if(!this.allStates.ContainsKey(className))
-                this.Create_State_Instance(state);
-
-            this.currentState = this.Select_State_To_Execute(this.allStates[className].GetType());
-            this.allStates[currentState].Enter(this);
-        }
-
-        internal void Update(float delta_time) {
-            string newState = this.Select_State_To_Execute(this.allStates[this.currentState].Execute(this));
-            if (this.currentState != newState) {
-                this.allStates[this.currentState].Exit(this);
-                this.allStates[newState].Enter(this);
-            }
-            this.currentState = newState;
-
-            // Update all characters
-            foreach (var character in characters) {
-                character.Update(delta_time);
-            }
-        }
-
-        public void force_set_state(Type state) {
-            string newState = this.Select_State_To_Execute(state);
-            if(this.currentState != newState) {
-                this.allStates[this.currentState].Exit(this);
-                this.allStates[newState].Enter(this);
-            }
-            this.currentState = newState;
-        }
+        public state_machine<AI_Controller> get_state_machine() { return state_machine; }
 
         // ------------------------------------------ private ------------------------------------------
-        private string Select_State_To_Execute(Type state) {
-            string className = state.Name;
-            if(!this.allStates.ContainsKey(className))
-                this.Create_State_Instance(state);
+        private state_machine<AI_Controller> state_machine;
 
-            return className;
-        }
-
-        private void Create_State_Instance(Type state) {
-            if(typeof(I_AI_State).IsAssignableFrom(state)) {
-                I_AI_State state_instance = (I_AI_State)Activator.CreateInstance(state);
-                this.allStates.Add(state.Name, state_instance);
-            }
-            else 
-                throw new InvalidOperationException($"Type [{state.Name}] does not implement [I_AI_state] interface.");
-        }
     }
+
+
+    public abstract class AI_Swarm_Controller : I_Controller {
+
+        public List<Character> characters { get; set; } = new List<Character>();
+
+        public AI_Swarm_Controller(List<Character>? characters = null) { 
+            
+            if(characters != null)
+                this.characters = characters;
+            state_machine = new state_machine<AI_Swarm_Controller>(this);
+        }
+
+        public virtual void Update(float delta_time) {
+
+            state_machine.Update(delta_time);
+            foreach (Character character in characters)
+                character.Update(delta_time);
+        }
+
+        public state_machine<AI_Swarm_Controller> get_state_machine() { return state_machine; }
+
+        //public void Pre_Create_States(List<Type> states) { state_machine.Pre_Create_States(states); }
+        //public void Set_Statup_State(Type state) { state_machine.Set_Statup_State(state); }
+        //public void force_set_state(Type state) { state_machine.force_set_state(state); }
+
+        // ------------------------------------------ private ------------------------------------------
+        private state_machine<AI_Swarm_Controller> state_machine;
+
+    }
+
 }

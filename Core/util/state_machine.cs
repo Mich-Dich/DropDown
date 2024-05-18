@@ -1,65 +1,80 @@
 ﻿
+using Core.Controllers.ai;
+
 namespace Core.util {
 
-    public class state_machine {
+    public interface I_state<T> {
+
+        Type execute(T aiController, float delta_time);
+        bool exit(T aiController);
+        bool enter(T aiController);
+    }
+
+
+    public sealed class state_machine<T> {
+
+        public object user_pointer { get; set; }
+        
+        public state_machine(T payload) { this.payload = payload; }
+
+        // ------------------------------------------ public ------------------------------------------
 
         public void Pre_Create_States(List<Type> states) {
 
             foreach(Type state_type in states)
-                this.Create_State_Instance(state_type);
+                Create_State_Instance(state_type);
         }
 
         public void Set_Statup_State(Type state) {
 
             string className = state.Name;
-            if(!this.allStates.ContainsKey(className))
-                this.Create_State_Instance(state);
+            if(!allStates.ContainsKey(className))
+                Create_State_Instance(state);
 
-            this.currentState = this.Select_State_To_Execute(this.allStates[className].GetType());
-            this.allStates[currentState].Enter(this);
+            currentState = Select_State_To_Execute(allStates[className].GetType());
+            allStates[currentState].enter(payload);
         }
 
-        internal void Update(float delta_time) {
+        public void Update(float delta_time) { change_state(allStates[currentState].execute(payload, delta_time)); }
 
-            string newState = this.Select_State_To_Execute(this.allStates[this.currentState].Execute(this));
+        public void force_set_state(Type state) { change_state(state); }
+
+        // ------------------------------------------ private ------------------------------------------
+
+        private readonly Dictionary<string, I_state<T>> allStates = new ();
+        private string currentState = string.Empty;
+        private T payload;
+
+        private void change_state(Type state) {
+
+            string newState = this.Select_State_To_Execute(state);
             if(this.currentState != newState) {
-                this.allStates[this.currentState].Exit(this);
-                this.allStates[newState].Enter(this);
+                this.allStates[this.currentState].exit(payload);
+                this.allStates[newState].enter(payload);
             }
             this.currentState = newState;
         }
 
-        // ------------------------------------------ private ------------------------------------------
-
-        private readonly Dictionary<string, I_state> allStates = new ();
-        private string currentState = string.Empty;
-
         private string Select_State_To_Execute(Type state) {
 
             string className = state.Name;
-            if(!this.allStates.ContainsKey(className))
-                this.Create_State_Instance(state);
+            if(!allStates.ContainsKey(className))
+                Create_State_Instance(state);
 
             return className;
         }
 
         private void Create_State_Instance(Type state) {
 
-            if(typeof(I_state).IsAssignableFrom(state)) {
+            if(typeof(I_state<T>).IsAssignableFrom(state)) {
 
-                I_state state_instance = (I_state)Activator.CreateInstance(state);
-                this.allStates.Add(state.Name, state_instance);
+                I_state<T> state_instance = (I_state<T>)Activator.CreateInstance(state);
+                allStates.Add(state.Name, state_instance);
             }
             else
-                throw new InvalidOperationException($"Type [{state.Name}] does not implement [I_AI_state] interface.");
+                throw new InvalidOperationException($"Type [{state.Name}] does not implement [I_state] interface.");
         }
 
     }
 
-    public interface I_state {
-
-        Type Execute(object payload);
-        bool Exit(object payload);
-        bool Enter(object payload);
-    }
 }
