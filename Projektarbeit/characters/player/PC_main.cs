@@ -66,24 +66,20 @@ namespace Hell.player {
         }
 
         protected override void Update(float deltaTime) {
-
             float total_speed = character.movement_speed;
 
             // simple movement
             if(move.X != 0 || move.Y != 0) {
-
                 Vector2 direction = Vector2.NormalizeFast((Vector2)move.GetValue());
                 character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * deltaTime);
             }
-            
-            character.rotate_to_move_dir_smooth();
+
+            // character always faces upwards
+            character.transform.rotation = 0;
 
             if((bool)fire.GetValue() && Game_Time.total - lastFireTime >= fireDelay) {
-
                 Vector2 playerLocation = character.transform.position;
-                Vec2 playerDirectionVec2 = character.collider.body.GetLinearVelocity();
-                playerDirectionVec2.Normalize();
-                Vector2 playerDirection = new Vector2(playerDirectionVec2.X, playerDirectionVec2.Y);
+                Vector2 playerDirection = new Vector2(0, -1);
                 Game.Instance.get_active_map().Add_Game_Object(new TestProjectile(playerLocation, playerDirection));
                 lastFireTime = Game_Time.total;
             }

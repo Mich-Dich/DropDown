@@ -39,7 +39,6 @@
 
         public override void draw_imgui() {
             base.draw_imgui();
-            Console.WriteLine("draw_imgui");
 
             if((health / health_max) < 1 && health > 0)
                 Display_Healthbar();
