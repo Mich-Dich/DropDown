@@ -8,9 +8,8 @@ namespace Hell.enemy {
     using OpenTK.Mathematics;
     using System;
 
-    public class SwarmEnemyController : AIC_simple {
+    public class SwarmEnemyController : AI_Swarm_Controller {
 
-        public List<Character> characters = new List<Character>();
         public Vector2 Origin = new Vector2();
 
         public SwarmEnemyController(Vector2 origin) : base() {
@@ -35,11 +34,6 @@ namespace Hell.enemy {
     }
 
     public class EnterScreen : I_state<AI_Swarm_Controller> {
-
-        private Vector2 direction = new Vector2(1, 0);
-        private float swarmPatternFactor = 1.0f;
-        private float randomnessFactor = 0.5f;
-
         public Type execute(AI_Swarm_Controller aiController, float delta_time) {
 
             foreach(var character in aiController.characters) {
