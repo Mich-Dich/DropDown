@@ -25,6 +25,14 @@ namespace Hell.enemy {
                 Vector2 position = this.Origin + new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * radius;
                 Game.Instance.get_active_map().Add_empty_Character(enemy, position);
                 this.characters.Add(enemy);
+                enemy.death_callback = () =>
+                {
+                    get_state_machine().force_set_state(typeof(Death));
+                    enemy.health = 0;
+                    enemy.auto_heal_amout = 0;
+                    Game.Instance.get_active_map().Remove_Game_Object(enemy);
+                    Game.Instance.get_active_map().allCharacter.Remove(enemy);
+                };
             }
 
             get_state_machine().Set_Statup_State(typeof(EnterScreen));
@@ -41,8 +49,6 @@ namespace Hell.enemy {
                 if(npc.IsPlayerInRange())
                     return typeof(Pursue);
             }
-
-            aiController.characters.RemoveAll(character => (character as SwarmEnemy).IsDead);
 
             return typeof(EnterScreen);
         }
@@ -76,8 +82,6 @@ namespace Hell.enemy {
                 }
             }
 
-            aiController.characters.RemoveAll(character => (character as SwarmEnemy).IsDead);
-
             return typeof(Pursue);
         }
 
@@ -101,8 +105,6 @@ namespace Hell.enemy {
                 if(enemy.IsHealthLow()) 
                     return typeof(Retreat);
             }
-
-            aiController.characters.RemoveAll(character => (character as SwarmEnemy).IsDead);
 
             return typeof(Attack);
         }
@@ -128,8 +130,6 @@ namespace Hell.enemy {
                     return typeof(Pursue);
             }
 
-            aiController.characters.RemoveAll(character => (character as SwarmEnemy).IsDead);
-
             return typeof(Retreat);
         }
 
@@ -139,5 +139,20 @@ namespace Hell.enemy {
                 ((CH_base_NPC)character).set_animation_from_anim_data(((CH_base_NPC)character).idle_anim);
             return true;
         }
+    }
+
+    public class Death : I_state<AI_Swarm_Controller> {
+
+        public bool exit(AI_Swarm_Controller aI_Controller) { return true; }
+        public bool enter(AI_Swarm_Controller aI_Controller) {
+
+            Console.WriteLine($"DEATH");
+            foreach(var character in aI_Controller.characters) {
+                ((CH_base_NPC)character).set_animation_from_anim_data(((CH_base_NPC)character).idle_anim);
+            }
+            return true;
+        }
+
+        public Type execute(AI_Swarm_Controller aI_Controller, float delta_time) { return typeof(Death); }
     }
 }

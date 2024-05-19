@@ -14,8 +14,6 @@ namespace Hell.enemy {
         public SwarmEnemyController Controller { get; set; }
         public float lastFireTime { get; set; }
         public float fireDelay { get; set; } = 1f;
-        public bool IsDead { get; private set; } = false;
-
 
         public SwarmEnemy() : base() {
 
@@ -77,7 +75,6 @@ namespace Hell.enemy {
             Vector2 direction = playerPosition - transform.position;
 
             if (direction.Length < StopDistance) {
-                // If the enemy is close enough to the player, stop moving
                 return;
             }
 
@@ -124,22 +121,13 @@ namespace Hell.enemy {
             ApplySeparation();
         }
 
-        public void Die() {
-            this.IsDead = true;
-            Console.WriteLine("Enemy has been marked for removal from the game.");
-        }
-
         public override void Hit(hitData hit) {
             if(hit.hit_object is TestProjectile) {
-                Console.WriteLine("Hit by a TestProjectile!");
 
                 this.health -= ((TestProjectile)hit.hit_object).Damage;
 
                 Console.WriteLine("Current health: " + this.health);
 
-                if(this.health <= 0) {
-                    Die();
-                }
             } else {
                 base.Hit(hit);
             }

@@ -29,6 +29,7 @@ namespace Core.world.map {
 
             Vec2 gravity = new (0.0f, 0.001f);
             physicsWorld = new World(aabb, gravity, true);
+            physicsWorld.SetContactListener(new CollisionListener());
         }
 
         public virtual void update(float deltaTime) { }
@@ -139,10 +140,8 @@ namespace Core.world.map {
 
             if(character.collider != null) {
                 character.collider.body = body;
-                character.collider.SetupCollisionDetection(character);
             } else {
                 Collider newCollider = new Collider(body);
-                newCollider.SetupCollisionDetection(character);
                 character.Add_Collider(newCollider);
             }
 
@@ -414,26 +413,33 @@ namespace Core.world.map {
         }
 
         internal void update_internal(float deltaTime) {
-
             this.physicsWorld.Step(deltaTime * 10, this.velocityIterations, this.positionIterations);
+
+            List<Character> charactersToRemove = new List<Character>();
 
             foreach(var character in this.allCharacter) {
                 character.Update_position();
                 character.Update(deltaTime);
+                if(character.health <= 0)
+                    charactersToRemove.Add(character);
             }
 
             foreach (var AI_Controller in all_AI_Controller)
                 AI_Controller.Update(deltaTime);
 
             for (int x = 0; x < this.world.Count; x++) {
-
                 if(world[x].collider != null) {
                     if(world[x].collider.body != null) {
-
                         world[x].Update_position();
                     }
                 }
                 world[x].Update(deltaTime);
+            }
+
+            foreach(var character in charactersToRemove) {
+                this.allCharacter.Remove(character);
+                if(character.death_callback != null)
+                    character.death_callback();
             }
 
             update(deltaTime);

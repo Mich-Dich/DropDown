@@ -123,7 +123,7 @@ namespace Core.world {
             transform.rotation = -new_angle + rotation_offset;
         }
 
-        public virtual void Hit(hitData hit) { }
+        public virtual void Hit(hitData hit) {}
 
         public virtual void Update(float deltaTime) { }
 
@@ -164,11 +164,13 @@ namespace Core.world {
             this.transform.position = (pos.X, pos.Y);
         }
 
+        /*
         public void SetupCollisionDetection() {
             if (this.collider != null) {
                 this.collider.SetupCollisionDetection(this);
             }
         }
+        */
 
         // =============================================== internal ==============================================
         internal void Draw_Debug() {

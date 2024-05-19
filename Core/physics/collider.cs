@@ -65,13 +65,6 @@ namespace Core.physics {
             this.mass = mass;
             return this;
         }
-
-        public void SetupCollisionDetection(Game_Object owner) {
-            if (Game.Instance.get_active_map().physicsWorld != null) {
-                GameObjectContactListener contactListener = new GameObjectContactListener(owner);
-                Game.Instance.get_active_map().physicsWorld.SetContactListener(contactListener);
-            }
-        }
     }
 
     public enum Collision_Shape {
