@@ -1,12 +1,17 @@
-﻿
+﻿using System.Collections.Generic;
+
 namespace Hell.player {
 
     using Core.physics;
     using Core.util;
     using Core.world;
+    using Hell.weapon;
     using OpenTK.Mathematics;
+    using Core.defaults;
 
     internal class CH_player : Character {
+
+        private HashSet<Projectile> hitProjectiles = new HashSet<Projectile>();
 
         public CH_player() {
             
@@ -19,7 +24,12 @@ namespace Hell.player {
             rotation_offset = float.Pi / 2;
         }
 
-        public override void Hit(hitData hit) { }
+        public override void Hit(hitData hit) {
+            if(hit.hit_object is EnemyTestProjectile projectile && !hitProjectiles.Contains(projectile)) {
+                this.health -= projectile.Damage;
+                hitProjectiles.Add(projectile);
+                Console.WriteLine("Current health: " + this.health);
+            }
+        }
     }
-
 }

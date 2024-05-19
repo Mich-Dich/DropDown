@@ -62,13 +62,6 @@ namespace Core.defaults {
             }
         }
 
-        public override void Hit(hitData hit) {
-            if(Bounce) {
-                // Calculate reflection direction
-            }
-            else {
-                Game.Instance.get_active_map().physicsWorld.DestroyBody(collider.body);
-            }
-        }
+        public override void Hit(hitData hit) { }
     }
 }
