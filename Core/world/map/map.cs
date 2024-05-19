@@ -174,12 +174,11 @@ namespace Core.world.map {
             }
         }
 
-        public void Set_Background_Image(string image_path) {
-
+        public void Set_Background_Image(string image_path, float scaleMultiplier = 1.0f) {
             Texture background_texture = Resource_Manager.Get_Texture(image_path, false);
-            Vector2 view_size = Game.Instance.camera.Get_View_Size_In_World_Coord();
+            Vector2 window_size = Game.Instance.window.Size;
             Vector2 original_sprite_size = new (background_texture.Width, background_texture.Height);
-            Vector2 scale_factor = view_size / original_sprite_size * Game.Instance.camera.GetScale();
+            Vector2 scale_factor = (window_size / original_sprite_size) * scaleMultiplier;
             Vector2 sprite_size = original_sprite_size * scale_factor;
             Vector2 sprite_position = Vector2.Zero;
             Transform background_transform = new (sprite_position, sprite_size, 0, Mobility.STATIC);

@@ -25,8 +25,9 @@ namespace Hell.player {
         }
 
         public override void Hit(hitData hit) {
-            if(hit.hit_object is EnemyTestProjectile) {
-                this.health -= ((EnemyTestProjectile)hit.hit_object).Damage;
+            if(hit.hit_object is EnemyTestProjectile testProjectile && !testProjectile.HasHit) {
+                this.health -= testProjectile.Damage;
+                testProjectile.HasHit = true;
                 Console.WriteLine("Current health: " + this.health);
             } else {
                 base.Hit(hit);

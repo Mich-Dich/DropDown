@@ -122,17 +122,15 @@ namespace Hell.enemy {
         }
 
         public override void Hit(hitData hit) {
-            if(hit.hit_object is TestProjectile) {
-
-                this.health -= ((TestProjectile)hit.hit_object).Damage;
-
+            if(hit.hit_object is TestProjectile testProjectile && !testProjectile.HasHit) {
+                this.health -= testProjectile.Damage;
+                testProjectile.HasHit = true;
                 Console.WriteLine("Current health: " + this.health);
-
             } else {
                 base.Hit(hit);
             }
         }
-
+        
         private void ApplySeparation() {
             Random random = new Random();
             float SeparationDistance = 60f + (float)random.NextDouble() * 20f;

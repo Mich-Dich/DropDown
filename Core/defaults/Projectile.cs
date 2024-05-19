@@ -16,6 +16,7 @@ namespace Core.defaults {
         public Sprite Sprite { get; set; }
         public float Lifetime { get; set; } = 5f;
         public DateTime CreationTime { get; set; }
+        public bool HasHit { get; set; } = false;
 
         public Projectile(Vector2 position, Vector2 direction, float speed = 10f, float damage = 1f, bool bounce = false, Collision_Shape shape = Collision_Shape.Square) : base(position) {
 

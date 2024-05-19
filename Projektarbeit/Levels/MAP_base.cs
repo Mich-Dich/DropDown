@@ -24,7 +24,7 @@ namespace Hell.Levels {
             time_stamp = Game_Time.total;
             time_interval = random.Next(2,4);
 
-            Set_Background_Image("assets/textures/background/background.png");
+            Set_Background_Image("assets/textures/background/background.png", 1.18f);
 
         }
 
