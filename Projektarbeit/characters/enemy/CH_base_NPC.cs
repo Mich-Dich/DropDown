@@ -3,14 +3,17 @@
     using Core.physics;
     using Core.render;
     using Core.world;
-    using OpenTK.Mathematics;
 
     public abstract class CH_base_NPC : Character {
 
         protected CH_base_NPC() {
             Add_Collider(new Collider(Collision_Shape.Circle));
             this.Set_Sprite(new Sprite());
-        }
+
+            healthbar_slope = 0f;
+            healthbar_width = 50;
+            healthbar_height = 5;
+    }
 
         public float damage;
         public int ray_number;
@@ -41,7 +44,9 @@
             base.draw_imgui();
 
             if((health / health_max) < 1 && health > 0)
-                Display_Healthbar();
+                Display_Healthbar(null, new System.Numerics.Vector2(-8,-40), new System.Numerics.Vector2(1), 5);
         }
+
+
     }
 }

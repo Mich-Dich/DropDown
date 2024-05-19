@@ -93,7 +93,7 @@ namespace Core.world {
 
         }
 
-        public void Display_Healthbar(System.Numerics.Vector2? display_size = null) {
+        public void Display_Healthbar(System.Numerics.Vector2? display_size = null, System.Numerics.Vector2? pos_offset = null, System.Numerics.Vector2? padding = null, float rounding = 0.0f) {
 
             string UniqueId = $"Helthbar_for_character_{this.GetHashCode()}";
             if (display_size == null)
@@ -107,9 +107,16 @@ namespace Core.world {
                 | ImGuiWindowFlags.NoNav
                 | ImGuiWindowFlags.NoMove;
 
-            System.Numerics.Vector2 position = Core.util.util.convert_Vector(Core.util.util.Convert_World_To_Screen_Coords(transform.position));
-            ImGui.SetNextWindowPos(position - (display_size.Value/2));
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(4));
+            System.Numerics.Vector2 position = 
+                Core.util.util.convert_Vector(Core.util.util.Convert_World_To_Screen_Coords(transform.position)) + pos_offset?? System.Numerics.Vector2.Zero;
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding?? new System.Numerics.Vector2(4));
+
+            if(rounding != 0.0f) {
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, rounding);
+                ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, rounding);
+            }
+
+            ImGui.SetNextWindowPos(position, ImGuiCond.Always, new System.Numerics.Vector2(0.5f));
             ImGui.Begin(UniqueId, window_flags);
 
             Imgui_Util.Progress_Bar_Stylised(health / health_max, 
@@ -122,6 +129,10 @@ namespace Core.world {
 
             ImGui.End();
             ImGui.PopStyleVar();
+
+            if(rounding != 0.0f)
+                ImGui.PopStyleVar(2);
+
         }
 
         public override void Update(Single deltaTime) {
@@ -132,8 +143,8 @@ namespace Core.world {
         }
 
         // healthbar
-        public float healthbar_width = 110;
-        public float healthbar_height = 10;
+        public float healthbar_width = 100;
+        public float healthbar_height = 8;
         public float healthbar_length_of_mini_bar = 0f;
         public float healthbar_height_of_mini_bar= 0f;
         public float healthbar_slope= 0.35f;

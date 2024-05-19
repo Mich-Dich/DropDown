@@ -12,6 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="assets\animation\bolt\bolt.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\animation\bolt\bolt.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\animation\enemy\enemy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
