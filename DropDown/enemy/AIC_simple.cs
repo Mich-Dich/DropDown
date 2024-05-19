@@ -5,6 +5,7 @@ namespace DropDown.enemy {
     using Core.Controllers.ai;
     using Core.util;
     using Core.world;
+    using DropDown.player;
     using OpenTK.Mathematics;
 
     public class AIC_simple : AI_Controller {
@@ -30,9 +31,9 @@ namespace DropDown.enemy {
         public bool exit(AI_Controller aI_Controller) { return true; }
         public bool enter(AI_Controller aI_Controller) {
 
-            Console.WriteLine($"DEATH");
             character = (CH_base_NPC)aI_Controller.character;
             character.set_animation_from_anim_data(character.death_anim);
+            Console.WriteLine($"character: {character.GetHashCode()} has died");
             return true;
         }
 
@@ -125,8 +126,9 @@ namespace DropDown.enemy {
                 Vector2 start = character.transform.position + (look_dir * (character.transform.size.X/2));
                 Vector2 end = start + (look_dir * (character.attack_range - (character.transform.size.X/2)));
 
-                if (Game.Instance.get_active_map().ray_cast(start, end, out Box2DX.Common.Vec2 intersection_point, out float distance, out Game_Object intersected_game_object, true, 0.5f))
-                    intersected_game_object.Hit(new Core.physics.hitData(character.damage));
+                if (Game.Instance.get_active_map().ray_cast(start, end, out Box2DX.Common.Vec2 intersection_point, out float distance, out Game_Object intersected_game_object, true, 0.5f)) 
+                    if(intersected_game_object is Character intersected_character)
+                        intersected_character.apply_damage(character.damage);
             });
             return true;
         }

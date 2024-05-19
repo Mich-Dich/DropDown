@@ -49,6 +49,7 @@ namespace Hell.player {
                     new(Key_Code.MouseWheelY, ResetFlags.reset_on_key_move_up, TriggerFlags.mouse_pos_and_neg),
                 });
             AddInputAction(look);
+            
 
             fire = new Action(
                 "fire",
@@ -84,5 +85,6 @@ namespace Hell.player {
                 lastFireTime = Game_Time.total;
             }
         }
+
     }
 }

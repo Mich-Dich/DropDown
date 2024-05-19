@@ -19,6 +19,7 @@ namespace Core.world {
         public float movement_force_max { get; set; } = 100000.0f;
         public float auto_heal_amout { get; set; } = 5;
         public float health { get; set; } = 100;
+        public bool auto_remove_on_death = false;
         public float health_max { get; set; } = 100;
         public Action death_callback { get; set; }
 
@@ -69,7 +70,11 @@ namespace Core.world {
                 this.collider.body.ApplyForce(force, Vec2.Zero);
         }
 
-        public override void Hit(hitData hit) {
+        public override void Hit(hitData hit) { }
+
+        public virtual void apply_damage(float damage) { 
+            
+            health -= damage;
             if(health <= 0 && death_callback != null)
                 death_callback();
         }
@@ -108,7 +113,7 @@ namespace Core.world {
                 | ImGuiWindowFlags.NoMove;
 
             System.Numerics.Vector2 position = 
-                Core.util.util.convert_Vector(Core.util.util.Convert_World_To_Screen_Coords(transform.position)) + pos_offset?? System.Numerics.Vector2.Zero;
+                Core.util.util.convert_Vector(Core.util.util.Convert_World_To_Screen_Coords(transform.position)) + (pos_offset?? System.Numerics.Vector2.Zero);
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding?? new System.Numerics.Vector2(4));
 
             if(rounding != 0.0f) {

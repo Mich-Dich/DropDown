@@ -1,5 +1,6 @@
 
 namespace DropDown.player {
+
     using Core;
     using Core.physics;
     using Core.util;
@@ -26,10 +27,12 @@ namespace DropDown.player {
             movement_speed = 350.0f;
         }
 
-        public override void Hit(hitData hit) {
+        public override void apply_damage(float damage) { 
 
-            health -= hit.hit_force;
+            health -= damage; 
             ((Drop_Down)Game.Instance).flash_blood_overlay();
+
+            base.apply_damage(damage);
         }
 
     }

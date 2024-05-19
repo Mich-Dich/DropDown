@@ -420,7 +420,7 @@ namespace Core.world.map {
             foreach(var character in this.allCharacter) {
                 character.Update_position();
                 character.Update(deltaTime);
-                if(character.health <= 0)
+                if(character.health <= 0 && character.auto_remove_on_death)
                     charactersToRemove.Add(character);
             }
 

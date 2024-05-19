@@ -49,6 +49,7 @@ namespace DropDown.player {
                 });
             AddInputAction(look);
 
+
             sprint = new Action(
                 "shoot",
                 (uint)Action_ModefierFlags.none,
@@ -110,8 +111,8 @@ namespace DropDown.player {
 
                 foreach(var obj in intersected_game_objects) {
 
-                    Character buffer = (Character)(obj);
-                    buffer.Hit(new hitData(20));
+                    if(obj is Character intersected_character)
+                        intersected_character.apply_damage(20);
                 }
 
             }

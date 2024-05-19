@@ -13,7 +13,8 @@
             healthbar_slope = 0f;
             healthbar_width = 50;
             healthbar_height = 5;
-    }
+            auto_remove_on_death = true;
+        }
 
         public float damage;
         public int ray_number;

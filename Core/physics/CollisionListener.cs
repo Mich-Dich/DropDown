@@ -1,22 +1,19 @@
-using Box2DX.Dynamics;
-using Box2DX.Collision;
-using OpenTK.Mathematics;
-using Core.world;
 
-namespace Core.physics
-{
-    public class CollisionListener : ContactListener
-    {
-        public override void Add(ContactPoint point)
-        {
-            Body body1 = point.Shape1.GetBody();
-            Body body2 = point.Shape2.GetBody();
+namespace Core.physics {
 
-            Game_Object object1 = body1.GetUserData() as Game_Object;
-            Game_Object object2 = body2.GetUserData() as Game_Object;
+    using Box2DX.Dynamics;
+    using Core.world;
+    using OpenTK.Mathematics;
 
-            if (object1 != null && object2 != null)
-            {
+    public class CollisionListener : ContactListener {
+    
+        public override void Add(ContactPoint point) {
+
+            Game_Object object1 = point.Shape1.GetBody().GetUserData() as Game_Object;
+            Game_Object object2 = point.Shape2.GetBody().GetUserData() as Game_Object;
+
+            if(object1 != null && object2 != null) {
+
                 hitData hit = new hitData();
                 hit.is_hit = true;
                 hit.hit_force = point.Velocity.Length();
@@ -33,25 +30,22 @@ namespace Core.physics
             }
         }
 
-        public override void Persist(ContactPoint point)
-        {
+        public override void Persist(ContactPoint point) {
+    
             Body body1 = point.Shape1.GetBody();
             Body body2 = point.Shape2.GetBody();
-
         }
 
-        public override void Remove(ContactPoint point)
-        {
+        public override void Remove(ContactPoint point) {
+
             Body body1 = point.Shape1.GetBody();
             Body body2 = point.Shape2.GetBody();
-
         }
 
-        public override void Result(ContactResult point)
-        {
+        public override void Result(ContactResult point) {
+
             Body body1 = point.Shape1.GetBody();
             Body body2 = point.Shape2.GetBody();
-
         }
     }
 }
