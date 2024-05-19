@@ -54,7 +54,7 @@ namespace Hell.enemy {
         }
 
         public void Move() {
-            Vector2 direction = new Vector2(0, -1);
+            Vector2 direction = new Vector2(0, 1);
             Random random = new Random();
             float offset = (float)(random.NextDouble() - 0.5) * 2;
             direction += new Vector2(offset, 0);

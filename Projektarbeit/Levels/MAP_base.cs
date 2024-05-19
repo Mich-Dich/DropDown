@@ -33,7 +33,7 @@ namespace Hell.Levels {
             if((time_stamp + time_interval) <= Game_Time.total) {
 
                 if(!is_running) {
-                    add_AI_Controller(new SwarmEnemyController(new Vector2(0, 400)));
+                    add_AI_Controller(new SwarmEnemyController(new Vector2(0, -500)));
                     time_stamp = Game_Time.total;
                     time_interval = random.Next(2, 4);
                     is_running = true;

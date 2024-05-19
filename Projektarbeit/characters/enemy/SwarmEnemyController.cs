@@ -27,11 +27,11 @@ namespace Hell.enemy {
                 this.characters.Add(enemy);
                 enemy.death_callback = () =>
                 {
-                    get_state_machine().force_set_state(typeof(Death));
                     enemy.health = 0;
                     enemy.auto_heal_amout = 0;
                     Game.Instance.get_active_map().Remove_Game_Object(enemy);
                     Game.Instance.get_active_map().allCharacter.Remove(enemy);
+                    this.characters.Remove(enemy);
                 };
             }
 
@@ -41,20 +41,18 @@ namespace Hell.enemy {
     }
 
     public class EnterScreen : I_state<AI_Swarm_Controller> {
+        public bool exit(AI_Swarm_Controller aiController) { return true; }
         public Type execute(AI_Swarm_Controller aiController, float delta_time) {
 
+            Type nextState = typeof(EnterScreen);
             foreach(var character in aiController.characters) {
                 SwarmEnemy npc = (SwarmEnemy)character;
                 npc.Move();
                 if(npc.IsPlayerInRange())
-                    return typeof(Pursue);
+                    nextState = typeof(Pursue);
             }
 
-            return typeof(EnterScreen);
-        }
-
-        public bool exit(AI_Swarm_Controller aiController) {
-            return true;
+            return nextState;
         }
 
         public bool enter(AI_Swarm_Controller aiController) {
@@ -71,18 +69,19 @@ namespace Hell.enemy {
         public bool exit(AI_Swarm_Controller aiController) { return true; }
         public Type execute(AI_Swarm_Controller aiController, float delta_time) {
 
+            Type nextState = typeof(Pursue);
             foreach(var character in aiController.characters) {
                 SwarmEnemy enemy = (SwarmEnemy)character;
                 enemy.Pursue();
                 if(enemy.IsPlayerInAttackRange()) {
-                    return typeof(Attack);
+                    nextState = typeof(Attack);
                 }
                 if(enemy.IsHealthLow()) {
-                    return typeof(Retreat);
+                    nextState = typeof(Retreat);
                 }
             }
 
-            return typeof(Pursue);
+            return nextState;
         }
 
         public bool enter(AI_Swarm_Controller aiController) {
@@ -97,16 +96,17 @@ namespace Hell.enemy {
         public bool exit(AI_Swarm_Controller aiController) { return true; }
         public Type execute(AI_Swarm_Controller aiController, float delta_time) {
 
+            Type nextState = typeof(Attack);
             foreach(var character in aiController.characters) {
                 SwarmEnemy enemy = (SwarmEnemy)character;
                 enemy.Attack();
                 if(!enemy.IsPlayerInAttackRange()) 
-                    return typeof(Pursue);
+                    nextState = typeof(Pursue);
                 if(enemy.IsHealthLow()) 
-                    return typeof(Retreat);
+                    nextState = typeof(Retreat);
             }
 
-            return typeof(Attack);
+            return nextState;
         }
 
         public bool enter(AI_Swarm_Controller aiController) {
@@ -123,14 +123,15 @@ namespace Hell.enemy {
         public bool exit(AI_Swarm_Controller aiController) { return true; }
         public Type execute(AI_Swarm_Controller aiController, float delta_time) {
 
+            Type nextState = typeof(Retreat);
             foreach(var character in aiController.characters) {
                 SwarmEnemy enemy = (SwarmEnemy)character;
                 enemy.Retreat();
                 if(!enemy.IsHealthLow())
-                    return typeof(Pursue);
+                    nextState = typeof(Pursue);
             }
 
-            return typeof(Retreat);
+            return nextState;
         }
 
         public bool enter(AI_Swarm_Controller aiController) {
