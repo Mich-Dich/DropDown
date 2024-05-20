@@ -151,8 +151,6 @@
                                 if(buffer.Length <= 1)
                                     break;
 
-                                Console.WriteLine($"length: {buffer.Length}");
-
                                 buffer.Normalize();
                                 loc_action.X = buffer.X;
                                 loc_action.Y = buffer.Y;

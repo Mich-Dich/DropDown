@@ -7,11 +7,8 @@ namespace Hell.player {
     using Core.world;
     using Hell.weapon;
     using OpenTK.Mathematics;
-    using Core.defaults;
 
     internal class CH_player : Character {
-
-        private HashSet<Projectile> hitProjectiles = new HashSet<Projectile>();
 
         public CH_player() {
             
@@ -28,7 +25,6 @@ namespace Hell.player {
             if(hit.hit_object is EnemyTestProjectile testProjectile && !testProjectile.HasHit) {
                 this.health -= testProjectile.Damage;
                 testProjectile.HasHit = true;
-                Console.WriteLine("Current health: " + this.health);
             } else {
                 base.Hit(hit);
             }

@@ -99,7 +99,6 @@ namespace Core.defaults {
 
                 List<Game_Object> intersected_game_objects = new List<Game_Object>();
                 character.perception_check(ref intersected_game_objects, (float.Pi / 2), 16, 2, 60, true, 1.5f);
-                Console.WriteLine($"hit objects count: {intersected_game_objects.Count}");
 
                 foreach(var obj in intersected_game_objects) {
 

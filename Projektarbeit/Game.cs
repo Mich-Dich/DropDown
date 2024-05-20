@@ -56,10 +56,7 @@ namespace Hell {
                 Imgui_Util.Progress_Bar_Stylised(this.player.health / this.player.health_max, new System.Numerics.Vector2(250, 15), col_red, transparentColor, 0.32f, 0.28f, 0.6f);
 
                 ImGui.Spacing();
-                Imgui_Util.Title("Score");
-                ImGui.SameLine();
-                Imgui_Util.Title("0");
-
+                Imgui_Util.Title($"Score: {Game.Instance.Score}");
                 ImGui.End();
             }
     }

@@ -60,6 +60,7 @@ namespace Core {
         public GameWindow window { get; private set; }
         public Camera camera { get; set; }
         public Character player { get; set; }
+        public int Score { get; set; } = 0;
         private global_debug_drawer global_Debug_Drawer { get; set; }
 
         protected string title { get; set; }

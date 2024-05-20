@@ -32,6 +32,7 @@ namespace Hell.enemy {
                     Game.Instance.get_active_map().Remove_Game_Object(enemy);
                     Game.Instance.get_active_map().allCharacter.Remove(enemy);
                     this.characters.Remove(enemy);
+                    Game.Instance.Score++;
                 };
             }
 
