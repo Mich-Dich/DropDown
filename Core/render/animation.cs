@@ -46,17 +46,17 @@ namespace Core.render {
 
         public void Update() {
 
-            if(!this.isPlaying) 
+            if(!this.isPlaying)
                 return;
 
-            if(Game.Instance.show_performance) 
+            if(Game.Instance.show_performance)
                 DebugData.playingAnimationNum++;
 
             this.sprite.animationTimer += Game_Time.delta;
             int current_frame_index = (int)(this.sprite.animationTimer / this.frameTime);
 
             // call notification
-            foreach (var notify in m_animation_notificationList) {
+            foreach(var notify in m_animation_notificationList) {
 
                 if(previous_frame_index < notify.frame_index
                     && current_frame_index >= notify.frame_index)
@@ -64,27 +64,28 @@ namespace Core.render {
             }
 
             int max_image_index = 0;
-            if(this.spriteBatch != null) 
+            if(this.spriteBatch != null)
                 max_image_index = this.spriteBatch.frameCount;
-            else if(this.textureAtlas != null) 
+            else if(this.textureAtlas != null)
                 max_image_index = this.numOfColumns * this.numOfRows;
 
             if(current_frame_index >= max_image_index) {
 
                 if(this.Loop) {
-                    
+
                     current_frame_index = 0;
                     this.sprite.animationTimer = 0;
-                } else {
-                  
+                }
+                else {
+
                     current_frame_index = max_image_index - 1;
                     this.Stop();
                 }
             }
 
-            if(this.spriteBatch != null) 
+            if(this.spriteBatch != null)
                 this.sprite.texture = this.spriteBatch.GetFrame(current_frame_index);
-            else if(this.textureAtlas != null) 
+            else if(this.textureAtlas != null)
                 this.sprite.Select_Texture_Region(this.numOfColumns, this.numOfRows, current_frame_index % this.numOfColumns, current_frame_index / this.numOfColumns);
 
             previous_frame_index = current_frame_index;
@@ -132,10 +133,10 @@ namespace Core.render {
             this.frameTime = 1.0f / fps;
             this.Loop = loop;
 
-            if(this.spriteBatch != null) 
+            if(this.spriteBatch != null)
                 this.sprite.texture = this.spriteBatch.GetFrame(0);
 
-            if(this.textureAtlas != null) 
+            if(this.textureAtlas != null)
                 this.sprite.texture = this.textureAtlas;
         }
     }

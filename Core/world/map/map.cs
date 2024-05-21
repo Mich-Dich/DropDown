@@ -23,7 +23,7 @@ namespace Core.world.map {
         public readonly World physicsWorld;
 
         public Map() {
-        
+
             AABB aabb = new ();
             aabb.LowerBound.Set(-100000, -100000);
             aabb.UpperBound.Set(100000, 100000);
@@ -44,7 +44,7 @@ namespace Core.world.map {
 
             var shape = physicsWorld.RaycastOne(ray, out distance, out normal, false, null);
 
-            if(shape != null) 
+            if(shape != null)
                 intersected_game_object = (Game_Object)shape.GetBody().GetUserData();
             else
                 intersected_game_object = null;
@@ -99,8 +99,8 @@ namespace Core.world.map {
         }
 
         [Obsolete("")]
-        public void Add_Game_Object(Game_Object game_object) { 
-            
+        public void Add_Game_Object(Game_Object game_object) {
+
             this.world.Add(game_object);
 
             if(game_object.transform.mobility == Mobility.DYNAMIC)
@@ -137,7 +137,7 @@ namespace Core.world.map {
 
 
         public Character Add_Character(Character character, Vector2? position = null, Single rotation = 0.0f, bool IsSensor = false) {
-        
+
             if(position != null)
                 character.transform.position = position.Value;
 
@@ -169,7 +169,8 @@ namespace Core.world.map {
             character.transform.mobility = Mobility.DYNAMIC;
             if(character.collider != null) {
                 character.collider.body = body;
-            } else {
+            }
+            else {
                 Collider newCollider = new Collider(body);
                 character.Add_Collider(newCollider);
             }
@@ -192,16 +193,15 @@ namespace Core.world.map {
                 return;
 
             switch(world_Layer) {
-
                 case World_Layer.None: break;
                 case World_Layer.world:
                     // Console.WriteLine($"add_sprite() with argument [World_Layer = World_Layer.world] is not implemented yet");
                     // world.Add(new game_object().set_sprite(sprite));
-                    break;
+                break;
 
                 case World_Layer.backgound:
                     this.backgound.Add(sprite);
-                    break;
+                break;
             }
         }
 
@@ -224,7 +224,7 @@ namespace Core.world.map {
 
             var current_tile = this.Get_Correct_Map_Tile(position);
             sprite.transform.position = position;
-            if(use_cellSize) 
+            if(use_cellSize)
                 sprite.transform.size = new Vector2(this.cellSize);
 
             current_tile.background.Add(sprite);
@@ -238,10 +238,10 @@ namespace Core.world.map {
             new_game_object.transform.position = position;
             new_game_object.transform.mobility = Mobility.STATIC;
 
-            if(new_game_object.collider != null) 
+            if(new_game_object.collider != null)
                 new_game_object.collider.offset.mobility = Mobility.STATIC;
 
-            if(use_cellSize) 
+            if(use_cellSize)
                 new_game_object.transform.size = new Vector2(this.cellSize);
 
             current_tile.staticGameObject.Add(new_game_object);
@@ -252,9 +252,9 @@ namespace Core.world.map {
 
         public void add_static_collider_AAABB(Transform transform, bool use_cell_size = true) {
 
-            if(use_cell_size) 
+            if(use_cell_size)
                 transform.size = new Vector2(this.cellSize);
-            
+
             BodyDef def = new ();
             def.Position.Set(transform.position.X, transform.position.Y);
             def.AllowSleep = false;
@@ -278,7 +278,7 @@ namespace Core.world.map {
 
             this.mapTiles.Clear();
 
-            if(Game.Instance.show_performance) 
+            if(Game.Instance.show_performance)
                 DebugData.numOfTiels = 0;
         }
 
@@ -305,13 +305,13 @@ namespace Core.world.map {
                         Mobility.STATIC);
 
                     // ============================ GRAS FILD ============================
-                    if(random.NextDouble() < 0.01f) 
+                    if(random.NextDouble() < 0.01f)
                         this.backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).Select_Texture_Region(32, 64, 3, 30));
-                    else if(random.NextDouble() < 0.03f) 
+                    else if(random.NextDouble() < 0.03f)
                         this.backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).Select_Texture_Region(32, 64, 5, 26));
-                    else if(random.NextDouble() < 0.1f) 
+                    else if(random.NextDouble() < 0.1f)
                         this.backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).Select_Texture_Region(32, 64, 10, 5));
-                    else 
+                    else
                         this.backgound.Add(new Sprite(loc_trans_buffer, texture_atlas).Select_Texture_Region(32, 64, 4, 28));
                 }
             }
@@ -340,14 +340,14 @@ namespace Core.world.map {
                     for(int x = 0; x < mapData.Width; x++) {
 
                         int tileGID = mapData.Layers[layerIndex].Tiles[x, y];
-                        if(tileGID <= 0) 
+                        if(tileGID <= 0)
                             continue;
-                        
+
 
                         int tileIndex = tileGID - tilesetData.FirstGid;
-                        if(tileIndex < 0) 
+                        if(tileIndex < 0)
                             continue;
-                        
+
 
                         int tileRow = tileIndex / tilesetColumns;
                         int tileColumn = tileIndex % tilesetColumns;
@@ -373,17 +373,17 @@ namespace Core.world.map {
 
                             this.Add_Static_Game_Object(newGameObject, tileTransform.position);
 
-                            if(layerIndex == 0) 
+                            if(layerIndex == 0)
                                 this.Add_Background_Sprite(tileSprite, tileTransform.position);
-                            
+
                         }
                         else {
-                            if(layerIndex == 0) 
+                            if(layerIndex == 0)
                                 this.Add_Background_Sprite(tileSprite, tileTransform.position);
-                            
+
                             //else 
                             //    this.allCollidableGameObjects.Add(new Game_Object(tileTransform).Set_Sprite(tileSprite));
-                            
+
                         }
                     }
                 }
@@ -406,7 +406,7 @@ namespace Core.world.map {
 
                     if(Game.Instance.show_performance)
                         DebugData.numOfTielsDisplayed++;
-                    foreach(var sprite in tile.Value.background) 
+                    foreach(var sprite in tile.Value.background)
                         sprite.Draw();
                 }
             }
@@ -415,10 +415,10 @@ namespace Core.world.map {
             for(int x = 0; x < this.backgound.Count; x++)
                 this.backgound[x].Draw();
 
-            foreach(var character in this.allCharacter) 
+            foreach(var character in this.allCharacter)
                 character.Draw();
 
-            for(int x = 0; x < this.world.Count; x++) 
+            for(int x = 0; x < this.world.Count; x++)
                 this.world[x].Draw();
         }
 
@@ -434,15 +434,15 @@ namespace Core.world.map {
                 float overlapY = (camera_size.Y / 2) + (tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
 
                 if(overlapX > 0 && overlapY > 0) {
-                    foreach(var game_object in tile.Value.staticGameObject) 
+                    foreach(var game_object in tile.Value.staticGameObject)
                         game_object.Draw_Debug();
                 }
             }
 
-            foreach(var character in this.allCharacter) 
+            foreach(var character in this.allCharacter)
                 character.Draw_Debug();
 
-            for(int x = 0; x < this.world.Count; x++) 
+            for(int x = 0; x < this.world.Count; x++)
                 this.world[x].Draw_Debug();
         }
 
@@ -458,10 +458,10 @@ namespace Core.world.map {
                     charactersToRemove.Add(character);
             }
 
-            foreach (var AI_Controller in all_AI_Controller)
+            foreach(var AI_Controller in all_AI_Controller)
                 AI_Controller.Update(deltaTime);
 
-            for (int x = 0; x < this.world.Count; x++) {
+            for(int x = 0; x < this.world.Count; x++) {
                 if(world[x].collider != null) {
                     if(world[x].collider.body != null) {
                         world[x].Update_position();
@@ -484,7 +484,7 @@ namespace Core.world.map {
         private List<Game_Object> world { get; set; } = new List<Game_Object>();
         private readonly int velocityIterations = 6;
         private readonly int positionIterations = 1;
-        
+
         // ------------------------------------------ tiles ------------------------------------------
         protected float minDistancForCollision = 1600;
         protected int cellSize = 200;

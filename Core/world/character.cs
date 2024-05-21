@@ -3,7 +3,6 @@ namespace Core.world {
 
     using Box2DX.Common;
     using Core.controllers;
-    using Core.Controllers;
     using Core.Controllers.ai;
     using Core.physics;
     using Core.render;
@@ -57,26 +56,26 @@ namespace Core.world {
 
         public void Add_Linear_Velocity(Vec2 add_velocity) {
 
-            if(this.collider != null && this.collider.body != null) 
+            if(this.collider != null && this.collider.body != null)
                 this.collider.body.SetLinearVelocity(this.collider.body.GetLinearVelocity() + add_velocity);
         }
 
         public void Set_Velocity(Vec2 new_velocity) {
 
-            if(this.collider != null && this.collider.body != null) 
+            if(this.collider != null && this.collider.body != null)
                 this.collider.body.SetLinearVelocity(new_velocity);
         }
 
         public void add_force(Vec2 force) {
 
-            if(this.collider != null && this.collider.body != null) 
+            if(this.collider != null && this.collider.body != null)
                 this.collider.body.ApplyForce(force, Vec2.Zero);
         }
 
         public override void Hit(hitData hit) { }
 
-        public virtual void apply_damage(float damage) { 
-            
+        public virtual void apply_damage(float damage) {
+
             health -= damage;
             if(health <= 0 && death_callback != null)
                 death_callback();
@@ -103,7 +102,7 @@ namespace Core.world {
 
                 if(!Game.Instance.get_active_map().ray_cast(start, end, out Box2DX.Common.Vec2 intersection_point, out float distance, out var buffer, display_debug, display_duration))
                     continue;
-                    
+
                 if(buffer != null)
                     if(!intersected_game_objects.Contains(buffer))
                         intersected_game_objects.Add(buffer);
@@ -114,7 +113,7 @@ namespace Core.world {
         public void Display_Healthbar(System.Numerics.Vector2? display_size = null, System.Numerics.Vector2? pos_offset = null, System.Numerics.Vector2? padding = null, float rounding = 0.0f) {
 
             string UniqueId = $"Helthbar_for_character_{this.GetHashCode()}";
-            if (display_size == null)
+            if(display_size == null)
                 display_size = new System.Numerics.Vector2(healthbar_width, healthbar_height);
 
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
@@ -125,9 +124,9 @@ namespace Core.world {
                 | ImGuiWindowFlags.NoNav
                 | ImGuiWindowFlags.NoMove;
 
-            System.Numerics.Vector2 position = 
+            System.Numerics.Vector2 position =
                 Core.util.util.convert_Vector(Core.util.util.Convert_World_To_Screen_Coords(transform.position)) + (pos_offset?? System.Numerics.Vector2.Zero);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding?? new System.Numerics.Vector2(4));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding ?? new System.Numerics.Vector2(4));
 
             if(rounding != 0.0f) {
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, rounding);
@@ -137,7 +136,7 @@ namespace Core.world {
             ImGui.SetNextWindowPos(position, ImGuiCond.Always, new System.Numerics.Vector2(0.5f));
             ImGui.Begin(UniqueId, window_flags);
 
-            Imgui_Util.Progress_Bar_Stylised(health / health_max, 
+            Imgui_Util.Progress_Bar_Stylised(health / health_max,
                 display_size,
                 (health / health_max) > 0.3f ? healthbar_col_default : healthbar_col_almost_dead,
                 healthbar_col_background,
@@ -155,7 +154,7 @@ namespace Core.world {
 
         public override void Update(Single deltaTime) {
             base.Update(deltaTime);
-            
+
             if(health < health_max)
                 health += (auto_heal_amout * deltaTime);
         }

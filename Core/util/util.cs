@@ -9,43 +9,43 @@ namespace Core.util {
 
         public static int Get_Size_Of_VertexAttribPointerType(VertexAttribPointerType attrib_type) {
             switch(attrib_type) {
-            case VertexAttribPointerType.Byte:
-            case VertexAttribPointerType.UnsignedByte:
-            return sizeof(byte);
+                case VertexAttribPointerType.Byte:
+                case VertexAttribPointerType.UnsignedByte:
+                    return sizeof(byte);
 
-            case VertexAttribPointerType.Short:
-            case VertexAttribPointerType.UnsignedShort:
-            return sizeof(short);
+                case VertexAttribPointerType.Short:
+                case VertexAttribPointerType.UnsignedShort:
+                    return sizeof(short);
 
-            case VertexAttribPointerType.Int:
-            return sizeof(int);
+                case VertexAttribPointerType.Int:
+                    return sizeof(int);
 
-            case VertexAttribPointerType.UnsignedInt:
-            return sizeof(uint);
+                case VertexAttribPointerType.UnsignedInt:
+                    return sizeof(uint);
 
-            case VertexAttribPointerType.Float:
-            return sizeof(float);
+                case VertexAttribPointerType.Float:
+                    return sizeof(float);
 
-            case VertexAttribPointerType.Double:
-            return sizeof(double);
+                case VertexAttribPointerType.Double:
+                    return sizeof(double);
 
-            case VertexAttribPointerType.HalfFloat: // Assuming sizeof(short) for HalfFloat
-            return sizeof(short);
+                case VertexAttribPointerType.HalfFloat: // Assuming sizeof(short) for HalfFloat
+                    return sizeof(short);
 
-            case VertexAttribPointerType.Fixed: // Assuming sizeof(int) for Fixed
-            return sizeof(int);
+                case VertexAttribPointerType.Fixed: // Assuming sizeof(int) for Fixed
+                    return sizeof(int);
 
-            case VertexAttribPointerType.UnsignedInt2101010Rev: // Assuming sizeof(int) for UnsignedInt2101010Rev
-            return sizeof(int);
+                case VertexAttribPointerType.UnsignedInt2101010Rev: // Assuming sizeof(int) for UnsignedInt2101010Rev
+                    return sizeof(int);
 
-            case VertexAttribPointerType.UnsignedInt10F11F11FRev: // Assuming sizeof(int) for UnsignedInt10F11F11FRev
-            return sizeof(int);
+                case VertexAttribPointerType.UnsignedInt10F11F11FRev: // Assuming sizeof(int) for UnsignedInt10F11F11FRev
+                    return sizeof(int);
 
-            case VertexAttribPointerType.Int2101010Rev: // Assuming sizeof(int) for Int2101010Rev
-            return sizeof(int);
+                case VertexAttribPointerType.Int2101010Rev: // Assuming sizeof(int) for Int2101010Rev
+                    return sizeof(int);
 
-            default:
-            return 0;
+                default:
+                    return 0;
             }
         }
 

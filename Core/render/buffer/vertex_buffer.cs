@@ -18,7 +18,7 @@ namespace Core.render.buffer {
         private bool disposed = false;
         public void Dispose() {
 
-            if(!disposed) 
+            if(!disposed)
                 GL.DeleteBuffer(id);
             disposed = true;
         }

@@ -1,7 +1,4 @@
-﻿
-using Core.Controllers.ai;
-
-namespace Core.util {
+﻿namespace Core.util {
 
     public interface I_state<T> {
 
@@ -14,7 +11,7 @@ namespace Core.util {
     public sealed class state_machine<T> {
 
         public object user_pointer { get; set; }
-        
+
         public state_machine(T payload) { this.payload = payload; }
 
         // ------------------------------------------ public ------------------------------------------

@@ -18,6 +18,9 @@
     <None Update="assets\animation\bolt\bolt.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\animation\enemy\enemy-hit.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\animation\enemy\enemy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

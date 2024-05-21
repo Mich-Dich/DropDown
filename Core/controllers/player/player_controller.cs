@@ -115,7 +115,7 @@
                         switch(loc_action.ActionType) {
                             case ActionType.BOOL:
                             case ActionType.VEC_1D:
-                            loc_action.X = payloadBuffer;
+                                loc_action.X = payloadBuffer;
 
                             break;
 
@@ -124,7 +124,7 @@
                                     loc_action.Y = payloadBuffer;
                                 else
                                     loc_action.X = payloadBuffer;
-                            }
+                            } 
                             break;
 
                             case ActionType.VEC_3D: {
@@ -261,7 +261,7 @@
                         switch(loc_action.ActionType) {
                             case ActionType.BOOL:
                             case ActionType.VEC_1D:
-                            loc_action.X = 0;
+                                loc_action.X = 0;
                             break;
 
                             case ActionType.VEC_2D: {

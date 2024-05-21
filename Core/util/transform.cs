@@ -17,7 +17,7 @@ namespace Core.util {
         }
 
         public Transform(Transform transform) {
-            
+
             this.position = transform.position;
             this.size = transform.size;
             this.rotation = transform.rotation;
@@ -38,9 +38,9 @@ namespace Core.util {
 
         public Vector2 position {
             get {
-                if(this.parent == null) 
+                if(this.parent == null)
                     return this.positionValue;
-                else 
+                else
                     return this.parent.position + this.positionValue;
             }
 
@@ -48,7 +48,7 @@ namespace Core.util {
         }
 
         public static Transform operator +(Transform t1, Transform t2) {
-            
+
             return new Transform {
                 position = t1.position + t2.position,
                 size = t1.size + t2.size,
@@ -59,7 +59,7 @@ namespace Core.util {
         }
 
         public Matrix4 GetTransformationMatrix() {
-            
+
             Vector2 position = this.position;
             Matrix4 translation = Matrix4.CreateTranslation(new Vector3(position.X, position.Y, 0));
             Matrix4 scale = Matrix4.CreateScale(new Vector3(this.size.X, this.size.Y, 1));
@@ -69,14 +69,14 @@ namespace Core.util {
         }
 
         public Vector2 TransformPoint(Vector2 point) {
-            
+
             Vector4 homogenousPoint = new (point.X, point.Y, 0, 1);
             Vector4 transformedPoint = this.GetTransformationMatrix() * homogenousPoint;
             return new Vector2(transformedPoint.X, transformedPoint.Y);
         }
 
         public Vector2 InverseTransformPoint(Vector2 point) {
-            
+
             Matrix4 inverseTransform = Matrix4.Invert(this.GetTransformationMatrix());
             Vector4 homogenousPoint = new (point.X, point.Y, 0, 1);
             Vector4 transformedPoint = inverseTransform * homogenousPoint;
@@ -91,18 +91,18 @@ namespace Core.util {
         }
 
         public override string ToString() {
-        
-            if(this.parent != null) 
+
+            if(this.parent != null)
                 return $"position: {this.position} size: {this.size} rotation: [{this.rotation}] mobility: [{this.mobility}]\n" +
                        $"      parent: [{this.parent}]";
-            else 
+            else
                 return $"position: {this.position} size: {this.size} rotation: [{this.rotation}] mobility: [{this.mobility}]";
         }
 
 
         // ------------------------------------ private ------------------------------------
         private Vector2 RotateVector(Vector2 vector, float degrees) {
- 
+
             float radians = MathHelper.DegreesToRadians(degrees);
             float x = (vector.X * MathF.Cos(radians)) - (vector.Y * MathF.Sin(radians));
             float y = (vector.X * MathF.Sin(radians)) + (vector.Y * MathF.Cos(radians));

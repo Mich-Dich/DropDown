@@ -1,8 +1,6 @@
 
 namespace Core {
 
-    using System;
-    using System.Diagnostics;
     using Core.Controllers.player;
     using Core.defaults;
     using Core.render;
@@ -16,6 +14,8 @@ namespace Core {
     using OpenTK.Windowing.Common;
     using OpenTK.Windowing.Desktop;
     using OpenTK.Windowing.GraphicsLibraryFramework;
+    using System;
+    using System.Diagnostics;
 
     public static class DebugData {
 
@@ -35,7 +35,7 @@ namespace Core {
         public static int debug_rectangle = 0;
 
         public static void Reset() {
-        
+
             workTimeUpdate = 0;
             workTimeRender = 0;
             spriteDrawCallsNum = 0;
@@ -77,8 +77,8 @@ namespace Core {
         public Debug_Drawer Debug_Drawer;
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight) {
-        
-            if(Instance != null) 
+
+            if(Instance != null)
                 throw new Exception("You can only create one instance of Game!");
 
             Instance = this;
@@ -122,7 +122,7 @@ namespace Core {
                 if(this.activeMap == null)
                     this.activeMap = new MAP_default();
 
-                if(this.player == null) 
+                if(this.player == null)
                     this.player = new CH_default_player();
 
                 if(this.playerController == null)
@@ -137,7 +137,7 @@ namespace Core {
             };
 
             this.window.Unload += () => {
-                
+
                 // kill OpenGL
                 GL.BindVertexArray(0);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -213,7 +213,7 @@ namespace Core {
 
                 if(show_performance)
                     stopwatch.Restart();
-                
+
                 this.Update_Game_Time((float)this.window.TimeSinceLastUpdate());
                 this.window.ResetTimeSinceLastUpdate();
 
@@ -221,7 +221,7 @@ namespace Core {
                 this.activeMap.update_internal(Game_Time.delta);
                 this.Update(Game_Time.delta);
                 this.inputEvent.Clear();
-                
+
                 if(show_performance) {
 
                     stopwatch.Stop();
@@ -249,16 +249,16 @@ namespace Core {
             // make two events for X/Y of mouse wheel movement
             this.window.MouseWheel += (MouseWheelEventArgs args) => {
 
-                if(args.OffsetX != 0) 
+                if(args.OffsetX != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.MouseWheelX, (KeyModifiers)0, (int)args.Offset.X, KeyState.Repeat));
 
-                if(args.OffsetY != 0) 
+                if(args.OffsetY != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.MouseWheelY, (KeyModifiers)0, (int)args.Offset.Y, KeyState.Repeat));
             };
 
             // make two events for X/Y of mouse movement
             this.window.MouseMove += (MouseMoveEventArgs args) => {
-                
+
                 if(args.DeltaX != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.CursorPositionX, (KeyModifiers)0, (int)args.X, KeyState.Repeat));
 
@@ -342,7 +342,7 @@ namespace Core {
 
             this.imguiController.Update(this.window, (float)Game_Time.delta);
 
-            if(this.show_performance) 
+            if(this.show_performance)
                 this.debugDataViualizer.Draw();
 
             this.activeMap.Draw_Imgui();

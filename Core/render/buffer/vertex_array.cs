@@ -13,20 +13,20 @@ namespace Core.render.buffer {
 
         public void Dispose() {
 
-            if(disposed) 
+            if(disposed)
                 GL.DeleteVertexArray(id);
             disposed = true;
         }
 
         public void Add_Buffer(Vertex_Buffer buffer, Buffer_Layout layout) {
-            
+
             Bind();
             buffer.Bind();
             var elements = layout.get_buffer_elements();
             int offset = 0;
 
             for(int x = 0; x < elements.Count; x++) {
-            
+
                 var current_element = elements[x];
                 GL.EnableVertexAttribArray(x);
                 GL.VertexAttribPointer(x, current_element.count, current_element.type, current_element.normalized, layout.get_stride(), offset);

@@ -33,8 +33,8 @@ namespace Core.Controllers.ai {
 
         public List<Character> characters { get; set; } = new List<Character>();
 
-        public AI_Swarm_Controller(List<Character>? characters = null) { 
-            
+        public AI_Swarm_Controller(List<Character>? characters = null) {
+
             if(characters != null)
                 this.characters = characters;
             state_machine = new state_machine<AI_Swarm_Controller>(this);
@@ -43,7 +43,7 @@ namespace Core.Controllers.ai {
         public virtual void Update(float delta_time) {
 
             state_machine.Update(delta_time);
-            foreach (Character character in characters)
+            foreach(Character character in characters)
                 character.Update(delta_time);
         }
 

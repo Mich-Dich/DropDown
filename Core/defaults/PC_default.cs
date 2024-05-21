@@ -90,7 +90,7 @@ namespace Core.defaults {
                 Vector2 direction = Vector2.NormalizeFast((Vector2)move.GetValue());
                 character.Add_Linear_Velocity(new Box2DX.Common.Vec2(direction.X, direction.Y) * total_speed * deltaTime);
             }
-           
+
             character.rotate_to_vector(Game.Instance.Get_Mouse_Relative_Pos());         // look at mouse
             Game.Instance.camera.transform.position = character.transform.position;     // camera follows player
             Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);          // change zoom

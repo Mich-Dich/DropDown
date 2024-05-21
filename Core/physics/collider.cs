@@ -33,7 +33,7 @@ namespace Core.physics {
         */
 
         public Collider(Body body) {
-            
+
             this.body = body;
             this.offset = new Transform(Vector2.Zero, Vector2.Zero);
         }
@@ -55,27 +55,27 @@ namespace Core.physics {
         }
 
         public Collider Set_Offset(Transform offset) {
-            
+
             this.offset = offset;
             return this;
         }
 
         public Collider Set_Mass(float mass) {
-        
+
             this.mass = mass;
             return this;
         }
     }
 
     public enum Collision_Shape {
-        
+
         None = 0,
         Circle = 1,
         Square = 2,
     }
 
     public enum Collision_Type {
-        
+
         None = 0,
         world = 1,
         character = 2,

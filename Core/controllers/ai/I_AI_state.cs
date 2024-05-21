@@ -10,7 +10,7 @@ namespace Core.Controllers.ai {
 
 
     //public interface I_state {
-        
+
     //    Type execute<T>(T aiController);
     //    bool exit<T>(T aiController);
     //    bool enter<T>(T aiController);

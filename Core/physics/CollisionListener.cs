@@ -6,7 +6,7 @@ namespace Core.physics {
     using OpenTK.Mathematics;
 
     public class CollisionListener : ContactListener {
-    
+
         public override void Add(ContactPoint point) {
 
             Game_Object object1 = point.Shape1.GetBody().GetUserData() as Game_Object;
@@ -31,7 +31,7 @@ namespace Core.physics {
         }
 
         public override void Persist(ContactPoint point) {
-    
+
             Body body1 = point.Shape1.GetBody();
             Body body2 = point.Shape2.GetBody();
         }

@@ -15,7 +15,7 @@ namespace Core.world {
         public float rotation_offset { get; set; } = 0;
 
         public Game_Object(Transform transform) {
-        
+
             this.transform = transform;
             this.Init();
         }
@@ -54,7 +54,7 @@ namespace Core.world {
         public Game_Object Set_Mobility(Mobility mobility) {
 
             this.transform.mobility = mobility;
-            if(this.sprite != null) 
+            if(this.sprite != null)
                 this.sprite.Set_Mobility(mobility);
 
             if(this.collider != null)
@@ -123,7 +123,7 @@ namespace Core.world {
             transform.rotation = -new_angle + rotation_offset;
         }
 
-        public virtual void Hit(hitData hit) {}
+        public virtual void Hit(hitData hit) { }
 
         public virtual void Update(float deltaTime) { }
 
@@ -131,7 +131,7 @@ namespace Core.world {
 
         public virtual void Draw() {
 
-            if(this.sprite == null) 
+            if(this.sprite == null)
                 return;
 
             this.sprite.Draw();

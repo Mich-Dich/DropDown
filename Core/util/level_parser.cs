@@ -67,7 +67,7 @@ namespace Core.util {
         }
 
         private static Tileset_Data Parse_TSX(string tsxFilePath) {
- 
+
             XDocument doc = XDocument.Load(tsxFilePath);
             XElement? tilesetElement = doc.Element("tileset");
 

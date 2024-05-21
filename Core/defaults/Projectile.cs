@@ -20,7 +20,7 @@ namespace Core.defaults {
 
         public Projectile(Vector2 position, Vector2 direction, float speed = 10f, float damage = 1f, bool bounce = false, Collision_Shape shape = Collision_Shape.Square) : base(position) {
 
-            if(Game.Instance == null || Game.Instance.get_active_map() == null || Game.Instance.get_active_map().physicsWorld == null) 
+            if(Game.Instance == null || Game.Instance.get_active_map() == null || Game.Instance.get_active_map().physicsWorld == null)
                 throw new Exception("Game instance, active map, or physics world is not initialized");
 
             Speed = speed;
@@ -58,7 +58,7 @@ namespace Core.defaults {
         }
 
         public override void Update(float deltaTime) {
-            if ((DateTime.Now - CreationTime).TotalSeconds > Lifetime) {
+            if((DateTime.Now - CreationTime).TotalSeconds > Lifetime) {
                 Game.Instance.get_active_map().Remove_Game_Object(this);
             }
         }
