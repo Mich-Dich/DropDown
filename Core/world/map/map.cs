@@ -187,6 +187,7 @@ namespace Core.world.map {
         }
 
         public void Add_Sprite(World_Layer world_Layer, Sprite sprite) {
+
             if(sprite == null)
                 return;
 
@@ -397,10 +398,6 @@ namespace Core.world.map {
             Vector2 camera_size = Game.Instance.camera.Get_View_Size_In_World_Coord() + new Vector2(this.cellSize * 2);
             float tiel_size = this.tileSize * this.cellSize;
 
-            // Draw the background first
-            for(int x = 0; x < this.backgound.Count; x++)
-                this.backgound[x].Draw();
-
             foreach(var tile in this.mapTiles) {
                 float overlapX = (camera_size.X / 2) + (tiel_size / 2) - Math.Abs(camera_pos.X - tile.Key.X);
                 float overlapY = (camera_size.Y / 2) + (tiel_size / 2) - Math.Abs(camera_pos.Y - tile.Key.Y);
@@ -413,6 +410,10 @@ namespace Core.world.map {
                         sprite.Draw();
                 }
             }
+
+            // Draw the background first
+            for(int x = 0; x < this.backgound.Count; x++)
+                this.backgound[x].Draw();
 
             foreach(var character in this.allCharacter) 
                 character.Draw();

@@ -54,6 +54,7 @@ namespace Hell.enemy {
         }
 
         public bool IsHealthLow() {
+
             return health <= health_max * 0.2;
         }
 

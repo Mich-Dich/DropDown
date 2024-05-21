@@ -92,6 +92,7 @@ namespace DropDown.player {
                 Vector2 direction = Vector2.NormalizeFast((Vector2)move.GetValue());
                 character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * deltaTime);
             }
+
             // camera follows player
             Game.Instance.camera.transform.position = character.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
             
@@ -102,13 +103,11 @@ namespace DropDown.player {
             Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);
 
 
-
             if((bool)interact.GetValue()) {
 
                 List<Game_Object> intersected_game_objects = new List<Game_Object>();
                 character.perception_check(ref intersected_game_objects, (float.Pi/2),  16, 2, 60, true, 1.5f);
-                Console.WriteLine($"hit objects count: {intersected_game_objects.Count}");
-
+                //Console.WriteLine($"hit objects count: {intersected_game_objects.Count}");
                 foreach(var obj in intersected_game_objects) {
 
                     if(obj is Character intersected_character)

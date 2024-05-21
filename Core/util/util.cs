@@ -86,9 +86,23 @@ namespace Core.util {
 
         public static OpenTK.Mathematics.Vector2 convert_Vector(System.Numerics.Vector2 vector) { return new OpenTK.Mathematics.Vector2(vector.X, vector.Y); }
         public static System.Numerics.Vector2 convert_Vector(OpenTK.Mathematics.Vector2 vector) { return new System.Numerics.Vector2(vector.X, vector.Y); }
-        //public static System.Numerics.Vector2 convert_Vector(Box2DX.Common.Vec2 vector) { return new System.Numerics.Vector2(vector.X, vector.Y); }
         public static OpenTK.Mathematics.Vector2 convert_Vector(Box2DX.Common.Vec2 vector_box2d) { return new OpenTK.Mathematics.Vector2(vector_box2d.X, vector_box2d.Y); }
         public static Box2DX.Common.Vec2 convert_Vector_x(OpenTK.Mathematics.Vector2 vector) { return new Box2DX.Common.Vec2(vector.X, vector.Y); }
+
+        // Function to generate a UInt64 value with specified density of bits flipped
+        public static ulong generate_random_UInt64_with_density(double density, Random? random = null) {
+
+            Random loc_random = random ?? new Random();
+            ulong result = 0;
+            for(int i = 0; i < 64; i++) {
+
+                double randomValue = loc_random.NextDouble();
+                if(randomValue < density)
+                    result |= (ulong)1 << i;
+            }
+            return result;
+        }
+
     }
 
     public static class Imgui_Fonts {

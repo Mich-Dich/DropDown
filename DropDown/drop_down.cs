@@ -147,11 +147,9 @@ namespace DropDown {
         // blood overlay
         private float _boold_overlay_decreace_amout = 1.5f;
         private float _boold_overlay_intencity = 0.0f;
-        public void flash_blood_overlay() { 
-            
-            if((CH_player.health / CH_player.health_max) <= 0.65f)
-                _boold_overlay_intencity += 0.3f;
-        }
+        
+        public void flash_blood_overlay() { _boold_overlay_intencity += 0.3f; }
+
         private void display_blood_overlay(float deltaTime) {
 
             float lower_limit = 1-((CH_player.health/ CH_player.health_max) * 2);
