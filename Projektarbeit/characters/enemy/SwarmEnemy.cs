@@ -14,6 +14,7 @@ namespace Hell.enemy {
         public SwarmEnemyController Controller { get; set; }
         public float lastFireTime { get; set; }
         public float fireDelay { get; set; } = 1f;
+        public animation_data hit_anim;
 
         public SwarmEnemy() : base() {
 
@@ -35,6 +36,7 @@ namespace Hell.enemy {
             attack_anim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
             walk_anim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
             idle_anim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
+            hit_anim = new animation_data("assets/animation/enemy/enemy-hit.png", 5, 1, true, false, 10, true);
         }
 
         public bool IsPlayerInRange() {
@@ -127,13 +129,12 @@ namespace Hell.enemy {
         }
 
         public override void Hit(hitData hit) {
-        
-            if(hit.hit_object is TestProjectile testProjectile && !testProjectile.HasHit) {
+            if(hit.hit_object is TestProjectile testProjectile) {
                 this.health -= testProjectile.Damage;
-                testProjectile.HasHit = true;
-            } else 
+                set_animation_from_anim_data(hit_anim);
+            } else {
                 base.Hit(hit);
-        
+            }
         }
         
         private void ApplySeparation() {
