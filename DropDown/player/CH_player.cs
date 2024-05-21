@@ -12,6 +12,10 @@ namespace DropDown.player {
         public float stamina = 70;
         public float stamina_max = 100;
 
+        public uint level = 1;
+        public uint XP_current = 0;
+        public uint XP_needed = 10;
+
         public CH_player() {
 
             health = 100;
@@ -34,6 +38,17 @@ namespace DropDown.player {
 
             base.apply_damage(damage);
         }
+
+        public void add_XP(uint amount) {
+
+            XP_current += amount;
+            if(XP_current >= XP_needed) {
+                level++;
+                XP_current -= XP_needed;
+                XP_needed = (uint)(XP_needed*1.5f);
+            }
+        }
+
 
     }
 }

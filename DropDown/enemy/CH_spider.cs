@@ -15,6 +15,7 @@ namespace DropDown.enemy {
             attack_range = 150;
             movement_force = 80000000;
             damage = 15;
+            XP = 5;
 
             auto_heal_amout = 2;
             health = 160;

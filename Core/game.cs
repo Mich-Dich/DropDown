@@ -34,7 +34,6 @@ namespace Core {
         public static int debug_circle = 0;
         public static int debug_rectangle = 0;
 
-        // public DebugData() {}
         public static void Reset() {
         
             workTimeUpdate = 0;
@@ -42,8 +41,6 @@ namespace Core {
             spriteDrawCallsNum = 0;
             numOfTielsDisplayed = 0;
             playingAnimationNum = 0;
-            colidableObjectsStatic = 0;
-            colidableObjectsDynamic = 0;
             debug_lines = 0;
             debug_circle = 0;
             debug_rectangle = 0;
@@ -134,7 +131,8 @@ namespace Core {
 
                 // ----------------------------------- finish setup -----------------------------------
                 this.playerController.character = this.player;
-                this.activeMap.Add_empty_Character(this.player);
+                if(!this.activeMap.player_is_spawned)
+                    this.activeMap.Add_Character(this.player);
                 this.window.IsVisible = true;
             };
 

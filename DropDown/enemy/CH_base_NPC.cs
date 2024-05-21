@@ -8,6 +8,8 @@ namespace DropDown.enemy {
 
     public class CH_base_NPC : Character{
 
+        public uint XP = 0;
+
         public CH_base_NPC() {
 
             transform.size = new Vector2(80);

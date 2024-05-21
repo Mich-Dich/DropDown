@@ -23,7 +23,10 @@ namespace Core.world {
         public float health_max { get; set; } = 100;
         public Action death_callback { get; set; }
 
-        public Character() { }
+        public Character() {
+
+            transform.mobility = Mobility.DYNAMIC;
+        }
 
         // ------------- controller -------------
         public void Set_Controller(AI_Controller controller) {
@@ -77,6 +80,16 @@ namespace Core.world {
             health -= damage;
             if(health <= 0 && death_callback != null)
                 death_callback();
+        }
+
+        public void force_set_position(Vec2 new_position, float angle = 0) {
+
+            this.transform.position = util.convert_Vector(new_position);
+            if(this.collider != null)
+                if(this.collider.body != null)
+                    collider.body.SetXForm(new_position, angle);
+
+            Console.WriteLine($"new position: {new_position.X}/{new_position.Y}");
         }
 
         public void perception_check(ref List<Game_Object> intersected_game_objects, float check_direction = 0, int num_of_rays = 6, float angle = float.Pi, float look_distance = 800, bool display_debug = false, float display_duration = 1f) {

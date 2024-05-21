@@ -16,9 +16,13 @@ namespace DropDown.enemy {
             get_state_machine().Set_Statup_State(typeof(idle));
             character.death_callback = () => {
 
+                ((CH_player)Game.Instance.player).add_XP(((CH_base_NPC)character).XP);
                 get_state_machine().force_set_state(typeof(death)); 
                 character.health = 0;
                 character.auto_heal_amout = 0;
+
+                // rest callback
+                character.death_callback = () => { };
             };
         }
     }

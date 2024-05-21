@@ -31,17 +31,19 @@ namespace DropDown {
 
             GL.ClearColor(new Color4(.05f, .05f, .05f, 1f));
             Set_Update_Frequency(144.0f);
-            CH_player = new CH_player();
-            this.playerController = new PC_Default(CH_player);
-            this.player = CH_player;
-            this.activeMap = new MAP_base();
             this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
-            this.camera.Set_Zoom(5.0f);
 #if DEBUG
             Show_Performance(true);
             showDebugData(true);
             this.camera.Set_min_Max_Zoom(0.03f, 1.4f);
 #endif
+            this.camera.Set_Zoom(1.4f);
+            CH_player = new CH_player();
+            this.playerController = new PC_Default(CH_player);
+            this.player = CH_player;
+            this.activeMap = new MAP_base();
+
+            // HUD
             image_blood_overlay = Resource_Manager.Get_Texture("assets/textures/BloodOverlay.png");
             image_hud_box = Resource_Manager.Get_Texture("assets/textures/box.png");
             image_hud_box_selected = Resource_Manager.Get_Texture("assets/textures/box_selected.png");
@@ -87,11 +89,14 @@ namespace DropDown {
                 Imgui_Util.Progress_Bar_Stylised(CH_player.health / CH_player.health_max, new System.Numerics.Vector2(250, 15), col_red, col_black, 0.35f, 0.28f, 0.6f);
                 ImGui.Spacing();
                 Imgui_Util.Progress_Bar_Stylised(1f, new System.Numerics.Vector2(210, 12), col_blue, col_black, 0.24f, 0.28f, 0.6f);
+                ImGui.Spacing();
+                Imgui_Util.Progress_Bar_Stylised(1f, new System.Numerics.Vector2(210, 12), col_blue, col_black, 0.24f, 0.28f, 0.6f);
 
                 ImGui.Spacing();
-                Imgui_Util.Title("{weapon image}");
+                Imgui_Util.Title($"Level {CH_player.level}");
                 ImGui.SameLine();
-                Imgui_Util.Title("10/10");
+                Imgui_Util.Shift_Cursor_Pos(15, 0);
+                Imgui_Util.Title($"{CH_player.XP_current}/{CH_player.XP_needed}");
             }
             ImGui.End();
             ImGui.PopStyleColor();

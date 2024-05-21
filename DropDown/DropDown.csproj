@@ -18,7 +18,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="assets\animation\animation-light-effect.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\animation\enemy\enemy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\animation\Ice_magic.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\animation\light-magic.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="assets\animation\small_bug\attack_01.png">
@@ -936,6 +945,15 @@
     <None Update="assets\textures\BloodOverlay.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\textures\blood_0.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\textures\blood_1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\textures\blood_2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\textures\bow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1152,7 +1170,7 @@
     <None Update="assets\textures\FX_explosion\munber_test.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\textures\muzzle_flash.jpg">
+    <None Update="assets\textures\hole.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="assets\textures\player\00.jpg">

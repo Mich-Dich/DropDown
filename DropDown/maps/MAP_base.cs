@@ -21,9 +21,25 @@ namespace DropDown {
             Generate_Actual_Map();
 
             for(int x = 0; x < 80; x++)
-                spaw_enemy();
+                spaw_enemy(typeof(CH_small_bug));
             for(int x = 0; x < 20; x++)
-                spaw_enemy_2();
+                spaw_enemy(typeof(CH_spider));
+
+
+            int iteration = 0;
+            bool found = false;
+            Vector2 player_pos = new Vector2();
+            while(!found && iteration < 1000) {
+
+                iteration++;
+                player_pos = find_random_free_positon();
+                if((hole_location - player_pos).Length > (40 * cellSize))
+                    found = true;
+
+                Console.WriteLine($"distance: {(hole_location - player_pos).Length}");
+            }
+            
+            Add_Player(Game.Instance.player, player_pos);
 
         }
 
@@ -132,12 +148,9 @@ namespace DropDown {
             Imgui_Util.Add_Table_Row("Bit-map generation duration", $"{bitMapGenerationDuration} ms");
             Imgui_Util.Add_Table_Row("convert to actual map duration", $"{mapGenerationDuration} ms");
             Imgui_Util.Add_Table_Row("collision generation", $"{collisionGenerationDuration} ms");
-            Imgui_Util.Add_Table_Row("generation until start_pos empty", $"{bitMapGenerationIteration}");
+            Imgui_Util.Add_Table_Row("generation until fond place for hole", $"{bitMapGenerationIteration}");
             Imgui_Util.Add_Table_Row("Total duration", $"{bitMapGenerationDuration + mapGenerationDuration + collisionGenerationDuration} ms");
             Imgui_Util.End_Table();
-
-            if(ImGui.Button("Spawn Enamy"))
-                spaw_enemy();
 
             if(ImGui.Button("Generate actual map from bit-map"))
                 Generate_Actual_Map();
@@ -188,6 +201,13 @@ namespace DropDown {
 
                 }
             }
+
+            // add Holes
+            this.Add_Background_Sprite(
+                new Sprite(new Transform(null, new Vector2(cellSize * 8)), Resource_Manager.Get_Texture("assets/textures/hole.png")),
+                hole_location,
+                false);
+            Console.WriteLine($"Generating hole");
 
             stopwatch.Stop();
             mapGenerationDuration = stopwatch.Elapsed.TotalMilliseconds;
@@ -276,7 +296,19 @@ namespace DropDown {
             collisionGenerationDuration = stopwatch.Elapsed.TotalMilliseconds;
         }
 
-        public void spaw_enemy() {
+        public void spaw_enemy(Type enemy_type) {
+
+            if(!typeof(CH_base_NPC).IsAssignableFrom(enemy_type))
+                throw new InvalidOperationException($"Type [{enemy_type.Name}] does not implement [I_state] interface.");
+
+            Random random = new Random();
+            this.add_AI_Controller(new AIC_simple(
+                Add_Character((CH_base_NPC)Activator.CreateInstance(enemy_type),
+                find_random_free_positon(),
+                random.NextSingle() * (float.Pi * 2))));
+        }
+
+        public Vector2 find_random_free_positon() {
 
             Random random = new Random();
 
@@ -290,33 +322,8 @@ namespace DropDown {
                 found = is_coord_in_bit_map_free(offset_x, offset_y);
             }
 
-            this.add_AI_Controller(new AIC_simple(
-                Add_empty_Character(new CH_small_bug(),
-                    new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
-                    random.NextSingle() * (float.Pi * 2))));
+            return new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize);
         }
-
-        public void spaw_enemy_2() {
-
-            Random random = new Random();
-
-            bool found = false;
-            int offset_y = 0, offset_x = 0;
-
-            while(!found) {
-
-                offset_y = random.Next(64);
-                offset_x = random.Next(64);
-                found = is_coord_in_bit_map_free(offset_x, offset_y);
-            }
-
-            this.add_AI_Controller(new AIC_simple(
-                Add_empty_Character(new CH_spider(),
-                    new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
-                    random.NextSingle() * (float.Pi * 2))));
-        }
-
-
 
 
 
@@ -390,24 +397,48 @@ namespace DropDown {
             bitMapGenerationIteration = 0;
 
             bool found = false;
+            List<Vector2> posible_tiles_for_hole = new List<Vector2>();
             while(found == false && bitMapGenerationIteration < 1000) {
 
                 // Call the method or perform the process you want to measure
                 Generate_Random_64x64_Bit_Map();
-                for(int x = 0; x < iterations.Length; x++) {
-
-                    //Console.WriteLine($"ITERATION: {x}");
+                
+                // apply cellular atomita
+                for(int x = 0; x < iterations.Length; x++)
                     Iterate_Over_Bit_Map(iterations[x]);
+
+                // check if hole can be placed
+                int found_places = 0;
+                posible_tiles_for_hole = new List<Vector2>();
+                for(int y = 0; y < 8; y++) {
+                    for(int x = 0; x < 8; x++) {
+
+                        byte[] current_tile = Get8x8_Block(x, y);
+                        int count = 0;
+                        foreach(byte b in current_tile)
+                            count += b;
+
+                        if(count == 0) {
+
+                            found_places++;
+                            posible_tiles_for_hole.Add(new Vector2(x, y));
+                        }
+                    }
                 }
 
-                found = is_coord_in_bit_map_free(32, 32);
+                found = (found_places > 0);
                 bitMapGenerationIteration++;
                 Console.WriteLine($"player loc is empty: {found}");
             }
 
+            Random random = new Random();
+            Vector2 buffer = posible_tiles_for_hole[random.Next(posible_tiles_for_hole.Count)];
+            hole_location = new Vector2(
+                ((buffer.X - 4) * cellSize * 8) + (cellSize * 4) - cellSize / 2,
+                ((buffer.Y - 4) * cellSize * 8) + (cellSize * 4) - cellSize / 2);
+
             stopwatch.Stop();
             bitMapGenerationDuration = stopwatch.Elapsed.TotalMilliseconds;
-
         }
 
         private bool is_coord_in_bit_map_free(int x, int y) { return (floorLayout[y] & (UInt64)1 << x) == 0; }
@@ -476,6 +507,8 @@ namespace DropDown {
         private int[] iterations = new int[] {4,4,4,4,4};
         private ulong[] floorLayoutBuffer = new ulong[64];
         private ulong[] floorLayout = new ulong[64];
+        private Vector2 hole_location = new Vector2();
+
         private readonly Texture textureBuffer = Resource_Manager.Get_Texture("assets/textures/terrain.png");
 
         private void Log_U64(ulong number) {

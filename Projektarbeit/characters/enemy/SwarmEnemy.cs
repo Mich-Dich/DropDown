@@ -38,12 +38,14 @@ namespace Hell.enemy {
         }
 
         public bool IsPlayerInRange() {
+            
             Vector2 playerPosition = Game.Instance.player.transform.position;
             float distanceToPlayer = (playerPosition - transform.position).Length;
             return distanceToPlayer <= DetectionRange;
         }
 
         public bool IsPlayerInAttackRange() {
+            
             Vector2 playerPosition = Game.Instance.player.transform.position;
             float distanceToPlayer = (playerPosition - transform.position).Length;
             return distanceToPlayer <= StopDistance;
@@ -54,6 +56,7 @@ namespace Hell.enemy {
         }
 
         public void Move() {
+            
             Vector2 direction = new Vector2(0, 1);
             Random random = new Random();
             float offset = (float)(random.NextDouble() - 0.5) * 2;
@@ -71,16 +74,15 @@ namespace Hell.enemy {
         }
 
         public void Pursue() {
+            
             Vector2 playerPosition = Game.Instance.player.transform.position;
             Vector2 direction = playerPosition - transform.position;
 
-            if (direction.Length < StopDistance) {
+            if (direction.Length < StopDistance)
                 return;
-            }
 
             direction.NormalizeFast();
             direction *= PursueSpeed;
-
             Box2DX.Common.Vec2 velocity = new Box2DX.Common.Vec2(direction.X, direction.Y) * Game_Time.delta;
             if (velocity.Length() > movement_speed_max) {
                 velocity.Normalize();
@@ -94,7 +96,9 @@ namespace Hell.enemy {
         }
 
         public void Attack() {
+
             if(Game_Time.total - lastFireTime >= fireDelay) {
+
                 Vector2 enemyLocation = this.transform.position;
                 Vector2 playerPosition = Game.Instance.player.transform.position;
                 Vector2 direction = (playerPosition - enemyLocation).Normalized();
@@ -106,6 +110,7 @@ namespace Hell.enemy {
         }
 
         public void Retreat() {
+
             Vector2 playerPosition = Game.Instance.player.transform.position;
             Vector2 direction = transform.position - playerPosition;
             direction.NormalizeFast();
@@ -122,20 +127,23 @@ namespace Hell.enemy {
         }
 
         public override void Hit(hitData hit) {
-        if(hit.hit_object is TestProjectile testProjectile && !testProjectile.HasHit) {
-            this.health -= testProjectile.Damage;
-            testProjectile.HasHit = true;
-        } else {
-            base.Hit(hit);
+        
+            if(hit.hit_object is TestProjectile testProjectile && !testProjectile.HasHit) {
+                this.health -= testProjectile.Damage;
+                testProjectile.HasHit = true;
+            } else 
+                base.Hit(hit);
+        
         }
-    }
         
         private void ApplySeparation() {
+
             Random random = new Random();
             float SeparationDistance = 60f + (float)random.NextDouble() * 20f;
             float SeparationSpeed = 10f + (float)random.NextDouble() * 10f;
             foreach (var other in Controller.characters) {
-                if (other == this) continue;
+                if (other == this) 
+                    continue;
                 float distance = (other.transform.position - transform.position).Length;
                 if (distance < SeparationDistance) {
                     Vector2 separationDirection = transform.position - other.transform.position;

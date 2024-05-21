@@ -18,6 +18,7 @@ namespace Core.world.map {
         private List<I_Controller> all_AI_Controller = new List<I_Controller>();
         public List<Character> allCharacter { get; set; } = new List<Character>();
         private List<Game_Object> projectils { get; set; } = new List<Game_Object>();
+        public bool player_is_spawned { get; private set; } = false;
 
         public readonly World physicsWorld;
 
@@ -98,17 +99,44 @@ namespace Core.world.map {
         }
 
         [Obsolete("")]
-        public void Add_Game_Object(Game_Object game_object) { this.world.Add(game_object); }
+        public void Add_Game_Object(Game_Object game_object) { 
+            
+            this.world.Add(game_object);
+
+            if(game_object.transform.mobility == Mobility.DYNAMIC)
+                DebugData.colidableObjectsDynamic++;
+            else
+                DebugData.colidableObjectsStatic++;
+        }
 
         public void Remove_Game_Object(Game_Object game_object) {
+
             this.world.Remove(game_object);
             this.physicsWorld.DestroyBody(game_object.collider.body);
+
+            if(game_object.transform.mobility == Mobility.DYNAMIC)
+                DebugData.colidableObjectsDynamic--;
+            else
+                DebugData.colidableObjectsStatic--;
         }
 
         public void add_AI_Controller(AI_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
         public void add_AI_Controller(AI_Swarm_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
 
-        public Character Add_empty_Character(Character character, Vector2? position = null, Single rotation = 0.0f, bool IsSensor = false) {
+
+        public Character Add_Player(Character character, Vector2? position = null, Single rotation = 0.0f, bool IsSensor = false) {
+
+            if(!player_is_spawned) {
+
+                player_is_spawned = true;
+                return Add_Character(character, position, rotation, IsSensor);
+            }
+            else
+                throw new Exception("player already spawned in this map");
+        }
+
+
+        public Character Add_Character(Character character, Vector2? position = null, Single rotation = 0.0f, bool IsSensor = false) {
         
             if(position != null)
                 character.transform.position = position.Value;
@@ -120,7 +148,7 @@ namespace Core.world.map {
             if(position != null)
                 def.Position.Set(position.Value.X, position.Value.Y);
             else
-                def.Position.Set(1, 1);
+                def.Position.Set(0, 0);
 
             float radius = Math.Abs(character.transform.size.X / 2);
             if(character.collider != null)
@@ -138,6 +166,7 @@ namespace Core.world.map {
             body.SetMassFromShapes();
             body.SetUserData(character);
 
+            character.transform.mobility = Mobility.DYNAMIC;
             if(character.collider != null) {
                 character.collider.body = body;
             } else {
@@ -148,6 +177,7 @@ namespace Core.world.map {
             this.allCharacter.Add(character);
             Console.WriteLine($"Adding character [{character}] to map. Current count: {this.allCharacter.Count} ");
 
+            DebugData.colidableObjectsDynamic++;
             return character;
         }
 
@@ -175,6 +205,7 @@ namespace Core.world.map {
         }
 
         public void Set_Background_Image(string image_path, float scaleMultiplier = 1.0f) {
+
             Texture background_texture = Resource_Manager.Get_Texture(image_path, false);
             Vector2 window_size = Game.Instance.window.Size;
             Vector2 original_sprite_size = new (background_texture.Width, background_texture.Height);
@@ -214,6 +245,8 @@ namespace Core.world.map {
 
             current_tile.staticGameObject.Add(new_game_object);
             //this.allCollidableGameObjects.Add(new_game_object);
+
+            DebugData.colidableObjectsStatic++;
         }
 
         public void add_static_collider_AAABB(Transform transform, bool use_cell_size = true) {
@@ -221,7 +254,6 @@ namespace Core.world.map {
             if(use_cell_size) 
                 transform.size = new Vector2(this.cellSize);
             
-
             BodyDef def = new ();
             def.Position.Set(transform.position.X, transform.position.Y);
             def.AllowSleep = false;
@@ -237,6 +269,8 @@ namespace Core.world.map {
 
             var current_tile = this.Get_Correct_Map_Tile(transform.position);
             current_tile.staticColliders.Add(body);
+
+            DebugData.colidableObjectsStatic++;
         }
 
         public void Force_Clear_mapTiles() {

@@ -23,7 +23,7 @@ namespace Hell.enemy {
                 float angle = (float)random.NextDouble() * MathHelper.TwoPi;
                 float radius = (float)random.NextDouble() * clusterRadius;
                 Vector2 position = this.Origin + new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * radius;
-                Game.Instance.get_active_map().Add_empty_Character(enemy, position);
+                Game.Instance.get_active_map().Add_Character(enemy, position);
                 this.characters.Add(enemy);
                 enemy.death_callback = () =>
                 {
@@ -42,6 +42,7 @@ namespace Hell.enemy {
     }
 
     public class EnterScreen : I_state<AI_Swarm_Controller> {
+
         public bool exit(AI_Swarm_Controller aiController) { return true; }
         public Type execute(AI_Swarm_Controller aiController, float delta_time) {
 
@@ -57,9 +58,10 @@ namespace Hell.enemy {
         }
 
         public bool enter(AI_Swarm_Controller aiController) {
-            foreach(var character in aiController.characters) {
+
+            foreach(var character in aiController.characters)
                 ((CH_base_NPC)character).set_animation_from_anim_data(((CH_base_NPC)character).idle_anim);
-            }
+            
             return true;
         }
 
@@ -74,12 +76,10 @@ namespace Hell.enemy {
             foreach(var character in aiController.characters) {
                 SwarmEnemy enemy = (SwarmEnemy)character;
                 enemy.Pursue();
-                if(enemy.IsPlayerInAttackRange()) {
+                if(enemy.IsPlayerInAttackRange()) 
                     nextState = typeof(Attack);
-                }
-                if(enemy.IsHealthLow()) {
+                if(enemy.IsHealthLow()) 
                     nextState = typeof(Retreat);
-                }
             }
 
             return nextState;
@@ -88,6 +88,7 @@ namespace Hell.enemy {
         public bool enter(AI_Swarm_Controller aiController) {
             foreach(var character in aiController.characters)
                 ((CH_base_NPC)character).set_animation_from_anim_data(((CH_base_NPC)character).walk_anim);
+
             return true;
         }
     }
@@ -112,9 +113,9 @@ namespace Hell.enemy {
 
         public bool enter(AI_Swarm_Controller aiController) {
 
-            foreach(var character in aiController.characters) {
+            foreach(var character in aiController.characters) 
                 ((CH_base_NPC)character).set_animation_from_anim_data(((CH_base_NPC)character).attack_anim);
-            }
+            
             return true;
         }
     }
@@ -139,6 +140,7 @@ namespace Hell.enemy {
 
             foreach(var character in aiController.characters)
                 ((CH_base_NPC)character).set_animation_from_anim_data(((CH_base_NPC)character).idle_anim);
+
             return true;
         }
     }
@@ -149,9 +151,9 @@ namespace Hell.enemy {
         public bool enter(AI_Swarm_Controller aI_Controller) {
 
             Console.WriteLine($"DEATH");
-            foreach(var character in aI_Controller.characters) {
+            foreach(var character in aI_Controller.characters) 
                 ((CH_base_NPC)character).set_animation_from_anim_data(((CH_base_NPC)character).idle_anim);
-            }
+            
             return true;
         }
 
