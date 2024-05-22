@@ -63,7 +63,7 @@ namespace Core {
         protected string title { get; set; }
         protected int initalWindowWidth { get; set; }
         protected int initalWindowHeight { get; set; }
-        protected Player_Controller playerController { get; set; }
+        public Player_Controller playerController { get; set; }
         protected Map activeMap { get; set; }
         public Map get_active_map() { return activeMap; }
 

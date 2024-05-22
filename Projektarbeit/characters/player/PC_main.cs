@@ -6,6 +6,7 @@ namespace Hell.player {
     using Core.util;
     using Core.world;
     using Hell.weapon;
+    using Core.defaults;
     using OpenTK.Mathematics;
 
     internal class PC_main : Player_Controller {
@@ -14,8 +15,9 @@ namespace Hell.player {
         public Action look { get; set; }
         public Action fire { get; set; }
 
-        private float fireDelay = 0.5f; // Delay in seconds
-        private float lastFireTime = 0f;
+        public float fireDelay = 0.5f; // Delay in seconds
+        public float lastFireTime = 0f;
+        public Type ProjectileType { get; set; } = typeof(TestProjectile);
 
         public PC_main(Character character)
             : base(character, null) {
@@ -81,7 +83,11 @@ namespace Hell.player {
             if((bool)fire.GetValue() && Game_Time.total - lastFireTime >= fireDelay) {
                 Vector2 playerLocation = character.transform.position;
                 Vector2 playerDirection = new Vector2(0, -1);
-                Game.Instance.get_active_map().Add_Game_Object(new TestProjectile(playerLocation, playerDirection));
+
+                // Use the ProjectileType property to create a new projectile
+                var projectile = (Projectile)Activator.CreateInstance(ProjectileType, playerLocation, playerDirection);
+                Game.Instance.get_active_map().Add_Game_Object(projectile);
+
                 lastFireTime = Game_Time.total;
             }
         }

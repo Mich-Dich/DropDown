@@ -6,6 +6,7 @@ namespace Hell.Levels {
     using Core.world.map;
     using OpenTK.Mathematics;
     using Hell.enemy;
+    using Hell.player.power;
 
     internal class MAP_base : Map {
 
@@ -34,12 +35,18 @@ namespace Hell.Levels {
 
                 if(!is_running) {
                     add_AI_Controller(new SwarmEnemyController(new Vector2(0, -500)));
+
+                    SpeedBoost speedBoost = new SpeedBoost(new Vector2(0, 300));
+                    Add_Game_Object(speedBoost);
+
+                    FireRateBoost fireRateBoost = new FireRateBoost(new Vector2(0, 400));
+                    Add_Game_Object(fireRateBoost);
+
                     time_stamp = Game_Time.total;
                     time_interval = random.Next(2, 4);
                     is_running = true;
                 }
             }
         }
-
     }
 }

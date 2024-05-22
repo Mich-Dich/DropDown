@@ -10,6 +10,7 @@ namespace Core.world.map {
     using Core.render;
     using Core.util;
     using Core.world;
+    using Core.defaults;
     using OpenTK.Mathematics;
 
     public class Map {
@@ -18,6 +19,7 @@ namespace Core.world.map {
         private List<I_Controller> all_AI_Controller = new List<I_Controller>();
         public List<Character> allCharacter { get; set; } = new List<Character>();
         private List<Game_Object> projectils { get; set; } = new List<Game_Object>();
+        private List<PowerUp> ActivePowerUps { get; set; } = new List<PowerUp>();
         public bool player_is_spawned { get; private set; } = false;
 
         public readonly World physicsWorld;
@@ -123,6 +125,8 @@ namespace Core.world.map {
         public void add_AI_Controller(AI_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
         public void add_AI_Controller(AI_Swarm_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
 
+        public void AddPowerUp(PowerUp powerUp) { ActivePowerUps.Add(powerUp); }
+        public void RemovePowerUp(PowerUp powerUp) { ActivePowerUps.Remove(powerUp); }
 
         public Character Add_Player(Character character, Vector2? position = null, Single rotation = 0.0f, bool IsSensor = false) {
 
@@ -450,6 +454,7 @@ namespace Core.world.map {
             this.physicsWorld.Step(deltaTime * 10, this.velocityIterations, this.positionIterations);
 
             List<Character> charactersToRemove = new List<Character>();
+            List<PowerUp> powerUpsToRemove = new List<PowerUp>();
 
             foreach(var character in this.allCharacter) {
                 character.Update_position();
@@ -460,6 +465,14 @@ namespace Core.world.map {
 
             foreach(var AI_Controller in all_AI_Controller)
                 AI_Controller.Update(deltaTime);
+
+            foreach(var powerUp in ActivePowerUps.ToList()) {
+                powerUp.Update(deltaTime);
+                if ((DateTime.Now - powerUp.ActivationTime).TotalSeconds > powerUp.Duration) {
+                    powerUp.Deactivate(Game.Instance.player);
+                    powerUpsToRemove.Add(powerUp);
+                }
+            }
 
             for(int x = 0; x < this.world.Count; x++) {
                 if(world[x].collider != null) {
@@ -474,6 +487,10 @@ namespace Core.world.map {
                 this.allCharacter.Remove(character);
                 if(character.death_callback != null)
                     character.death_callback();
+            }
+
+            foreach(var powerUp in powerUpsToRemove) {
+                ActivePowerUps.Remove(powerUp);
             }
 
             update(deltaTime);
