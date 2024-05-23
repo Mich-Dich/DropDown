@@ -16,7 +16,7 @@ namespace Hell.weapon {
         private static readonly Collision_Shape shape = Collision_Shape.Square;
 
         public TestProjectile(Vector2 position, Vector2 direction) 
-            : base(position, direction, speed, damage, bounce, shape) {
+            : base(position, direction, size, speed, damage, bounce, shape) {
 
             Sprite sprite = new Sprite(texture);
             Set_Sprite(sprite);
