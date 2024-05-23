@@ -66,6 +66,12 @@ namespace Core.world {
                 this.collider.body.SetLinearVelocity(new_velocity);
         }
 
+        public Vec2 Get_Velocity() {
+            if(this.collider != null && this.collider.body != null)
+                return this.collider.body.GetLinearVelocity();
+            return Vec2.Zero;
+        }
+
         public void add_force(Vec2 force) {
 
             if(this.collider != null && this.collider.body != null)
