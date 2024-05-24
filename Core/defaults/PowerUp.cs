@@ -57,9 +57,7 @@ namespace Core.defaults {
         }
 
         public override void Hit(hitData hit) {
-
             if(hit.hit_object == Game.Instance.player) {
-
                 Game.Instance.player.add_power_up(this);
                 ActivationTime = Game_Time.total;
                 Game.Instance.get_active_map().Remove_Game_Object(this);

@@ -21,6 +21,7 @@ namespace Hell.player.power {
 
                 if(target is CH_player player)
                     player.movement_speed += SpeedIncrease;
+
             };
 
             deactivation = (Character target) => {
