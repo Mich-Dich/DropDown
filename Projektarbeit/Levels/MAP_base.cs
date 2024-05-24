@@ -40,8 +40,8 @@ namespace Hell.Levels {
                     SpeedBoost speedBoost = new SpeedBoost(new Vector2(0, 300));
                     Add_Game_Object(speedBoost);
 
-                    //FireRateBoost fireRateBoost = new FireRateBoost(new Vector2(0, 400));
-                    //Add_Game_Object(fireRateBoost);
+                    HealthBoost fireRateBoost = new HealthBoost(new Vector2(0, 400));
+                    Add_Game_Object(fireRateBoost);
 
                     time_stamp = Game_Time.total;
                     time_interval = random.Next(2, 4);

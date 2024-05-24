@@ -8,10 +8,10 @@ namespace Hell.player.power {
 
     public class FireRateBoost : PowerUp {
 
-        public float FireDelayDecrease { get; set; } = 0.1f;
+        public float FireDelayDecrease { get; set; } = 0.3f;
         private static readonly Texture texture = new Texture("assets/textures/power-ups/firerate_increaser.png");
         private static readonly Vector2 size = new Vector2(30, 30);
-        private float originalFireDelay;
+        private float originalFireDelay = 0.5f;
 
         public FireRateBoost(Vector2 position) : base(position, size, new Sprite(texture))  {
         
