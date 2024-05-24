@@ -11,26 +11,23 @@ namespace Hell.player.power {
         private static readonly Texture texture = new Texture("assets/textures/power-ups/health.png");
         private static readonly Vector2 size = new Vector2(30, 30);
 
-        public HealthBoost(Vector2 position) : base(position, size, new Sprite(texture)) 
-        {
+        public HealthBoost(Vector2 position) : base(position, size, new Sprite(texture))  {
+            
             Console.WriteLine("HealthBoost created");
-            ActivationTime = DateTime.Now;
-         }
 
-        public override void Activate(Game_Object target) {
-            if(target is CH_player player) {
-                player.health_max += HealthIncrease;
-                Game.Instance.get_active_map().AddPowerUp(this);
-                Console.WriteLine("HealthBoost activated");
-            }
+            activation = (Character target) => {
+
+                if(target is CH_player player)
+                    player.health_max += HealthIncrease;
+            };
+
+            deactivation = (Character target) => {
+
+                if(target is CH_player player)
+                    player.health_max -= HealthIncrease;
+            };
+
         }
 
-        public override void Deactivate(Game_Object target) {
-            if(target is CH_player player) {
-                player.health_max -= HealthIncrease;
-                Game.Instance.get_active_map().RemovePowerUp(this);
-                Console.WriteLine("HealthBoost deactivated");
-            }
-        }
     }
 }

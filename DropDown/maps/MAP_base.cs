@@ -178,7 +178,6 @@ namespace DropDown {
 
             //for(int x = 0; x < 1000; x++)
             //    add_blood_splater(find_random_free_positon());
-            
 
             Add_Player(Game.Instance.player, player_pos);
         }

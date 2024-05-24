@@ -12,14 +12,15 @@ namespace Core.world.map {
     using Core.world;
     using Core.defaults;
     using OpenTK.Mathematics;
+    using System.Drawing;
 
     public class Map {
 
-        //public List<Game_Object> allCollidableGameObjects { get; set; } = new List<Game_Object>();
+        public List<Game_Object> all_game_objects { get; set; } = new List<Game_Object>();
         private List<I_Controller> all_AI_Controller = new List<I_Controller>();
         public List<Character> allCharacter { get; set; } = new List<Character>();
         private List<Game_Object> projectils { get; set; } = new List<Game_Object>();
-        private List<PowerUp> ActivePowerUps { get; set; } = new List<PowerUp>();
+        //private List<PowerUp> ActivePowerUps { get; set; } = new List<PowerUp>();
         public bool player_is_spawned { get; private set; } = false;
 
         public readonly World physicsWorld;
@@ -125,18 +126,13 @@ namespace Core.world.map {
         public void add_AI_Controller(AI_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
         public void add_AI_Controller(AI_Swarm_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
 
-        public void AddPowerUp(PowerUp powerUp) { ActivePowerUps.Add(powerUp); }
-        public void RemovePowerUp(PowerUp powerUp) { ActivePowerUps.Remove(powerUp); }
-
         public Character Add_Player(Character character, Vector2? position = null, Single rotation = 0.0f, bool IsSensor = false) {
 
-            if(!player_is_spawned) {
-
-                player_is_spawned = true;
-                return Add_Character(character, position, rotation, IsSensor);
-            }
-            else
+            if(player_is_spawned)
                 throw new Exception("player already spawned in this map");
+
+            player_is_spawned = true;
+            return Add_Character(character, position, rotation, IsSensor);
         }
 
 
@@ -184,6 +180,23 @@ namespace Core.world.map {
 
             DebugData.colidableObjectsDynamic++;
             return character;
+        }
+
+        public Game_Object add_game_object(Game_Object game_object, Vector2 position, Vector2 size) {
+
+
+            BodyDef def = new BodyDef();
+            def.Position.Set(position.X, position.Y);
+            def.AllowSleep = false;
+            def.LinearDamping = 0f;
+
+            PolygonDef polygonDef = new ();
+            polygonDef.SetAsBox(size.X / 2, size.Y / 2);
+            polygonDef.Density = 1f;
+            polygonDef.Friction = 0.3f;
+            polygonDef.IsSensor = true;
+
+            return game_object;
         }
 
         public void Add_Sprite(Sprite sprite) {
@@ -451,10 +464,10 @@ namespace Core.world.map {
         }
 
         internal void update_internal(float deltaTime) {
+
             this.physicsWorld.Step(deltaTime * 10, this.velocityIterations, this.positionIterations);
 
             List<Character> charactersToRemove = new List<Character>();
-            List<PowerUp> powerUpsToRemove = new List<PowerUp>();
 
             foreach(var character in this.allCharacter) {
                 character.Update_position();
@@ -466,12 +479,8 @@ namespace Core.world.map {
             foreach(var AI_Controller in all_AI_Controller)
                 AI_Controller.Update(deltaTime);
 
-            foreach(var powerUp in ActivePowerUps.ToList()) {
-                powerUp.Update(deltaTime);
-                if ((DateTime.Now - powerUp.ActivationTime).TotalSeconds > powerUp.Duration) {
-                    powerUp.Deactivate(Game.Instance.player);
-                    powerUpsToRemove.Add(powerUp);
-                }
+            foreach(var game_object in all_game_objects.ToList()) {
+                game_object.Update(deltaTime);
             }
 
             for(int x = 0; x < this.world.Count; x++) {
@@ -487,10 +496,6 @@ namespace Core.world.map {
                 this.allCharacter.Remove(character);
                 if(character.death_callback != null)
                     character.death_callback();
-            }
-
-            foreach(var powerUp in powerUpsToRemove) {
-                ActivePowerUps.Remove(powerUp);
             }
 
             update(deltaTime);

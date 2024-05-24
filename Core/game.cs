@@ -111,17 +111,16 @@ namespace Core {
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
                 this.defaultSpriteShader = new("Core.defaults.shaders.texture_vert.glsl", "Core.defaults.shaders.texture_frag.glsl", true);
                 this.defaultSpriteShader.Use();
-                this.camera = new(Vector2.Zero, this.window.Size, 0.5f);
+
+                this.activeMap = new MAP_default();
+                this.camera = new Camera(Vector2.Zero, this.window.Size, 0.5f);
                 this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
                 this.camera.Set_Zoom(5.0f);
                 this.InitImGuiController();
 
                 this.Init();
-
+                
                 // ----------------------------------- check for null values -----------------------------------
-                if(this.activeMap == null)
-                    this.activeMap = new MAP_default();
-
                 if(this.player == null)
                     this.player = new CH_default_player();
 

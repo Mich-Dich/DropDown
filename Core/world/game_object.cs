@@ -8,6 +8,7 @@ namespace Core.world {
 
     public class Game_Object {
 
+        public bool is_sensore { get; set; } = false;
         public Transform transform { get; set; } = new Transform();
         public Game_Object? parent { get; private set; }
         public List<Game_Object> children { get; } = new List<Game_Object>();
@@ -16,11 +17,17 @@ namespace Core.world {
 
         public Game_Object(Transform transform) {
 
+            if(Game.Instance == null || Game.Instance.get_active_map() == null || Game.Instance.get_active_map().physicsWorld == null)
+                throw new Exception("Game instance, active map, or physics world is not initialized");
+
             this.transform = transform;
             this.Init();
         }
 
         public Game_Object(Vector2? position = null, Vector2? size = null, float rotation = 0, Mobility mobility = Mobility.DYNAMIC) {
+
+            if(Game.Instance == null || Game.Instance.get_active_map() == null || Game.Instance.get_active_map().physicsWorld == null)
+                throw new Exception("Game instance, active map, or physics world is not initialized");
 
             this.transform.position = position ?? default(Vector2);
             this.transform.size = size ?? new Vector2(100, 100);
@@ -28,8 +35,11 @@ namespace Core.world {
             this.transform.mobility = mobility;
             this.Init();
         }
+        
+        // ---------------------------------------------------------------------------------------------------------------
+        // default setters/getters
+        // ---------------------------------------------------------------------------------------------------------------
 
-        // ======================= func =====================
         public virtual Game_Object Set_Sprite(Sprite sprite) {
 
             this.sprite = sprite;
@@ -123,6 +133,10 @@ namespace Core.world {
             transform.rotation = -new_angle + rotation_offset;
         }
 
+        // ---------------------------------------------------------------------------------------------------------------
+        // interaction
+        // ---------------------------------------------------------------------------------------------------------------
+
         public virtual void Hit(hitData hit) { }
 
         public virtual void Update(float deltaTime) { }
@@ -159,6 +173,9 @@ namespace Core.world {
         }
 
         public void Update_position() {
+
+            if (collider.body == null) 
+                return;
 
             Box2DX.Common.Vec2 pos = this.collider.body.GetPosition();
             this.transform.position = (pos.X, pos.Y);

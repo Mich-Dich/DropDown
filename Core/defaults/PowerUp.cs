@@ -1,22 +1,28 @@
+
 namespace Core.defaults {
+
+    using Box2DX.Collision;
+    using Box2DX.Dynamics;
     using Core.physics;
+    using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
-    using Core.render;
-    using Box2DX.Collision;
-    using Box2DX.Common;
-    using Box2DX.Dynamics;
 
     public abstract class PowerUp : Game_Object {
 
+        private float live_time { get; set; } = 0f;     // 0f: infinit live_time
         public float Duration { get; set; } = 5f;
-        public DateTime ActivationTime { get; set; }
+        public float ActivationTime { get; set; }
+
+        public Action<Character> activation { get; set; }
+        public Action<Character> deactivation { get; set; }
+        public Action destruction { get; set; }             // an action that is called befor destruction on the same tread
 
         public PowerUp(Vector2 position, Vector2 size, Sprite sprite) : base(position, size) {
-            if(Game.Instance == null || Game.Instance.get_active_map() == null || Game.Instance.get_active_map().physicsWorld == null)
-                throw new Exception("Game instance, active map, or physics world is not initialized");
-            
+
             Set_Sprite(sprite);
+
+            Game.Instance.get_active_map().Add_Game_Object(this);
 
             BodyDef def = new BodyDef();
             def.Position.Set(position.X, position.Y);
@@ -39,21 +45,26 @@ namespace Core.defaults {
         }
 
         public override void Update(float deltaTime) {
-            if((DateTime.Now - ActivationTime).TotalSeconds > Duration) {
-                Deactivate(Game.Instance.player);
-                Game.Instance.get_active_map().Remove_Game_Object(this);
+
+            if(live_time > 0f) {
+                if(Game_Time.total >= ActivationTime + Duration) {
+                
+                    Console.WriteLine($"destruction");
+                    destruction();
+                    Game.Instance.get_active_map().Remove_Game_Object(this);
+                }
             }
         }
 
-        public abstract void Activate(Game_Object target);
-        public abstract void Deactivate(Game_Object target);
-
-
         public override void Hit(hitData hit) {
+
             if(hit.hit_object == Game.Instance.player) {
-                Activate(Game.Instance.player);
+
+                Game.Instance.player.add_power_up(this);
+                ActivationTime = Game_Time.total;
                 Game.Instance.get_active_map().Remove_Game_Object(this);
             }
         }
     }
+
 }

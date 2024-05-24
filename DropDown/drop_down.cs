@@ -30,6 +30,11 @@ namespace DropDown {
         protected override void Init() {
 
             GL.ClearColor(new Color4(.05f, .05f, .05f, 1f));
+            CH_player = new CH_player();
+            this.playerController = new PC_Default(CH_player);
+            this.player = CH_player;
+            this.activeMap = new MAP_base();
+
             Set_Update_Frequency(144.0f);
             this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
 #if DEBUG
@@ -38,10 +43,6 @@ namespace DropDown {
             this.camera.Set_min_Max_Zoom(0.03f, 1.4f);
 #endif
             this.camera.Set_Zoom(1.4f);
-            CH_player = new CH_player();
-            this.playerController = new PC_Default(CH_player);
-            this.player = CH_player;
-            this.activeMap = new MAP_base();
 
             // HUD
             image_blood_overlay = Resource_Manager.Get_Texture("assets/textures/BloodOverlay.png");

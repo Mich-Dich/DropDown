@@ -18,9 +18,9 @@ namespace Hell {
         protected override void Init() {
 
             Set_Update_Frequency(144.0f);
+            this.activeMap = new MAP_base();
             this.player = new CH_player();
             this.playerController = new PC_main(player);
-            this.activeMap = new MAP_base();
 #if DEBUG
             Show_Performance(true);
             showDebugData(true);

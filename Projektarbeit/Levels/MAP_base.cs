@@ -34,6 +34,7 @@ namespace Hell.Levels {
             if((time_stamp + time_interval) <= Game_Time.total) {
 
                 if(!is_running) {
+
                     add_AI_Controller(new SwarmEnemyController(new Vector2(0, -500)));
 
                     SpeedBoost speedBoost = new SpeedBoost(new Vector2(0, 300));
@@ -48,5 +49,6 @@ namespace Hell.Levels {
                 }
             }
         }
+
     }
 }

@@ -4,6 +4,7 @@ namespace Core.world {
     using Box2DX.Common;
     using Core.controllers;
     using Core.Controllers.ai;
+    using Core.defaults;
     using Core.physics;
     using Core.render;
     using Core.util;
@@ -22,12 +23,17 @@ namespace Core.world {
         public float health_max { get; set; } = 100;
         public Action death_callback { get; set; }
 
+        private List<PowerUp> all_power_ups = new List<PowerUp>();
+
         public Character() {
 
             transform.mobility = Mobility.DYNAMIC;
         }
 
-        // ------------- controller -------------
+        // ---------------------------------------------------------------------------------------------------------------
+        // controller
+        // ---------------------------------------------------------------------------------------------------------------
+
         public void Set_Controller(AI_Controller controller) {
 
             this.controller = controller;
@@ -39,6 +45,10 @@ namespace Core.world {
             this.controller = controller;
             controller.characters.Add(this);
         }
+
+        // ---------------------------------------------------------------------------------------------------------------
+        // default setters/getters
+        // ---------------------------------------------------------------------------------------------------------------
 
         public void set_animation(Animation animation) {
 
@@ -78,6 +88,20 @@ namespace Core.world {
                 this.collider.body.ApplyForce(force, Vec2.Zero);
         }
 
+        //public void force_set_position(Vec2 new_position, float angle = 0) {
+
+        //    this.transform.position = util.convert_Vector(new_position);
+        //    if(this.collider != null)
+        //        if(this.collider.body != null)
+        //            collider.body.SetXForm(new_position, angle);
+
+        //    Console.WriteLine($"new position: {new_position.X}/{new_position.Y}");
+        //}
+
+        // ---------------------------------------------------------------------------------------------------------------
+        // interaction
+        // ---------------------------------------------------------------------------------------------------------------
+
         public override void Hit(hitData hit) { }
 
         public virtual void apply_damage(float damage) {
@@ -87,15 +111,6 @@ namespace Core.world {
                 death_callback();
         }
 
-        public void force_set_position(Vec2 new_position, float angle = 0) {
-
-            this.transform.position = util.convert_Vector(new_position);
-            if(this.collider != null)
-                if(this.collider.body != null)
-                    collider.body.SetXForm(new_position, angle);
-
-            Console.WriteLine($"new position: {new_position.X}/{new_position.Y}");
-        }
 
         public void perception_check(ref List<Game_Object> intersected_game_objects, float check_direction = 0, int num_of_rays = 6, float angle = float.Pi, float look_distance = 800, bool display_debug = false, float display_duration = 1f) {
 
@@ -115,6 +130,32 @@ namespace Core.world {
             }
 
         }
+
+        // ---------------------------------------------------------------------------------------------------------------
+        // power up
+        // ---------------------------------------------------------------------------------------------------------------
+
+        public void add_power_up(PowerUp power_up) {
+
+            if(all_power_ups.Contains(power_up))
+                return;
+
+            all_power_ups.Add(power_up);
+            power_up.activation(this);
+        }
+
+        public void force_remove_power_up(PowerUp power_up) {
+
+            if(!all_power_ups.Contains(power_up))
+                return;
+
+            power_up.deactivation(this);
+            all_power_ups.Remove(power_up);
+        }
+
+        // ---------------------------------------------------------------------------------------------------------------
+        // display
+        // ---------------------------------------------------------------------------------------------------------------
 
         public void Display_Healthbar(System.Numerics.Vector2? display_size = null, System.Numerics.Vector2? pos_offset = null, System.Numerics.Vector2? padding = null, float rounding = 0.0f) {
 
@@ -158,11 +199,32 @@ namespace Core.world {
 
         }
 
+        // ---------------------------------------------------------------------------------------------------------------
+        // update
+        // ---------------------------------------------------------------------------------------------------------------
+
         public override void Update(Single deltaTime) {
             base.Update(deltaTime);
 
             if(health < health_max)
                 health += (auto_heal_amout * deltaTime);
+
+            if(all_power_ups.Count >= 0) {
+
+                List<PowerUp> power_ups_to_remove = new List<PowerUp>();
+
+                foreach(var powerup in all_power_ups) {
+                    if(Game_Time.total >= powerup.ActivationTime + powerup.Duration) {
+
+                        powerup.deactivation(this);
+                        power_ups_to_remove.Add(powerup);
+                    }
+                }
+
+                foreach(var powerup in power_ups_to_remove)
+                    all_power_ups.Remove(powerup);
+            }
+
         }
 
         // healthbar

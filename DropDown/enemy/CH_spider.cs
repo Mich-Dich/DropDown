@@ -26,7 +26,7 @@ namespace DropDown.enemy {
         }
 
         private void init_attack() {
-            XP = 5;
+            XP = 2;
             attack_range = 150;
             auto_detection_range = 400;
             ray_number = 15;
