@@ -24,6 +24,7 @@ namespace Core.world {
         public Action death_callback { get; set; }
 
         private List<PowerUp> all_power_ups = new List<PowerUp>();
+        private List<Ability> abilities = new List<Ability>();
 
         public Character() {
 
@@ -152,6 +153,24 @@ namespace Core.world {
             power_up.deactivation(this);
             all_power_ups.Remove(power_up);
         }
+
+        // ---------------------------------------------------------------------------------------------------------------
+        // abilities
+        // ---------------------------------------------------------------------------------------------------------------
+
+        public void AddAbility(Ability ability) {
+            abilities.Add(ability);
+        }
+
+        public void UseAbility(int index) {
+            if (index < 0 || index >= abilities.Count) return;
+            var ability = abilities[index];
+            if (ability.CanUse()) {
+                ability.Use(this);
+                ability.LastUsedTime = Game_Time.total;
+            }
+        }
+
 
         // ---------------------------------------------------------------------------------------------------------------
         // display

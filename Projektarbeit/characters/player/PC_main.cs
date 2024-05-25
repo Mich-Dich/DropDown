@@ -1,5 +1,4 @@
-﻿
-namespace Hell.player {
+﻿namespace Hell.player {
 
     using Box2DX.Common;
     using Core.Controllers.player;
@@ -14,6 +13,7 @@ namespace Hell.player {
         public Action move { get; set; }
         public Action look { get; set; }
         public Action fire { get; set; }
+        public Action useAbility { get; set; }
 
         public float fireDelay = 0.5f; // Delay in seconds
         public float lastFireTime = 0f;
@@ -64,6 +64,17 @@ namespace Hell.player {
                 });
             AddInputAction(fire);
 
+            useAbility = new Action(
+                "useAbility",
+                (uint)Action_ModefierFlags.auto_reset,
+                false,
+                ActionType.BOOL,
+                0f,
+                new List<KeyBindingDetail> {
+                    new(Key_Code.E, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
+                });
+            AddInputAction(useAbility);
+
             Game.Instance.camera.Add_Zoom_Offset(0.2f);
             Game.Instance.camera.zoom_offset = 0.2f;
         }
@@ -89,6 +100,10 @@ namespace Hell.player {
                 Game.Instance.get_active_map().Add_Game_Object(projectile);
 
                 lastFireTime = Game_Time.total;
+            }
+
+            if ((bool)useAbility.GetValue()) {
+                character.UseAbility(0);
             }
         }
 

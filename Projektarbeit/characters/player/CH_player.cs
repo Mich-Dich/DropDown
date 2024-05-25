@@ -7,6 +7,7 @@ namespace Hell.player {
     using Core.world;
     using Hell.weapon;
     using OpenTK.Mathematics;
+    using Hell.player.ability;
 
     internal class CH_player : Character {
 
@@ -19,6 +20,8 @@ namespace Hell.player {
 
             movement_speed = 400.0f;
             rotation_offset = float.Pi / 2;
+
+            AddAbility(new ShieldBubbleAbility());
         }
 
         public override void Hit(hitData hit) {
