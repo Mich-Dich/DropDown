@@ -22,9 +22,12 @@ namespace Core.world {
         public bool auto_remove_on_death = false;
         public float health_max { get; set; } = 100;
         public Action death_callback { get; set; }
+        public IShieldStrategy ShieldStrategy { get; set; }
+        public List<Ability> Abilities { get; set; } = new List<Ability>();
+        private Dictionary<Ability, Timer> abilityTimers = new Dictionary<Ability, Timer>();
+
 
         private List<PowerUp> all_power_ups = new List<PowerUp>();
-        private List<Ability> abilities = new List<Ability>();
 
         public Character() {
 
@@ -105,13 +108,13 @@ namespace Core.world {
 
         public override void Hit(hitData hit) { }
 
-        public virtual void apply_damage(float damage) {
-
+        public virtual void apply_damage(float damage)
+        {
+            damage = ShieldStrategy.ApplyShield(damage);
             health -= damage;
             if(health <= 0 && death_callback != null)
                 death_callback();
         }
-
 
         public void perception_check(ref List<Game_Object> intersected_game_objects, float check_direction = 0, int num_of_rays = 6, float angle = float.Pi, float look_distance = 800, bool display_debug = false, float display_duration = 1f) {
 
@@ -158,17 +161,28 @@ namespace Core.world {
         // abilities
         // ---------------------------------------------------------------------------------------------------------------
 
-        public void AddAbility(Ability ability) {
-            abilities.Add(ability);
-        }
-
         public void UseAbility(int index) {
-            if (index < 0 || index >= abilities.Count) return;
-            var ability = abilities[index];
+            if (index < 0 || index >= Abilities.Count) return;
+            var ability = Abilities[index];
             if (ability.CanUse()) {
                 ability.Use(this);
                 ability.LastUsedTime = Game_Time.total;
+                StartAbilityTimer(ability);
             }
+        }
+
+        private void StartAbilityTimer(Ability ability) {
+            if (abilityTimers.ContainsKey(ability)) {
+                abilityTimers[ability].Change((int)ability.Duration * 1000, Timeout.Infinite);
+            } else {
+                var timer = new Timer(_ => ResetAbility(ability), null, (int)ability.Duration * 1000, Timeout.Infinite);
+                abilityTimers.Add(ability, timer);
+            }
+        }
+
+        private void ResetAbility(Ability ability) {
+            ability = new NoAbility();
+            abilityTimers.Remove(ability);
         }
 
 
