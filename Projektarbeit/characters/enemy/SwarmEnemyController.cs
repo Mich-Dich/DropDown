@@ -27,12 +27,15 @@ namespace Hell.enemy {
                 this.characters.Add(enemy);
                 enemy.death_callback = () =>
                 {
-                    enemy.health = 0;
-                    enemy.auto_heal_amout = 0;
-                    Game.Instance.get_active_map().Remove_Game_Object(enemy);
-                    Game.Instance.get_active_map().allCharacter.Remove(enemy);
-                    this.characters.Remove(enemy);
-                    Game.Instance.Score++;
+                    if (!enemy.IsDead) {
+                        enemy.IsDead = true;
+                        enemy.health = 0;
+                        enemy.auto_heal_amout = 0;
+                        Game.Instance.get_active_map().Remove_Game_Object(enemy);
+                        Game.Instance.get_active_map().allCharacter.Remove(enemy);
+                        this.characters.Remove(enemy);
+                        Game.Instance.Score++;
+                    }
                 };
             }
 

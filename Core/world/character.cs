@@ -20,6 +20,7 @@ namespace Core.world {
         public float auto_heal_amout { get; set; } = 5;
         public float health { get; set; } = 100;
         public bool auto_remove_on_death = false;
+        public bool IsDead { get; set; } = false;
         public float health_max { get; set; } = 100;
         public bool Invincible { get; set; } = false;
         public Action death_callback { get; set; }
