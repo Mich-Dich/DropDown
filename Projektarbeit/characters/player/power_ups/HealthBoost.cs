@@ -17,14 +17,18 @@ namespace Hell.player.power {
 
             activation = (Character target) => {
 
-                if(target is CH_player player)
+                if(target is CH_player player) {
                     player.health_max += HealthIncrease;
+                    player.UpdateHealthRatio();
+                }
             };
 
             deactivation = (Character target) => {
 
-                if(target is CH_player player)
+                if(target is CH_player player) {
                     player.health_max -= HealthIncrease;
+                    player.UpdateHealthRatio();
+                }
             };
 
         }

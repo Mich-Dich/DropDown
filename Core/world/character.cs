@@ -18,10 +18,23 @@ namespace Core.world {
         public float movement_force { get; set; } = 100000.0f;
         public float movement_force_max { get; set; } = 100000.0f;
         public float auto_heal_amout { get; set; } = 5;
-        public float health { get; set; } = 100;
+        public float health {
+            get { return _health; }
+            set {
+                _health = value;
+                UpdateHealthRatio();
+            }
+        }
+        public float HealthRatio { get; private set; }
         public bool auto_remove_on_death = false;
         public bool IsDead { get; set; } = false;
-        public float health_max { get; set; } = 100;
+        public float health_max {
+            get { return _health_max; }
+            set {
+                _health_max = value;
+                UpdateHealthRatio();
+            }
+        }
         public bool Invincible { get; set; } = false;
         public Action death_callback { get; set; }
         public Ability Ability { get; set; }
@@ -29,9 +42,16 @@ namespace Core.world {
 
 
         private List<PowerUp> all_power_ups = new List<PowerUp>();
+        private float _health;
+        private float _health_max;
+
+        public void UpdateHealthRatio() {
+            HealthRatio = health / health_max;
+        }
 
         public Character() {
-
+            _health = 100;
+            _health_max = 100;
             transform.mobility = Mobility.DYNAMIC;
         }
 
