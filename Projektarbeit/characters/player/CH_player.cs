@@ -19,12 +19,12 @@
             movement_speed = 400.0f;
             rotation_offset = float.Pi / 2;
 
-            Abilities.Add(new TestAbility { Cooldown = 5.0f }); // 5 seconds cooldown
+            Abilities.Add(new ShieldAbility());
         }
 
         public override void Hit(hitData hit) {
             if(hit.hit_object is EnemyTestProjectile testProjectile && !testProjectile.HasHit) {
-                this.health -= testProjectile.Damage;
+                this.apply_damage(testProjectile.Damage);
                 testProjectile.HasHit = true;
             } else {
                 base.Hit(hit);

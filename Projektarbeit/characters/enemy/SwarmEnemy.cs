@@ -131,17 +131,17 @@ namespace Hell.enemy {
 
         public override void Hit(hitData hit) {
             if(hit.hit_object is TestProjectile testProjectile) {
-                this.health -= testProjectile.Damage;
+                this.apply_damage(testProjectile.Damage);
                 set_animation_from_anim_data(hit_anim);
             }
             if(hit.hit_object is EnemyTestProjectile projectile) {
                 if(projectile.Reflected) {
-                    this.health -= projectile.Damage * 3;
+                    this.apply_damage(projectile.Damage * 3);
                     set_animation_from_anim_data(hit_anim);
                 }
             }
             if(hit.hit_object is Reflect reflect) {
-                this.health -= reflect.Damage;
+                this.apply_damage(reflect.Damage);
                 Box2DX.Common.Vec2 direction = new(transform.position.X - hit.hit_position.X, transform.position.Y - hit.hit_position.Y);
                 collider.body.ApplyForce(direction * 100000f, collider.body.GetWorldCenter());
                 set_animation_from_anim_data(hit_anim);

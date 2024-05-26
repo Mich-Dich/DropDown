@@ -21,11 +21,10 @@ namespace Core.world {
         public float health { get; set; } = 100;
         public bool auto_remove_on_death = false;
         public float health_max { get; set; } = 100;
+        public bool Invincible { get; set; } = false;
         public Action death_callback { get; set; }
-        public IShieldStrategy ShieldStrategy { get; set; }
         public List<Ability> Abilities { get; set; } = new List<Ability>();
         private Dictionary<Ability, float> abilityLastUsedTimes = new Dictionary<Ability, float>();
-
 
         private List<PowerUp> all_power_ups = new List<PowerUp>();
 
@@ -110,10 +109,11 @@ namespace Core.world {
 
         public virtual void apply_damage(float damage)
         {
-            damage = ShieldStrategy.ApplyShield(damage);
-            health -= damage;
-            if(health <= 0 && death_callback != null)
-                death_callback();
+            if (!Invincible) {
+                health -= damage;
+                if(health <= 0 && death_callback != null)
+                    death_callback();
+            }
         }
 
         public void perception_check(ref List<Game_Object> intersected_game_objects, float check_direction = 0, int num_of_rays = 6, float angle = float.Pi, float look_distance = 800, bool display_debug = false, float display_duration = 1f) {
