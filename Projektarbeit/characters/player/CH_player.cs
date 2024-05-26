@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace Hell.player {
+﻿namespace Hell.player {
 
     using Core.physics;
     using Core.util;
     using Core.world;
     using Hell.weapon;
     using OpenTK.Mathematics;
+    using Hell.player.ability;
 
     internal class CH_player : Character {
 
@@ -19,6 +18,8 @@ namespace Hell.player {
 
             movement_speed = 400.0f;
             rotation_offset = float.Pi / 2;
+
+            Abilities.Add(new TestAbility { Cooldown = 5.0f }); // 5 seconds cooldown
         }
 
         public override void Hit(hitData hit) {

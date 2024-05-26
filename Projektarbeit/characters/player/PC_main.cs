@@ -106,6 +106,5 @@
                 character.UseAbility(0);
             }
         }
-
     }
 }

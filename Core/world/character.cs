@@ -24,7 +24,7 @@ namespace Core.world {
         public Action death_callback { get; set; }
         public IShieldStrategy ShieldStrategy { get; set; }
         public List<Ability> Abilities { get; set; } = new List<Ability>();
-        private Dictionary<Ability, Timer> abilityTimers = new Dictionary<Ability, Timer>();
+        private Dictionary<Ability, float> abilityLastUsedTimes = new Dictionary<Ability, float>();
 
 
         private List<PowerUp> all_power_ups = new List<PowerUp>();
@@ -160,31 +160,15 @@ namespace Core.world {
         // ---------------------------------------------------------------------------------------------------------------
         // abilities
         // ---------------------------------------------------------------------------------------------------------------
-
         public void UseAbility(int index) {
             if (index < 0 || index >= Abilities.Count) return;
             var ability = Abilities[index];
-            if (ability.CanUse()) {
+            var currentTime = Game_Time.total;
+            if (!abilityLastUsedTimes.ContainsKey(ability) || currentTime - abilityLastUsedTimes[ability] >= ability.Cooldown) {
                 ability.Use(this);
-                ability.LastUsedTime = Game_Time.total;
-                StartAbilityTimer(ability);
+                abilityLastUsedTimes[ability] = currentTime;
             }
         }
-
-        private void StartAbilityTimer(Ability ability) {
-            if (abilityTimers.ContainsKey(ability)) {
-                abilityTimers[ability].Change((int)ability.Duration * 1000, Timeout.Infinite);
-            } else {
-                var timer = new Timer(_ => ResetAbility(ability), null, (int)ability.Duration * 1000, Timeout.Infinite);
-                abilityTimers.Add(ability, timer);
-            }
-        }
-
-        private void ResetAbility(Ability ability) {
-            ability = new NoAbility();
-            abilityTimers.Remove(ability);
-        }
-
 
         // ---------------------------------------------------------------------------------------------------------------
         // display
@@ -256,6 +240,14 @@ namespace Core.world {
 
                 foreach(var powerup in power_ups_to_remove)
                     all_power_ups.Remove(powerup);
+            }
+
+            // Update abilities
+            var currentTime = Game_Time.total;
+            foreach (var ability in Abilities) {
+                if (!abilityLastUsedTimes.ContainsKey(ability)) {
+                    abilityLastUsedTimes[ability] = currentTime;
+                }
             }
 
         }
