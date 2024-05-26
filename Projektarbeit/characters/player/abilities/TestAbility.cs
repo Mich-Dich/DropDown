@@ -5,7 +5,8 @@ namespace Hell.player.ability {
     public class TestAbility : Ability
     {
         public TestAbility() {
-            Cooldown = 5.0f; // 5 seconds cooldown
+            Cooldown = 5.0f;
+            Effect = null;
         }
 
         public override void Use(Character character) {

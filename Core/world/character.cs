@@ -135,6 +135,10 @@ namespace Core.world {
 
         }
 
+        public void DisplayEffect(AbilityEffect effect) {
+            // Code to display the effect
+        }
+
         // ---------------------------------------------------------------------------------------------------------------
         // power up
         // ---------------------------------------------------------------------------------------------------------------
@@ -167,6 +171,14 @@ namespace Core.world {
             if (!abilityLastUsedTimes.ContainsKey(ability) || currentTime - abilityLastUsedTimes[ability] >= ability.Cooldown) {
                 ability.Use(this);
                 abilityLastUsedTimes[ability] = currentTime;
+
+                // Display the effect
+                if (ability.Effect != null) {
+                    // Add the ability effect as a child to the character
+                    ability.AddEffectToCharacter(this);
+                    // Start the animation of the effect
+                    ability.Effect.Animation.Play();
+                }
             }
         }
 

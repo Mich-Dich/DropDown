@@ -1,6 +1,7 @@
 namespace Hell.player.ability {
     using Core.defaults;
     using Core.world;
+    using Core.render;
     using System.Timers;
 
     public class ShieldAbility : Ability
@@ -13,6 +14,12 @@ namespace Hell.player.ability {
             timer = new Timer(2000); // 2 seconds duration
             timer.Elapsed += OnTimerElapsed;
             timer.AutoReset = false;
+
+            float scale = 1.6f;
+            int fps = 8;
+            bool loop = true;
+
+            this.Effect = new AbilityEffect("assets/animation/shield/shield.png", scale, 4, 1, fps, loop);
         }
 
         public override void Use(Character character) {
@@ -20,12 +27,18 @@ namespace Hell.player.ability {
             character.Invincible = true;
             timer.Start();
             Console.WriteLine("Shield ability used!");
+
+            AddEffectToCharacter(character);
+
+            Game.Instance.get_active_map().Add_Game_Object(this.Effect);
         }
 
         private void OnTimerElapsed(object source, ElapsedEventArgs e) {
             if (character != null) {
                 character.Invincible = false;
                 Console.WriteLine("Shield ability expired!");
+
+                Game.Instance.get_active_map().Remove_Game_Object(this.Effect);
             }
         }
     }
