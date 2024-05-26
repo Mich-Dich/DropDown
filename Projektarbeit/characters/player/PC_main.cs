@@ -103,7 +103,7 @@
             }
 
             if ((bool)useAbility.GetValue()) {
-                character.UseAbility(0);
+                character.UseAbility();
             }
         }
     }

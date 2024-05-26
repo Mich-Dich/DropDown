@@ -19,7 +19,7 @@
             movement_speed = 400.0f;
             rotation_offset = float.Pi / 2;
 
-            Abilities.Add(new ShieldAbility());
+            Ability = new ShieldAbility();
         }
 
         public override void Hit(hitData hit) {

@@ -1,5 +1,4 @@
-﻿
-namespace Hell {
+﻿namespace Hell {
 
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
@@ -7,7 +6,8 @@ namespace Hell {
     using Core.util;
     using Hell.player;
     using Hell.Levels;
-
+    using Core.world;
+    
     internal class Game : Core.Game {
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight)
@@ -35,29 +35,36 @@ namespace Hell {
         protected override void Render(float deltaTime) { }
 
         protected override void Render_Imgui(float deltaTime) {
-                // HUD
-                ImGuiIOPtr io = ImGui.GetIO();
-                ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
-                    | ImGuiWindowFlags.NoDocking
-                    | ImGuiWindowFlags.AlwaysAutoResize
-                    | ImGuiWindowFlags.NoSavedSettings
-                    | ImGuiWindowFlags.NoFocusOnAppearing
-                    | ImGuiWindowFlags.NoNav
-                    | ImGuiWindowFlags.NoMove
-                    | ImGuiWindowFlags.NoBackground;
+            // HUD
+            ImGuiIOPtr io = ImGui.GetIO();
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
+                | ImGuiWindowFlags.NoDocking
+                | ImGuiWindowFlags.AlwaysAutoResize
+                | ImGuiWindowFlags.NoSavedSettings
+                | ImGuiWindowFlags.NoFocusOnAppearing
+                | ImGuiWindowFlags.NoNav
+                | ImGuiWindowFlags.NoMove
+                | ImGuiWindowFlags.NoBackground;
 
-                ImGui.SetNextWindowBgAlpha(0f);
-                ImGui.SetNextWindowPos(new System.Numerics.Vector2(10, io.DisplaySize.Y - 10), ImGuiCond.Always, new System.Numerics.Vector2(0, 1));
-                ImGui.Begin("HUD_TopLeft", window_flags);
+            ImGui.SetNextWindowBgAlpha(0f);
+            ImGui.SetNextWindowPos(new System.Numerics.Vector2(10, io.DisplaySize.Y - 10), ImGuiCond.Always, new System.Numerics.Vector2(0, 1));
+            ImGui.Begin("HUD_TopLeft", window_flags);
 
-                uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
-                uint transparentColor = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
+            uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
+            uint transparentColor = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
+            uint col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.9f, 1));
 
-                Imgui_Util.Progress_Bar_Stylised(this.player.health / this.player.health_max, new System.Numerics.Vector2(250, 15), col_red, transparentColor, 0.32f, 0.28f, 0.6f);
+            Imgui_Util.Progress_Bar_Stylised(this.player.health / this.player.health_max, new System.Numerics.Vector2(250, 15), col_red, transparentColor, 0.32f, 0.28f, 0.6f);
 
-                ImGui.Spacing();
-                Imgui_Util.Title($"Score: {Game.Instance.Score}");
-                ImGui.End();
-            }
+            // Display ability cooldown bar
+            var currentTime = Game_Time.total;
+            float cooldownProgress = (currentTime - this.player.abilityLastUsedTime) / this.player.Ability.Cooldown;
+            cooldownProgress = Math.Clamp(cooldownProgress, 0.0f, 1.0f);
+            Imgui_Util.Progress_Bar_Stylised(cooldownProgress, new System.Numerics.Vector2(250, 15), col_blue, transparentColor, 0.32f, 0.28f, 0.6f);
+
+            ImGui.Spacing();
+            Imgui_Util.Title($"Score: {Game.Instance.Score}");
+            ImGui.End();
+        }
     }
 }

@@ -23,8 +23,9 @@ namespace Core.world {
         public float health_max { get; set; } = 100;
         public bool Invincible { get; set; } = false;
         public Action death_callback { get; set; }
-        public List<Ability> Abilities { get; set; } = new List<Ability>();
-        private Dictionary<Ability, float> abilityLastUsedTimes = new Dictionary<Ability, float>();
+        public Ability Ability { get; set; }
+        public float abilityLastUsedTime;
+
 
         private List<PowerUp> all_power_ups = new List<PowerUp>();
 
@@ -135,10 +136,6 @@ namespace Core.world {
 
         }
 
-        public void DisplayEffect(AbilityEffect effect) {
-            // Code to display the effect
-        }
-
         // ---------------------------------------------------------------------------------------------------------------
         // power up
         // ---------------------------------------------------------------------------------------------------------------
@@ -164,20 +161,15 @@ namespace Core.world {
         // ---------------------------------------------------------------------------------------------------------------
         // abilities
         // ---------------------------------------------------------------------------------------------------------------
-        public void UseAbility(int index) {
-            if (index < 0 || index >= Abilities.Count) return;
-            var ability = Abilities[index];
+        public void UseAbility() {
             var currentTime = Game_Time.total;
-            if (!abilityLastUsedTimes.ContainsKey(ability) || currentTime - abilityLastUsedTimes[ability] >= ability.Cooldown) {
-                ability.Use(this);
-                abilityLastUsedTimes[ability] = currentTime;
+            if (currentTime - abilityLastUsedTime >= Ability.Cooldown) {
+                Ability.Use(this);
+                abilityLastUsedTime = currentTime;
 
-                // Display the effect
-                if (ability.Effect != null) {
-                    // Add the ability effect as a child to the character
-                    ability.AddEffectToCharacter(this);
-                    // Start the animation of the effect
-                    ability.Effect.Animation.Play();
+                if (Ability.Effect != null) {
+                    Ability.AddEffectToCharacter(this);
+                    Ability.Effect.Animation.Play();
                 }
             }
         }
@@ -239,12 +231,10 @@ namespace Core.world {
                 health += (auto_heal_amout * deltaTime);
 
             if(all_power_ups.Count >= 0) {
-
                 List<PowerUp> power_ups_to_remove = new List<PowerUp>();
 
                 foreach(var powerup in all_power_ups) {
                     if(Game_Time.total >= powerup.ActivationTime + powerup.Duration) {
-
                         powerup.deactivation(this);
                         power_ups_to_remove.Add(powerup);
                     }
@@ -253,15 +243,6 @@ namespace Core.world {
                 foreach(var powerup in power_ups_to_remove)
                     all_power_ups.Remove(powerup);
             }
-
-            // Update abilities
-            var currentTime = Game_Time.total;
-            foreach (var ability in Abilities) {
-                if (!abilityLastUsedTimes.ContainsKey(ability)) {
-                    abilityLastUsedTimes[ability] = currentTime;
-                }
-            }
-
         }
 
         // healthbar
