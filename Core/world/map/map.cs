@@ -10,9 +10,7 @@ namespace Core.world.map {
     using Core.render;
     using Core.util;
     using Core.world;
-    using Core.defaults;
     using OpenTK.Mathematics;
-    using System.Drawing;
 
     public class Map {
 

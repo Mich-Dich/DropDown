@@ -7,6 +7,7 @@
     using Hell.weapon;
     using Core.defaults;
     using OpenTK.Mathematics;
+    using Hell.player.ability;
 
     internal class PC_main : Player_Controller {
 
@@ -91,13 +92,22 @@
             // character always faces upwards
             character.transform.rotation = 0;
 
-            if((bool)fire.GetValue() && Game_Time.total - lastFireTime >= fireDelay) {
+             if((bool)fire.GetValue() && Game_Time.total - lastFireTime >= fireDelay) {
                 Vector2 playerLocation = character.transform.position;
-                Vector2 playerDirection = new Vector2(0, -1);
 
-                // Use the ProjectileType property to create a new projectile
-                var projectile = (Projectile)Activator.CreateInstance(ProjectileType, playerLocation, playerDirection);
-                Game.Instance.get_active_map().Add_Game_Object(projectile);
+                if (character.Ability is OmniFireAbility omniFireAbility && omniFireAbility.IsActive()) {
+                    // Fire projectiles in all directions
+                    for (int angle = 0; angle < 360; angle += 10) { // Adjust the step for more or less density of projectiles
+                        Vector2 projectileDirection = new Vector2((float)System.Math.Cos(angle * System.Math.PI / 180), (float)System.Math.Sin(angle * System.Math.PI / 180));
+                        var projectile = (Projectile)Activator.CreateInstance(ProjectileType, playerLocation, projectileDirection);
+                        Game.Instance.get_active_map().Add_Game_Object(projectile);
+                    }
+                } else {
+                    // Normal single projectile fire
+                    Vector2 playerDirection = new Vector2(0, -1);
+                    var projectile = (Projectile)Activator.CreateInstance(ProjectileType, playerLocation, playerDirection);
+                    Game.Instance.get_active_map().Add_Game_Object(projectile);
+                }
 
                 lastFireTime = Game_Time.total;
             }
