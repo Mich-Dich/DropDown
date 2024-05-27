@@ -113,7 +113,6 @@ namespace Core.world.map {
         }
 
         public void Remove_Game_Object(Game_Object game_object) {
-
             this.world.Remove(game_object);
             this.physicsWorld.DestroyBody(game_object.collider.body);
 

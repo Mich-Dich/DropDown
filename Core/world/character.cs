@@ -69,7 +69,6 @@ namespace Core.world {
         // ---------------------------------------------------------------------------------------------------------------
         // default setters/getters
         // ---------------------------------------------------------------------------------------------------------------
-
         public void set_animation(Animation animation) {
 
             if(sprite != null)
@@ -157,7 +156,6 @@ namespace Core.world {
         // ---------------------------------------------------------------------------------------------------------------
 
         public void add_power_up(PowerUp power_up) {
-
             if(all_power_ups.Contains(power_up))
                 return;
 
@@ -166,7 +164,6 @@ namespace Core.world {
         }
 
         public void force_remove_power_up(PowerUp power_up) {
-
             if(!all_power_ups.Contains(power_up))
                 return;
 

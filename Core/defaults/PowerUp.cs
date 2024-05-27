@@ -13,10 +13,11 @@ namespace Core.defaults {
         private float live_time { get; set; } = 0f;     // 0f: infinit live_time
         public float Duration { get; set; } = 5f;
         public float ActivationTime { get; set; }
+        public bool IsActivated { get;  set; } = false;
 
         public Action<Character> activation { get; set; }
         public Action<Character> deactivation { get; set; }
-        public Action destruction { get; set; }             // an action that is called befor destruction on the same tread
+        public Action destruction { get; set; }
 
         public PowerUp(Vector2 position, Vector2 size, Sprite sprite) : base(position, size) {
 
@@ -45,11 +46,8 @@ namespace Core.defaults {
         }
 
         public override void Update(float deltaTime) {
-
             if(live_time > 0f) {
                 if(Game_Time.total >= ActivationTime + Duration) {
-                
-                    Console.WriteLine($"destruction");
                     destruction();
                     Game.Instance.get_active_map().Remove_Game_Object(this);
                 }
@@ -58,9 +56,13 @@ namespace Core.defaults {
 
         public override void Hit(hitData hit) {
             if(hit.hit_object == Game.Instance.player) {
-                Game.Instance.player.add_power_up(this);
+                if(!IsActivated) {
+                    Game.Instance.player.add_power_up(this);
+                    IsActivated = true;
+                }
                 ActivationTime = Game_Time.total;
                 Game.Instance.get_active_map().Remove_Game_Object(this);
+                collider.body.GetWorld().DestroyBody(collider.body);
             }
         }
     }
