@@ -40,14 +40,9 @@ namespace Core.world {
         public Ability Ability { get; set; }
         public float abilityLastUsedTime;
 
-
         private List<PowerUp> all_power_ups = new List<PowerUp>();
         private float _health;
         private float _health_max;
-
-        public void UpdateHealthRatio() {
-            HealthRatio = health / health_max;
-        }
 
         public Character() {
             _health = 100;
@@ -245,6 +240,10 @@ namespace Core.world {
         // update
         // ---------------------------------------------------------------------------------------------------------------
 
+        public void UpdateHealthRatio() {
+            HealthRatio = health / health_max;
+        }
+
         public override void Update(Single deltaTime) {
             base.Update(deltaTime);
 
@@ -264,6 +263,8 @@ namespace Core.world {
                 foreach(var powerup in power_ups_to_remove)
                     all_power_ups.Remove(powerup);
             }
+
+            UpdateHealthRatio();
         }
 
         // healthbar

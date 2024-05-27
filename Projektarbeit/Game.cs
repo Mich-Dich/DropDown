@@ -53,8 +53,9 @@
             uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
             uint transparentColor = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
             uint col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.9f, 1));
-
-            Imgui_Util.Progress_Bar_Stylised(this.player.HealthRatio, new System.Numerics.Vector2(250, 15), col_red, transparentColor, 0.32f, 0.28f, 0.6f);
+            
+            float healthBarWidth = 250 * (this.player.health_max / 100f);
+            Imgui_Util.Progress_Bar_Stylised(this.player.HealthRatio, new System.Numerics.Vector2(healthBarWidth, 15), col_red, transparentColor, 0.32f, 0.28f, 0.6f);
 
             // Display ability cooldown bar
             var currentTime = Game_Time.total;

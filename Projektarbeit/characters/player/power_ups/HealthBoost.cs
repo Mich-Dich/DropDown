@@ -19,7 +19,6 @@ namespace Hell.player.power {
 
                 if(target is CH_player player) {
                     player.health_max += HealthIncrease;
-                    player.UpdateHealthRatio();
                 }
             };
 
@@ -27,7 +26,6 @@ namespace Hell.player.power {
 
                 if(target is CH_player player) {
                     player.health_max -= HealthIncrease;
-                    player.UpdateHealthRatio();
                 }
             };
 
