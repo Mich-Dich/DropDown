@@ -9,7 +9,7 @@ namespace Hell.weapon {
         private static readonly Texture texture = new Texture("assets/textures/projectiles/beam/beam.png");
         private static readonly Vector2 size = new Vector2(32, 22);
         private static readonly float speed = 4000f;
-        private static readonly float damage = 1f;
+        private static readonly float damage = 10f;
         private static readonly bool bounce = true;
         private static readonly Collision_Shape shape = Collision_Shape.Square;
         private static readonly animation_data projectileAnimationData = new animation_data("assets/animation/bolt/bolt.png", 1, 4, true, false, 8, true);

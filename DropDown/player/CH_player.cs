@@ -46,7 +46,9 @@ namespace DropDown.player {
         }
 
         public override void apply_damage(float damage) {
-
+            if(health <= 0) {
+                death_callback?.Invoke();
+            }
             float loc_damage = damage;
             if((health / health_max) <= health_lower_limit_area)
                 loc_damage = damage / 3;

@@ -25,6 +25,15 @@
 
             actions.Clear();
 
+            character.death_callback = () => {
+                if (!character.IsDead) {
+                    character.IsDead = true;
+                    character.health = 0;
+                    Game.Instance.get_active_map().Remove_Game_Object(character);
+                    Game.Instance.get_active_map().allCharacter.Remove(character);
+                }
+            };
+
             move = new Action(
                 "move",
                 (uint)Action_ModefierFlags.auto_reset,
@@ -81,6 +90,11 @@
         }
 
         protected override void Update(float deltaTime) {
+
+            if (character.IsDead) {
+                return;
+            }
+
             float total_speed = character.movement_speed;
 
             // simple movement
@@ -97,7 +111,7 @@
 
                 if (character.Ability is OmniFireAbility omniFireAbility && omniFireAbility.IsActive()) {
                     // Fire projectiles in all directions
-                    for (int angle = 0; angle < 360; angle += 10) { // Adjust the step for more or less density of projectiles
+                    for (int angle = 0; angle < 360; angle += 10) {
                         Vector2 projectileDirection = new Vector2((float)System.Math.Cos(angle * System.Math.PI / 180), (float)System.Math.Sin(angle * System.Math.PI / 180));
                         var projectile = (Projectile)Activator.CreateInstance(ProjectileType, playerLocation, projectileDirection);
                         Game.Instance.get_active_map().Add_Game_Object(projectile);

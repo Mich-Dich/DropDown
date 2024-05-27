@@ -33,7 +33,7 @@ namespace Hell.player.ability {
             Game.Instance.get_active_map().Add_Game_Object(this.Effect);
         }
 
-        private void OnTimerElapsed(object source, ElapsedEventArgs e) {
+        private void OnTimerElapsed(object? source, ElapsedEventArgs e) {
             if (character != null) {
                 character.Invincible = false;
                 Console.WriteLine("Shield ability expired!");

@@ -40,14 +40,18 @@ namespace Hell.enemy {
         }
 
         public bool IsPlayerInRange() {
-            
+            if (Game.Instance.player == null || Game.Instance.player.IsDead) {
+                return false;
+            }
             Vector2 playerPosition = Game.Instance.player.transform.position;
             float distanceToPlayer = (playerPosition - transform.position).Length;
             return distanceToPlayer <= DetectionRange;
         }
 
         public bool IsPlayerInAttackRange() {
-            
+            if (Game.Instance.player == null || Game.Instance.player.IsDead) {
+                return false;
+            }
             Vector2 playerPosition = Game.Instance.player.transform.position;
             float distanceToPlayer = (playerPosition - transform.position).Length;
             return distanceToPlayer <= StopDistance;

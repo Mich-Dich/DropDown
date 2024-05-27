@@ -24,7 +24,7 @@ namespace Hell.player.ability {
             Console.WriteLine("OmniFire ability used!");
         }
 
-        private void OnTimerElapsed(object source, ElapsedEventArgs e) {
+        private void OnTimerElapsed(object? source, ElapsedEventArgs e) {
             if (character != null) {
                 isActive = false;
                 Console.WriteLine("OmniFire ability expired!");
