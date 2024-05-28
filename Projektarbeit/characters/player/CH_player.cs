@@ -8,6 +8,7 @@
     using Hell.player.ability;
 
     internal class CH_player : Character {
+        public int projectilesPerShot { get; set; } = 1;
 
         public CH_player() {
             
