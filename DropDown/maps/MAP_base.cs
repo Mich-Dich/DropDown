@@ -5,7 +5,6 @@ namespace DropDown {
     using Core.render;
     using Core.util;
     using Core.world;
-    using Core.world.map;
     using DropDown.enemy;
     using ImGuiNET;
     using OpenTK.Mathematics;
@@ -319,12 +318,10 @@ namespace DropDown {
         }
 
 
-        private void spaw_enemy(Type enemy_type) 
-        {
+        private void spaw_enemy(Type enemy_type)  {
+
             if (!typeof(CH_base_NPC).IsAssignableFrom(enemy_type))
-            {
                 throw new InvalidOperationException($"Type [{enemy_type.Name}] does not implement [I_state] interface.");
-            }
 
             List<Character> newEnemies = new List<Character>();
             CH_base_NPC newEnemy = (CH_base_NPC)Activator.CreateInstance(enemy_type);

@@ -6,7 +6,7 @@ namespace Core.util {
 
     public class Transform {
 
-        public Vector2 size { get; set; } = new Vector2(100, 100);
+        public Vector2 size { get; set; } = new Vector2(0);
         public float rotation { get; set; } = 0;
         public Mobility mobility { get; set; } = Mobility.DYNAMIC;
         public Transform? parent { get; set; }

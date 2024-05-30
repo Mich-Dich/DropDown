@@ -1,5 +1,6 @@
 
-namespace Core {
+namespace Core
+{
 
     using Core.Controllers.player;
     using Core.defaults;
@@ -7,8 +8,6 @@ namespace Core {
     using Core.render.shaders;
     using Core.util;
     using Core.world;
-    using Core.world.map;
-    using DropDown;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using OpenTK.Windowing.Common;
@@ -65,7 +64,9 @@ namespace Core {
         protected int initalWindowHeight { get; set; }
         public Player_Controller playerController { get; set; }
         protected Map activeMap { get; set; }
+
         public Map get_active_map() { return activeMap; }
+        public void set_active_map(Map new_map) { activeMap = new_map; }
 
         protected List<InputEvent> inputEvent { get; } = new List<InputEvent>();
 

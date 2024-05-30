@@ -1,8 +1,9 @@
 ﻿
-namespace DropDown {
+namespace Core.defaults
+{
 
     using Core.render;
-    using Core.world.map;
+    using Core.world;
     using OpenTK.Mathematics;
     using System.Reflection;
 

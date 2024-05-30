@@ -24,6 +24,12 @@
     <None Update="assets\animation\enemy\enemy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\animation\projectiles\swirl.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\animation\shield\shield.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\textures\background\background.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

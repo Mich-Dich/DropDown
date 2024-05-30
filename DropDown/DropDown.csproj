@@ -1197,6 +1197,9 @@
     <None Update="assets\textures\player\00.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\textures\sign.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\textures\terrain.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

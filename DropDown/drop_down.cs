@@ -33,7 +33,7 @@ namespace DropDown {
             CH_player = new CH_player();
             this.playerController = new PC_Default(CH_player);
             this.player = CH_player;
-            this.activeMap = new MAP_base();
+            this.activeMap = new MAP_start();
 
             Set_Update_Frequency(144.0f);
             this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
@@ -183,6 +183,7 @@ namespace DropDown {
             ImGui.PopStyleColor();
 
         }
+
 
     }
 }
