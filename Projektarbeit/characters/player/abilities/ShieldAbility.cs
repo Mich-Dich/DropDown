@@ -11,7 +11,7 @@ namespace Hell.player.ability {
 
         public ShieldAbility() {
             Cooldown = 10.0f; // 10 seconds cooldown
-            timer = new Timer(2000); // 2 seconds duration
+            timer = new Timer(2500); // 2 seconds duration
             timer.Elapsed += OnTimerElapsed;
             timer.AutoReset = false;
 

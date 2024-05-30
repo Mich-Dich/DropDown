@@ -58,8 +58,9 @@ namespace Core.defaults {
         }
 
         public override void Update(float deltaTime) {
-            if((DateTime.Now - CreationTime).TotalSeconds > Lifetime) {
-                Game.Instance.get_active_map().Remove_Game_Object(this);
+            if ((DateTime.Now - CreationTime).TotalSeconds > Lifetime) {
+                if (Game.Instance != null && Game.Instance.get_active_map() != null)
+                    Game.Instance.get_active_map().Remove_Game_Object(this); 
             }
         }
 

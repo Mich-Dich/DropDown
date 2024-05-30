@@ -15,8 +15,6 @@ namespace Hell.Levels {
         private float time_stamp;
         private float time_interval;
 
-        bool is_running = false;
-
         public MAP_base() {
 
             this.camera = Game.Instance.camera;
@@ -33,22 +31,56 @@ namespace Hell.Levels {
 
             if((time_stamp + time_interval) <= Game_Time.total) {
 
-                if(!is_running) {
+                int maxEnemies = 10 + Game.Instance.Score / 10;
+                int currentEnemies = Game.Instance.get_active_map().allCharacter.Count;
 
-                    add_AI_Controller(new SwarmEnemyController(new Vector2(0, -500)));
+                if (currentEnemies < maxEnemies) {
+                    int enemyType = random.Next(0, 4);
+                    Vector2 spawnPosition = new Vector2(random.Next(-250, 250), -600);
 
-                    SpeedBoost speedBoost = new SpeedBoost(new Vector2(0, 300));
-                    Add_Game_Object(speedBoost);
-
-                    HealthBoost fireRateBoost = new HealthBoost(new Vector2(0, 400));
-                    Add_Game_Object(fireRateBoost);
-
-                    time_stamp = Game_Time.total;
-                    time_interval = random.Next(2, 4);
-                    is_running = true;
+                    switch (enemyType) {
+                        case 0:
+                            add_AI_Controller(new SwarmEnemyController(spawnPosition));
+                            break;
+                        case 1:
+                            add_AI_Controller(new SniperEnemyController(spawnPosition));
+                            break;
+                        case 2:
+                            add_AI_Controller(new SwarmEnemyController(spawnPosition));
+                            break;
+                        case 3:
+                            add_AI_Controller(new TankEnemyController(spawnPosition));
+                            break;
+                    }
                 }
+
+                if (random.NextDouble() < 0.1) {
+                    Vector2 powerUpPosition = new Vector2(random.Next(-400, 400), random.Next(-400, 400));
+
+                    if (Game.Instance.player.health < 50 && random.NextDouble() < 0.5) {
+                        HealthBoost healthBoost = new HealthBoost(powerUpPosition);
+                        Add_Game_Object(healthBoost);
+                    } else {
+                        switch (random.Next(0, 3)) {
+                            case 0:
+                                SpeedBoost speedBoost = new SpeedBoost(powerUpPosition);
+                                Add_Game_Object(speedBoost);
+                                break;
+                            case 1:
+                                HealthIncrease healthBoost = new HealthIncrease(powerUpPosition);
+                                Add_Game_Object(healthBoost);
+                                break;
+                            case 2:
+                                FireRateBoost fireRateBoost = new FireRateBoost(powerUpPosition);
+                                Add_Game_Object(fireRateBoost);
+                                break;
+                        }
+                    }
+                }
+
+                time_stamp = Game_Time.total;
+                time_interval = random.Next(2, 4);
             }
         }
-
     }
 }

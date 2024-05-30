@@ -16,9 +16,9 @@
         public Action fire { get; set; }
         public Action useAbility { get; set; }
 
-        public float fireDelay = 0.5f; // Delay in seconds
+        public float fireDelay = 1.0f; // Delay in seconds
         public float lastFireTime = 0f;
-        public Type ProjectileType { get; set; } = typeof(TestProjectile);
+        public Type ProjectileType { get; set; } = typeof(Reflect);
 
         public PC_main(Character character)
             : base(character, null) {
@@ -89,15 +89,6 @@
             Game.Instance.camera.zoom_offset = 0.2f;
         }
 
-        private Vector2 RotateVector(Vector2 v, float angle) {
-            float sin = (float)System.Math.Sin(angle);
-            float cos = (float)System.Math.Cos(angle);
-
-            float tx = v.X;
-            float ty = v.Y;
-
-            return new Vector2(cos * tx - sin * ty, sin * tx + cos * ty);
-        }
         protected override void Update(float deltaTime) {
 
             if (character.IsDead) {
@@ -126,15 +117,10 @@
                         Game.Instance.get_active_map().Add_Game_Object(projectile);
                     }
                 } else {
-                     if (character is CH_player playerCharacter) {
-                        // Normal single projectile fire
-                        Vector2 playerDirection = new Vector2(0, -1);
-                        for (int i = 0; i < playerCharacter.projectilesPerShot; i++) {
-                            Vector2 offsetDirection = playerCharacter.projectilesPerShot == 1 ? playerDirection : RotateVector(playerDirection, i * 0.1f - (playerCharacter.projectilesPerShot - 1) * 0.05f);
-                            var projectile = (Projectile)Activator.CreateInstance(ProjectileType, playerLocation, offsetDirection);
-                            Game.Instance.get_active_map().Add_Game_Object(projectile);
-                        }
-                    }
+                    // Normal single projectile fire
+                    Vector2 playerDirection = new Vector2(0, -1);
+                    var projectile = (Projectile)Activator.CreateInstance(ProjectileType, playerLocation, playerDirection);
+                    Game.Instance.get_active_map().Add_Game_Object(projectile);
                 }
 
                 lastFireTime = Game_Time.total;

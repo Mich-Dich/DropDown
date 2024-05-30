@@ -54,15 +54,19 @@ namespace Core.defaults {
             }
         }
 
-        public override void Hit(hitData hit) {
-            if(hit.hit_object == Game.Instance.player) {
-                if(!IsActivated) {
+        public override void Hit(hitData hit)
+        {
+            if (hit.hit_object == Game.Instance.player)
+            {
+                if (!IsActivated)
+                {
                     Game.Instance.player.add_power_up(this);
                     IsActivated = true;
                 }
+
                 ActivationTime = Game_Time.total;
+
                 Game.Instance.get_active_map().Remove_Game_Object(this);
-                collider.body.GetWorld().DestroyBody(collider.body);
             }
         }
     }

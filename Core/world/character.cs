@@ -54,14 +54,8 @@ namespace Core.world {
         // controller
         // ---------------------------------------------------------------------------------------------------------------
 
-        public void Set_Controller(AI_Controller controller) {
-
-            this.controller = controller;
-            controller.character = this;
-        }
-
-        public void Set_Controller(AI_Swarm_Controller controller) {
-
+        public void Set_Controller(AI_Controller controller) 
+        {
             this.controller = controller;
             controller.characters.Add(this);
         }

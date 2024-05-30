@@ -8,15 +8,12 @@ namespace Hell.enemy
     using System;
     using System.Collections.Generic;
 
-    public class SwarmEnemyController : AI_Controller
+    public class TankEnemyController : AI_Controller
     {
-        public Vector2 Origin = new Vector2();
-
-        public SwarmEnemyController(Vector2 origin) : base(new List<Character>()) 
+        public TankEnemyController(Vector2 origin) : base(new List<Character>())
         {
-            this.Origin = origin;
             this.characters = CreateEnemies(origin);
-            get_state_machine().Set_Statup_State(typeof(EnterScreen));
+            get_state_machine().Set_Statup_State(typeof(EnterScreen)); // Assuming EnterScreen works with Character
         }
 
         private List<Character> CreateEnemies(Vector2 origin)
@@ -24,12 +21,13 @@ namespace Hell.enemy
             var enemies = new List<Character>();
             Random random = new Random();
             float clusterRadius = 200f;
-            int enemyCount = random.Next(8, 12);
+            int enemyCount = random.Next(1, 6);
 
             for (int i = 0; i < enemyCount; i++)
             {
-                SwarmEnemy enemy = new SwarmEnemy();
+                TankEnemy enemy = new TankEnemy();
                 enemy.Controller = this;
+
                 float angle = (float)random.NextDouble() * MathHelper.TwoPi;
                 float radius = (float)random.NextDouble() * clusterRadius;
                 Vector2 position = origin + new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * radius;
@@ -45,7 +43,7 @@ namespace Hell.enemy
                         enemy.auto_heal_amout = 0;
                         Game.Instance.get_active_map().Remove_Game_Object(enemy);
                         Game.Instance.get_active_map().allCharacter.Remove(enemy);
-                        this.characters.Remove(enemy); 
+                        this.characters.Remove(enemy);
                         Game.Instance.Score++;
                     }
                 };

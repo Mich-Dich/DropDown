@@ -8,7 +8,6 @@
     using Hell.player.ability;
 
     internal class CH_player : Character {
-        public int projectilesPerShot { get; set; } = 1;
 
         public CH_player() {
             
@@ -20,7 +19,7 @@
             movement_speed = 400.0f;
             rotation_offset = float.Pi / 2;
 
-            Ability = new OmniFireAbility();
+            Ability = new ShieldAbility();
         }
 
         public override void Hit(hitData hit) {

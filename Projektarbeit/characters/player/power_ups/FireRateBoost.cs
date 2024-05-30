@@ -11,11 +11,12 @@ namespace Hell.player.power {
         public float FireDelayDecrease { get; set; } = 0.3f;
         private static readonly Texture texture = new Texture("assets/textures/power-ups/firerate_increaser.png");
         private static readonly Vector2 size = new Vector2(30, 30);
-        private float originalFireDelay = 0.5f;
+        private float originalFireDelay = 1.0f;
 
         public FireRateBoost(Vector2 position) : base(position, size, new Sprite(texture))  {
         
             Console.WriteLine("FireRateBoost created");
+            originalFireDelay = (Game.Instance.playerController as Hell.player.PC_main).fireDelay;
 
             activation = (Character target) => {
 

@@ -111,18 +111,26 @@ namespace Core.world.map {
         }
 
         public void Remove_Game_Object(Game_Object game_object) {
-            this.world.Remove(game_object);
-            this.physicsWorld.DestroyBody(game_object.collider.body);
+            if (this.world.Contains(game_object)) {
+                this.world.Remove(game_object);
+                this.all_game_objects.Remove(game_object);
+                this.projectils.Remove(game_object);
 
-            if(game_object.transform.mobility == Mobility.DYNAMIC)
-                DebugData.colidableObjectsDynamic--;
-            else
-                DebugData.colidableObjectsStatic--;
+                if (game_object.collider != null && game_object.collider.body != null) {
+                    this.physicsWorld.DestroyBody(game_object.collider.body); 
+                    game_object.collider.body = null;
+                }
+                if (game_object.transform.mobility == Mobility.DYNAMIC)
+                    DebugData.colidableObjectsDynamic--;
+                else
+                    DebugData.colidableObjectsStatic--;
+            } else {
+                Console.WriteLine($"Warning: Tried to remove a game object that wasn't in the world list. {game_object}");
+            }
         }
 
         public void add_AI_Controller(AI_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
-        public void add_AI_Controller(AI_Swarm_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
-
+        
         public Character Add_Player(Character character, Vector2? position = null, Single rotation = 0.0f, bool IsSensor = false) {
 
             if(player_is_spawned)

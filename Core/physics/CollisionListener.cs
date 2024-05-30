@@ -7,13 +7,14 @@ namespace Core.physics {
 
     public class CollisionListener : ContactListener {
 
-        public override void Add(ContactPoint point) {
+        public override void Add(ContactPoint point)
+        {
+            // Use null conditional operators for safety
+            Game_Object object1 = point.Shape1?.GetBody()?.GetUserData() as Game_Object;
+            Game_Object object2 = point.Shape2?.GetBody()?.GetUserData() as Game_Object;
 
-            Game_Object object1 = point.Shape1.GetBody().GetUserData() as Game_Object;
-            Game_Object object2 = point.Shape2.GetBody().GetUserData() as Game_Object;
-
-            if(object1 != null && object2 != null) {
-
+            if (object1 != null && object2 != null)
+            {
                 hitData hit = new hitData();
                 hit.is_hit = true;
                 hit.hit_force = point.Velocity.Length();
@@ -27,6 +28,11 @@ namespace Core.physics {
 
                 hit.hit_object = object1;
                 object2.Hit(hit);
+            }
+            else
+            {
+                // Log a warning, but don't throw an exception 
+                Console.WriteLine("Warning: Collision detected with a null object. This might be expected if an object was recently removed.");
             }
         }
 
