@@ -319,15 +319,20 @@ namespace DropDown {
         }
 
 
-        private void spaw_enemy(Type enemy_type) {
-
-            if(!typeof(CH_base_NPC).IsAssignableFrom(enemy_type))
+        private void spaw_enemy(Type enemy_type) 
+        {
+            if (!typeof(CH_base_NPC).IsAssignableFrom(enemy_type))
+            {
                 throw new InvalidOperationException($"Type [{enemy_type.Name}] does not implement [I_state] interface.");
+            }
 
-            this.add_AI_Controller(new AIC_simple(
-                Add_Character((CH_base_NPC)Activator.CreateInstance(enemy_type),
-                find_random_free_positon(),
-                random.NextSingle() * (float.Pi * 2))));
+            List<Character> newEnemies = new List<Character>();
+            CH_base_NPC newEnemy = (CH_base_NPC)Activator.CreateInstance(enemy_type);
+            newEnemies.Add(newEnemy);
+
+            this.add_AI_Controller(new AIC_simple(newEnemies));
+
+            Add_Character(newEnemy, find_random_free_positon(), random.NextSingle() * (float.Pi * 2));
         }
 
 
