@@ -45,6 +45,9 @@
     <None Update="assets/textures/power-ups/speed_increaser.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\textures\projectiles\beam\beam.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

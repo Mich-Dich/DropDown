@@ -538,8 +538,8 @@ namespace Core.world {
             foreach(var character in allCharacter)
                 character.Draw();
 
-            //for(int x = 0; x < world.Count; x++)
-            //    world[x].Draw();
+            for(int x = 0; x < world.Count; x++)
+                world[x].Draw();
         }
 
         internal void Draw_Debug() {
