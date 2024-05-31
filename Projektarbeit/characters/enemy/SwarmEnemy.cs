@@ -11,6 +11,8 @@ namespace Hell.enemy {
         private const float StopDistance = 200f;
         private const float PursueSpeed = 60;
 
+        Random random = new Random();
+
         public SwarmEnemy() : base() {
 
             transform.size = new Vector2(40);
@@ -88,7 +90,7 @@ namespace Hell.enemy {
         }
 
         public override void Attack() {
-
+            if (Game_Time.total - lastFireTime >= fireDelay + (float)random.NextDouble() * (1f - 0.2f) + 0.2f) {
             if(Game_Time.total - lastFireTime >= fireDelay) {
 
                 Vector2 enemyLocation = this.transform.position;
@@ -99,6 +101,7 @@ namespace Hell.enemy {
             }
 
             ApplySeparation();
+            }
         }
 
         public override void Retreat() {
@@ -129,30 +132,59 @@ namespace Hell.enemy {
                     set_animation_from_anim_data(hit_anim);
                 }
             }
-            if(hit.hit_object is Reflect reflect) {
+            if (hit.hit_object is Reflect reflect && collider != null && collider.body != null) { 
                 this.apply_damage(reflect.Damage);
                 Box2DX.Common.Vec2 direction = new(transform.position.X - hit.hit_position.X, transform.position.Y - hit.hit_position.Y);
-                collider.body.ApplyForce(direction * 100000f, collider.body.GetWorldCenter());
+                if(collider != null)
+                    collider.body.ApplyForce(direction * 100000f, collider.body.GetWorldCenter());
                 set_animation_from_anim_data(hit_anim);
             }
         }
         
-        private void ApplySeparation() {
-
+        private void ApplySeparation()
+        {
             Random random = new Random();
-            float SeparationDistance = 60f + (float)random.NextDouble() * 20f;
-            float SeparationSpeed = 10f + (float)random.NextDouble() * 10f;
-            foreach (var other in Controller.characters) {
-                if (other == this) 
-                    continue;
+            float separationDistance = 80f + (float)random.NextDouble() * 30f;
+            float separationSpeed = 15f + (float)random.NextDouble() * 10f;
+            float maxSeparationForce = 80f;
+
+            Vector2 totalSeparationForce = Vector2.Zero;
+            int nearbyCount = 0;
+
+            foreach (var other in Controller.characters)
+            {
+                if (other == this) continue;
+
                 float distance = (other.transform.position - transform.position).Length;
-                if (distance < SeparationDistance) {
+                if (distance < separationDistance)
+                {
                     Vector2 separationDirection = transform.position - other.transform.position;
                     separationDirection.NormalizeFast();
-                    separationDirection *= SeparationSpeed;
-                    Box2DX.Common.Vec2 separationVelocity = new Box2DX.Common.Vec2(separationDirection.X, separationDirection.Y) * Game_Time.delta;
-                    Add_Linear_Velocity(separationVelocity);
+
+                    float separationForceMagnitude = (float)Math.Exp(-distance / 20f) * maxSeparationForce;
+                    Vector2 separationForce = separationDirection * separationForceMagnitude;
+                    totalSeparationForce += separationForce;
+                    nearbyCount++;
                 }
+            }
+
+            if (nearbyCount > 0)
+            {
+                totalSeparationForce /= nearbyCount;
+
+                float jitterAngle = (float)(random.NextDouble() - 0.5f) * 0.5f;
+                totalSeparationForce = RotateVector(totalSeparationForce, jitterAngle);
+
+                Box2DX.Common.Vec2 separationVelocity = 
+                    new Box2DX.Common.Vec2(totalSeparationForce.X, totalSeparationForce.Y) * Game_Time.delta;
+
+                if (separationVelocity.Length() > separationSpeed)
+                {
+                    separationVelocity.Normalize();
+                    separationVelocity *= separationSpeed;
+                }
+
+                Add_Linear_Velocity(separationVelocity);
             }
         }
     }

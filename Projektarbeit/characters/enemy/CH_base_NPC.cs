@@ -4,6 +4,7 @@
     using Core.render;
     using Core.world;
     using Core.Controllers.ai;
+    using OpenTK.Mathematics;
 
     public abstract class CH_base_NPC : Character {
 
@@ -57,8 +58,16 @@
                 Display_Healthbar(null, new System.Numerics.Vector2(-8,-40), new System.Numerics.Vector2(1), 5);
         }
 
-
-        
+        public static Vector2 RotateVector(Vector2 v, float radians)
+        {
+            float cos = MathF.Cos(radians);
+            float sin = MathF.Sin(radians);
+            return new Vector2(
+                v.X * cos - v.Y * sin,
+                v.X * sin + v.Y * cos
+            );
+        }
+ 
         public abstract bool IsPlayerInRange();
         public abstract bool IsPlayerInAttackRange();
         public abstract bool IsHealthLow();
@@ -66,13 +75,5 @@
         public abstract void Pursue();
         public abstract void Attack();
         public abstract void Retreat();
-
-
-
-
-
-        
-
-
     }
 }

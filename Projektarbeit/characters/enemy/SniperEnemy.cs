@@ -6,10 +6,17 @@ namespace Hell.enemy
     using Core.util;
     using Hell.weapon;
     using Core.physics;
+    using System;
+
     public class SniperEnemy : CH_base_NPC
     {
-        private const float StopDistance = 1000f;
+        private const float StopDistance = 450f;
         private const float PursueSpeed = 60;
+        private const float PursueThreshold = 350f;
+        private const float IdealDistanceFromPlayer = 450f;
+        private const float DistanceTolerance = 100f;
+
+        private Vector2 targetPosition;
 
         public SniperEnemy() : base()
         {
@@ -30,11 +37,12 @@ namespace Hell.enemy
             shoot_interval = 0.4f;
             fireDelay = 10f;
 
-
             attack_anim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
             walk_anim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
             idle_anim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
             hit_anim = new animation_data("assets/animation/enemy/enemy-hit.png", 5, 1, true, false, 10, true);
+
+            targetPosition = Game.Instance.player.transform.position;
         }
 
         public override bool IsPlayerInRange()
@@ -87,9 +95,26 @@ namespace Hell.enemy
 
         public override void Pursue()
         {
-
             Vector2 playerPosition = Game.Instance.player.transform.position;
-            Vector2 direction = playerPosition - transform.position;
+            Vector2 toPlayer = playerPosition - transform.position;
+
+            Vector2 desiredDirection = toPlayer.Normalized() * IdealDistanceFromPlayer;
+            targetPosition = playerPosition - desiredDirection;
+
+            float distanceToTarget = (targetPosition - transform.position).Length;
+            if (Math.Abs(distanceToTarget - IdealDistanceFromPlayer) <= DistanceTolerance)
+            {
+                if (toPlayer.Length > PursueThreshold)
+                {
+                    targetPosition = playerPosition - desiredDirection;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            Vector2 direction = targetPosition - transform.position;
 
             if (direction.Length < StopDistance)
                 return;
@@ -159,34 +184,59 @@ namespace Hell.enemy
                     set_animation_from_anim_data(hit_anim);
                 }
             }
-            if (hit.hit_object is Reflect reflect)
-            {
+            if (hit.hit_object is Reflect reflect && collider != null && collider.body != null) { 
                 this.apply_damage(reflect.Damage);
                 Box2DX.Common.Vec2 direction = new(transform.position.X - hit.hit_position.X, transform.position.Y - hit.hit_position.Y);
-                collider.body.ApplyForce(direction * 100000f, collider.body.GetWorldCenter());
+                if(collider != null)
+                    collider.body.ApplyForce(direction * 100000f, collider.body.GetWorldCenter());
                 set_animation_from_anim_data(hit_anim);
             }
         }
 
         private void ApplySeparation()
         {
-
             Random random = new Random();
-            float SeparationDistance = 60f + (float)random.NextDouble() * 20f;
-            float SeparationSpeed = 10f + (float)random.NextDouble() * 10f;
+            float separationDistance = 80f + (float)random.NextDouble() * 30f;
+            float separationSpeed = 15f + (float)random.NextDouble() * 10f;
+            float maxSeparationForce = 80f;
+
+            Vector2 totalSeparationForce = Vector2.Zero;
+            int nearbyCount = 0;
+
             foreach (var other in Controller.characters)
             {
-                if (other == this)
-                    continue;
+                if (other == this) continue;
+
                 float distance = (other.transform.position - transform.position).Length;
-                if (distance < SeparationDistance)
+                if (distance < separationDistance)
                 {
                     Vector2 separationDirection = transform.position - other.transform.position;
                     separationDirection.NormalizeFast();
-                    separationDirection *= SeparationSpeed;
-                    Box2DX.Common.Vec2 separationVelocity = new Box2DX.Common.Vec2(separationDirection.X, separationDirection.Y) * Game_Time.delta;
-                    Add_Linear_Velocity(separationVelocity);
+
+                    float separationForceMagnitude = (float)Math.Exp(-distance / 20f) * maxSeparationForce;
+                    Vector2 separationForce = separationDirection * separationForceMagnitude;
+                    totalSeparationForce += separationForce;
+                    nearbyCount++;
                 }
+            }
+
+            if (nearbyCount > 0)
+            {
+                totalSeparationForce /= nearbyCount;
+
+                float jitterAngle = (float)(random.NextDouble() - 0.5f) * 0.5f;
+                totalSeparationForce = RotateVector(totalSeparationForce, jitterAngle);
+
+                Box2DX.Common.Vec2 separationVelocity = 
+                    new Box2DX.Common.Vec2(totalSeparationForce.X, totalSeparationForce.Y) * Game_Time.delta;
+
+                if (separationVelocity.Length() > separationSpeed)
+                {
+                    separationVelocity.Normalize();
+                    separationVelocity *= separationSpeed;
+                }
+
+                Add_Linear_Velocity(separationVelocity);
             }
         }
     }

@@ -112,25 +112,26 @@ namespace Core.world {
                 DebugData.colidableObjectsStatic++;
         }
 
-        public void Remove_Game_Object(Game_Object game_object) {
-            if(world.Contains(game_object)) {
-                world.Remove(game_object);
-                all_game_objects.Remove(game_object);
-                projectils.Remove(game_object);
+        public void Remove_Game_Object(Game_Object game_object)
+        {
+            world.Remove(game_object);
+            all_game_objects.Remove(game_object);
+            projectils.Remove(game_object);
+            allCharacter.Remove(game_object as Character);
 
-                if(game_object.collider != null && game_object.collider.body != null) {
-                    physicsWorld.DestroyBody(game_object.collider.body);
-                    game_object.collider.body = null;
-                }
-                if(game_object.transform.mobility == Mobility.DYNAMIC)
-                    DebugData.colidableObjectsDynamic--;
-                else
-                    DebugData.colidableObjectsStatic--;
+            if (game_object.collider != null && game_object.collider.body != null)
+            {
+                game_object.collider.body.SetUserData(null);
+                physicsWorld.DestroyBody(game_object.collider.body);
+                game_object.collider.body = null;
             }
-            else {
-                Console.WriteLine($"Warning: Tried to remove a game object that wasn't in the world list. {game_object}");
-            }
+
+            if (game_object.transform.mobility == Mobility.DYNAMIC)
+                DebugData.colidableObjectsDynamic--;
+            else
+                DebugData.colidableObjectsStatic--;
         }
+
 
         public void add_AI_Controller(AI_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
 

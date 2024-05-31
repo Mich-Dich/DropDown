@@ -3,7 +3,6 @@ namespace Hell.Levels {
 
     using Core.util;
     using Core.world;
-    using Core.world.map;
     using OpenTK.Mathematics;
     using Hell.enemy;
     using Hell.player.power;

@@ -13,7 +13,7 @@ namespace Core.physics {
             Game_Object object1 = point.Shape1?.GetBody()?.GetUserData() as Game_Object;
             Game_Object object2 = point.Shape2?.GetBody()?.GetUserData() as Game_Object;
 
-            if (object1 != null && object2 != null)
+            if (object1 != null && object2 != null && object1.collider != null && object2.collider != null)
             {
                 hitData hit = new hitData();
                 hit.is_hit = true;
