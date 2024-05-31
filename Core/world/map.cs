@@ -23,6 +23,7 @@ namespace Core.world {
         public bool player_is_spawned { get; private set; } = false;
 
         public readonly World physicsWorld;
+        private const int MaxPhysicsBodies = 350;
 
         public Map() {
 
@@ -121,9 +122,15 @@ namespace Core.world {
 
             if (game_object.collider != null && game_object.collider.body != null)
             {
+                int bodyCountBefore = physicsWorld.GetBodyCount();
+                Console.WriteLine($"Active physics bodies before removal: {bodyCountBefore}"); 
+
                 game_object.collider.body.SetUserData(null);
                 physicsWorld.DestroyBody(game_object.collider.body);
                 game_object.collider.body = null;
+
+                int bodyCountAfter = physicsWorld.GetBodyCount();
+                Console.WriteLine($"Active physics bodies after removal: {bodyCountAfter}");
             }
 
             if (game_object.transform.mobility == Mobility.DYNAMIC)
@@ -131,7 +138,6 @@ namespace Core.world {
             else
                 DebugData.colidableObjectsStatic--;
         }
-
 
         public void add_AI_Controller(AI_Controller ai_Controller) { all_AI_Controller.Add(ai_Controller); }
 
@@ -185,7 +191,6 @@ namespace Core.world {
             }
 
             allCharacter.Add(character);
-            //Console.WriteLine($"Adding character [{character}] to map. Current count: {allCharacter.Count} ");
 
             DebugData.colidableObjectsDynamic++;
             return character;
@@ -220,8 +225,6 @@ namespace Core.world {
             switch(world_Layer) {
             case World_Layer.None: break;
             case World_Layer.world:
-            // Console.WriteLine($"add_sprite() with argument [World_Layer = World_Layer.world] is not implemented yet");
-            // world.Add(new game_object().set_sprite(sprite));
             break;
 
             case World_Layer.backgound:
@@ -482,6 +485,27 @@ namespace Core.world {
             }
         }
 
+        private void ResetPhysicsWorld() {
+            Body body = physicsWorld.GetBodyList();
+            while (body != null) {
+                Body nextBody = body.GetNext();
+
+                var userData = body.GetUserData();
+                if (!(userData is Character)) {
+                    body.SetUserData(null);
+                    physicsWorld.DestroyBody(body);
+                }
+
+                body = nextBody;
+            }
+
+            world.Clear();
+            projectils.Clear();
+
+            DebugData.colidableObjectsStatic = 0;
+            DebugData.colidableObjectsDynamic = 0; 
+        }
+
         // ================================================================= internal =================================================================
 
         internal void Draw() {
@@ -578,6 +602,10 @@ namespace Core.world {
             }
 
             update(deltaTime);
+            if (physicsWorld.GetBodyCount() > MaxPhysicsBodies) {
+                Console.WriteLine($"WARNING: Physics body count exceeded limit ({MaxPhysicsBodies}). Resetting physics world.");
+                ResetPhysicsWorld();
+            }
         }
 
         // ========================================== private ==========================================

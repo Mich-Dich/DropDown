@@ -8,44 +8,41 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="../Core/Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="assets\animation\bolt\bolt.json">
+    <None Update="assets/animation/bolt/bolt.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\animation\bolt\bolt.png">
+    <None Update="assets/animation/bolt/bolt.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\animation\enemy\enemy-hit.png">
+    <None Update="assets/animation/enemy/enemy-hit.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\animation\enemy\enemy.png">
+    <None Update="assets/animation/enemy/enemy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\animation\projectiles\swirl.png">
+    <None Update="assets/animation/projectiles/swirl.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\animation\shield\shield.png">
+    <None Update="assets/animation/shield/shield.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\textures\background\background.png">
+    <None Update="assets/textures/background/background.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\textures\player\Angel-1.png">
+    <None Update="assets/textures/player/Angel-1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\textures\power-ups\firerate_increaser.png">
+    <None Update="assets/textures/power-ups/firerate_increaser.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\textures\power-ups\health.png">
+    <None Update="assets/textures/power-ups/health.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="assets\textures\power-ups\speed_increaser.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="assets\textures\projectiles\beam\beam.png">
+    <None Update="assets/textures/power-ups/speed_increaser.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -9,30 +9,34 @@ namespace Core.physics {
 
         public override void Add(ContactPoint point)
         {
-            // Use null conditional operators for safety
-            Game_Object object1 = point.Shape1?.GetBody()?.GetUserData() as Game_Object;
-            Game_Object object2 = point.Shape2?.GetBody()?.GetUserData() as Game_Object;
-
-            if (object1 != null && object2 != null && object1.collider != null && object2.collider != null)
+            try 
             {
-                hitData hit = new hitData();
-                hit.is_hit = true;
-                hit.hit_force = point.Velocity.Length();
-                hit.hit_position = new Vector2(point.Position.X, point.Position.Y);
-                hit.hit_direction = new Vector2(point.Velocity.X, point.Velocity.Y);
-                hit.hit_normal = new Vector2(point.Normal.X, point.Normal.Y);
-                hit.hit_impact_point = hit.hit_position;
+                Game_Object? object1 = point.Shape1?.GetBody()?.GetUserData() as Game_Object;
+                Game_Object? object2 = point.Shape2?.GetBody()?.GetUserData() as Game_Object;
+    
+                if (object1?.collider != null && object2?.collider != null)
+                {
+                    var hit = new hitData
+                    {
+                        is_hit = true,
+                        hit_force = point.Velocity.Length(),
+                        hit_position = new Vector2(point.Position.X, point.Position.Y),
+                        hit_direction = new Vector2(point.Velocity.X, point.Velocity.Y),
+                        hit_normal = new Vector2(point.Normal.X, point.Normal.Y),
+                        hit_impact_point = new Vector2(point.Position.X, point.Position.Y)
+                    };
+    
+                    hit.hit_object = object2;
+                    object1.Hit(hit); // This is where your null reference likely occurs
 
-                hit.hit_object = object2;
-                object1.Hit(hit);
-
-                hit.hit_object = object1;
-                object2.Hit(hit);
+                    hit.hit_object = object1;
+                    object2.Hit(hit);
+                }
             }
-            else
+            catch (NullReferenceException ex)
             {
-                // Log a warning, but don't throw an exception 
-                Console.WriteLine("Warning: Collision detected with a null object. This might be expected if an object was recently removed.");
+                // Log the error for debugging
+                Console.WriteLine($"Error in CollisionListener: {ex.Message}");
             }
         }
 

@@ -59,8 +59,15 @@ namespace Core.defaults {
 
         public override void Update(float deltaTime) {
             if ((DateTime.Now - CreationTime).TotalSeconds > Lifetime) {
-                if (Game.Instance != null && Game.Instance.get_active_map() != null)
+                if (Game.Instance != null && Game.Instance.get_active_map() != null) {
                     Game.Instance.get_active_map().Remove_Game_Object(this); 
+
+                    if (collider != null && collider.body != null) {
+                        var world = Game.Instance.get_active_map().physicsWorld;
+                        world.DestroyBody(collider.body);
+                        collider.body = null;
+                    }
+                }
             }
         }
 
