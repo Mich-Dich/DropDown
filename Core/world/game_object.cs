@@ -14,6 +14,7 @@ namespace Core.world {
         public List<Game_Object> children { get; } = new List<Game_Object>();
         public Collider? collider { get; set; }
         public float rotation_offset { get; set; } = 0;
+        public bool IsRemoved { get; set; } = false;
 
         public Game_Object(Transform transform) {
 

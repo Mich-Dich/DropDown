@@ -18,12 +18,12 @@ namespace Core.world {
         public List<Game_Object> all_game_objects { get; set; } = new List<Game_Object>();
         private List<I_Controller> all_AI_Controller = new List<I_Controller>();
         public List<Character> allCharacter { get; set; } = new List<Character>();
-        private List<Game_Object> projectils { get; set; } = new List<Game_Object>();
+        public List<Game_Object> projectiles { get; set; } = new List<Game_Object>();
         //private List<PowerUp> ActivePowerUps { get; set; } = new List<PowerUp>();
         public bool player_is_spawned { get; private set; } = false;
 
         public readonly World physicsWorld;
-        private const int MaxPhysicsBodies = 350;
+        private const int MaxPhysicsBodies = 400;
 
         public Map() {
 
@@ -115,22 +115,21 @@ namespace Core.world {
 
         public void Remove_Game_Object(Game_Object game_object)
         {
+            game_object.IsRemoved = true;
             world.Remove(game_object);
             all_game_objects.Remove(game_object);
-            projectils.Remove(game_object);
+            projectiles.Remove(game_object);
             allCharacter.Remove(game_object as Character);
 
             if (game_object.collider != null && game_object.collider.body != null)
             {
                 int bodyCountBefore = physicsWorld.GetBodyCount();
-                Console.WriteLine($"Active physics bodies before removal: {bodyCountBefore}"); 
 
                 game_object.collider.body.SetUserData(null);
                 physicsWorld.DestroyBody(game_object.collider.body);
                 game_object.collider.body = null;
 
                 int bodyCountAfter = physicsWorld.GetBodyCount();
-                Console.WriteLine($"Active physics bodies after removal: {bodyCountAfter}");
             }
 
             if (game_object.transform.mobility == Mobility.DYNAMIC)
@@ -500,7 +499,7 @@ namespace Core.world {
             }
 
             world.Clear();
-            projectils.Clear();
+            projectiles.Clear();
 
             DebugData.colidableObjectsStatic = 0;
             DebugData.colidableObjectsDynamic = 0; 
@@ -536,10 +535,12 @@ namespace Core.world {
                 backgound[x].Draw();
 
             foreach(var character in allCharacter)
-                character.Draw();
+                if (!character.IsRemoved)
+                    character.Draw();
 
             for(int x = 0; x < world.Count; x++)
-                world[x].Draw();
+                if (!world[x].IsRemoved)
+                    world[x].Draw();
         }
 
         internal void Draw_Debug() {
@@ -560,10 +561,12 @@ namespace Core.world {
             }
 
             foreach(var character in allCharacter)
-                character.Draw_Debug();
+                if (!character.IsRemoved)
+                    character.Draw_Debug();
 
             for(int x = 0; x < world.Count; x++)
-                world[x].Draw_Debug();
+                if (!world[x].IsRemoved)
+                    world[x].Draw_Debug();
         }
 
         internal void update_internal(float deltaTime) {
@@ -583,16 +586,19 @@ namespace Core.world {
                 AI_Controller.Update(deltaTime);
 
             foreach(var game_object in all_game_objects.ToList()) {
-                game_object.Update(deltaTime);
+                if (!game_object.IsRemoved)
+                    game_object.Update(deltaTime);
             }
 
             for(int x = 0; x < world.Count; x++) {
-                if(world[x].collider != null) {
-                    if(world[x].collider.body != null) {
-                        world[x].Update_position();
+                if (!world[x].IsRemoved) {
+                    if(world[x].collider != null) {
+                        if(world[x].collider.body != null) {
+                            world[x].Update_position();
+                        }
                     }
+                    world[x].Update(deltaTime);
                 }
-                world[x].Update(deltaTime);
             }
 
             foreach(var character in charactersToRemove) {
