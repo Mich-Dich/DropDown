@@ -16,20 +16,20 @@ namespace Hell.player.power {
         public FireRateBoost(Vector2 position) : base(position, size, new Sprite(texture))  {
         
             Console.WriteLine("FireRateBoost created");
-            originalFireDelay = (Game.Instance.playerController as Hell.player.PC_main).fireDelay;
+            originalFireDelay = (Game.Instance.playerController as Hell.player.PC_main).character.fireDelay;
 
             activation = (Character target) => {
 
                 if(target is CH_player player)
                     if(Game.Instance.playerController is Hell.player.PC_main pcMain)
-                        pcMain.fireDelay -= FireDelayDecrease;
+                        pcMain.character.fireDelay -= FireDelayDecrease;
             };
 
             deactivation = (Character target) => {
 
                 if(target is CH_player player)
                     if(Game.Instance.playerController is Hell.player.PC_main pcMain)
-                        pcMain.fireDelay = originalFireDelay;
+                        pcMain.character.fireDelay = originalFireDelay;
             };
 
         }

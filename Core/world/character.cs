@@ -39,6 +39,8 @@ namespace Core.world {
         public Action death_callback { get; set; }
         public Ability Ability { get; set; }
         public float abilityLastUsedTime;
+        public float fireDelay = 1.0f;
+        public float lastFireTime = 0f;
 
         private List<PowerUp> all_power_ups = new List<PowerUp>();
         private float _health;

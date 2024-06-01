@@ -16,8 +16,6 @@
         public Action fire { get; set; }
         public Action useAbility { get; set; }
 
-        public float fireDelay = 1.0f; // Delay in seconds
-        public float lastFireTime = 0f;
         public Type ProjectileType { get; set; } = typeof(Reflect);
 
         public PC_main(Character character)
@@ -106,7 +104,7 @@
             // character always faces upwards
             character.transform.rotation = 0;
 
-             if((bool)fire.GetValue() && Game_Time.total - lastFireTime >= fireDelay) {
+             if((bool)fire.GetValue() && Game_Time.total - character.lastFireTime >= character.fireDelay) {
                 Vector2 playerLocation = character.transform.position;
 
                 if (character.Ability is OmniFireAbility omniFireAbility && omniFireAbility.IsActive()) {
@@ -123,7 +121,7 @@
                     Game.Instance.get_active_map().Add_Game_Object(projectile);
                 }
 
-                lastFireTime = Game_Time.total;
+                character.lastFireTime = Game_Time.total;
             }
 
             if ((bool)useAbility.GetValue()) {

@@ -19,7 +19,6 @@ namespace Core.world {
         private List<I_Controller> all_AI_Controller = new List<I_Controller>();
         public List<Character> allCharacter { get; set; } = new List<Character>();
         public List<Game_Object> projectiles { get; set; } = new List<Game_Object>();
-        //private List<PowerUp> ActivePowerUps { get; set; } = new List<PowerUp>();
         public bool player_is_spawned { get; private set; } = false;
 
         public readonly World physicsWorld;
