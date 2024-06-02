@@ -107,7 +107,7 @@
              if((bool)fire.GetValue() && Game_Time.total - character.lastFireTime >= character.fireDelay) {
                 Vector2 playerLocation = character.transform.position;
 
-                if (character.Ability is OmniFireAbility omniFireAbility && omniFireAbility.IsActive()) {
+                if (character.Ability is OmniFireAbility omniFireAbility && omniFireAbility.IsActive) {
                     // Fire projectiles in all directions
                     for (int angle = 0; angle < 360; angle += 10) {
                         Vector2 projectileDirection = new Vector2((float)System.Math.Cos(angle * System.Math.PI / 180), (float)System.Math.Sin(angle * System.Math.PI / 180));

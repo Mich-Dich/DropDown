@@ -81,7 +81,19 @@
 
                 ImGui.SetNextWindowBgAlpha(0f);
                 ImGui.SetNextWindowPos(new System.Numerics.Vector2(10, io.DisplaySize.Y - 10), ImGuiCond.Always, new System.Numerics.Vector2(0, 1));
+
                 ImGui.Begin("HUD_TopLeft", window_flags);
+
+                if (player.Ability.IconPath != null) {
+                    var abilityTexture = Resource_Manager.Get_Texture(player.Ability.IconPath);
+
+                    System.Numerics.Vector2 uv0 = new System.Numerics.Vector2(0, 1);
+                    System.Numerics.Vector2 uv1 = new System.Numerics.Vector2(1, 0);
+
+                    if (player.Ability.IsActive && abilityTexture != null) {
+                        ImGui.Image(abilityTexture.Handle, new System.Numerics.Vector2(30, 30), uv0, uv1);
+                    }
+                }
 
                 uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
                 uint transparentColor = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
@@ -90,7 +102,6 @@
                 float healthBarWidth = 250 * (this.player.health_max / 100f);
                 Imgui_Util.Progress_Bar_Stylised(this.player.HealthRatio, new System.Numerics.Vector2(healthBarWidth, 15), col_red, transparentColor, 0.32f, 0.28f, 0.6f);
 
-                // Display ability cooldown bar
                 var currentTime = Game_Time.total;
                 float cooldownProgress = (currentTime - this.player.abilityLastUsedTime) / this.player.Ability.Cooldown;
                 cooldownProgress = Math.Clamp(cooldownProgress, 0.0f, 1.0f);

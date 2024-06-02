@@ -20,6 +20,7 @@ namespace Hell.player.ability {
             bool loop = true;
 
             this.Effect = new AbilityEffect("assets/animation/shield/shield.png", scale, 4, 1, fps, loop);
+            this.IconPath = "assets/textures/abilities/shield.png";
         }
 
         public override void Use(Character character) {
@@ -31,6 +32,7 @@ namespace Hell.player.ability {
             AddEffectToCharacter(character);
 
             Game.Instance.get_active_map().Add_Game_Object(this.Effect);
+            IsActive = true;
         }
 
         private void OnTimerElapsed(object? source, ElapsedEventArgs e) {
@@ -39,6 +41,7 @@ namespace Hell.player.ability {
                 Console.WriteLine("Shield ability expired!");
 
                 Game.Instance.get_active_map().Remove_Game_Object(this.Effect);
+                IsActive = false;
             }
         }
     }

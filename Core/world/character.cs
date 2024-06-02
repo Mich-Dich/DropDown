@@ -41,7 +41,6 @@ namespace Core.world {
         public float abilityLastUsedTime;
         public float fireDelay = 1.0f;
         public float lastFireTime = 0f;
-
         private List<PowerUp> all_power_ups = new List<PowerUp>();
         private float _health;
         private float _health_max;

@@ -8,7 +8,6 @@ namespace Core.defaults {
         public string SpriteSheet { get; set; }
         public float Scale { get; set; }
         public Animation Animation { get; set; }
-
         public AbilityEffect(string spriteSheetPath, float scale, int columns, int rows, int fps = 30, bool loop = true) : base()
         {
             string directoryPath = Path.GetDirectoryName(spriteSheetPath);
