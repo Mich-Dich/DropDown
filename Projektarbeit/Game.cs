@@ -1,14 +1,17 @@
 ﻿namespace Hell {
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Mathematics;
     using ImGuiNET;
     using Core.util;
     using Hell.player;
     using Hell.Levels;
-    using Core.world;
+    using Core.UI;
 
     internal class Game : Core.Game {
         private bool isGameOver = false;
+        private Text testText;
+        private Button testButton;
+        private Input testInput;
+        private Image testImage;
+        private ProgressBar healthBar;
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) { }
@@ -23,6 +26,40 @@
             Show_Performance(true);
             showDebugData(true);
             this.camera.Set_min_Max_Zoom(0.03f, 1.4f);
+            testText = new Text("Test Text");
+            testButton = new Button(
+                            new System.Numerics.Vector2(0, 300), // position
+                            new System.Numerics.Vector2(100, 50), // size
+                            "Test Button", // label
+                            () => Console.WriteLine("Button was clicked!"), // onClick
+                            () => Console.WriteLine("Button was hovered!"), // onHover
+                            new System.Numerics.Vector4(0.2f, 0.2f, 0.2f, 1.0f), // color
+                            new System.Numerics.Vector4(0.3f, 0.3f, 0.3f, 1.0f), // hoverColor
+                            new System.Numerics.Vector4(0.1f, 0.1f, 0.1f, 1.0f), // clickColor
+                            new System.Numerics.Vector4(1.0f, 1.0f, 1.0f, 1.0f), // textColor
+                            new System.Numerics.Vector4(1.0f, 1.0f, 1.0f, 1.0f), // hoverTextColor
+                            new System.Numerics.Vector4(1.0f, 1.0f, 1.0f, 1.0f)  // clickTextColor
+            );
+        testInput = new Input(
+            new System.Numerics.Vector2(200, 300), // position
+            new System.Numerics.Vector2(200, 50), // size
+            "Test Input", // initial text
+            new System.Numerics.Vector4(1.0f, 1.0f, 1.0f, 1.0f), // color
+            text => Console.WriteLine($"Input text changed to: {text}") // onTextChanged
+        );
+
+        testImage = new Image(new System.Numerics.Vector2(0, 400), "assets/textures/abilities/fireboost.png");
+
+        healthBar = new ProgressBar(
+            new System.Numerics.Vector2(0, 500), // position
+            new System.Numerics.Vector2(250, 15), // size
+            new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1.0f), // fill color
+            new System.Numerics.Vector4(0.2f, 0.2f, 0.2f, 1.0f), // background color
+            () => this.player.health, // value provider
+            0, // min value
+            100, // max value
+            false // show percentage text
+        );
 #endif
         }
 
@@ -83,6 +120,12 @@
                 ImGui.SetNextWindowPos(new System.Numerics.Vector2(10, io.DisplaySize.Y - 10), ImGuiCond.Always, new System.Numerics.Vector2(0, 1));
 
                 ImGui.Begin("HUD_TopLeft", window_flags);
+
+                testText.Render();
+                testButton.Render();
+                testInput.Render();
+                testImage.Render();
+                healthBar.Render();
 
                 if (player.Ability.IconPath != null) {
                     var abilityTexture = Resource_Manager.Get_Texture(player.Ability.IconPath);
