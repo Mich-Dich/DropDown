@@ -16,9 +16,12 @@ namespace Hell.player.power {
         public FireRateBoost(Vector2 position) : base(position, size, new Sprite(texture))  {
         
             Console.WriteLine("FireRateBoost created");
+            IconPath = "assets/textures/abilities/fireboost.png";
             originalFireDelay = (Game.Instance.playerController as Hell.player.PC_main).character.fireDelay;
 
             activation = (Character target) => {
+                Console.WriteLine("FireRateBoost activation");
+                Game.Instance.player.ActivePowerUp = this;
 
                 if(target is CH_player player)
                     if(Game.Instance.playerController is Hell.player.PC_main pcMain)
@@ -26,6 +29,8 @@ namespace Hell.player.power {
             };
 
             deactivation = (Character target) => {
+                Console.WriteLine("FireRateBoost deactivation");
+                Game.Instance.player.ActivePowerUp = null;
 
                 if(target is CH_player player)
                     if(Game.Instance.playerController is Hell.player.PC_main pcMain)

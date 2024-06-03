@@ -14,10 +14,10 @@ namespace Core.defaults {
         public float Duration { get; set; } = 5f;
         public float ActivationTime { get; set; }
         public bool IsActivated { get;  set; } = false;
-
         public Action<Character> activation { get; set; }
         public Action<Character> deactivation { get; set; }
         public Action destruction { get; set; }
+        public string IconPath { get; set; }
 
         public PowerUp(Vector2 position, Vector2 size, Sprite sprite) : base(position, size) {
 

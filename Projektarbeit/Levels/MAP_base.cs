@@ -29,31 +29,9 @@ namespace Hell.Levels {
         }
 
         public override void update(float deltaTime) {
-            /* if((time_stamp + time_interval) <= Game_Time.total) {
+            if((time_stamp + time_interval) <= Game_Time.total) {
 
-                int maxEnemies = 10 + Game.Instance.Score / 10;
-                int currentEnemies = Game.Instance.get_active_map().allCharacter.Count;
-
-                if (currentEnemies < maxEnemies) {
-                    int enemyType = random.Next(0, 4);
-                    Vector2 spawnPosition = new Vector2(random.Next(-250, 250), -600);
-
-                    switch (enemyType) {
-                        case 0:
-                            add_AI_Controller(new SwarmEnemyController(spawnPosition));
-                            break;
-                        case 1:
-                            add_AI_Controller(new SniperEnemyController(spawnPosition));
-                            break;
-                        case 2:
-                            add_AI_Controller(new SwarmEnemyController(spawnPosition));
-                            break;
-                        case 3:
-                            add_AI_Controller(new TankEnemyController(spawnPosition));
-                            break;
-                    }
-                }
-
+                // Spawn power-ups
                 if (random.NextDouble() < 0.1) {
                     Vector2 powerUpPosition = new Vector2(random.Next(-400, 400), random.Next(-400, 400));
 
@@ -80,7 +58,7 @@ namespace Hell.Levels {
 
                 time_stamp = Game_Time.total;
                 time_interval = random.Next(2, 4);
-            } */
+            }
         }
     }
 }

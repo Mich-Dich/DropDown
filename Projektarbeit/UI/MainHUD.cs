@@ -1,6 +1,7 @@
 using Core.UI;
 using System.Numerics;
 using Core.util;
+using Core.render;
 
 namespace Hell.UI {
     public class MainHUD : Menu {
@@ -10,6 +11,8 @@ namespace Hell.UI {
         private VerticalBox verticalBox;
         private HorizontalBox statusEffectsBox;
         private float cooldownProgress;
+
+        private Texture powerUpTexture;
 
         public MainHUD() {
             // Create a VerticalBox
@@ -86,6 +89,32 @@ namespace Hell.UI {
                     }
                 }
             }
+
+            if(Game.Instance.player.ActivePowerUp != null)
+            {
+                if(Game.Instance.player.ActivePowerUp.IconPath != null)
+                {
+                    powerUpTexture = Resource_Manager.Get_Texture(Game.Instance.player.ActivePowerUp.IconPath);
+                    if(powerUpTexture != null)
+                    {
+                        var statusEffectImage = statusEffectsBox.GetElementByTextureId(powerUpTexture.Handle);
+                        if (statusEffectImage == null) {
+                            statusEffectImage = new Image(statusEffectsBox.Position, new Vector2(30, 30), Game.Instance.player.ActivePowerUp.IconPath);
+                            statusEffectsBox.AddElement(statusEffectImage);
+                        }
+                    }
+                }
+            }
+            else {
+                if(powerUpTexture != null)
+                {
+                    var statusEffectImage = statusEffectsBox.GetElementByTextureId(powerUpTexture.Handle);
+                    if (statusEffectImage != null) {
+                        statusEffectsBox.RemoveElement(statusEffectImage);
+                    }
+                }
+            }
+            
         }
     }
 }

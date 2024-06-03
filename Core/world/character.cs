@@ -38,10 +38,12 @@ namespace Core.world {
         public bool Invincible { get; set; } = false;
         public Action death_callback { get; set; }
         public Ability Ability { get; set; }
+        public PowerUp ActivePowerUp { get; set; }
         public float abilityLastUsedTime;
         public float fireDelay = 1.0f;
         public float lastFireTime = 0f;
-        private List<PowerUp> all_power_ups = new List<PowerUp>();
+        public List<PowerUp> all_power_ups = new List<PowerUp>();
+
         private float _health;
         private float _health_max;
 
