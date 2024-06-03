@@ -6,6 +6,7 @@ namespace Hell.Levels {
     using OpenTK.Mathematics;
     using Hell.enemy;
     using Hell.player.power;
+    using Core.Controllers.ai;
 
     internal class MAP_base : Map {
 
@@ -23,12 +24,12 @@ namespace Hell.Levels {
             time_interval = random.Next(2,4);
 
             Set_Background_Image("assets/textures/background/background.png", 1.18f);
+            all_game_objects.Add(new Spawner(new Vector2(0, -600), typeof(SwarmEnemyController), 10, true, 3, 0));
 
         }
 
         public override void update(float deltaTime) {
-
-            if((time_stamp + time_interval) <= Game_Time.total) {
+            /* if((time_stamp + time_interval) <= Game_Time.total) {
 
                 int maxEnemies = 10 + Game.Instance.Score / 10;
                 int currentEnemies = Game.Instance.get_active_map().allCharacter.Count;
@@ -79,7 +80,7 @@ namespace Hell.Levels {
 
                 time_stamp = Game_Time.total;
                 time_interval = random.Next(2, 4);
-            }
+            } */
         }
     }
 }
