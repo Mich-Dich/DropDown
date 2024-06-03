@@ -16,6 +16,20 @@ namespace Core.UI {
             OrganizeElements();
         }
 
+        public void RemoveElement(UIElement element) {
+            elements.Remove(element);
+            OrganizeElements();
+        }
+
+        public UIElement GetElementByTextureId(IntPtr textureId) {
+            foreach (var element in elements) {
+                if (element is Image image && image.TextureId == textureId) {
+                    return image;
+                }
+            }
+            return null;
+        }
+
         public override void Render() {
             foreach (var element in elements) {
                 element.Render();
