@@ -12,6 +12,7 @@ namespace Core.defaults {
 
         public void AddEffectToCharacter(Character character)
         {
+            this.Effect.IsRemoved = false;
             character.Add_Child(this.Effect);
         }
     }

@@ -157,6 +157,7 @@ namespace Core.world {
             this.children.Add(child);
             child.parent = this;
             child.transform.parent = this.transform;
+            Console.WriteLine("Current Child " + child.GetType().ToString());
         }
 
         public void Remove_Child(Game_Object child) {

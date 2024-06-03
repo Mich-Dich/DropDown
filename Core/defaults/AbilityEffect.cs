@@ -50,6 +50,7 @@ namespace Core.defaults {
             }
 
             sprite.animation.Play();
+            Console.WriteLine("Set animation for Effect");
         }
     }
 }

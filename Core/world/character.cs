@@ -178,6 +178,7 @@ namespace Core.world {
                 abilityLastUsedTime = currentTime;
 
                 if (Ability.Effect != null) {
+                    Console.WriteLine("Adding effect to character");
                     Ability.AddEffectToCharacter(this);
                     Ability.Effect.Animation.Play();
                 }
