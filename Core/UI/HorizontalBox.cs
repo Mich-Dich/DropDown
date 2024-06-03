@@ -5,7 +5,7 @@ namespace Core.UI {
     using Core.util;
 
     public class HorizontalBox : UIElement {
-        private List<UIElement> elements;
+        public List<UIElement> elements;
         private Vector2 padding;
 
         public HorizontalBox(Vector2 position, Vector2 size, Vector2 padding) : base(position, size) {

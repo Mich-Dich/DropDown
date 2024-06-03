@@ -8,12 +8,17 @@ namespace Core.UI {
         public Vector2 UV0 { get; set; } = new Vector2(0, 1);
         public Vector2 UV1 { get; set; } = new Vector2(1, 0);
         public Vector4 TintColor { get; set; }
+        public string TexturePath { get; set; } // Add this line
 
         public Image(Vector2 position, string texturePath)
-            : this(position, new Vector2(100, 100), Resource_Manager.Get_Texture(texturePath).Handle, new Vector2(0, 0), new Vector2(1, 1), new Vector4(1.0f, 1.0f, 1.0f, 1.0f)) { }
+            : this(position, new Vector2(100, 100), Resource_Manager.Get_Texture(texturePath).Handle, new Vector2(0, 0), new Vector2(1, 1), new Vector4(1.0f, 1.0f, 1.0f, 1.0f)) {
+            TexturePath = texturePath; // Add this line
+        }
 
         public Image(Vector2 position, Vector2 size, string texturePath)
-            : this(position, size, Resource_Manager.Get_Texture(texturePath).Handle, new Vector2(0, 1), new Vector2(1, 0), new Vector4(1.0f, 1.0f, 1.0f, 1.0f)) { }
+            : this(position, size, Resource_Manager.Get_Texture(texturePath).Handle, new Vector2(0, 1), new Vector2(1, 0), new Vector4(1.0f, 1.0f, 1.0f, 1.0f)) {
+            TexturePath = texturePath; // Add this line
+        }
 
         public Image(Vector2 position, Vector2 size, IntPtr textureId, Vector2 uv0, Vector2 uv1, Vector4 tintColor)
             : base(position, size) {

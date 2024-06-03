@@ -38,7 +38,7 @@ namespace Core.world {
         public bool Invincible { get; set; } = false;
         public Action death_callback { get; set; }
         public Ability Ability { get; set; }
-        public PowerUp ActivePowerUp { get; set; }
+        public List<PowerUp> ActivePowerUps { get; set; } = new List<PowerUp>();
         public float abilityLastUsedTime;
         public float fireDelay = 1.0f;
         public float lastFireTime = 0f;

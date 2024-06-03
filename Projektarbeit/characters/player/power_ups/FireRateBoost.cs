@@ -21,7 +21,7 @@ namespace Hell.player.power {
 
             activation = (Character target) => {
                 Console.WriteLine("FireRateBoost activation");
-                Game.Instance.player.ActivePowerUp = this;
+                Game.Instance.player.ActivePowerUps.Add(this);
 
                 if(target is CH_player player)
                     if(Game.Instance.playerController is Hell.player.PC_main pcMain)
@@ -30,7 +30,7 @@ namespace Hell.player.power {
 
             deactivation = (Character target) => {
                 Console.WriteLine("FireRateBoost deactivation");
-                Game.Instance.player.ActivePowerUp = null;
+                Game.Instance.player.ActivePowerUps.Remove(this);
 
                 if(target is CH_player player)
                     if(Game.Instance.playerController is Hell.player.PC_main pcMain)

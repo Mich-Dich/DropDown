@@ -18,7 +18,7 @@ namespace Hell.player.power {
             Console.WriteLine("SpeedBoost created");
             IconPath = "assets/textures/abilities/fireboost.png";
             activation = (Character target) => {
-                Game.Instance.player.ActivePowerUp = this;
+                Game.Instance.player.ActivePowerUps.Add(this);
 
                 if(target is CH_player player)
                     player.movement_speed += SpeedIncrease;
@@ -27,8 +27,8 @@ namespace Hell.player.power {
 
             deactivation = (Character target) => {
                 Console.WriteLine("SpeedBoost deactivation");
-                Game.Instance.player.ActivePowerUp = null;
-                
+                Game.Instance.player.ActivePowerUps.Remove(this);
+
                 if(target is CH_player player)
                     player.movement_speed -= SpeedIncrease;
             };

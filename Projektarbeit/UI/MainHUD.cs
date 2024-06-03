@@ -2,17 +2,20 @@ using Core.UI;
 using System.Numerics;
 using Core.util;
 using Core.render;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Hell.UI {
     public class MainHUD : Menu {
-        private ProgressBar healthBar;
-        private ProgressBar cooldownBar;
-        private Text scoreText;
-        private VerticalBox verticalBox;
-        private HorizontalBox statusEffectsBox;
+        private readonly ProgressBar healthBar;
+        private readonly ProgressBar cooldownBar;
+        private readonly Text scoreText;
+        private readonly VerticalBox verticalBox;
+        private readonly HorizontalBox statusEffectsBox;
         private float cooldownProgress;
 
         private Texture powerUpTexture;
+        private List<string> abilityIcons = new List<string>();
 
         public MainHUD() {
             // Create a VerticalBox
@@ -81,38 +84,46 @@ namespace Hell.UI {
                     if (statusEffectImage == null) {
                         statusEffectImage = new Image(statusEffectsBox.Position, new Vector2(30, 30), player.Ability.IconPath);
                         statusEffectsBox.AddElement(statusEffectImage);
+                        abilityIcons.Add(player.Ability.IconPath);
                     }
                 } else {
                     var statusEffectImage = statusEffectsBox.GetElementByTextureId(abilityTexture.Handle);
                     if (statusEffectImage != null) {
                         statusEffectsBox.RemoveElement(statusEffectImage);
+                        abilityIcons.Remove(player.Ability.IconPath);
                     }
                 }
             }
 
-            if(Game.Instance.player.ActivePowerUp != null)
+            foreach (var powerUp in Game.Instance.player.ActivePowerUps)
             {
-                if(Game.Instance.player.ActivePowerUp.IconPath != null)
+                if(powerUp.IconPath != null)
                 {
-                    powerUpTexture = Resource_Manager.Get_Texture(Game.Instance.player.ActivePowerUp.IconPath);
+                    powerUpTexture = Resource_Manager.Get_Texture(powerUp.IconPath);
                     if(powerUpTexture != null)
                     {
                         var statusEffectImage = statusEffectsBox.GetElementByTextureId(powerUpTexture.Handle);
                         if (statusEffectImage == null) {
-                            statusEffectImage = new Image(statusEffectsBox.Position, new Vector2(30, 30), Game.Instance.player.ActivePowerUp.IconPath);
+                            statusEffectImage = new Image(statusEffectsBox.Position, new Vector2(30, 30), powerUp.IconPath);
                             statusEffectsBox.AddElement(statusEffectImage);
                         }
                     }
                 }
             }
-            else {
-                if(powerUpTexture != null)
+
+            var elementsToRemove = new List<UIElement>();
+
+            foreach (var child in statusEffectsBox.elements)
+            {
+                if (child is Image image && !Game.Instance.player.ActivePowerUps.Any(p => p.IconPath == image.TexturePath) && !abilityIcons.Contains(image.TexturePath))
                 {
-                    var statusEffectImage = statusEffectsBox.GetElementByTextureId(powerUpTexture.Handle);
-                    if (statusEffectImage != null) {
-                        statusEffectsBox.RemoveElement(statusEffectImage);
-                    }
+                    elementsToRemove.Add(child);
                 }
+            }
+
+            foreach (var element in elementsToRemove)
+            {
+                statusEffectsBox.RemoveElement(element);
             }
             
         }
