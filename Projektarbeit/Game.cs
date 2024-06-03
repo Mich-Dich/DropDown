@@ -4,6 +4,7 @@
     using Hell.player;
     using Hell.Levels;
     using Core.UI;
+    using Hell.UI;
 
     internal class Game : Core.Game {
         private bool isGameOver = false;
@@ -12,6 +13,7 @@
         private Input testInput;
         private Image testImage;
         private ProgressBar healthBar;
+        private TestMenu testMenu;
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) { }
@@ -60,6 +62,8 @@
             100, // max value
             false // show percentage text
         );
+
+        testMenu = new TestMenu();
 #endif
         }
 
@@ -121,11 +125,7 @@
 
                 ImGui.Begin("HUD_TopLeft", window_flags);
 
-                testText.Render();
-                testButton.Render();
-                testInput.Render();
-                testImage.Render();
-                healthBar.Render();
+                testMenu.Render();
 
                 if (player.Ability.IconPath != null) {
                     var abilityTexture = Resource_Manager.Get_Texture(player.Ability.IconPath);
