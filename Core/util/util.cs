@@ -106,8 +106,18 @@ namespace Core.util {
     }
 
     public static class Imgui_Fonts {
-
         public static Dictionary<string, ImFontPtr> fonts = new ();
+
+        public static void LoadFont(string path, float size) {
+            if (!File.Exists(path)) {
+                throw new FileNotFoundException($"Font file not found: {path}");
+            }
+
+            ImFontPtr font = ImGui.GetIO().Fonts.AddFontFromFileTTF(path, size);
+            Console.WriteLine(font);
+
+            fonts[path + size.ToString()] = font;
+        }
     }
 
     public sealed class ResourceNotAssignedException : Exception {
