@@ -105,6 +105,8 @@ namespace Core
         }
 
         // ============================================================================== public ==============================================================================
+        public virtual void Restart() { }
+
         public void Run() {
 
             this.window = new GameWindow(this.gameWindowSettings, this.nativeWindowSettings);
@@ -438,5 +440,6 @@ namespace Core
             // Instanciate the ImGuiController with the right Scale Factor
             this.imguiController = new ImguI_Controller(this.window.ClientSize.X, this.window.ClientSize.Y, scaleFactorX, scaleFactorY);
         }
+        
     }
 }

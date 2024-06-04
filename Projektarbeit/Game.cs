@@ -59,5 +59,20 @@
                     break;
             }
         }
+
+        public override void Restart()
+        {
+            base.Restart();
+
+            this.isGameOver = false;
+            this.activeMap = new MAP_base();
+            this.player = new CH_player();
+            this.playerController = new PC_main(player);
+            this.gameState = Core.GameState.Playing;
+            this.Score = 0;
+
+            this.activeMap.Add_Game_Object(this.player);
+            this.activeMap.allCharacter.Add(this.player);
+        }
     }
 }
