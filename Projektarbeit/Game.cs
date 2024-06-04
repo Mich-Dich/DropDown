@@ -10,6 +10,7 @@
         private bool isGameOver = false;
         private MainHUD mainHUD;
         private GameOver gameOver;
+        private MainMenu mainMenu;
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) { }
@@ -22,6 +23,8 @@
             this.playerController = new PC_main(player);
             mainHUD = new MainHUD();
             gameOver = new GameOver();
+            mainMenu = new MainMenu();
+            this.gameState = Core.GameState.MainMenu;
 #if DEBUG
             Show_Performance(true);
             showDebugData(true);
@@ -40,10 +43,20 @@
         protected override void Render(float deltaTime) { }
 
         protected override void Render_Imgui(float deltaTime) {
-            if (isGameOver) {
-                gameOver.Render();
-            } else {
-                mainHUD.Render();
+            switch(gameState)
+            {
+                case Core.GameState.MainMenu:
+                    mainMenu.Render();
+                    break;
+                case Core.GameState.Playing:
+                    if (isGameOver) {
+                        gameOver.Render();
+                    } else {
+                        mainHUD.Render();
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }
