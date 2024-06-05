@@ -20,6 +20,7 @@ namespace Core.world {
         public List<Character> allCharacter { get; set; } = new List<Character>();
         public List<Game_Object> projectiles { get; set; } = new List<Game_Object>();
         public bool player_is_spawned { get; private set; } = false;
+        protected bool use_garbage_collector = false;
 
         public readonly World physicsWorld;
         private const int MaxPhysicsBodies = 400;
@@ -483,11 +484,11 @@ namespace Core.world {
 
         private void ResetPhysicsWorld() {
             Body body = physicsWorld.GetBodyList();
-            while (body != null) {
+            while(body != null) {
                 Body nextBody = body.GetNext();
 
                 var userData = body.GetUserData();
-                if (!(userData is Character)) {
+                if(!(userData is Character)) {
                     body.SetUserData(null);
                     physicsWorld.DestroyBody(body);
                 }
@@ -499,7 +500,7 @@ namespace Core.world {
             projectiles.Clear();
 
             DebugData.colidableObjectsStatic = 0;
-            DebugData.colidableObjectsDynamic = 0; 
+            DebugData.colidableObjectsDynamic = 0;
         }
 
         // ================================================================= internal =================================================================
@@ -607,7 +608,9 @@ namespace Core.world {
             update(deltaTime);
             if (physicsWorld.GetBodyCount() > MaxPhysicsBodies) {
                 Console.WriteLine($"WARNING: Physics body count exceeded limit ({MaxPhysicsBodies}). Resetting physics world.");
-                ResetPhysicsWorld();
+
+                if(use_garbage_collector)
+                    ResetPhysicsWorld();
             }
         }
 

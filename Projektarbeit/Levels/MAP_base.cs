@@ -15,6 +15,7 @@
 
         public MAP_base()
         {
+            this.use_garbage_collector = true;
             this.camera = Game.Instance.camera;
             this.random = new Random();
 

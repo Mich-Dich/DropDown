@@ -6,6 +6,7 @@ namespace DropDown {
     using Core.util;
     using Core.world;
     using DropDown.enemy;
+    using DropDown.maps;
     using ImGuiNET;
     using OpenTK.Mathematics;
     using System;
@@ -227,12 +228,30 @@ namespace DropDown {
                 }
             }
 
-            // add Holes
-            this.Add_Background_Sprite(
-                new Sprite(new Transform(null, new Vector2(cellSize * 8)), Resource_Manager.Get_Texture("assets/textures/hole.png")),
+
+
+            // Add dungeon entrance
+            Add_Sprite(
+                new Sprite(
+                    new Transform(new Vector2(), new Vector2(cellSize * 8)),
+                    Resource_Manager.Get_Texture("assets/textures/hole.png")));
+            Add_Static_Game_Object(
+                new Drop_Hole { transform = new Transform(new Vector2(), new Vector2(cellSize * 8)) },
+                new Transform(hole_location, new Vector2(-(cellSize * 4))),
                 hole_location,
-                false);
-            Console.WriteLine($"Generating hole");
+                false,
+                true,
+                true);
+
+
+
+
+            // add Holes
+            //this.Add_Background_Sprite(
+            //    new Sprite(new Transform(null, new Vector2(cellSize * 8)), Resource_Manager.Get_Texture("assets/textures/hole.png")),
+            //    hole_location,
+            //    false);
+            //Console.WriteLine($"Generating hole");
 
             stopwatch.Stop();
             mapGenerationDuration = stopwatch.Elapsed.TotalMilliseconds;

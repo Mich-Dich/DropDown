@@ -2,23 +2,10 @@
 namespace DropDown {
 
     using Core;
-    using Core.physics;
     using Core.util;
     using Core.world;
+    using DropDown.maps;
     using OpenTK.Mathematics;
-
-    internal class level_hole : Game_Object {
-
-        public override void Hit(hitData hit) {
-            base.Hit(hit);
-
-            ((Drop_Down)Game.Instance).set_play_state(Play_State.Playing);
-
-            if(hit.hit_object == Game.Instance.player)
-                Game.Instance.set_active_map(new MAP_base());
-
-        }
-    }
 
     internal class MAP_start : Map {
 
@@ -46,7 +33,7 @@ namespace DropDown {
                     new Transform(new Vector2(), new Vector2(cellSize * 8)),
                     Resource_Manager.Get_Texture("assets/textures/hole.png")));
             Add_Static_Game_Object(
-                new level_hole { transform = new Transform(new Vector2(), new Vector2(cellSize * 8)) },
+                new Drop_Hole { transform = new Transform(new Vector2(), new Vector2(cellSize * 8)) },
                 new Transform(new Vector2(50, 80), new Vector2(- (cellSize * 4))),
                 new Vector2(), 
                 false, 

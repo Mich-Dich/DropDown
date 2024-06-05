@@ -183,14 +183,6 @@ namespace Core.world {
             this.transform.position = (pos.X, pos.Y);
         }
 
-        /*
-        public void SetupCollisionDetection() {
-            if (this.collider != null) {
-                this.collider.SetupCollisionDetection(this);
-            }
-        }
-        */
-
         // =============================================== internal ==============================================
         internal void Draw_Debug() {
 
