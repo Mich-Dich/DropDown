@@ -13,6 +13,7 @@
     <PackageReference Include="OpenTK" Version="4.8.2" />
     <PackageReference Include="OpenTK.Mathematics" Version="4.8.2" />
     <PackageReference Include="StbImageSharp" Version="2.27.13" />
+    <PackageReference Include="xunit" Version="2.8.1" />
   </ItemGroup>
 
   <ItemGroup>

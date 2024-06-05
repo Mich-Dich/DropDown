@@ -11,10 +11,7 @@ namespace Core.util {
         public Mobility mobility { get; set; } = Mobility.DYNAMIC;
         public Transform? parent { get; set; }
 
-        public Transform() {
-
-            this.position = default(Vector2);
-        }
+        public Transform() { this.position = default(Vector2); }
 
         public Transform(Transform transform) {
 

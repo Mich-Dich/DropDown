@@ -1,5 +1,8 @@
+
 namespace Core.UI {
+
     public abstract class UIElement {
+
         public System.Numerics.Vector2 Position { get; set; }
         public System.Numerics.Vector2 Size { get; set; }
         public bool IsActive { get; set; }

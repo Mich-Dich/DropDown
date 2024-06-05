@@ -1,11 +1,16 @@
+
 namespace Core.UI {
+
     using ImGuiNET;
+
     public class Text : UIElement {
+
         public string Content { get; set; }
         public System.Numerics.Vector4 Color { get; set; }
 
         public Text(System.Numerics.Vector2 position, string content, System.Numerics.Vector4 color, System.Numerics.Vector2 size)
             : base(position, size) {
+
             Content = content;
             Color = color;
             Size = size;
@@ -18,7 +23,9 @@ namespace Core.UI {
             : this(new System.Numerics.Vector2(0, 0), content) { }
 
         public override void Render() {
-            if (!IsActive) return;
+
+            if (!IsActive)
+                return;
 
             ImGui.SetNextWindowPos(Position);
             ImGui.SetNextWindowSize(Size);

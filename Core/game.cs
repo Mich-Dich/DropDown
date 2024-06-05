@@ -46,11 +46,6 @@ namespace Core
         }
     }
 
-    public enum GameState {
-            MainMenu,
-            Playing
-    }
-
     public abstract class Game {
 
         public Shader defaultSpriteShader;
@@ -81,7 +76,6 @@ namespace Core
         private readonly DebugDataViualizer debugDataViualizer = new ();
         private double updateFrequencyBuffer = 0;
         public Debug_Drawer Debug_Drawer;
-        public GameState gameState = GameState.Playing;
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight) {
 
@@ -157,102 +151,37 @@ namespace Core
             // internal game update_internal
             this.window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
-                switch(gameState)
-                {
-                    case GameState.MainMenu:
-                        if(show_performance)
-                        stopwatch.Restart();
+                if(show_performance)
+                    stopwatch.Restart();
 
-                        this.Update_Game_Time((float)eventArgs.Time);
-                        this.Update(Game_Time.delta);
-                        this.inputEvent.Clear();
+                this.Update_Game_Time((float)eventArgs.Time);
+                this.playerController.Update_Internal(Game_Time.delta, this.inputEvent);
+                this.activeMap.update_internal(Game_Time.delta);
+                this.Update(Game_Time.delta);
+                this.inputEvent.Clear();
 
-                        if(show_performance) {
+                if(show_performance) {
 
-                            stopwatch.Stop();
-                            DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
-                        }
-                        break;
-                    case GameState.Playing:
-                        if(show_performance)
-                            stopwatch.Restart();
-
-                        this.Update_Game_Time((float)eventArgs.Time);
-                        this.playerController.Update_Internal(Game_Time.delta, this.inputEvent);
-                        this.activeMap.update_internal(Game_Time.delta);
-                        this.Update(Game_Time.delta);
-                        this.inputEvent.Clear();
-
-                        if(show_performance) {
-
-                            stopwatch.Stop();
-                            DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
-                        }
-                        break;
-                    default:
-                        if(show_performance)
-                            stopwatch.Restart();
-
-                        this.Update_Game_Time((float)eventArgs.Time);
-                        this.playerController.Update_Internal(Game_Time.delta, this.inputEvent);
-                        this.activeMap.update_internal(Game_Time.delta);
-                        this.Update(Game_Time.delta);
-                        this.inputEvent.Clear();
-
-                        if(show_performance) {
-
-                            stopwatch.Stop();
-                            DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
-                        }
-                        break;
+                    stopwatch.Stop();
+                    DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
                 }
             };
 
             this.window.RenderFrame += (FrameEventArgs eventArgs) => {
 
-                switch(gameState)
-                {
-                    case GameState.MainMenu:
-                        if(show_performance)
-                            stopwatch.Restart();
+                if(show_performance)
+                    stopwatch.Restart();
 
-                        this.Imgui_Render(Game_Time.delta);
+                this.window.SwapBuffers();
+                this.Internal_Render();
+                this.Imgui_Render(Game_Time.delta);
 
-                        if(show_performance) {
+                if(show_performance) {
 
-                            stopwatch.Stop();
-                            DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
-                        }
-                        break;
-                    case GameState.Playing:
-                        if(show_performance)
-                            stopwatch.Restart();
-
-                        this.window.SwapBuffers();
-                        this.Internal_Render();
-                        this.Imgui_Render(Game_Time.delta);
-
-                        if(show_performance) {
-
-                            stopwatch.Stop();
-                            DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
-                        }
-                        break;
-                    default:
-                        if(show_performance)
-                            stopwatch.Restart();
-
-                        this.window.SwapBuffers();
-                        this.Internal_Render();
-                        this.Imgui_Render(Game_Time.delta);
-
-                        if(show_performance) {
-
-                            stopwatch.Stop();
-                            DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
-                        }
-                        break;
+                    stopwatch.Stop();
+                    DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
                 }
+
             };
 
             this.window.Resize += (ResizeEventArgs eventArgs) => {
@@ -419,14 +348,11 @@ namespace Core
             if(this.show_performance)
                 this.debugDataViualizer.Draw();
 
-            if(gameState.Equals(GameState.Playing))
-            {
-                this.activeMap.Draw_Imgui();
-            }
+            this.activeMap.Draw_Imgui();
             this.Render_Imgui(deltaTime);
             this.imguiController.Render();
-            ImguI_Controller.CheckGLError("End of frame");
 
+            ImguI_Controller.CheckGLError("End of frame");
             DebugData.Reset();
         }
 

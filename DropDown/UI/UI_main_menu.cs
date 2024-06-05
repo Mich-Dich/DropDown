@@ -1,21 +1,30 @@
-namespace Core.UI {
+﻿
+namespace DropDown.UI {
 
+    using Core.UI;
     using ImGuiNET;
-    using System.Collections.Generic;
 
-    public abstract class Menu {
+    public class UI_main_menu : Menu {
 
-        private List<UIElement> elements;
-        public Action custom_UI_logic_bevor_elements { get; set; }
-        public Action custom_UI_logic_after_elements { get; set; }
+        public UI_main_menu() {
 
-        public Menu() { elements = new List<UIElement>(); }
+            //AddElement(new Background(new Vector4(0.2f, 0.7f, 0.2f, 1)));
 
-        public void AddElement(UIElement element) { elements.Add(element); }
+            custom_UI_logic_bevor_elements = () => {
 
-        public virtual void Render() {
+
+            };
+
+            custom_UI_logic_after_elements = () => { 
+            
+
+            };
+        
+        }
+
+        public override void Render() {
+
             ImGuiIOPtr io = ImGui.GetIO();
-
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
                 | ImGuiWindowFlags.NoDocking
                 | ImGuiWindowFlags.AlwaysAutoResize
@@ -30,15 +39,16 @@ namespace Core.UI {
 
             ImGui.Begin("HUD", window_flags);
 
-            custom_UI_logic_bevor_elements?.Invoke();
 
-            foreach (var element in elements)
-                element.Render();
-             
-            custom_UI_logic_after_elements?.Invoke();
+
+            ImGui.Text("slkdjfghksjdfghlkjsdfg");
+
+
 
             ImGui.End();
+
         }
+
 
     }
 }

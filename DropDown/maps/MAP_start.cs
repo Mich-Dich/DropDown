@@ -12,12 +12,11 @@ namespace DropDown {
         public override void Hit(hitData hit) {
             base.Hit(hit);
 
-            if(hit.hit_object == Game.Instance.player) {
+            ((Drop_Down)Game.Instance).set_play_state(Play_State.Playing);
 
-                Console.WriteLine($"PLAYER HIT LEVEL HOLE");
-
+            if(hit.hit_object == Game.Instance.player)
                 Game.Instance.set_active_map(new MAP_base());
-            }
+
         }
     }
 
@@ -25,14 +24,21 @@ namespace DropDown {
 
         private const int DefaultCellSize = 100;
 
-        // Initializes a new instance of the <see cref="MAP_default"/> class.
+        private enum road_direction {
+            
+            up = 0, 
+            down = 1, 
+            left = 2, 
+            right = 3,
+        }
+
         public MAP_start() {
 
             this.cellSize = DefaultCellSize;
             this.minDistancForCollision = this.cellSize * this.tileSize;
             
             Generate_Backgound_Tile(100, 100);
-            Add_Player(Game.Instance.player, new Vector2(0, -600));
+            Add_Player(Game.Instance.player, new Vector2(40, -600));
 
             // Add dungeon entrance
             Add_Sprite(
@@ -55,14 +61,42 @@ namespace DropDown {
 
 
 
-            for(int x = -10; x < 10; x++) {
+            add_road(new Vector2(-120, -600), 10, road_direction.left);
+            add_road(new Vector2(40, -760), 10, road_direction.up);
+            add_road(new Vector2(40, -440), 6, road_direction.down);
 
-                add_road_segment(new Vector2(30, -700 + (x * 80) ));
+        }
+
+        private void add_road(Vector2 start_position, int length, road_direction direction) {
+
+
+            for(int x = 0; x < length; x++) {
+
+                Vector2 offset;
+
+                switch(direction) {
+                    case road_direction.up:
+                        add_road_segment_vertical(start_position + new Vector2(0, -(x * 80)));
+                        break;
+                    case road_direction.down:
+                        add_road_segment_vertical(start_position + new Vector2(0, (x * 80)));
+                        break;
+                    case road_direction.left:
+                        add_road_segment_horicontal(start_position + new Vector2(-(x * 80), 0));
+                        break;
+                    case road_direction.right:
+                        add_road_segment_horicontal(start_position + new Vector2((x * 80), 0));
+                        break;
+                    default:
+                        offset = new Vector2(0);
+                        break;
+                }
+
             }
 
         }
 
-        private void add_road_segment(Vector2 position) {
+        private void add_road_segment_vertical(Vector2 position) {
 
             Add_Background_Sprite(
                 new Sprite(
@@ -86,6 +120,34 @@ namespace DropDown {
                     Resource_Manager.Get_Texture("assets/textures/terrain.png")).
                 Select_Texture_Region(32, 64, 2, 42),
                 position + new Vector2(80, 0),
+                false);
+
+        }
+
+        private void add_road_segment_horicontal(Vector2 position) {
+
+            Add_Background_Sprite(
+                new Sprite(
+                    new Transform(null, new Vector2(80)),
+                    Resource_Manager.Get_Texture("assets/textures/terrain.png")).
+                Select_Texture_Region(32, 64, 1, 41),
+                position + new Vector2(0, -80),
+                false);
+
+            Add_Background_Sprite(
+                new Sprite(
+                    new Transform(null, new Vector2(80)),
+                    Resource_Manager.Get_Texture("assets/textures/terrain.png")).
+                Select_Texture_Region(32, 64, 1, 42),
+                position + new Vector2(0, 0),
+                false);
+
+            Add_Background_Sprite(
+                new Sprite(
+                    new Transform(null, new Vector2(80)),
+                    Resource_Manager.Get_Texture("assets/textures/terrain.png")).
+                Select_Texture_Region(32, 64, 1, 43),
+                position + new Vector2(0, 80),
                 false);
 
         }

@@ -3,6 +3,7 @@ namespace Hell.UI
     using System.Numerics;
     using Core.UI;
     using Core.util;
+    using Hell.Levels;
 
     public class MainMenu : Menu
     {
@@ -17,12 +18,12 @@ namespace Hell.UI
             this.background = new Background(new Vector4(0.2f, 0.2f, 0.2f, 1));
 
             this.titleText = new Text(new Vector2(0, 0), "Projektarbeit", new Vector4(1, 1, 1, 1), new Vector2(100, 100));
-
+            
             this.playButton = new Button(
                 new Vector2(0, 0),
                 new Vector2(200, 50),
                 "Play",
-                () => Game.Instance.gameState = Core.GameState.Playing,
+                () => { Game.Instance.set_active_map(new MAP_base()); },
                 null,
                 new Vector4(0.2f, 0.7f, 0.2f, 1), // Normal color
                 new Vector4(0.0f, 0.8f, 0.1f, 1), // Hover color
