@@ -6,25 +6,23 @@ namespace Hell.weapon
     using Core.world;
     using OpenTK.Mathematics;
 
-    public class EnemyTestProjectile : Projectile, IReflectable, IProjectile
+    public class SniperProjectile : Projectile, IReflectable, IProjectile
     {
         private static readonly Texture Texture = new ("assets/textures/projectiles/beam/beam.png");
-        private static readonly Vector2 Size = new (32, 22);
+        private static readonly Vector2 Size = new (32, 80);
 
         public bool FiredByPlayer { get; set; } = false;
 
         private static readonly Collision_Shape Shape = Collision_Shape.Square;
-        private static readonly animation_data ProjectileAnimationData = new ("assets/animation/bolt/bolt.png", 1, 4, true, false, 8, true);
 
         public bool Reflected { get; private set; } = false;
 
-        public EnemyTestProjectile(Vector2 position, Vector2 direction)
-            : base(position, direction, Size, 350f, 5f, Shape)
+        public SniperProjectile(Vector2 position, Vector2 direction)
+            : base(position, direction, Size, 800f, 20f, Shape)
             {
             Sprite sprite = new (Texture);
             this.Set_Sprite(sprite);
             this.transform.size = Size;
-            this.set_animation(ProjectileAnimationData);
             this.SetSpriteRotation(direction);
         }
 
@@ -62,7 +60,7 @@ namespace Hell.weapon
         private void SetSpriteRotation(Vector2 direction)
         {
             float angleRadians = (float)System.Math.Atan2(direction.Y, direction.X);
-            this.sprite.transform.rotation = angleRadians + (float)System.Math.PI;
+            this.sprite.transform.rotation = angleRadians + (float)System.Math.PI + ((float)System.Math.PI / 2);
         }
     }
 }

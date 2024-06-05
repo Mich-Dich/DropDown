@@ -27,9 +27,9 @@ namespace Core.defaults {
             this.SpriteSheet = fullSpriteSheetPath;
             this.transform.size = new Vector2(this.transform.size.X * scale, this.transform.size.Y * scale);
 
-            Texture texture = new Texture(fullSpriteSheetPath);
-            Sprite sprite = new Sprite(texture);
-            SpriteBatch spriteBatch = new SpriteBatch(directoryPath);
+            Texture texture = new(fullSpriteSheetPath);
+            Sprite sprite = new(texture);
+            SpriteBatch spriteBatch = new(directoryPath);
 
             this.Animation = new Animation(sprite, spriteBatch, fps, loop);
             SetSprite(fullSpriteSheetPath);
@@ -39,13 +39,13 @@ namespace Core.defaults {
 
         public void SetSprite(string spriteSheetPath)
         {
-            Sprite sprite = new Sprite(new Texture(spriteSheetPath));
+            Sprite sprite = new(new Texture(spriteSheetPath));
             this.Set_Sprite(sprite);
         }
 
         public void set_animation(string animationDataPath, int numOfColumns, int numOfRows, int fps, bool loop) {
             if(sprite != null) {
-                Texture textureAtlas = new Texture(animationDataPath);
+                Texture textureAtlas = new(animationDataPath);
                 sprite.animation = new Animation(sprite, textureAtlas, numOfColumns, numOfRows, fps, loop);
             }
 

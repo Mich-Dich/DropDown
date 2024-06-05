@@ -7,37 +7,29 @@ namespace Hell.enemy
     using Hell.weapon;
     using OpenTK.Mathematics;
 
-    public class TankEnemy : CH_base_NPC
+    public class PullerEnemy : CH_base_NPC
     {
-        private const float StopDistance = 200f;
-        private const float PursueSpeed = 30;
+        private const float StopDistance = 450f;
+        private const float PursueSpeed = 15;
 
-        public TankEnemy()
+        private readonly Random random = new ();
+
+        public PullerEnemy()
             : base()
         {
-            this.health_max = 300;
+            this.health_max = 100;
             this.health = this.health_max;
+            this.fireDelay = 5f;
 
-            this.transform.size = new Vector2(150);
-            this.movement_speed = 10;
+            this.transform.size = new Vector2(30);
+            this.movement_speed = 12;
             this.movement_speed_max = 15;
             this.rotation_offset = float.Pi / 2;
 
-            this.damage = 5;
-            this.rayNumber = 15;
-            this.rayCastRange = 800;
-            this.rayCastAngle = float.Pi / 2;
-            this.autoDetectionRange = 100;
-            this.attackRange = 50;
-
-            this.lastShootTime = 0f;
-            this.shootInterval = 0.4f;
-            this.fireDelay = 2f;
-
-            this.attackAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
-            this.walkAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
-            this.idleAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
-            this.hitAnim = new animation_data("assets/animation/enemy/enemy-hit.png", 5, 1, true, false, 10, true);
+            this.attackAnim = new animation_data("assets/animation/enemy/Puller.png", 5, 1, true, false, 10, true);
+            this.walkAnim = new animation_data("assets/animation/enemy/Puller.png", 5, 1, true, false, 10, true);
+            this.idleAnim = new animation_data("assets/animation/enemy/Puller.png", 5, 1, true, false, 10, true);
+            this.hitAnim = new animation_data("assets/animation/enemy/Puller.png", 5, 1, true, false, 10, true);
         }
 
         public override bool IsPlayerInRange()
@@ -116,13 +108,26 @@ namespace Hell.enemy
 
         public override void Attack()
         {
+            if (Game.Instance.player == null || Game.Instance.player.IsDead)
+            {
+                return;
+            }
+
             if (Game_Time.total - this.lastFireTime >= this.fireDelay)
             {
-                Vector2 enemyLocation = this.transform.position;
-                Vector2 playerPosition = Game.Instance.player.transform.position;
-                Vector2 direction = (playerPosition - enemyLocation).Normalized();
-                Game.Instance.get_active_map().Add_Game_Object(new EnemyTestProjectile(enemyLocation, direction));
-                this.lastFireTime = Game_Time.total;
+            Vector2 playerPosition = Game.Instance.player.transform.position;
+            Vector2 enemyPosition = this.transform.position;
+
+            // Calculate the direction from the enemy to the player
+            Vector2 pullDirection = (playerPosition - enemyPosition).Normalized();
+
+            // Convert OpenTK.Mathematics.Vector2 to Box2DX.Common.Vec2
+            Box2DX.Common.Vec2 pullDirectionBox2D = new (pullDirection.X, pullDirection.Y);
+
+            // Apply a force to the player in the direction of the enemy
+            Game.Instance.player.add_force(-pullDirectionBox2D * 3000000);
+
+            this.lastFireTime = Game_Time.total;
             }
 
             this.ApplySeparation();
@@ -167,9 +172,7 @@ namespace Hell.enemy
             if (hit.hit_object is Reflect reflect && this.collider != null && this.collider.body != null)
             {
                 this.apply_damage(reflect.Damage);
-                Box2DX.Common.Vec2 direction = new (
-                    this.transform.position.X - hit.hit_position.X,
-                    this.transform.position.Y - hit.hit_position.Y);
+                Box2DX.Common.Vec2 direction = new (this.transform.position.X - hit.hit_position.X, this.transform.position.Y - hit.hit_position.Y);
                 if (this.collider != null)
                 {
                     this.collider.body.ApplyForce(direction * 100000f, this.collider.body.GetWorldCenter());

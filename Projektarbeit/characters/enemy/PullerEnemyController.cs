@@ -8,9 +8,9 @@ namespace Hell.enemy
     using Core.world;
     using OpenTK.Mathematics;
 
-    public class SniperEnemyController : AI_Controller
+    public class PullerEnemyController : AI_Controller
     {
-        public SniperEnemyController(Vector2 origin)
+        public PullerEnemyController(Vector2 origin)
             : base(new List<Character>())
         {
             this.characters = this.CreateEnemies(origin);
@@ -22,11 +22,11 @@ namespace Hell.enemy
             var enemies = new List<Character>();
             Random random = new ();
             float clusterRadius = 200f;
-            int enemyCount = random.Next(8, 12);
+            int enemyCount = random.Next(1, 6);
 
             for (int i = 0; i < enemyCount; i++)
             {
-                SniperEnemy enemy = new ();
+                PullerEnemy enemy = new ();
                 enemy.Controller = this;
 
                 float angle = (float)random.NextDouble() * MathHelper.TwoPi;

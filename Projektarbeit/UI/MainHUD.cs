@@ -1,12 +1,14 @@
-using Core.UI;
-using System.Numerics;
-using Core.util;
-using Core.render;
-using System.Collections.Generic;
-using System.Linq;
+namespace Hell.UI
+{
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Numerics;
+    using Core.render;
+    using Core.UI;
+    using Core.util;
 
-namespace Hell.UI {
-    public class MainHUD : Menu {
+    public class MainHUD : Menu
+    {
         private readonly ProgressBar healthBar;
         private readonly ProgressBar cooldownBar;
         private readonly Text scoreText;
@@ -15,97 +17,101 @@ namespace Hell.UI {
         private float cooldownProgress;
 
         private Texture powerUpTexture;
-        private List<string> abilityIcons = new List<string>();
 
-        public MainHUD() {
+        public MainHUD()
+        {
             // Create a VerticalBox
-            verticalBox = new VerticalBox(
+            this.verticalBox = new VerticalBox(
                             new Vector2(15, Game.Instance.window.Size.Y - 150),
-                            new Vector2(100, 200), 
-                            new Vector2(10, 10)
-            );
+                            new Vector2(100, 200),
+                            new Vector2(10, 10));
 
-            statusEffectsBox = new HorizontalBox(
+            this.statusEffectsBox = new HorizontalBox(
                             new Vector2(0, 0),
-                            new Vector2(100, 30), 
-                            new Vector2(10, 10)
-            );
+                            new Vector2(100, 30),
+                            new Vector2(10, 10));
 
             // Create two ProgressBars
-            healthBar = new ProgressBar(
-                new Vector2(0, 0), 
-                new Vector2(250, 15), 
-                new Vector4(0.9f, 0.2f, 0.2f, 1), 
-                new Vector4(0, 0, 0, 1), 
-                () => Game.Instance.player.HealthRatio, 
-                0, 
-                Game.Instance.player.health_max, 
-                false
-            );
+            this.healthBar = new ProgressBar(
+                new Vector2(0, 0),
+                new Vector2(250, 15),
+                new Vector4(0.9f, 0.2f, 0.2f, 1),
+                new Vector4(0, 0, 0, 1),
+                () => Game.Instance.player.HealthRatio,
+                0,
+                Game.Instance.player.health_max,
+                false);
 
-            cooldownBar = new ProgressBar(
-                new Vector2(0, 0), 
-                new Vector2(250, 15), 
-                new Vector4(0.2f, 0.2f, 0.9f, 1), 
-                new Vector4(0, 0, 0, 1), 
-                () => cooldownProgress, 
-                0, 
-                100, 
-                false
-            );
+            this.cooldownBar = new ProgressBar(
+                new Vector2(0, 0),
+                new Vector2(250, 15),
+                new Vector4(0.2f, 0.2f, 0.9f, 1),
+                new Vector4(0, 0, 0, 1),
+                () => this.cooldownProgress,
+                0,
+                100,
+                false);
 
-            scoreText = new Text(new Vector2(0, 0), "Score");
+            this.scoreText = new Text(new Vector2(0, 0), "Score");
 
             // Add ProgressBars to the VerticalBox
-            verticalBox.AddElement(statusEffectsBox);
-            verticalBox.AddElement(healthBar);
-            verticalBox.AddElement(cooldownBar);
-            verticalBox.AddElement(scoreText);
+            this.verticalBox.AddElement(this.statusEffectsBox);
+            this.verticalBox.AddElement(this.healthBar);
+            this.verticalBox.AddElement(this.cooldownBar);
+            this.verticalBox.AddElement(this.scoreText);
 
             // Add VerticalBox to the Menu
-            AddElement(verticalBox);
+            this.AddElement(this.verticalBox);
         }
 
-        public override void Render() {
+        public override void Render()
+        {
             base.Render();
-            
-            var currentTime = Game_Time.total;
-            cooldownProgress = (currentTime - Game.Instance.player.abilityLastUsedTime) / Game.Instance.player.Ability.Cooldown;
-            cooldownProgress = Math.Clamp(cooldownProgress, 0.0f, 1.0f);
 
-            scoreText.Content = $"Score: {Game.Instance.Score}";
+            var currentTime = Game_Time.total;
+            this.cooldownProgress = (currentTime - Game.Instance.player.abilityLastUsedTime) / Game.Instance.player.Ability.Cooldown;
+            this.cooldownProgress = Math.Clamp(this.cooldownProgress, 0.0f, 1.0f);
+
+            this.scoreText.Content = $"Score: {Game.Instance.Score}";
 
             var player = Game.Instance.player;
-            if (player.Ability.IconPath != null) {
+            if (player.Ability.IconPath != null)
+            {
                 var abilityTexture = Resource_Manager.Get_Texture(player.Ability.IconPath);
 
-                if (player.Ability.IsActive && abilityTexture != null) {
-                    var statusEffectImage = statusEffectsBox.GetElementByTextureId(abilityTexture.Handle);
-                    if (statusEffectImage == null) {
-                        statusEffectImage = new Image(statusEffectsBox.Position, new Vector2(30, 30), player.Ability.IconPath);
-                        statusEffectsBox.AddElement(statusEffectImage);
-                        abilityIcons.Add(player.Ability.IconPath);
+                if (player.Ability.IsActive && abilityTexture != null)
+                {
+                    var statusEffectImage = this.statusEffectsBox.GetElementByTextureId(abilityTexture.Handle);
+                    if (statusEffectImage == null)
+                    {
+                        statusEffectImage = new Image(this.statusEffectsBox.Position, new Vector2(30, 30), player.Ability.IconPath);
+                        this.statusEffectsBox.AddElement(statusEffectImage);
+                        this.abilityIcons.Add(player.Ability.IconPath);
                     }
-                } else {
-                    var statusEffectImage = statusEffectsBox.GetElementByTextureId(abilityTexture.Handle);
-                    if (statusEffectImage != null) {
-                        statusEffectsBox.RemoveElement(statusEffectImage);
-                        abilityIcons.Remove(player.Ability.IconPath);
+                }
+                else
+                {
+                    var statusEffectImage = this.statusEffectsBox.GetElementByTextureId(abilityTexture.Handle);
+                    if (statusEffectImage != null)
+                    {
+                        this.statusEffectsBox.RemoveElement(statusEffectImage);
+                        this.abilityIcons.Remove(player.Ability.IconPath);
                     }
                 }
             }
 
             foreach (var powerUp in Game.Instance.player.ActivePowerUps)
             {
-                if(powerUp.IconPath != null)
+                if (powerUp.IconPath != null)
                 {
-                    powerUpTexture = Resource_Manager.Get_Texture(powerUp.IconPath);
-                    if(powerUpTexture != null)
+                    this.powerUpTexture = Resource_Manager.Get_Texture(powerUp.IconPath);
+                    if (this.powerUpTexture != null)
                     {
-                        var statusEffectImage = statusEffectsBox.GetElementByTextureId(powerUpTexture.Handle);
-                        if (statusEffectImage == null) {
-                            statusEffectImage = new Image(statusEffectsBox.Position, new Vector2(30, 30), powerUp.IconPath);
-                            statusEffectsBox.AddElement(statusEffectImage);
+                        var statusEffectImage = this.statusEffectsBox.GetElementByTextureId(this.powerUpTexture.Handle);
+                        if (statusEffectImage == null)
+                        {
+                            statusEffectImage = new Image(this.statusEffectsBox.Position, new Vector2(30, 30), powerUp.IconPath);
+                            this.statusEffectsBox.AddElement(statusEffectImage);
                         }
                     }
                 }
@@ -113,9 +119,9 @@ namespace Hell.UI {
 
             var elementsToRemove = new List<UIElement>();
 
-            foreach (var child in statusEffectsBox.elements)
+            foreach (var child in this.statusEffectsBox.elements)
             {
-                if (child is Image image && !Game.Instance.player.ActivePowerUps.Any(p => p.IconPath == image.TexturePath) && !abilityIcons.Contains(image.TexturePath))
+                if (child is Image image && !Game.Instance.player.ActivePowerUps.Any(p => p.IconPath == image.TexturePath) && !this.abilityIcons.Contains(image.TexturePath))
                 {
                     elementsToRemove.Add(child);
                 }
@@ -123,9 +129,10 @@ namespace Hell.UI {
 
             foreach (var element in elementsToRemove)
             {
-                statusEffectsBox.RemoveElement(element);
+                this.statusEffectsBox.RemoveElement(element);
             }
-            
         }
+
+        private readonly List<string> abilityIcons = new ();
     }
 }

@@ -23,7 +23,7 @@ namespace Core.UI {
             OrganizeElements();
         }
 
-        public UIElement GetElementByTextureId(IntPtr textureId) {
+        public UIElement? GetElementByTextureId(IntPtr textureId) {
             foreach (var element in elements) {
                 if (element is Image image && image.TextureId == textureId) {
                     return image;

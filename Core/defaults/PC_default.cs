@@ -97,7 +97,7 @@ namespace Core.defaults {
 
             if((bool)interact.GetValue()) {
 
-                List<Game_Object> intersected_game_objects = new List<Game_Object>();
+                List<Game_Object> intersected_game_objects = new();
                 character.perception_check(ref intersected_game_objects, (float.Pi / 2), 16, 2, 60, true, 1.5f);
 
                 foreach(var obj in intersected_game_objects) {

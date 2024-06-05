@@ -35,7 +35,7 @@ namespace Core.render {
 
     public sealed class global_debug_drawer {
 
-        public List<debug_line> lines = new List<debug_line>();
+        public List<debug_line> lines = new();
 
         public void draw() {
 

@@ -4,7 +4,7 @@ namespace Core.UI {
     using ImGuiNET;
 
     public abstract class Menu {
-        private List<UIElement> elements;
+        private readonly List<UIElement> elements;
 
         public Menu() {
             elements = new List<UIElement>();

@@ -40,7 +40,7 @@
 
         private readonly Dictionary<string, I_state<T>> allStates = new ();
         private string currentState = string.Empty;
-        private T payload;
+        private readonly T payload;
 
         private void change_state(Type state) {
 

@@ -1,10 +1,10 @@
 namespace Hell.enemy
 {
+    using System;
     using Core;
     using Core.Controllers.ai;
     using Core.util;
     using Core.world;
-    using System;
 
     public class Retreat : I_state<AI_Controller>
     {
@@ -19,9 +19,12 @@ namespace Hell.enemy
                 {
                     npc.Retreat();
                     if (!npc.IsHealthLow())
+                    {
                         nextState = typeof(Pursue);
+                    }
                 }
             }
+
             return nextState;
         }
 
@@ -31,9 +34,10 @@ namespace Hell.enemy
             {
                 if (character is CH_base_NPC npc)
                 {
-                    npc.set_animation_from_anim_data(npc.walk_anim);
+                    npc.set_animation_from_anim_data(npc.walkAnim);
                 }
             }
+
             return true;
         }
     }

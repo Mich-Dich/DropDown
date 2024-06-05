@@ -8,7 +8,7 @@
     public class AI_Controller : I_Controller
     {
         public List<Character> characters { get; set; } = new List<Character>();
-        private state_machine<AI_Controller> state_machine;
+        private readonly state_machine<AI_Controller> state_machine;
 
         public AI_Controller(List<Character> characters)
         {

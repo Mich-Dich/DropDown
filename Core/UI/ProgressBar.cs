@@ -12,7 +12,7 @@ namespace Core.UI {
         public float MaxValue { get; set; }
         public bool ShowPercentageText { get; set; }
         private static int counter = 0;
-        private string windowName;
+        private readonly string windowName;
 
 
         public ProgressBar(Vector2 position, Vector2 size, Vector4 fillColor, Vector4 backgroundColor, Func<float> valueProvider, float minValue, float maxValue, bool showPercentageText = false, float backgroundAlpha = 1.0f)

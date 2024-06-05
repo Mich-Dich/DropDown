@@ -1,12 +1,12 @@
 namespace Hell.enemy
 {
-    using OpenTK.Mathematics;
-    using Core.render;
+    using System;
     using Core;
+    using Core.physics;
+    using Core.render;
     using Core.util;
     using Hell.weapon;
-    using Core.physics;
-    using System;
+    using OpenTK.Mathematics;
 
     public class SniperEnemy : CH_base_NPC
     {
@@ -18,31 +18,32 @@ namespace Hell.enemy
 
         private Vector2 targetPosition;
 
-        public SniperEnemy() : base()
+        public SniperEnemy()
+            : base()
         {
-            transform.size = new Vector2(40);
-            movement_speed = 10;
-            movement_speed_max = 20;
-            rotation_offset = float.Pi / 2;
+            this.transform.size = new Vector2(40);
+            this.movement_speed = 10;
+            this.movement_speed_max = 20;
+            this.rotation_offset = float.Pi / 2;
 
-            damage = 5;
-            ray_number = 15;
-            ray_cast_range = 800;
-            ray_cast_angle = float.Pi/2;
-            auto_detection_range = 100;
-            attack_range = 50;
-            DetectionRange = 8000f;
+            this.damage = 5;
+            this.rayNumber = 15;
+            this.rayCastRange = 800;
+            this.rayCastAngle = float.Pi / 2;
+            this.autoDetectionRange = 100;
+            this.attackRange = 50;
+            this.DetectionRange = 8000f;
 
-            last_shoot_time = 0f;
-            shoot_interval = 0.4f;
-            fireDelay = 10f;
+            this.lastShootTime = 0f;
+            this.shootInterval = 0.4f;
+            this.fireDelay = 10f;
 
-            attack_anim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
-            walk_anim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
-            idle_anim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
-            hit_anim = new animation_data("assets/animation/enemy/enemy-hit.png", 5, 1, true, false, 10, true);
+            this.attackAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
+            this.walkAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
+            this.idleAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
+            this.hitAnim = new animation_data("assets/animation/enemy/enemy-hit.png", 5, 1, true, false, 10, true);
 
-            targetPosition = Game.Instance.player.transform.position;
+            this.targetPosition = Game.Instance.player.transform.position;
         }
 
         public override bool IsPlayerInRange()
@@ -51,9 +52,10 @@ namespace Hell.enemy
             {
                 return false;
             }
+
             Vector2 playerPosition = Game.Instance.player.transform.position;
-            float distanceToPlayer = (playerPosition - transform.position).Length;
-            return distanceToPlayer <= DetectionRange;
+            float distanceToPlayer = (playerPosition - this.transform.position).Length;
+            return distanceToPlayer <= this.DetectionRange;
         }
 
         public override bool IsPlayerInAttackRange()
@@ -62,51 +64,51 @@ namespace Hell.enemy
             {
                 return false;
             }
+
             Vector2 playerPosition = Game.Instance.player.transform.position;
-            float distanceToPlayer = (playerPosition - transform.position).Length;
+            float distanceToPlayer = (playerPosition - this.transform.position).Length;
             return distanceToPlayer <= StopDistance;
         }
 
         public override bool IsHealthLow()
         {
-
-            return health <= health_max * 0.2;
+            return this.health <= this.health_max * 0.2;
         }
 
         public override void Move()
         {
-
-            Vector2 direction = new Vector2(0, 1);
-            Random random = new Random();
+            Vector2 direction = new (0, 1);
+            Random random = new ();
             float offset = (float)(random.NextDouble() - 0.5) * 2;
             direction += new Vector2(offset, 0);
             direction.NormalizeFast();
-            direction *= movement_speed;
-            movement_force = random.Next((int)movement_speed, (int)movement_speed_max);
-            Box2DX.Common.Vec2 velocity = new Box2DX.Common.Vec2(direction.X, direction.Y) * movement_force * Game_Time.delta;
-            if (velocity.Length() > movement_speed_max)
+            direction *= this.movement_speed;
+            this.movement_force = random.Next((int)this.movement_speed, (int)this.movement_speed_max);
+            Box2DX.Common.Vec2 velocity = new Box2DX.Common.Vec2(direction.X, direction.Y) * this.movement_force * Game_Time.delta;
+            if (velocity.Length() > this.movement_speed_max)
             {
                 velocity.Normalize();
-                velocity *= movement_speed_max;
+                velocity *= this.movement_speed_max;
             }
-            Add_Linear_Velocity(velocity);
-            rotate_to_vector_smooth(direction);
+
+            this.Add_Linear_Velocity(velocity);
+            this.rotate_to_vector_smooth(direction);
         }
 
         public override void Pursue()
         {
             Vector2 playerPosition = Game.Instance.player.transform.position;
-            Vector2 toPlayer = playerPosition - transform.position;
+            Vector2 toPlayer = playerPosition - this.transform.position;
 
             Vector2 desiredDirection = toPlayer.Normalized() * IdealDistanceFromPlayer;
-            targetPosition = playerPosition - desiredDirection;
+            this.targetPosition = playerPosition - desiredDirection;
 
-            float distanceToTarget = (targetPosition - transform.position).Length;
+            float distanceToTarget = (this.targetPosition - this.transform.position).Length;
             if (Math.Abs(distanceToTarget - IdealDistanceFromPlayer) <= DistanceTolerance)
             {
                 if (toPlayer.Length > PursueThreshold)
                 {
-                    targetPosition = playerPosition - desiredDirection;
+                    this.targetPosition = playerPosition - desiredDirection;
                 }
                 else
                 {
@@ -114,103 +116,112 @@ namespace Hell.enemy
                 }
             }
 
-            Vector2 direction = targetPosition - transform.position;
+            Vector2 direction = this.targetPosition - this.transform.position;
 
             if (direction.Length < StopDistance)
+            {
                 return;
+            }
 
             direction.NormalizeFast();
             direction *= PursueSpeed;
             Box2DX.Common.Vec2 velocity = new Box2DX.Common.Vec2(direction.X, direction.Y) * Game_Time.delta;
-            if (velocity.Length() > movement_speed_max)
+            if (velocity.Length() > this.movement_speed_max)
             {
                 velocity.Normalize();
-                velocity *= movement_speed_max;
+                velocity *= this.movement_speed_max;
             }
 
-            Add_Linear_Velocity(velocity);
-            rotate_to_vector_smooth(direction);
+            this.Add_Linear_Velocity(velocity);
+            this.rotate_to_vector_smooth(direction);
 
-            ApplySeparation();
+            this.ApplySeparation();
         }
 
         public override void Attack()
         {
-
-            if (Game_Time.total - lastFireTime >= fireDelay)
+            if (Game_Time.total - this.lastFireTime >= this.fireDelay)
             {
-
                 Vector2 enemyLocation = this.transform.position;
                 Vector2 playerPosition = Game.Instance.player.transform.position;
                 Vector2 direction = (playerPosition - enemyLocation).Normalized();
-                Game.Instance.get_active_map().Add_Game_Object(new EnemyTestProjectile(enemyLocation, direction));
-                lastFireTime = Game_Time.total;
+                Game.Instance.get_active_map().Add_Game_Object(new SniperProjectile(enemyLocation, direction));
+                this.lastFireTime = Game_Time.total;
             }
 
-            ApplySeparation();
+            this.ApplySeparation();
         }
 
         public override void Retreat()
         {
-
             Vector2 playerPosition = Game.Instance.player.transform.position;
-            Vector2 direction = transform.position - playerPosition;
+            Vector2 direction = this.transform.position - playerPosition;
             direction.NormalizeFast();
-            direction *= movement_speed;
+            direction *= this.movement_speed;
             Box2DX.Common.Vec2 velocity = new Box2DX.Common.Vec2(direction.X, direction.Y) * Game_Time.delta;
-            if (velocity.Length() > movement_speed_max)
+            if (velocity.Length() > this.movement_speed_max)
             {
                 velocity.Normalize();
-                velocity *= movement_speed_max;
+                velocity *= this.movement_speed_max;
             }
-            Add_Linear_Velocity(velocity);
-            rotate_to_vector_smooth(direction);
 
-            ApplySeparation();
+            this.Add_Linear_Velocity(velocity);
+            this.rotate_to_vector_smooth(direction);
+
+            this.ApplySeparation();
         }
 
         public override void Hit(hitData hit)
         {
-            if (hit.hit_object is TestProjectile testProjectile)
+            if (hit.hit_object is IProjectile projectile1 && projectile1.FiredByPlayer)
             {
-                this.apply_damage(testProjectile.Damage);
-                set_animation_from_anim_data(hit_anim);
+                this.apply_damage(projectile1.Damage);
+                this.set_animation_from_anim_data(this.hitAnim);
             }
-            if (hit.hit_object is EnemyTestProjectile projectile)
+
+            if (hit.hit_object is IReflectable projectile)
             {
                 if (projectile.Reflected)
                 {
                     this.apply_damage(projectile.Damage * 3);
-                    set_animation_from_anim_data(hit_anim);
+                    this.set_animation_from_anim_data(this.hitAnim);
                 }
             }
-            if (hit.hit_object is Reflect reflect && collider != null && collider.body != null) { 
+
+            if (hit.hit_object is Reflect reflect && this.collider != null && this.collider.body != null)
+            {
                 this.apply_damage(reflect.Damage);
-                Box2DX.Common.Vec2 direction = new(transform.position.X - hit.hit_position.X, transform.position.Y - hit.hit_position.Y);
-                if(collider != null)
-                    collider.body.ApplyForce(direction * 100000f, collider.body.GetWorldCenter());
-                set_animation_from_anim_data(hit_anim);
+                Box2DX.Common.Vec2 direction = new (this.transform.position.X - hit.hit_position.X, this.transform.position.Y - hit.hit_position.Y);
+                if (this.collider != null)
+                {
+                    this.collider.body.ApplyForce(direction * 100000f, this.collider.body.GetWorldCenter());
+                }
+
+                this.set_animation_from_anim_data(this.hitAnim);
             }
         }
 
         private void ApplySeparation()
         {
-            Random random = new Random();
-            float separationDistance = 80f + (float)random.NextDouble() * 30f;
-            float separationSpeed = 15f + (float)random.NextDouble() * 10f;
+            Random random = new ();
+            float separationDistance = 80f + ((float)random.NextDouble() * 30f);
+            float separationSpeed = 15f + ((float)random.NextDouble() * 10f);
             float maxSeparationForce = 80f;
 
             Vector2 totalSeparationForce = Vector2.Zero;
             int nearbyCount = 0;
 
-            foreach (var other in Controller.characters)
+            foreach (var other in this.Controller.characters)
             {
-                if (other == this) continue;
+                if (other == this)
+                {
+                    continue;
+                }
 
-                float distance = (other.transform.position - transform.position).Length;
+                float distance = (other.transform.position - this.transform.position).Length;
                 if (distance < separationDistance)
                 {
-                    Vector2 separationDirection = transform.position - other.transform.position;
+                    Vector2 separationDirection = this.transform.position - other.transform.position;
                     separationDirection.NormalizeFast();
 
                     float separationForceMagnitude = (float)Math.Exp(-distance / 20f) * maxSeparationForce;
@@ -227,7 +238,7 @@ namespace Hell.enemy
                 float jitterAngle = (float)(random.NextDouble() - 0.5f) * 0.5f;
                 totalSeparationForce = RotateVector(totalSeparationForce, jitterAngle);
 
-                Box2DX.Common.Vec2 separationVelocity = 
+                Box2DX.Common.Vec2 separationVelocity =
                     new Box2DX.Common.Vec2(totalSeparationForce.X, totalSeparationForce.Y) * Game_Time.delta;
 
                 if (separationVelocity.Length() > separationSpeed)
@@ -236,7 +247,7 @@ namespace Hell.enemy
                     separationVelocity *= separationSpeed;
                 }
 
-                Add_Linear_Velocity(separationVelocity);
+                this.Add_Linear_Velocity(separationVelocity);
             }
         }
     }

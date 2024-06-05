@@ -12,27 +12,25 @@ namespace Core.defaults {
 
         public float Speed { get; set; }
         public float Damage { get; set; }
-        public bool Bounce { get; set; }
         public Sprite Sprite { get; set; }
         public float Lifetime { get; set; } = 5f;
         public DateTime CreationTime { get; set; }
         public bool HasHit { get; set; } = false;
 
-        public Projectile(Vector2 position, Vector2 direction, Vector2 size, float speed = 10f, float damage = 1f, bool bounce = false, Collision_Shape shape = Collision_Shape.Square) : base(position, size) {
+        public Projectile(Vector2 position, Vector2 direction, Vector2 size, float speed = 10f, float damage = 1f, Collision_Shape shape = Collision_Shape.Square) : base(position, size) {
 
             if(Game.Instance == null || Game.Instance.get_active_map() == null || Game.Instance.get_active_map().physicsWorld == null)
                 throw new Exception("Game instance, active map, or physics world is not initialized");
 
             Speed = speed;
             Damage = damage;
-            Bounce = bounce;
             Add_Collider(new Collider(shape, Collision_Type.bullet, null, 1f, direction * speed));
             direction.Normalize();
             collider.velocity = direction * speed;
             Sprite = new Sprite();
             Set_Sprite(Sprite);
 
-            BodyDef def = new BodyDef();
+            BodyDef def = new();
             def.Position.Set(position.X, position.Y);
             def.AllowSleep = false;
             def.LinearDamping = 0f;

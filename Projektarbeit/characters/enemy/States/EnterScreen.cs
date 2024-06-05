@@ -1,10 +1,10 @@
 namespace Hell.enemy
 {
+    using System;
     using Core;
     using Core.Controllers.ai;
     using Core.util;
     using Core.world;
-    using System;
 
     public class EnterScreen : I_state<AI_Controller>
     {
@@ -19,7 +19,9 @@ namespace Hell.enemy
                 {
                     npc.Move();
                     if (npc.IsPlayerInRange())
+                    {
                         nextState = typeof(Pursue);
+                    }
                 }
             }
 
@@ -32,9 +34,10 @@ namespace Hell.enemy
             {
                 if (character is CH_base_NPC npc)
                 {
-                    npc.set_animation_from_anim_data(npc.idle_anim);
+                    npc.set_animation_from_anim_data(npc.idleAnim);
                 }
             }
+
             return true;
         }
     }

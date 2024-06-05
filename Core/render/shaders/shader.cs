@@ -31,8 +31,8 @@ namespace Core.render.shaders {
             if(fragStream == null)
                 throw new FileNotFoundException(fragment_shader_path);
 
-            using StreamReader vertReader = new StreamReader(vertStream);
-            using StreamReader fragReader = new StreamReader(fragStream);
+            using StreamReader vertReader = new(vertStream);
+            using StreamReader fragReader = new(fragStream);
 
             string vert_shader = vertReader.ReadToEnd();
             string frag_shader = fragReader.ReadToEnd();

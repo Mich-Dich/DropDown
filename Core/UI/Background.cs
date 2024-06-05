@@ -5,7 +5,7 @@ using Core.util;
 namespace Core.UI {
     public class Background : UIElement {
         private Vector4 color;
-        private IntPtr textureId;
+        private readonly IntPtr textureId;
 
         // Constructor for color background
         public Background(Vector4 color) : base(Vector2.Zero, new System.Numerics.Vector2(Game.Instance.window.Size.X, Game.Instance.window.Size.Y)) {

@@ -117,7 +117,7 @@ namespace Core.render {
 
         // ======================================= private =======================================
 
-        private List<animation_notification> m_animation_notificationList = new List<animation_notification>();
+        private readonly List<animation_notification> m_animation_notificationList = new();
         private int previous_frame_index = 0;
         private readonly SpriteBatch? spriteBatch;
         private readonly Texture? textureAtlas;

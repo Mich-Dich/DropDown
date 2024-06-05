@@ -1,10 +1,10 @@
 namespace Hell.enemy
 {
+    using System;
     using Core;
     using Core.Controllers.ai;
     using Core.util;
     using Core.world;
-    using System;
 
     public class Pursue : I_state<AI_Controller>
     {
@@ -19,11 +19,17 @@ namespace Hell.enemy
                 {
                     npc.Pursue();
                     if (npc.IsPlayerInAttackRange())
+                    {
                         nextState = typeof(Attack);
+                    }
+
                     if (npc.IsHealthLow())
+                    {
                         nextState = typeof(Retreat);
+                    }
                 }
             }
+
             return nextState;
         }
 
@@ -33,9 +39,10 @@ namespace Hell.enemy
             {
                 if (character is CH_base_NPC npc)
                 {
-                    npc.set_animation_from_anim_data(npc.walk_anim);
+                    npc.set_animation_from_anim_data(npc.walkAnim);
                 }
             }
+
             return true;
         }
     }

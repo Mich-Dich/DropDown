@@ -42,7 +42,7 @@ namespace Core.world {
         public float abilityLastUsedTime;
         public float fireDelay = 1.0f;
         public float lastFireTime = 0f;
-        public List<PowerUp> all_power_ups = new List<PowerUp>();
+        public List<PowerUp> all_power_ups = new();
 
         private float _health;
         private float _health_max;
@@ -246,7 +246,7 @@ namespace Core.world {
                 health += (auto_heal_amout * deltaTime);
 
             if(all_power_ups.Count >= 0) {
-                List<PowerUp> power_ups_to_remove = new List<PowerUp>();
+                List<PowerUp> power_ups_to_remove = new();
 
                 foreach(var powerup in all_power_ups) {
                     if(Game_Time.total >= powerup.ActivationTime + powerup.Duration) {
@@ -269,9 +269,9 @@ namespace Core.world {
         public float healthbar_height_of_mini_bar= 0f;
         public float healthbar_slope= 0.35f;
 
-        uint healthbar_col_default = 4291572531;         // BLUE    => 0.2f,    0.2f,   0.8f,   1f
-        uint healthbar_col_almost_dead = 4281545702;     // RED     => 0.9f,    0.2f,   0.2f,   1f
-        uint healthbar_col_background = 4278190080;      // BLACK   => 0f,      0f,     0f,     1f
+        readonly uint healthbar_col_default = 4291572531;         // BLUE    => 0.2f,    0.2f,   0.8f,   1f
+        readonly uint healthbar_col_almost_dead = 4281545702;     // RED     => 0.9f,    0.2f,   0.2f,   1f
+        readonly uint healthbar_col_background = 4278190080;      // BLACK   => 0f,      0f,     0f,     1f
 
         // ================================================== private ==================================================
 

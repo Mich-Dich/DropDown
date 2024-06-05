@@ -1,8 +1,13 @@
-using OpenTK.Mathematics;
+namespace Hell.weapon
+{
+    using OpenTK.Mathematics;
 
-namespace Hell.weapon {
-    public interface IReflectable {
-        public bool Reflected { get;}
+    public interface IReflectable
+    {
+        float Damage { get; }
+
+        public bool Reflected { get; }
+
         public void Reflect(Vector2 position);
     }
 }

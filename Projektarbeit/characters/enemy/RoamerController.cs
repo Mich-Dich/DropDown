@@ -1,23 +1,21 @@
-
-using OpenTK.Mathematics;
-using Core.Controllers.ai;
-using Core.util;
-using Core.world;
-using Hell.player;
-using System.Collections.Generic;
-using System;
-
 namespace Hell.enemy
 {
+    using System;
+    using System.Collections.Generic;
+    using Core.Controllers.ai;
+    using Core.util;
+    using Core.world;
+    using Hell.player;
+    using OpenTK.Mathematics;
     /*public class RoamerController : AI_Controller<Roamer>
     {
         public readonly float maxDistanceOffset = 80f;
 
-        public RoamerController(Roamer character) : base(new List<Roamer> { character }) 
+        public RoamerController(Roamer character) : base(new List<Roamer> { character })
         {
             Game.Instance.get_active_map().Add_Character(character, new Vector2(0, -200), 0, true);
             get_state_machine().Set_Statup_State(typeof(RRoam));
-            character.Controller = this.AsControllerOf<CH_base_NPC>() 
+            character.Controller = this.AsControllerOf<CH_base_NPC>()
                                  ?? throw new ArgumentNullException(nameof(CH_base_NPC));
         }
     }
@@ -69,7 +67,7 @@ namespace Hell.enemy
             character.set_animation_from_anim_data(character.walk_anim);
             distanceOffset = (float)random.NextDouble() * 1000 % controller.maxDistanceOffset;
             attackDelay = (float)random.NextDouble() * 2 + 1;
-            
+
             return true;
         }
 
@@ -97,11 +95,11 @@ namespace Hell.enemy
     public class RAttack : I_state<AI_Controller> {
 
         public bool enter(AI_Controller aiController) {
-            
+
             RoamerController controller = (RoamerController)aiController;
             Roamer character = (Roamer)controller.character;
             character.set_animation_from_anim_data(character.attack_anim);
-            
+
             return true;
         }
 

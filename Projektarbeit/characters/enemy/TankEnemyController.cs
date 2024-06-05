@@ -1,36 +1,37 @@
 namespace Hell.enemy
 {
+    using System;
+    using System.Collections.Generic;
     using Core;
     using Core.Controllers.ai;
     using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
-    using System;
-    using System.Collections.Generic;
 
     public class TankEnemyController : AI_Controller
     {
-        public TankEnemyController(Vector2 origin) : base(new List<Character>())
+        public TankEnemyController(Vector2 origin)
+            : base(new List<Character>())
         {
-            this.characters = CreateEnemies(origin);
-            get_state_machine().Set_Statup_State(typeof(EnterScreen)); // Assuming EnterScreen works with Character
+            this.characters = this.CreateEnemies(origin);
+            this.get_state_machine().Set_Statup_State(typeof(EnterScreen));
         }
 
         private List<Character> CreateEnemies(Vector2 origin)
         {
             var enemies = new List<Character>();
-            Random random = new Random();
+            Random random = new ();
             float clusterRadius = 200f;
             int enemyCount = random.Next(1, 6);
 
             for (int i = 0; i < enemyCount; i++)
             {
-                TankEnemy enemy = new TankEnemy();
+                TankEnemy enemy = new ();
                 enemy.Controller = this;
 
                 float angle = (float)random.NextDouble() * MathHelper.TwoPi;
                 float radius = (float)random.NextDouble() * clusterRadius;
-                Vector2 position = origin + new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * radius;
+                Vector2 position = origin + (new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * radius);
                 Game.Instance.get_active_map().Add_Character(enemy, position, 0, true);
                 enemies.Add(enemy);
 

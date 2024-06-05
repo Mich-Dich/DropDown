@@ -25,7 +25,7 @@ namespace Core.defaults {
 
             Game.Instance.get_active_map().Add_Game_Object(this);
 
-            BodyDef def = new BodyDef();
+            BodyDef def = new();
             def.Position.Set(position.X, position.Y);
             def.AllowSleep = false;
             def.LinearDamping = 0f;

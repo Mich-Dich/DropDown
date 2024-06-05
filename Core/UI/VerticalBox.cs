@@ -3,7 +3,7 @@ namespace Core.UI {
     using System.Numerics;
 
     public class VerticalBox : UIElement {
-        private List<UIElement> elements;
+        public readonly List<UIElement> elements;
         private Vector2 padding;
 
         public VerticalBox(Vector2 position, Vector2 size, Vector2 padding) : base(position, size) {
@@ -21,7 +21,7 @@ namespace Core.UI {
             OrganizeElements();
         }
 
-        public UIElement GetElementByTextureId(IntPtr textureId) {
+        public UIElement? GetElementByTextureId(IntPtr textureId) {
             foreach (var element in elements) {
                 if (element is Image image && image.TextureId == textureId) {
                     return image;

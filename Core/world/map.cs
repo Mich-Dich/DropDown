@@ -16,7 +16,7 @@ namespace Core.world {
     public class Map {
 
         public List<Game_Object> all_game_objects { get; set; } = new List<Game_Object>();
-        private List<I_Controller> all_AI_Controller = new List<I_Controller>();
+        private readonly List<I_Controller> all_AI_Controller = new();
         public List<Character> allCharacter { get; set; } = new List<Character>();
         public List<Game_Object> projectiles { get; set; } = new List<Game_Object>();
         public bool player_is_spawned { get; private set; } = false;
@@ -39,7 +39,7 @@ namespace Core.world {
 
         public bool ray_cast(Vector2 start, Vector2 end, out Vec2 normal, out float distance, out Game_Object? intersected_game_object, bool draw_debug = false, float duration_in_sec = 2.0f) {
 
-            Segment ray = new Segment
+            Segment ray = new()
             {
                 P1 = new Vec2(start.X, start.Y),
                 P2 = new Vec2(end.X, end.Y),
@@ -154,7 +154,7 @@ namespace Core.world {
             if(position != null)
                 character.transform.position = position.Value;
 
-            BodyDef def = new BodyDef();
+            BodyDef def = new();
             def.LinearDamping = 1.0f;
             def.AllowSleep = false;
             def.Angle = rotation;
@@ -167,7 +167,7 @@ namespace Core.world {
             if(character.collider != null)
                 radius = Math.Abs(character.transform.size.X / 2 + character.collider.offset.size.X / 2);
 
-            CircleDef circleDef = new CircleDef();
+            CircleDef circleDef = new();
             circleDef.Radius = radius;
             circleDef.Density = 1f;
             circleDef.Friction = 0.3f;
@@ -184,7 +184,7 @@ namespace Core.world {
                 character.collider.body = body;
             }
             else {
-                Collider newCollider = new Collider(body);
+                Collider newCollider = new(body);
                 character.Add_Collider(newCollider);
             }
 
@@ -196,7 +196,7 @@ namespace Core.world {
 
         public Game_Object add_game_object(Game_Object game_object, Vector2 position, Vector2 size) {
 
-            BodyDef def = new BodyDef();
+            BodyDef def = new();
             def.Position.Set(position.X, position.Y);
             def.AllowSleep = false;
             def.LinearDamping = 0f;
@@ -262,8 +262,6 @@ namespace Core.world {
             if(use_cellSize)
                 new_game_object.transform.size = new Vector2(cellSize);
 
-            Vector2 position_buffer;
-
             BodyDef def = new();
             def.Position.Set(position.X + collider_transform_offset.position.X, position.Y + collider_transform_offset.position.Y);
             def.AllowSleep = false;
@@ -296,7 +294,7 @@ namespace Core.world {
                 new_game_object.collider.body = body;
 
             else {
-                Collider newCollider = new Collider(body);
+                Collider newCollider = new(body);
                 new_game_object.Add_Collider(newCollider);
             }
 
@@ -572,7 +570,7 @@ namespace Core.world {
 
             physicsWorld.Step(deltaTime * 10, velocityIterations, positionIterations);
 
-            List<Character> charactersToRemove = new List<Character>();
+            List<Character> charactersToRemove = new();
 
             foreach(var character in allCharacter) {
                 character.Update_position();

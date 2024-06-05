@@ -8,11 +8,14 @@ namespace Hell.enemy
     using Core.world;
     using OpenTK.Mathematics;
 
-    public class SniperEnemyController : AI_Controller
+    public class ExplosivEnemyController : AI_Controller
     {
-        public SniperEnemyController(Vector2 origin)
+        public Vector2 Origin = new ();
+
+        public ExplosivEnemyController(Vector2 origin)
             : base(new List<Character>())
         {
+            this.Origin = origin;
             this.characters = this.CreateEnemies(origin);
             this.get_state_machine().Set_Statup_State(typeof(EnterScreen));
         }
@@ -26,9 +29,8 @@ namespace Hell.enemy
 
             for (int i = 0; i < enemyCount; i++)
             {
-                SniperEnemy enemy = new ();
+                ExplosivEnemy enemy = new ();
                 enemy.Controller = this;
-
                 float angle = (float)random.NextDouble() * MathHelper.TwoPi;
                 float radius = (float)random.NextDouble() * clusterRadius;
                 Vector2 position = origin + (new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * radius);
