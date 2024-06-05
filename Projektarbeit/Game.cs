@@ -6,12 +6,19 @@ namespace Hell {
     using Hell.UI;
     using Projektarbeit.Levels;
 
+    internal enum Play_State {
+
+        main_menu = 0,
+        Playing = 1,
+        dead = 2,
+    }
+
     internal class Game : Core.Game
     {
-        private bool isGameOver = false;
         private MainHUD mainHUD;
         private GameOver gameOver;
         private MainMenu mainMenu;
+        private Play_State play_state = Play_State.main_menu;
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) { }
@@ -20,10 +27,14 @@ namespace Hell {
         protected override void Init() {
 
             Set_Update_Frequency(144.0f);
-            //this.player = new CH_player();
+            
             this.activeMap = new MAP_main_menu();
-            //this.playerController = new PC_main(player);
+            this.player = new CH_player();
+            this.playerController = new PC_main(player);
+            
             mainMenu = new MainMenu();
+            mainHUD = new MainHUD();
+            gameOver = new GameOver();
 #if DEBUG
             Show_Performance(true);
             showDebugData(true);
@@ -34,31 +45,39 @@ namespace Hell {
         protected override void Shutdown() { }
 
         protected override void Update(float deltaTime) {
-            if (this.player.health <= 0) {
-                isGameOver = true;
-            }
+
+            if (this.player.health <= 0)
+#if true         // TEST-ONLY: Directly go to new map
+                Game.Instance.set_active_map(new MAP_base());
+#else
+                play_state = Play_State.dead;
+#endif
+
         }
 
         protected override void Render(float deltaTime) { }
 
         protected override void Render_Imgui(float deltaTime) {
 
-            if (this.get_active_map().GetType() == typeof(MAP_main_menu))
-                mainMenu.Render();
+            switch(play_state) {
 
-            if(isGameOver && this.activeMap.GetType() == typeof(MAP_base) && gameOver != null)
-                gameOver.Render();
-            else if(this.activeMap.GetType() == typeof(MAP_base) && mainHUD != null)
-                mainHUD.Render();
+                case Play_State.main_menu:
+                    mainMenu.Render();
+                    break;
+                case Play_State.Playing:
+                    mainHUD.Render();
+                    break;
+                case Play_State.dead:
+                    gameOver.Render();
+                    break;
+            }
+
         }
 
         public override void Start_Game() {
 
             this.activeMap = new MAP_base();
-            this.player = new CH_player();
-            this.playerController = new PC_main(player);
-            mainHUD = new MainHUD();
-            isGameOver = false;
+            play_state = Play_State.Playing;
         }
     }
 }

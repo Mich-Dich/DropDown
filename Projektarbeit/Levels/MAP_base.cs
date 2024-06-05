@@ -23,6 +23,8 @@
             this.timeInterval = this.random.Next(2, 4);
 
             this.Set_Background_Image("assets/textures/background/background.png", 1.18f);
+
+            Add_Player(Game.Instance.player);
         }
 
         public override void update(float deltaTime)
@@ -34,7 +36,7 @@
 
                 if (currentEnemies < maxEnemies)
                 {
-                    int enemyType = this.random.Next(0, 4);
+                    int enemyType = this.random.Next(0, 0);
                     Vector2 spawnPosition = new (this.random.Next(-250, 250), -600);
 
                     switch (enemyType)

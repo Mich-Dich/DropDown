@@ -22,35 +22,11 @@ namespace DropDown {
         private double mapGenerationDuration = 0;
         private double collisionGenerationDuration = 0;
 
-        public MAP_base()           { init(false); }
-        public MAP_base(int seed)   { init(false, seed); }
-
-
-
-        public void add_blood_splater(Vector2 position) {
-            
-            this.Add_Sprite(new Sprite(new Transform { position = position, rotation = (2*float.Pi) * random.NextSingle() }, blood_textures[random.Next(blood_textures.Length - 1)]));
-        }
-
-
-        public override void Draw_Imgui() {
-            base.Draw_Imgui();
-
-            if(!Game.Instance.showDebug)
-                return;
-
-            cellular_automata.draw_bit_map_debug_data();
-        }
-
-        // ====================================================================================================================================================================
-        // PRIVATE
-        // ====================================================================================================================================================================
-
-        private void init(bool use_seed, int seed = -1) {
+        public MAP_base(int seed = -1)   {
 
             ((Drop_Down)Game.Instance).set_play_state(Play_State.Playing);
 
-            if(use_seed)
+            if(seed != -1)
                 random = new Random(seed);
             else
                 random = new Random();
@@ -62,7 +38,6 @@ namespace DropDown {
 
             this.cellSize = 150;
             this.minDistancForCollision = (float)(this.cellSize * this.tileSize);
-
 
             cellular_automata = new Cellular_Automata();
             cellular_automata.Generate_Bit_Map();
@@ -100,6 +75,26 @@ namespace DropDown {
             Add_Player(Game.Instance.player, player_pos);
         }
 
+
+
+        public void add_blood_splater(Vector2 position) {
+            
+            this.Add_Sprite(new Sprite(new Transform { position = position, rotation = (2*float.Pi) * random.NextSingle() }, blood_textures[random.Next(blood_textures.Length - 1)]));
+        }
+
+
+        public override void Draw_Imgui() {
+            base.Draw_Imgui();
+
+            if(!Game.Instance.showDebug)
+                return;
+
+            cellular_automata.draw_bit_map_debug_data();
+        }
+
+        // ====================================================================================================================================================================
+        // PRIVATE
+        // ====================================================================================================================================================================
 
         private void Generate_Actual_Map() {
 

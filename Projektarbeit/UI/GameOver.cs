@@ -3,6 +3,7 @@ namespace Hell.UI
     using System.Numerics;
     using Core.UI;
     using Core.util;
+    using Hell.Levels;
 
     public class GameOver : Menu
     {
@@ -21,7 +22,9 @@ namespace Hell.UI
                 new Vector2(0, 0),
                 new Vector2(200, 50),
                 "Restart",
-                () => Game.Instance.Restart(),
+                () => {
+                    Game.Instance.set_active_map(new MAP_base());
+                },
                 null,
                 new Vector4(0.2f, 0.7f, 0.2f, 1), // Normal color
                 new Vector4(0.0f, 0.8f, 0.1f, 1), // Hover color
