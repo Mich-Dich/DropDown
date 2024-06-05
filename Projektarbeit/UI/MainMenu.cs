@@ -23,7 +23,7 @@ namespace Hell.UI
                 new Vector2(0, 0),
                 new Vector2(200, 50),
                 "Play",
-                () => { Game.Instance.set_active_map(new MAP_base()); },
+                () => { Game.Instance.Start_Game(); },
                 null,
                 new Vector4(0.2f, 0.7f, 0.2f, 1), // Normal color
                 new Vector4(0.0f, 0.8f, 0.1f, 1), // Hover color

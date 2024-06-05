@@ -100,6 +100,7 @@ namespace Core
 
         // ============================================================================== public ==============================================================================
         public virtual void Restart() { }
+        public virtual void Start_Game() { }
 
         public void Run() {
 

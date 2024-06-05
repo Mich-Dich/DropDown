@@ -20,11 +20,9 @@ namespace Hell {
         protected override void Init() {
 
             Set_Update_Frequency(144.0f);
-            this.player = new CH_player();
+            //this.player = new CH_player();
             this.activeMap = new MAP_main_menu();
-            this.playerController = new PC_main(player);
-            mainHUD = new MainHUD();
-            gameOver = new GameOver();
+            //this.playerController = new PC_main(player);
             mainMenu = new MainMenu();
 #if DEBUG
             Show_Performance(true);
@@ -48,11 +46,19 @@ namespace Hell {
             if (this.get_active_map().GetType() == typeof(MAP_main_menu))
                 mainMenu.Render();
 
-            if(isGameOver)
+            if(isGameOver && this.activeMap.GetType() == typeof(MAP_base) && gameOver != null)
                 gameOver.Render();
-            else 
+            else if(this.activeMap.GetType() == typeof(MAP_base) && mainHUD != null)
                 mainHUD.Render();
+        }
 
+        public override void Start_Game() {
+
+            this.activeMap = new MAP_base();
+            this.player = new CH_player();
+            this.playerController = new PC_main(player);
+            mainHUD = new MainHUD();
+            isGameOver = false;
         }
     }
 }
