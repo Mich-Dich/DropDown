@@ -2,11 +2,9 @@
 namespace DropDown {
 
     using Core;
-    using Core.render;
     using Core.util;
     using DropDown.player;
     using DropDown.UI;
-    using ImGuiNET;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
 
@@ -36,11 +34,7 @@ namespace DropDown {
             CH_player = new CH_player();
             this.playerController = new PC_Default(CH_player);
             this.player = CH_player;
-#if true
             this.activeMap = new MAP_start();
-#else
-            //this.activeMap = new MAP_base();
-#endif
 
             Set_Update_Frequency(144.0f);
             this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
@@ -49,7 +43,7 @@ namespace DropDown {
             showDebugData(true);
             this.camera.Set_min_Max_Zoom(0.03f, 1.4f);
 #endif
-            this.camera.Set_Zoom(1.4f);
+            this.camera.Set_Zoom(0.04f);
 
             main_menu = new UI_main_menu();
             HUD = new UI_HUD();

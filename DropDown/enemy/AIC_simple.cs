@@ -42,7 +42,6 @@ namespace DropDown.enemy {
             foreach (CH_base_NPC character in aiController.characters)
             {
                 character.set_animation_from_anim_data(character.death_anim);
-                Console.WriteLine($"Character: {character.GetHashCode()} has died");
             }
             return true;
         }

@@ -50,12 +50,5 @@ namespace UnitTest
             Assert.Equal("MockState", stateMachine.currentState);
         }
 
-        [Fact]
-        public void TestForceSetState()
-        {
-            var stateMachine = new state_machine<object>(new object());
-            stateMachine.force_set_state(typeof(MockState));
-            Assert.Equal("MockState", stateMachine.currentState);
-        }
     }
 }

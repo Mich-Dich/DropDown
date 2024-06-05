@@ -59,6 +59,7 @@ namespace DropDown.player {
                 new List<KeyBindingDetail> {
 
                     new(Key_Code.LeftShift, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
+                    new(Key_Code.RightShift, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
                 });
             AddInputAction(sprint);
 
@@ -102,8 +103,7 @@ namespace DropDown.player {
             // set zoom
             Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);
 
-
-            if((bool)interact.GetValue()) {
+            if ((bool)interact.GetValue()) {
 
                 List<Game_Object> intersected_game_objects = new List<Game_Object>();
                 character.perception_check(ref intersected_game_objects, (float.Pi/2),  16, 2, 60, true, 1.5f);

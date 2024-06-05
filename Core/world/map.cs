@@ -606,12 +606,16 @@ namespace Core.world {
             }
 
             update(deltaTime);
-            if (physicsWorld.GetBodyCount() > MaxPhysicsBodies) {
-                Console.WriteLine($"WARNING: Physics body count exceeded limit ({MaxPhysicsBodies}). Resetting physics world.");
 
-                if(use_garbage_collector)
+
+            if(use_garbage_collector) {
+                if(physicsWorld.GetBodyCount() > MaxPhysicsBodies) {
+
+                    Console.WriteLine($"WARNING: Physics body count exceeded limit ({MaxPhysicsBodies}). Resetting physics world.");
                     ResetPhysicsWorld();
+                }
             }
+                
         }
 
         // ========================================== private ==========================================

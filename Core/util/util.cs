@@ -102,6 +102,23 @@ namespace Core.util {
             }
             return result;
         }
+        
+        public static int Count_Number_Of_Following_Ones(byte target, int index_of_first_one) {
+
+            int count = 0;
+            byte buffer = target;
+            byte mask = 0x01; // Start with the least significant bit (LSB) mask
+            mask <<= index_of_first_one;
+            int buffer_index = index_of_first_one;
+
+            // Iterate over each bit of the byte value
+            while((buffer & mask) != 0 && buffer_index < 8) {
+                count++; // Increment the count for each '1' encountered
+                mask <<= 1; // Shift the mask to the left to check the next bit
+            }
+            return count;
+        }
+
 
     }
 
