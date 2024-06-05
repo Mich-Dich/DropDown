@@ -38,8 +38,8 @@
 
         // ------------------------------------------ private ------------------------------------------
 
-        private readonly Dictionary<string, I_state<T>> allStates = new ();
-        private string currentState = string.Empty;
+        public readonly Dictionary<string, I_state<T>> allStates = new ();
+        public string currentState = string.Empty;
         private readonly T payload;
 
         private void change_state(Type state) {
