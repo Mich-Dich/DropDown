@@ -2,6 +2,7 @@
 namespace DropDown {
 
     using Core;
+    using Core.physics;
     using Core.render;
     using Core.util;
     using Core.world;
@@ -12,6 +13,19 @@ namespace DropDown {
     using System;
     using System.Diagnostics;
 
+    internal class Drop_Hole : Game_Object {
+
+        public Action enter { get; set; }
+
+        public override void Hit(hitData hit) {
+            base.Hit(hit);
+
+            if(hit.hit_object == Game.Instance.player)
+                Game.Instance.set_active_map(new MAP_base());
+
+        }
+
+    }
     public class MAP_base : Map {
 
         private Texture[] blood_textures = new Texture[4];

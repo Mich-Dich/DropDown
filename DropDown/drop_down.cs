@@ -84,6 +84,8 @@ namespace DropDown {
 
         public void set_play_state(Play_State new_play_state) { play_state = new_play_state; }
 
-
+        public override void StartGame() {
+            throw new NotImplementedException();
+        }
     }
 }
