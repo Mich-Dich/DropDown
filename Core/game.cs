@@ -16,6 +16,13 @@ namespace Core
     using System;
     using System.Diagnostics;
 
+    public enum Play_State {
+
+        main_menu = 0,
+        Playing = 1,
+        dead = 2,
+    }
+
     public static class DebugData {
 
         public static double workTimeUpdate = 0;
@@ -57,6 +64,7 @@ namespace Core
         public Camera camera { get; set; }
         public Character player { get; set; }
         public int Score { get; set; } = 0;
+        public Play_State play_state = Play_State.main_menu;
         private global_debug_drawer global_Debug_Drawer { get; set; }
 
         protected string title { get; set; }
@@ -99,8 +107,7 @@ namespace Core
         }
 
         // ============================================================================== public ==============================================================================
-        public virtual void Restart() { }
-        public virtual void Start_Game() { }
+        public abstract void StartGame();
 
         public void Run() {
 

@@ -59,9 +59,6 @@ namespace Hell.enemy
 
         public override void Move()
         {
-
-            Console.WriteLine($"player pos: {Game.Instance.player.transform.position}");
-
             Vector2 direction = new (0, 1);
             Random random = new ();
             float offset = (float)(random.NextDouble() - 0.5) * 2;

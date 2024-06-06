@@ -18,7 +18,10 @@
 
         public CH_player()
         {
+            this.IsDead = false;
             this.transform.size = new Vector2(100);
+            this.health = 100;
+            this.auto_heal_amout = 0;
             this.Set_Sprite(new Sprite(Resource_Manager.Get_Texture("assets/textures/player/Angel-1.png")));
             this.Add_Collider(new Collider(Collision_Shape.Circle)
                 .Set_Offset(new Transform(Vector2.Zero, new Vector2(-10))));
@@ -31,62 +34,65 @@
 
         public void DisplayCooldownBar(System.Numerics.Vector2? display_size = null, System.Numerics.Vector2? pos_offset = null, System.Numerics.Vector2? padding = null, float rounding = 0.0f)
         {
-            string uniqueId = $"Helthbar_for_character_{this.GetHashCode()}";
-            if (display_size == null)
+            if(!this.IsRemoved)
             {
-                display_size = new System.Numerics.Vector2(this.CooldownBarWidth, this.CooldownBarHeight);
-            }
+                string uniqueId = $"Helthbar_for_character_{this.GetHashCode()}";
+                if (display_size == null)
+                {
+                    display_size = new System.Numerics.Vector2(this.CooldownBarWidth, this.CooldownBarHeight);
+                }
 
-            ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
-                | ImGuiWindowFlags.NoDocking
-                | ImGuiWindowFlags.AlwaysAutoResize
-                | ImGuiWindowFlags.NoSavedSettings
-                | ImGuiWindowFlags.NoFocusOnAppearing
-                | ImGuiWindowFlags.NoNav
-                | ImGuiWindowFlags.NoMove;
+                ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
+                    | ImGuiWindowFlags.NoDocking
+                    | ImGuiWindowFlags.AlwaysAutoResize
+                    | ImGuiWindowFlags.NoSavedSettings
+                    | ImGuiWindowFlags.NoFocusOnAppearing
+                    | ImGuiWindowFlags.NoNav
+                    | ImGuiWindowFlags.NoMove;
 
-            System.Numerics.Vector2 position =
-                Core.util.util.convert_Vector(Core.util.util.Convert_World_To_Screen_Coords(this.transform.position)) + (pos_offset ?? System.Numerics.Vector2.Zero);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding ?? new System.Numerics.Vector2(4));
+                System.Numerics.Vector2 position =
+                    Core.util.util.convert_Vector(Core.util.util.Convert_World_To_Screen_Coords(this.transform.position)) + (pos_offset ?? System.Numerics.Vector2.Zero);
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding ?? new System.Numerics.Vector2(4));
 
-            if (rounding != 0.0f)
-            {
-                ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, rounding);
-                ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, rounding);
-            }
+                if (rounding != 0.0f)
+                {
+                    ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, rounding);
+                    ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, rounding);
+                }
 
-            // Set the transparent color
-            this.cooldownColTransparent = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
+                // Set the transparent color
+                this.cooldownColTransparent = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
 
-            // Disable the border
-            ImGui.PushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
+                // Disable the border
+                ImGui.PushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
 
-            ImGui.SetNextWindowPos(position, ImGuiCond.Always, new System.Numerics.Vector2(0.5f));
-            ImGui.Begin(uniqueId, window_flags);
+                ImGui.SetNextWindowPos(position, ImGuiCond.Always, new System.Numerics.Vector2(0.5f));
+                ImGui.Begin(uniqueId, window_flags);
 
-            // Calculate Cooldown
-            float cooldownRemaining = Math.Max(0, this.fireDelay - (Game_Time.total - this.lastFireTime));
-            float cooldownRatio = cooldownRemaining / this.fireDelay;
+                // Calculate Cooldown
+                float cooldownRemaining = Math.Max(0, this.fireDelay - (Game_Time.total - this.lastFireTime));
+                float cooldownRatio = cooldownRemaining / this.fireDelay;
 
-            Imgui_Util.Progress_Bar_Stylised(
-                cooldownRatio,
-                display_size.Value,
-                4294944000,
-                this.cooldownColTransparent,
-                0f,
-                0f,
-                0.35f);
+                Imgui_Util.Progress_Bar_Stylised(
+                    cooldownRatio,
+                    display_size.Value,
+                    4294944000,
+                    this.cooldownColTransparent,
+                    0f,
+                    0f,
+                    0.35f);
 
-            if (cooldownRemaining > 0)
-            {
-            }
+                if (cooldownRemaining > 0)
+                {
+                }
 
-            ImGui.End();
-            ImGui.PopStyleVar();
+                ImGui.End();
+                ImGui.PopStyleVar();
 
-            if (rounding != 0.0f)
-            {
-                ImGui.PopStyleVar(2);
+                if (rounding != 0.0f)
+                {
+                    ImGui.PopStyleVar(2);
+                }
             }
         }
 

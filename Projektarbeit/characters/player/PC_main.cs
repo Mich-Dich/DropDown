@@ -8,6 +8,7 @@
     using Hell.player.ability;
     using Hell.weapon;
     using OpenTK.Mathematics;
+    using Core;
 
     internal class PC_main : Player_Controller
     {
@@ -32,8 +33,8 @@
                 {
                     character.IsDead = true;
                     character.health = 0;
-                    Game.Instance.get_active_map().Remove_Game_Object(character);
-                    Game.Instance.get_active_map().allCharacter.Remove(character);
+                    character.IsRemoved = true;
+                    Game.Instance.play_state = Play_State.dead;
                 }
             };
 
