@@ -1,33 +1,53 @@
-﻿using Core.render;
-using System.Reflection;
-namespace DropDown {
-    using Core.util;
-    using Core.world.map;
+﻿
+namespace Core.defaults
+{
+
+    using Core.render;
+    using Core.world;
+    using OpenTK.Mathematics;
+    using System.Reflection;
 
     public class MAP_default : Map {
 
+        private const int DefaultCellSize = 100;
+        private const string DefaultResourceName = "Core.defaults.textures.default_grid_bright.png";
+
+        // Initializes a new instance of the <see cref="MAP_default"/> class.
         public MAP_default() {
 
-            this.cellSize = 100;
-            this.minDistancForCollision = (float)(this.cellSize * this.tileSize);
+            init_map_settings();
             generate_grid();
         }
 
-        public void generate_grid(int size_x = 10, int size_y = 10) {
+        // Initializes the map settings.
+        private void init_map_settings() {
+            
+            this.cellSize = DefaultCellSize;
+            this.minDistancForCollision = this.cellSize * this.tileSize;
+        }
+
+        // Generates the grid with the specified dimensions.
+        public void generate_grid(int sizeX = 10, int sizeY = 10) {
+            
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "Core.defaults.textures.default_grid_bright.png";
+            using(Stream stream = assembly.GetManifestResourceStream(DefaultResourceName)) {
 
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            {
-                if (stream == null) return;
+                if(stream == null)
+                    return;
+
                 var texture = new Texture(stream);
+                AddGridSprites(texture, sizeX, sizeY);
+            }
+        }
 
-                for(int x = -(size_x/2)+1; x < (size_x / 2); x++) {
-                    for(int y = -(size_y / 2)+1; y < (size_y / 2); y++) {
-                        this.Add_Background_Sprite(
-                            new Core.world.Sprite(texture),
-                            new OpenTK.Mathematics.Vector2(x * cellSize, y * cellSize));
-                    }
+        // Adds grid sprites to the map.
+        private void AddGridSprites(Texture texture, int sizeX, int sizeY) {
+            
+            for(int x = -(sizeX / 2) + 1; x < (sizeX / 2); x++) {
+                for(int y = -(sizeY / 2) + 1; y < (sizeY / 2); y++) {
+                    var position = new Vector2(x * cellSize, y * cellSize);
+                    var sprite = new Core.world.Sprite(texture);
+                    this.Add_Background_Sprite(sprite, position);
                 }
             }
         }

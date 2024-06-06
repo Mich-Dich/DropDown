@@ -1,4 +1,2 @@
-﻿namespace Core.Defaults.AI
-{
-    using Core.Controllers.ai;
+﻿namespace Core.Defaults.AI {
 }

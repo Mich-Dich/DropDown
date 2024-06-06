@@ -1,39 +1,62 @@
-﻿namespace Hell.enemy {
-
+﻿namespace Hell.enemy
+{
+    using Core.Controllers.ai;
     using Core.physics;
     using Core.render;
     using Core.world;
     using OpenTK.Mathematics;
 
-    public abstract class CH_base_NPC : Character {
-
-        protected CH_base_NPC() {
-            Add_Collider(new Collider(Collision_Shape.Circle));
+    public abstract class CH_base_NPC : Character
+    {
+        protected CH_base_NPC()
+        {
+            this.Add_Collider(new Collider(Collision_Shape.Circle));
             this.Set_Sprite(new Sprite());
+
+            this.healthbar_slope = 0f;
+            this.healthbar_width = 50;
+            this.healthbar_height = 5;
+            this.auto_remove_on_death = true;
         }
 
         public float damage;
-        public int ray_number;
-        public float ray_cast_range;
-        public float ray_cast_angle;
-        public float auto_detection_range;
-        public float attack_range;
+        public int rayNumber;
+        public float rayCastRange;
+        public float rayCastAngle;
+        public float autoDetectionRange;
+        public float attackRange;
 
-        protected float last_shoot_time;
-        protected float shoot_interval;
+        public float DetectionRange { get; set; } = 400f;
 
-        public abstract void Move();
+        public AI_Controller Controller { get; set; }
 
-        public abstract void Attack();
+        public animation_data attackAnim;
+        public animation_data walkAnim;
+        public animation_data idleAnim;
+        public animation_data currentAnim;
+        public animation_data hitAnim;
 
-        public abstract void Die();
+        protected float lastShootTime = 0f;
+        protected float shootInterval;
 
-        public animation_data attack_anim;
-        public animation_data walk_anim;
-        public animation_data idle_anim;
+        public static Vector2 RotateVector(Vector2 v, float radians)
+        {
+            float cos = MathF.Cos(radians);
+            float sin = MathF.Sin(radians);
+            return new Vector2(
+                (v.X * cos) - (v.Y * sin),
+                (v.X * sin) + (v.Y * cos));
+        }
 
-        public void set_animation_from_anim_data(animation_data animation_data) {
-            sprite.set_animation(
+        public void set_animation_from_anim_data(animation_data animation_data)
+        {
+            if (this.currentAnim.Equals(animation_data))
+            {
+                return;
+            }
+
+            this.currentAnim = animation_data;
+            this.sprite.set_animation(
                 animation_data.path_to_texture_atlas,
                 animation_data.num_of_rows,
                 animation_data.num_of_columns,
@@ -43,7 +66,28 @@
                 animation_data.loop);
         }
 
-        public virtual void shoot_bullet_pattern() {
+        public override void draw_imgui()
+        {
+            base.draw_imgui();
+
+            if ((this.health / this.health_max) < 1 && this.health > 0)
+            {
+                this.Display_Healthbar(null, new System.Numerics.Vector2(-8, -40), new System.Numerics.Vector2(1), 5);
+            }
         }
+
+        public abstract bool IsPlayerInRange();
+
+        public abstract bool IsPlayerInAttackRange();
+
+        public abstract bool IsHealthLow();
+
+        public abstract void Move();
+
+        public abstract void Pursue();
+
+        public abstract void Attack();
+
+        public abstract void Retreat();
     }
 }

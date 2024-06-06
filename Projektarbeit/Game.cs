@@ -1,24 +1,33 @@
-﻿
-namespace Projektarbeit {
 
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Mathematics;
-    using Projektarbeit.characters.player;
+namespace Hell {
+
+    using Hell.Levels;
+    using Hell.player;
+    using Hell.UI;
     using Projektarbeit.Levels;
+    using Core;
 
-    internal class Game : Core.Game {
-
+    internal class Game : Core.Game
+    {
+        private MainHUD mainHUD;
+        private GameOver gameOver;
+        private MainMenu mainMenu;
         public Game(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) { }
-
 
         // ========================================================= functions =========================================================
         protected override void Init() {
 
             Set_Update_Frequency(144.0f);
+
+            this.activeMap = new MAP_main_menu();
             this.player = new CH_player();
+            this.player.IsRemoved = true;
             this.playerController = new PC_main(player);
-            this.activeMap = new MAP_base();
+
+            mainMenu = new MainMenu();
+            mainHUD = new MainHUD();
+            gameOver = new GameOver();
 #if DEBUG
             Show_Performance(true);
             showDebugData(true);
@@ -32,7 +41,29 @@ namespace Projektarbeit {
 
         protected override void Render(float deltaTime) { }
 
-        protected override void Render_Imgui(float deltaTime) { }
+        protected override void Render_Imgui(float deltaTime) {
 
+            switch(this.play_state) {
+
+                case Play_State.main_menu:
+                    mainMenu.Render();
+                    break;
+                case Play_State.Playing:
+                    mainHUD.Render();
+                    break;
+                case Play_State.dead:
+                    gameOver.Render();
+                    break;
+            }
+        }
+
+        public override void StartGame() {
+            this.set_active_map(new MAP_base());
+            this.play_state = Play_State.Playing;
+            this.player.health = 100;
+            this.player.IsDead = false;
+            this.player.IsRemoved = false;
+            this.Score = 0;
+        }
     }
 }

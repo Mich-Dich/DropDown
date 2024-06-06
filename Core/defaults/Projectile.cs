@@ -12,26 +12,25 @@ namespace Core.defaults {
 
         public float Speed { get; set; }
         public float Damage { get; set; }
-        public bool Bounce { get; set; }
         public Sprite Sprite { get; set; }
         public float Lifetime { get; set; } = 5f;
         public DateTime CreationTime { get; set; }
+        public bool HasHit { get; set; } = false;
 
-        public Projectile(Vector2 position, Vector2 direction, float speed = 10f, float damage = 1f, bool bounce = false, Collision_Shape shape = Collision_Shape.Square) : base(position) {
+        public Projectile(Vector2 position, Vector2 direction, Vector2 size, float speed = 10f, float damage = 1f, Collision_Shape shape = Collision_Shape.Square) : base(position, size) {
 
-            if(Game.Instance == null || Game.Instance.get_active_map() == null || Game.Instance.get_active_map().physicsWorld == null) 
+            if(Game.Instance == null || Game.Instance.get_active_map() == null || Game.Instance.get_active_map().physicsWorld == null)
                 throw new Exception("Game instance, active map, or physics world is not initialized");
 
             Speed = speed;
             Damage = damage;
-            Bounce = bounce;
             Add_Collider(new Collider(shape, Collision_Type.bullet, null, 1f, direction * speed));
             direction.Normalize();
             collider.velocity = direction * speed;
             Sprite = new Sprite();
             Set_Sprite(Sprite);
 
-            BodyDef def = new BodyDef();
+            BodyDef def = new();
             def.Position.Set(position.X, position.Y);
             def.AllowSleep = false;
             def.LinearDamping = 0f;
@@ -58,17 +57,18 @@ namespace Core.defaults {
 
         public override void Update(float deltaTime) {
             if ((DateTime.Now - CreationTime).TotalSeconds > Lifetime) {
-                Game.Instance.get_active_map().Remove_Game_Object(this);
+                if (Game.Instance != null && Game.Instance.get_active_map() != null) {
+                    Game.Instance.get_active_map().Remove_Game_Object(this); 
+
+                    if (collider != null && collider.body != null) {
+                        var world = Game.Instance.get_active_map().physicsWorld;
+                        world.DestroyBody(collider.body);
+                        collider.body = null;
+                    }
+                }
             }
         }
 
-        public override void Hit(hitData hit) {
-            if(Bounce) {
-                // Calculate reflection direction
-            }
-            else {
-                Game.Instance.get_active_map().physicsWorld.DestroyBody(collider.body);
-            }
-        }
+        public override void Hit(hitData hit) { }
     }
 }

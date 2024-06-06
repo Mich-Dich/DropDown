@@ -2,148 +2,113 @@
 namespace DropDown {
 
     using Core;
+    using Core.physics;
     using Core.render;
     using Core.util;
     using Core.world;
-    using Core.world.map;
     using DropDown.enemy;
-    using ImGuiNET;
+    using DropDown.maps;
+    using DropDown.utility;
     using OpenTK.Mathematics;
+    using System;
     using System.Diagnostics;
 
+    internal class Drop_Hole : Game_Object {
+
+        public Action enter { get; set; }
+
+        public override void Hit(hitData hit) {
+            base.Hit(hit);
+
+            if(hit.hit_object == Game.Instance.player)
+                Game.Instance.set_active_map(new MAP_base());
+
+        }
+
+    }
     public class MAP_base : Map {
 
-        public MAP_base() {
+        private Texture[] blood_textures = new Texture[4];
+        private Random random;
+        private Cellular_Automata cellular_automata;
+        private Vector2 hole_location = new Vector2();
+        private readonly Texture textureBuffer = Resource_Manager.Get_Texture("assets/textures/terrain.png");
+        private double mapGenerationDuration = 0;
+        private double collisionGenerationDuration = 0;
+
+        public MAP_base(int seed = -1)   {
+
+            ((Drop_Down)Game.Instance).set_play_state(Play_State.Playing);
+
+            if(seed != -1)
+                random = new Random(seed);
+            else
+                random = new Random();
+
+            blood_textures[0] = Resource_Manager.Get_Texture("assets/textures/blood_00.png");
+            blood_textures[1] = Resource_Manager.Get_Texture("assets/textures/blood_01.png");
+            blood_textures[2] = Resource_Manager.Get_Texture("assets/textures/blood_02.png");
+            blood_textures[3] = Resource_Manager.Get_Texture("assets/textures/blood_03.png");
 
             this.cellSize = 150;
             this.minDistancForCollision = (float)(this.cellSize * this.tileSize);
-            Generate_Bit_Map();
+
+            cellular_automata = new Cellular_Automata();
+            cellular_automata.Generate_Bit_Map();
+
             Generate_Actual_Map();
 
+            // spawn enemys
             for(int x = 0; x < 80; x++)
-                spaw_enemy();
-            for(int x = 0; x < 20; x++)
-                spaw_enemy_2();
+                spaw_enemy(typeof(CH_small_bug));
+            for(int x = 0; x < 10; x++)
+                spaw_enemy(typeof(CH_spider));
 
+            int iteration = 0;
+            bool found = false;
+            Vector2 player_pos = new Vector2();
+            while(!found && iteration < 1000) {
+
+                iteration++;
+                player_pos = cellular_automata.find_random_free_positon();
+                if((hole_location - player_pos).Length > (40 * cellSize))
+                    found = true;
+            }
+
+            //spawn random sparkel
+            //for(int x = 0; x < 50; x++) {
+            //    this.Add_Background_Sprite(
+            //        new Sprite { transform = new Transform { size = new Vector2(300) } }.set_animation("assets/animation/spell_00.png", 5, 6, true, false, 20, true),
+            //        cellular_automata.find_random_free_positon(),
+            //        false);
+            //}
+
+            //for(int x = 0; x < 1000; x++)
+            //    add_blood_splater(find_random_free_positon());
+
+            Add_Player(Game.Instance.player, player_pos);
         }
 
-        public void Generate_Map_From_Bit_Map() {
+
+
+        public void add_blood_splater(Vector2 position) {
             
+            this.Add_Sprite(new Sprite(new Transform { position = position, rotation = (2*float.Pi) * random.NextSingle() }, blood_textures[random.Next(blood_textures.Length - 1)]));
         }
+
 
         public override void Draw_Imgui() {
             base.Draw_Imgui();
 
-            Imgui_Diaplay_Level_Bit_Map();
-        }
-
-        private void Imgui_Diaplay_Level_Bit_Map() {
-
-
             if(!Game.Instance.showDebug)
                 return;
 
-            if(!ImGui.Begin("level_bit_map"))
-                return;
-
-            Imgui_Util.Title("Data for map:");
-
-            Imgui_Util.Begin_Table("bit_map_generation_data");
-            Imgui_Util.Add_Table_Row("inital density", ref initalDensity, 0.0002f, 0f, 1f);
-            Imgui_Util.Add_Table_Row("tile display size", ref tileDisplaySize, 0.1f, 3, 10);
-            Imgui_Util.Add_Table_Row("Iterations count", () => { 
-                ImGui.Text($"{iterations.Length}");
-                ImGui.SameLine();
-                if(ImGui.Button("+##add to iterations")) {
-
-                    int[] buffer = new int[iterations.Length + 1];
-                    Array.Copy(iterations, buffer, iterations.Length);
-                    buffer[buffer.Length - 1] = 4;
-                    iterations = buffer;
-                }
-                ImGui.SameLine();
-                if(ImGui.Button("-##add to iterations")) {
-
-                    int[] buffer = new int[iterations.Length - 1];
-                    Array.Copy(iterations, buffer, iterations.Length - 1);
-                    iterations = buffer;
-                }
-            } );
-            Imgui_Util.End_Table();
-
-            for (int x = 0; x < iterations.Length; x++) {
-                
-                ImGui.VSliderInt($"##int{x}", new System.Numerics.Vector2(18, 60), ref iterations[x], 0, 8);
-                ImGui.SameLine();
-            }
-            
-            if(ImGui.Button("Regenerate")) {
-                Generate_Bit_Map();
-            }
-            
-            Imgui_Util.Title("Map generated by cellular automata:");
-
-            ImDrawListPtr draw_list = ImGui.GetWindowDrawList();
-            var wondopw_pos = ImGui.GetWindowPos() + ImGui.GetCursorPos() - new System.Numerics.Vector2(0, ImGui.GetScrollY());
-            uint col_white = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.2f, 1));
-            uint col_black = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.9f, 0.9f, 1));
-
-            // display bit map
-            for(int x = 0; x < 64; x++) {
-                for(int y = 63; y >= 0 ; y--) {
-
-                    ulong currentBit = (floorLayout[x] >> y) & 1;
-
-                    draw_list.AddRectFilled(
-                        wondopw_pos + new System.Numerics.Vector2(y * tileDisplaySize, x * tileDisplaySize),
-                        wondopw_pos + new System.Numerics.Vector2((y + 1) * tileDisplaySize, (x+1) * tileDisplaySize),
-                        (currentBit == 0) ? col_black : col_white);
-                }
-            }
-
-            // display bit map
-            uint col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
-            for(int x = 1; x < 8; x++) {
-
-                // Draw X-Axis Line
-                draw_list.AddLine(
-                    wondopw_pos + new System.Numerics.Vector2(0, x * tileDisplaySize * 8),
-                    wondopw_pos + new System.Numerics.Vector2(64 * tileDisplaySize, x * tileDisplaySize * 8),
-                    col_red);
-
-                // Draw Y-Axis Line
-                draw_list.AddLine(
-                    wondopw_pos + new System.Numerics.Vector2(x * tileDisplaySize * 8, 0),
-                    wondopw_pos + new System.Numerics.Vector2(x * tileDisplaySize * 8, 64 * tileDisplaySize),
-                    col_red);
-
-            }
-
-
-            // show player position
-            draw_list.AddRectFilled(
-                wondopw_pos + new System.Numerics.Vector2(32 * tileDisplaySize, 32 * tileDisplaySize),
-                wondopw_pos + new System.Numerics.Vector2((32 + 1) * tileDisplaySize, (32 + 1) * tileDisplaySize),
-                ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.9f, 0.2f, 1)));
-
-            Imgui_Util.Shift_Cursor_Pos(0,64 * tileDisplaySize + 5);
-
-            Imgui_Util.Begin_Table("map_generation_result");
-            Imgui_Util.Add_Table_Row("Bit-map generation duration", $"{bitMapGenerationDuration} ms");
-            Imgui_Util.Add_Table_Row("convert to actual map duration", $"{mapGenerationDuration} ms");
-            Imgui_Util.Add_Table_Row("collision generation", $"{collisionGenerationDuration} ms");
-            Imgui_Util.Add_Table_Row("generation until start_pos empty", $"{bitMapGenerationIteration}");
-            Imgui_Util.Add_Table_Row("Total duration", $"{bitMapGenerationDuration + mapGenerationDuration + collisionGenerationDuration} ms");
-            Imgui_Util.End_Table();
-
-            if(ImGui.Button("Spawn Enamy"))
-                spaw_enemy();
-
-            if(ImGui.Button("Generate actual map from bit-map"))
-                Generate_Actual_Map();
-
-            ImGui.End();
+            cellular_automata.draw_bit_map_debug_data();
         }
+
+        // ====================================================================================================================================================================
+        // PRIVATE
+        // ====================================================================================================================================================================
 
         private void Generate_Actual_Map() {
 
@@ -154,40 +119,60 @@ namespace DropDown {
             Random rnd = new();
             Force_Clear_mapTiles();
             const int totalBits = sizeof(ulong) * 8;
+            Vector2 position;
             for(int x = 0; x < totalBits; x++) {
                 for(int y = 0; y < totalBits; y++) {
 
                     // Extract bits of current X
-                    ulong currentBit = (floorLayout[x] >> y) & 1;
+                    ulong currentBit = (cellular_automata.bit_map[x] >> y) & 1;
 
                     if(currentBit == 1)
                         continue;
 
-
+                    position = new Vector2((y - totalBits / 2) * this.cellSize, (x - totalBits / 2) * this.cellSize);
                     double probebilits = rnd.NextDouble();
                     if(probebilits < 0.05f) {
-                        
+
                         this.Add_Background_Sprite(
-                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, 3, 5 ),
-                            new Vector2((y - totalBits/2) * this.cellSize, (x - totalBits/2) * this.cellSize));
+                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, 3, 5),
+                            position);
                     }
 
                     else if(probebilits < 0.2f) {
 
                         this.Add_Background_Sprite(
                             new Sprite(textureBuffer).Select_Texture_Region(32, 64, 4, 5),
-                            new Vector2((y - totalBits / 2) * this.cellSize, (x - totalBits / 2) * this.cellSize));
+                            position);
                     }
                     
                     else {
 
                         this.Add_Background_Sprite(
                             new Sprite(textureBuffer).Select_Texture_Region(32, 64, 5, 5),
-                            new Vector2((y - totalBits / 2) * this.cellSize, (x - totalBits / 2) * this.cellSize));
+                            position);
                     }
 
                 }
             }
+
+
+            var Location_buffer = cellular_automata.empty_tile_location[0];
+            hole_location = new Vector2(
+                ((Location_buffer.X - 4) * cellSize * 8) + (cellSize * 4) - cellSize / 2,
+                ((Location_buffer.Y - 4) * cellSize * 8) + (cellSize * 4) - cellSize / 2);
+
+            // Add dungeon entrance
+            Add_Sprite(
+                new Sprite(
+                    new Transform(hole_location, new Vector2(cellSize * 8)),
+                    Resource_Manager.Get_Texture("assets/textures/hole.png")));
+            Add_Static_Game_Object(
+                new Drop_Hole { transform = new Transform(new Vector2(), new Vector2(cellSize * 8)) },
+                new Transform(new Vector2(50, 80), new Vector2(-(cellSize * 4))),
+                hole_location,
+                false,
+                true,
+                true);
 
             stopwatch.Stop();
             mapGenerationDuration = stopwatch.Elapsed.TotalMilliseconds;
@@ -203,7 +188,7 @@ namespace DropDown {
                         (y- (totalBits / tileSize/2)) * (this.tileSize * this.cellSize));
 
                     // Display each byte in the array as a binary string
-                    byte[] current_tile = Get8x8_Block(x, y);
+                    byte[] current_tile = cellular_automata.Get8x8_Block(x, y);
                     for(int z = 0; z < current_tile.Length; z++) {
 
                         // repeat untill all bit are 0 in this byte (auto skips empty bytes)
@@ -221,7 +206,7 @@ namespace DropDown {
                                     continue;
 
                                 firstOneIndex = i;
-                                column_counter = Count_Number_Of_Following_Ones(buffer, firstOneIndex);
+                                column_counter = util.Count_Number_Of_Following_Ones(buffer, firstOneIndex);
                                 break;
                             }
                             
@@ -232,7 +217,7 @@ namespace DropDown {
                                 if(z + 1 > 7)
                                     break;
                                 
-                                questionable_count = Count_Number_Of_Following_Ones(current_tile[z + row_counter], firstOneIndex);
+                                questionable_count = util.Count_Number_Of_Following_Ones(current_tile[z + row_counter], firstOneIndex);
                                 if(questionable_count < column_counter)
                                     break;
 
@@ -254,16 +239,12 @@ namespace DropDown {
                                     new Vector2(column_counter * this.cellSize, row_counter * this.cellSize))
                                 ,false);
 
-                            //this.Add_Static_Game_Object(
-                            //    new Game_Object(
-                            //        null,
-                            //        new Vector2(column_counter * this.cell_size, row_counter * this.cell_size))
-                            //            .Add_Collider(new Collider(collision_shape.Square)),
-                            //    new Vector2((column_counter * this.cell_size) / 2, (row_counter * this.cell_size) / 2) + tile_offset + collider_tile_offset,
-                            //    false);
-
                             // --------------- set used values to 0 --------------- 
-                            byte reset_mask = SetBits(firstOneIndex, column_counter);
+                            byte reset_mask = 0;
+                            byte mask = (byte)((1 << column_counter) - 1);      // Creates a sequence of 'count' ones
+                            mask <<= firstOneIndex;                             // Shift the mask to the left by 'start_index' positions
+                            reset_mask |= mask;
+
                             for(int i = 0; i < row_counter; i++) 
                                 current_tile[z + i] = (byte)(current_tile[z + i] & ~reset_mask);
 
@@ -276,255 +257,22 @@ namespace DropDown {
             collisionGenerationDuration = stopwatch.Elapsed.TotalMilliseconds;
         }
 
-        public void spaw_enemy() {
 
-            Random random = new Random();
+        private void spaw_enemy(Type enemy_type)  {
 
-            bool found = false;
-            int offset_y = 0, offset_x = 0;
+            if (!typeof(CH_base_NPC).IsAssignableFrom(enemy_type))
+                throw new InvalidOperationException($"Type [{enemy_type.Name}] does not implement [I_state] interface.");
 
-            while(!found) {
+            List<Character> newEnemies = new List<Character>();
+            CH_base_NPC newEnemy = (CH_base_NPC)Activator.CreateInstance(enemy_type);
+            newEnemies.Add(newEnemy);
 
-                offset_y = random.Next(64);
-                offset_x = random.Next(64);
-                found = is_coord_in_bit_map_free(offset_x, offset_y);
-            }
+            this.add_AI_Controller(new AIC_simple(newEnemies));
 
-            this.Add_Character(new AIC_simple(new CH_small_bug()),
-                new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
-                random.NextSingle() * (float.Pi * 2));
-
-        }
-
-        public void spaw_enemy_2() {
-
-            Random random = new Random();
-
-            bool found = false;
-            int offset_y = 0, offset_x = 0;
-
-            while(!found) {
-
-                offset_y = random.Next(64);
-                offset_x = random.Next(64);
-                found = is_coord_in_bit_map_free(offset_x, offset_y);
-            }
-
-            this.Add_Character(new AIC_simple(new CH_spider()),
-                new Vector2((offset_x - 32) * this.cellSize, (offset_y - 32) * this.cellSize),
-                random.NextSingle() * (float.Pi * 2));
-
+            Add_Character(newEnemy, cellular_automata.find_random_free_positon(), random.NextSingle() * (float.Pi * 2));
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        private static byte SetBits(int start_index, int count) {
-
-            byte result = 0;
-            byte mask = (byte)((1 << count) - 1);   // Creates a sequence of 'count' ones
-            mask <<= start_index;                   // Shift the mask to the left by 'start_index' positions
-            result |= mask;
-
-            return result;
-        }
-
-        private int Count_Number_Of_Following_Ones(byte target, int index_of_first_one) {
-
-            int count = 0;
-            byte buffer = target;
-            byte mask = 0x01; // Start with the least significant bit (LSB) mask
-            mask <<= index_of_first_one;
-            int buffer_index = index_of_first_one;
-
-            // Iterate over each bit of the byte value
-            while((buffer & mask) != 0 && buffer_index < 8) {
-                count++; // Increment the count for each '1' encountered
-                mask <<= 1; // Shift the mask to the left to check the next bit
-            }
-            return count;
-        }
-
-        private byte[] Get8x8_Block(int tile_index_x, int tile_index_y) {
-
-            const int loc_tileSize = 8;
-            const int totalBits = sizeof(ulong) * 8;
-            if(tile_index_x < 0 || tile_index_x > (totalBits/loc_tileSize) || tile_index_y < 0 || tile_index_y > (totalBits/loc_tileSize)) 
-                throw new ArgumentException("Invalid startRow or startCol for extracting 8x8 block.");
-
-            // Iterate over the rows of the 8x8 block
-            ulong int_buffer = 0;
-            byte[] block = new byte[8];
-            for(int x = 0; x < 8; x++) {
-
-                int_buffer = floorLayout[(tile_index_y*loc_tileSize) + x];
-                block[x] = (byte)((int_buffer >> (tile_index_x * 8)) & 0xFF);
-            }
-
-            return block;
-        }
-
-
-        private void Generate_Bit_Map() {
-
-            Stopwatch stopwatch = new();
-            stopwatch.Start();
-            bitMapGenerationIteration = 0;
-
-            bool found = false;
-            while(found == false && bitMapGenerationIteration < 1000) {
-
-                // Call the method or perform the process you want to measure
-                Generate_Random_64x64_Bit_Map();
-                for(int x = 0; x < iterations.Length; x++) {
-
-                    //Console.WriteLine($"ITERATION: {x}");
-                    Iterate_Over_Bit_Map(iterations[x]);
-                }
-
-                found = is_coord_in_bit_map_free(32, 32);
-                bitMapGenerationIteration++;
-                Console.WriteLine($"player loc is empty: {found}");
-            }
-
-            stopwatch.Stop();
-            bitMapGenerationDuration = stopwatch.Elapsed.TotalMilliseconds;
-
-        }
-
-        private bool is_coord_in_bit_map_free(int x, int y) { return (floorLayout[y] & (UInt64)1 << x) == 0; }
-
-        private void Generate_Random_64x64_Bit_Map() {
-
-            for(int x = 0; x < 64; x++) {
-
-                floorLayout[x] = generate_random_UInt64_with_density(initalDensity);
-            }
-
-        }
-
-        private void Iterate_Over_Bit_Map(int threshhold = 4) {
-
-            floorLayoutBuffer = new ulong[64];
-
-            // Determine the number of bits in UInt64 (64 bits)
-            const int totalBits = sizeof(ulong) * 8;
-
-            for(int x = 0;x < totalBits;x++) {
-
-                // Loop through each bit position
-                for(int y = totalBits - 1; y >= 0; y--) {
-
-                    // Extract bits of current X
-                    ulong currentBit = (floorLayout[x] >> y) & 1;
-                    ulong previousBit = (y > 0) ? ((floorLayout[x] >> (y - 1)) & 1) : 1;
-                    ulong nextBit = (y < totalBits - 1) ? ((floorLayout[x] >> (y + 1)) & 1) : 1;
-                    uint combinedBits = (uint)((nextBit << 2) | (currentBit << 1) | previousBit);
-
-                    // Extract bits of u64 one above X
-                    ulong upper_buffer = ((x - 1) < 0)? ulong.MaxValue: floorLayout[x - 1];
-                    ulong upper_currentBit = (upper_buffer >> y) & 1;
-                    ulong upper_previousBit = (y > 0) ? ((upper_buffer >> (y - 1)) & 1) : 1;
-                    ulong upper_nextBit = (y < totalBits - 1) ? ((upper_buffer >> (y + 1)) & 1) : 1;
-                    uint upper_combinedBits = (uint)((upper_nextBit << 2) | (upper_currentBit << 1) | upper_previousBit);
-
-                    // Extract bits of u64 one below X
-                    ulong lower_buffer = ((x + 1) > totalBits-1)? ulong.MaxValue: floorLayout[x + 1];
-                    ulong lower_currentBit = (lower_buffer >> y) & 1;
-                    ulong lower_previousBit = (y > 0) ? ((lower_buffer >> (y - 1)) & 1) : 1;
-                    ulong lower_nextBit = (y < totalBits - 1) ? ((lower_buffer >> (y + 1)) & 1) : 1;
-                    uint lower_combinedBits = (uint)((lower_nextBit << 2) | (lower_currentBit << 1) | lower_previousBit);
-
-                    int count = Count_Ones_Exclude_Middle(combinedBits) + Count_Ones(upper_combinedBits) + Count_Ones(lower_combinedBits);
-
-                    if(count >= threshhold) {
-
-                        ulong mask = (ulong)1 << y; // Calculate the mask based on MSB index (63 - bitIndex)
-                        floorLayoutBuffer[x] |= mask;
-                    }
-                }
-            }
-            floorLayout = floorLayoutBuffer;
-        }
-
-        // imgui Window
-        private float tileDisplaySize = 4.5f;
-        private double bitMapGenerationDuration = 0;
-        private double bitMapGenerationIteration = 0;
-        private double mapGenerationDuration = 0;
-        private double collisionGenerationDuration = 0;
-
-        private float initalDensity = 0.37f;
-        private int[] iterations = new int[] {4,4,4,4,4};
-        private ulong[] floorLayoutBuffer = new ulong[64];
-        private ulong[] floorLayout = new ulong[64];
-        private readonly Texture textureBuffer = Resource_Manager.Get_Texture("assets/textures/terrain.png");
-
-        private void Log_U64(ulong number) {
-
-            string binaryRepresentation = Convert.ToString((long)number, 2).PadLeft(64, '0');
-
-            // Replace '0' with ' ' and '1' with 'X'
-            char[] binaryChars = binaryRepresentation.Select(c => c == '0' ? ' ' : 'X').ToArray();
-            string formattedBinary = new(binaryChars);
-
-            Console.WriteLine($"Map: |{formattedBinary}|");
-        }
-
-
-        // Function to count the number of '1's in a 3-bit number
-        private static int Count_Ones(uint num) {
-
-            int count = 0;
-            for(int i = 0; i < 3; i++) {
-                if((num & (1 << i)) != 0)
-                    count++;
-            }
-            return count;
-        }
-
-        // Function to count the number of '1's in the leftmost and rightmost bits of a 3-bit number
-        private static int Count_Ones_Exclude_Middle(uint num) {
-
-            int count = 0;
-            for(int i = 0; i <= 2; i += 2) {
-                if((num & (1 << i)) != 0) 
-                    count++;
-            }
-            return count;
-        }
-
-        // Function to generate a UInt64 value with specified density of bits flipped
-        private static ulong generate_random_UInt64_with_density(double density) {
-
-            Random random = new();
-            ulong result = 0;
-            for(int i = 0; i < 64; i++) {
-            
-                double randomValue = random.NextDouble();
-                if(randomValue < density)
-                    result |= (ulong)1 << i;
-            }
-            return result;
-        }
 
     }
 }

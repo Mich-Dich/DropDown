@@ -13,7 +13,7 @@ namespace Core.render.buffer {
         public int get_stride() => stride;
 
         public Buffer_Layout add<T>(int count, bool normalized = false) where T : struct {
-        
+
             if(!typemap.TryGetValue(typeof(T), out var vertex_type))
                 throw new NotSupportedException($"type {typeof(T)} is not supported.");
 
@@ -26,7 +26,7 @@ namespace Core.render.buffer {
         private readonly List<Buffer_Element> elements = new ();
         private readonly Dictionary<Type, VertexAttribPointerType> typemap =
             new () {
-                
+
                 { typeof(byte), VertexAttribPointerType.UnsignedByte },
                 { typeof(sbyte), VertexAttribPointerType.Byte },
                 { typeof(short), VertexAttribPointerType.Short },

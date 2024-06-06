@@ -31,8 +31,8 @@ namespace Core.render.shaders {
             if(fragStream == null)
                 throw new FileNotFoundException(fragment_shader_path);
 
-            using StreamReader vertReader = new StreamReader(vertStream);
-            using StreamReader fragReader = new StreamReader(fragStream);
+            using StreamReader vertReader = new(vertStream);
+            using StreamReader fragReader = new(fragStream);
 
             string vert_shader = vertReader.ReadToEnd();
             string frag_shader = fragReader.ReadToEnd();
@@ -134,10 +134,10 @@ namespace Core.render.shaders {
                 mat.M41, mat.M42, mat.M43, mat.M44,
             };
         }
-        
+
         public int GetAttribLocation(string attribName) { return GL.GetAttribLocation(this.programmId, attribName); }
 
-        public void Dispose() { GL.DeleteProgram(this.programmId);}
+        public void Dispose() { GL.DeleteProgram(this.programmId); }
 
         public void Unbind() { GL.UseProgram(0); }
 

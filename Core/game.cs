@@ -1,21 +1,27 @@
 
-namespace Core {
+namespace Core
+{
 
-    using System;
-    using System.Diagnostics;
     using Core.Controllers.player;
     using Core.defaults;
     using Core.render;
     using Core.render.shaders;
     using Core.util;
     using Core.world;
-    using Core.world.map;
-    using DropDown;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using OpenTK.Windowing.Common;
     using OpenTK.Windowing.Desktop;
     using OpenTK.Windowing.GraphicsLibraryFramework;
+    using System;
+    using System.Diagnostics;
+
+    public enum Play_State {
+
+        main_menu = 0,
+        Playing = 1,
+        dead = 2,
+    }
 
     public static class DebugData {
 
@@ -34,16 +40,13 @@ namespace Core {
         public static int debug_circle = 0;
         public static int debug_rectangle = 0;
 
-        // public DebugData() {}
         public static void Reset() {
-        
+
             workTimeUpdate = 0;
             workTimeRender = 0;
             spriteDrawCallsNum = 0;
             numOfTielsDisplayed = 0;
             playingAnimationNum = 0;
-            colidableObjectsStatic = 0;
-            colidableObjectsDynamic = 0;
             debug_lines = 0;
             debug_circle = 0;
             debug_rectangle = 0;
@@ -60,14 +63,18 @@ namespace Core {
         public GameWindow window { get; private set; }
         public Camera camera { get; set; }
         public Character player { get; set; }
+        public int Score { get; set; } = 0;
+        public Play_State play_state = Play_State.main_menu;
         private global_debug_drawer global_Debug_Drawer { get; set; }
 
         protected string title { get; set; }
         protected int initalWindowWidth { get; set; }
         protected int initalWindowHeight { get; set; }
-        protected Player_Controller playerController { get; set; }
+        public Player_Controller playerController { get; set; }
         protected Map activeMap { get; set; }
+
         public Map get_active_map() { return activeMap; }
+        public void set_active_map(Map new_map) { activeMap = new_map; }
 
         protected List<InputEvent> inputEvent { get; } = new List<InputEvent>();
 
@@ -79,8 +86,8 @@ namespace Core {
         public Debug_Drawer Debug_Drawer;
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight) {
-        
-            if(Instance != null) 
+
+            if(Instance != null)
                 throw new Exception("You can only create one instance of Game!");
 
             Instance = this;
@@ -100,6 +107,8 @@ namespace Core {
         }
 
         // ============================================================================== public ==============================================================================
+        public abstract void StartGame();
+
         public void Run() {
 
             this.window = new GameWindow(this.gameWindowSettings, this.nativeWindowSettings);
@@ -113,17 +122,17 @@ namespace Core {
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
                 this.defaultSpriteShader = new("Core.defaults.shaders.texture_vert.glsl", "Core.defaults.shaders.texture_frag.glsl", true);
                 this.defaultSpriteShader.Use();
-                this.camera = new(Vector2.Zero, this.window.Size, 0.5f);
+
+                this.activeMap = new MAP_default();
+                this.camera = new Camera(Vector2.Zero, this.window.Size, 0.5f);
                 this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
                 this.camera.Set_Zoom(5.0f);
+                this.InitImGuiController();
 
                 this.Init();
-
+                
                 // ----------------------------------- check for null values -----------------------------------
-                if(this.activeMap == null)
-                    this.activeMap = new MAP_default();
-
-                if(this.player == null) 
+                if(this.player == null)
                     this.player = new CH_default_player();
 
                 if(this.playerController == null)
@@ -132,14 +141,13 @@ namespace Core {
 
                 // ----------------------------------- finish setup -----------------------------------
                 this.playerController.character = this.player;
-                this.activeMap.Add_empty_Character(this.player);
-
-                this.InitImGuiController();
+                if(!this.activeMap.player_is_spawned)
+                    this.activeMap.Add_Character(this.player);
                 this.window.IsVisible = true;
             };
 
             this.window.Unload += () => {
-                
+
                 // kill OpenGL
                 GL.BindVertexArray(0);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -181,6 +189,7 @@ namespace Core {
                     stopwatch.Stop();
                     DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
                 }
+
             };
 
             this.window.Resize += (ResizeEventArgs eventArgs) => {
@@ -215,7 +224,7 @@ namespace Core {
 
                 if(show_performance)
                     stopwatch.Restart();
-                
+
                 this.Update_Game_Time((float)this.window.TimeSinceLastUpdate());
                 this.window.ResetTimeSinceLastUpdate();
 
@@ -223,7 +232,7 @@ namespace Core {
                 this.activeMap.update_internal(Game_Time.delta);
                 this.Update(Game_Time.delta);
                 this.inputEvent.Clear();
-                
+
                 if(show_performance) {
 
                     stopwatch.Stop();
@@ -251,16 +260,16 @@ namespace Core {
             // make two events for X/Y of mouse wheel movement
             this.window.MouseWheel += (MouseWheelEventArgs args) => {
 
-                if(args.OffsetX != 0) 
+                if(args.OffsetX != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.MouseWheelX, (KeyModifiers)0, (int)args.Offset.X, KeyState.Repeat));
 
-                if(args.OffsetY != 0) 
+                if(args.OffsetY != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.MouseWheelY, (KeyModifiers)0, (int)args.Offset.Y, KeyState.Repeat));
             };
 
             // make two events for X/Y of mouse movement
             this.window.MouseMove += (MouseMoveEventArgs args) => {
-                
+
                 if(args.DeltaX != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.CursorPositionX, (KeyModifiers)0, (int)args.X, KeyState.Repeat));
 
@@ -344,14 +353,14 @@ namespace Core {
 
             this.imguiController.Update(this.window, (float)Game_Time.delta);
 
-            if(this.show_performance) 
+            if(this.show_performance)
                 this.debugDataViualizer.Draw();
 
             this.activeMap.Draw_Imgui();
             this.Render_Imgui(deltaTime);
             this.imguiController.Render();
-            ImguI_Controller.CheckGLError("End of frame");
 
+            ImguI_Controller.CheckGLError("End of frame");
             DebugData.Reset();
         }
 
@@ -365,5 +374,6 @@ namespace Core {
             // Instanciate the ImGuiController with the right Scale Factor
             this.imguiController = new ImguI_Controller(this.window.ClientSize.X, this.window.ClientSize.Y, scaleFactorX, scaleFactorY);
         }
+        
     }
 }

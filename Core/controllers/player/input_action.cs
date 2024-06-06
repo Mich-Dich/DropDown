@@ -50,17 +50,6 @@ namespace Core.Controllers.player {
                     throw new InvalidOperationException("Unsupported Action type.");
             }
         }
-
-        // ======================================= private =======================================
-        private bool isTriggered { get; set; } = false;
-        private TimeSpan triggerTime { get; set; } = TimeSpan.Zero;       // time_stamp  of moment this Action was last triggered
-
-        // the input system is Event based, meaning wi calculate the target value of this Action only once (when an event changes it)
-        // but If we want to change the value gradualy (with durationInSec) we need to know that the target should be and in waht direction to change the payload calue
-        private bool targetBoolean { get; set; } = false;
-        private float targetVec1D { get; set; } = 0;
-        private Vector2 targetVec2D { get; set; } = default(Vector2);
-        private Vector3 targetVec3D { get; set; } = default(Vector3);
     }
 
     // ----------------------- data -----------------------

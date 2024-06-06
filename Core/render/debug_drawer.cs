@@ -8,7 +8,7 @@ namespace Core.render {
     using OpenTK.Mathematics;
 
     public enum DebugColor {
-        
+
         Red,
         Green,
         Blue,
@@ -35,11 +35,11 @@ namespace Core.render {
 
     public sealed class global_debug_drawer {
 
-        public List<debug_line> lines = new List<debug_line>();
+        public List<debug_line> lines = new();
 
         public void draw() {
 
-            if(Game.Instance.show_performance) 
+            if(Game.Instance.show_performance)
                 DebugData.debug_lines = lines.Count;
 
             basic_drawer.debugShader.Use();
@@ -66,7 +66,7 @@ namespace Core.render {
                         break;
                 }
                 basic_drawer.debugShader.Set_Uniform("color", color);
-            
+
                 draw_line(line.start, line.end);
             }
 
@@ -105,7 +105,7 @@ namespace Core.render {
 
         // ================================================================= public =================================================================
         public void Draw_Collision_Shape(Transform transform, Collider collider, DebugColor debugColor) {
-            
+
             // Console.WriteLine("Drawing collision shape");
             this.DebugColor = debugColor;
             this.debugShader.Use();

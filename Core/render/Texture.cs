@@ -1,6 +1,6 @@
 ﻿
 namespace Core.render {
-    
+
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using StbImageSharp;
@@ -51,6 +51,7 @@ namespace Core.render {
         }
 
         public Texture(Stream stream, bool isPixelArt = false) {
+
             IsPixelArt = isPixelArt;
             Handle = GL.GenTexture();
             StbImage.stbi_set_flip_vertically_on_load(1);

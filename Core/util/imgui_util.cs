@@ -7,7 +7,7 @@ namespace Core.util {
 
         public static void Begin_Table(string label, bool display_lable = false) {
 
-            if(display_lable) 
+            if(display_lable)
                 ImGui.Text(label);
 
             ImGuiTableFlags flags = ImGuiTableFlags.Resizable;
@@ -17,12 +17,12 @@ namespace Core.util {
         }
 
         public static void End_Table() {
-            
+
             ImGui.EndTable();
         }
 
         public static void Add_Table_Row(string label, string value) {
-            
+
             ImGui.TableNextRow();
             ImGui.TableSetColumnIndex(0);
             ImGui.Text(label);
@@ -61,11 +61,11 @@ namespace Core.util {
 
             ImGui.TableNextRow();
             ImGui.TableSetColumnIndex(0);
-            for(int x = 0; x < amout; x++) 
+            for(int x = 0; x < amout; x++)
                 ImGui.Spacing();
 
             ImGui.TableSetColumnIndex(1);
-            for(int x = 0; x < amout; x++) 
+            for(int x = 0; x < amout; x++)
                 ImGui.Spacing();
         }
 
@@ -76,9 +76,9 @@ namespace Core.util {
 
         public static void Title(string label, bool giant = false) {
 
-            if(giant) 
+            if(giant)
                 ImGui.PushFont(Imgui_Fonts.fonts["giant"]);
-            else 
+            else
                 ImGui.PushFont(Imgui_Fonts.fonts["regular_big"]);
 
             ImGui.Text(label);

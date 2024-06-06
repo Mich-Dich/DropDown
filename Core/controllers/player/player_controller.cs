@@ -2,7 +2,8 @@
     using Core.world;
     using OpenTK.Mathematics;
 
-    public abstract class Player_Controller : I_Controller {
+    public abstract class Player_Controller {
+
         public Character character { get; set; }
 
         // public character character { get; set; }
@@ -114,7 +115,7 @@
                         switch(loc_action.ActionType) {
                             case ActionType.BOOL:
                             case ActionType.VEC_1D:
-                            loc_action.X = payloadBuffer;
+                                loc_action.X = payloadBuffer;
 
                             break;
 
@@ -123,7 +124,7 @@
                                     loc_action.Y = payloadBuffer;
                                 else
                                     loc_action.X = payloadBuffer;
-                            }
+                            } 
                             break;
 
                             case ActionType.VEC_3D: {
@@ -149,8 +150,6 @@
                                 Vector2 buffer = (Vector2)loc_action.GetValue();
                                 if(buffer.Length <= 1)
                                     break;
-
-                                Console.WriteLine($"length: {buffer.Length}");
 
                                 buffer.Normalize();
                                 loc_action.X = buffer.X;
@@ -262,7 +261,7 @@
                         switch(loc_action.ActionType) {
                             case ActionType.BOOL:
                             case ActionType.VEC_1D:
-                            loc_action.X = 0;
+                                loc_action.X = 0;
                             break;
 
                             case ActionType.VEC_2D: {

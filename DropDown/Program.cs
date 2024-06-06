@@ -6,7 +6,7 @@ namespace DropDown {
 
         private static void Main(string[] args) {
 
-            Game game = new Drop_Down("Texture_test", 1600, 920);
+            Game game = new Drop_Down("Drop Down", 1600, 920);
             game.Run();
         }
     }

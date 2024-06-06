@@ -1,10 +1,6 @@
-﻿
-namespace Core.Controllers {
-
-    using Core.world;
+﻿namespace Core.controllers {
 
     public interface I_Controller {
-
-        Character character { get; set; }
+        public void Update(float delta_time);
     }
 }

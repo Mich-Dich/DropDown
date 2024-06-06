@@ -8,6 +8,8 @@ namespace DropDown.enemy {
 
     public class CH_base_NPC : Character{
 
+        public uint XP = 0;
+
         public CH_base_NPC() {
 
             transform.size = new Vector2(80);
@@ -17,24 +19,16 @@ namespace DropDown.enemy {
             rotation_offset = float.Pi/2;
 
             Add_Collider(new Collider(Collision_Shape.Circle));
-
             this.Set_Sprite(new Sprite());
-
         }
 
         public override void draw_imgui() {
             base.draw_imgui();
 
             if((health / health_max) < 1 && health > 0)
-                Display_Healthbar();
+                Display_Healthbar(null, new System.Numerics.Vector2(-7, 15));
         }
 
-        public override void Hit(hitData hit) {
-            health -= hit.hit_force;
-
-            base.Hit(hit);
-        }
-        
         public float damage = 15;
         public int ray_number = 15;
         public float ray_cast_range = 800;

@@ -82,7 +82,7 @@ namespace Core.world {
         public Sprite set_animation(string path_to_directory, bool start_playing = false, bool is_pixel_art = false, int fps = 30, bool loop = false) {
 
             animation = new Animation(this, new SpriteBatch(path_to_directory, is_pixel_art), fps, loop);
-            if (start_playing)
+            if(start_playing)
                 animation.Play();
 
             return this;
@@ -91,7 +91,7 @@ namespace Core.world {
         public Sprite set_animation(string path_to_texture_atlas, int num_of_rows, int num_of_columns, bool start_playing = false, bool is_pixel_art = false, int fps = 30, bool loop = false) {
 
             animation = new Animation(this, Resource_Manager.Get_Texture(path_to_texture_atlas, is_pixel_art), num_of_rows, num_of_columns, fps, loop);
-            if (start_playing)
+            if(start_playing)
                 animation.Play();
 
             return this;
@@ -100,7 +100,7 @@ namespace Core.world {
         public void Set_Mobility(Mobility mobility) {
 
             transform.mobility = mobility;
-            if (transform.mobility == Mobility.STATIC)
+            if(transform.mobility == Mobility.STATIC)
                 modelMatrix = Calc_Modle_Matrix();
         }
 
@@ -175,14 +175,14 @@ namespace Core.world {
         // ================================================================= internal =================================================================
         public void Draw(Matrix4? model = null) {
 
-            if (shader == null || texture == null && animation == null)
+            if(shader == null || texture == null && animation == null)
                 throw new NotImplementedException("Neither a texture nor an animation is assigned to the sprite. The sprite cannot be rendered.");
 
             // -------------------------------------- select display mode --------------------------------------
-            if (Game.Instance.show_performance)
+            if(Game.Instance.show_performance)
                 DebugData.spriteDrawCallsNum++;
 
-            if (animation != null)
+            if(animation != null)
                 animation?.Update();
 
             texture?.Use(TextureUnit.Texture0);
@@ -195,16 +195,15 @@ namespace Core.world {
             indexBuffer.Bind();
 
             // -------------------------------------- modle matrix --------------------------------------
-            if (model != null)
+            if(model != null)
                 shader.Set_Matrix_4x4("model", model.Value);
 
             // else Use precalculated matrix
-            else if (transform.mobility == Mobility.STATIC)
+            else if(transform.mobility == Mobility.STATIC)
                 shader.Set_Matrix_4x4("model", modelMatrix);
 
             // recalculate matrix every frame
-            else if (transform.mobility == Mobility.DYNAMIC || needsUpdate)
-            {
+            else if(transform.mobility == Mobility.DYNAMIC || needsUpdate) {
                 shader.Set_Matrix_4x4("model", Calc_Modle_Matrix());
                 needsUpdate = false;
             }
@@ -237,7 +236,7 @@ namespace Core.world {
 
         public Sprite Init() {
 
-            if (shader == null)
+            if(shader == null)
                 shader = Game.Instance.defaultSpriteShader;
 
             indexBuffer = new Index_Buffer(indeices);
@@ -246,15 +245,14 @@ namespace Core.world {
             vertexArray = new();
             vertexArray.Add_Buffer(vertexBuffer, Get_Buffer_Layout());
 
-            if (transform.mobility == Mobility.STATIC)
+            if(transform.mobility == Mobility.STATIC)
                 modelMatrix = Calc_Modle_Matrix();
 
-            if (texture == null) {
+            if(texture == null) {
                 var assembly = Assembly.GetExecutingAssembly();
                 var resourceName = "Core.defaults.textures.default_grid.png";
-                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-                {
-                    if (stream == null) return this;
+                using(Stream stream = assembly.GetManifestResourceStream(resourceName)) {
+                    if(stream == null) return this;
                     texture = new Texture(stream);
                 }
             }
