@@ -1,14 +1,16 @@
 ﻿
-namespace Core.util {
+using ImGuiNET;
+using OpenTK.Graphics.OpenGL4;
 
-    using ImGuiNET;
-    using OpenTK.Graphics.OpenGL4;
-    using System;
+namespace Core.util
+{
+    public static class util
+    {
 
-    public static class util {
-
-        public static int Get_Size_Of_VertexAttribPointerType(VertexAttribPointerType attrib_type) {
-            switch(attrib_type) {
+        public static int Get_Size_Of_VertexAttribPointerType(VertexAttribPointerType attrib_type)
+        {
+            switch (attrib_type)
+            {
                 case VertexAttribPointerType.Byte:
                 case VertexAttribPointerType.UnsignedByte:
                     return sizeof(byte);
@@ -61,11 +63,12 @@ namespace Core.util {
 
         public static OpenTK.Mathematics.Vector2 vector_from_angle(float angle_radians) { return new OpenTK.Mathematics.Vector2((float)Math.Cos(angle_radians), (float)Math.Sin(angle_radians)); }
 
-        public static OpenTK.Mathematics.Vector2 Convert_Screen_To_World_Coords(float x, float y) {
+        public static OpenTK.Mathematics.Vector2 Convert_Screen_To_World_Coords(float x, float y)
+        {
 
-            OpenTK.Mathematics.Vector2 result = new ();
-            OpenTK.Mathematics.Vector2 default_offset = new (17, 40);
-            OpenTK.Mathematics.Vector2 mouse_position = new (x, y);
+            OpenTK.Mathematics.Vector2 result = new();
+            OpenTK.Mathematics.Vector2 default_offset = new(17, 40);
+            OpenTK.Mathematics.Vector2 mouse_position = new(x, y);
 
             result = Game.Instance.camera.transform.position * Game.Instance.camera.GetScale();
             result += mouse_position - Game.Instance.window.Size / 2;
@@ -74,7 +77,8 @@ namespace Core.util {
             return result;
         }
 
-        public static OpenTK.Mathematics.Vector2 Convert_World_To_Screen_Coords(OpenTK.Mathematics.Vector2 world_position) {
+        public static OpenTK.Mathematics.Vector2 Convert_World_To_Screen_Coords(OpenTK.Mathematics.Vector2 world_position)
+        {
 
             OpenTK.Mathematics.Vector2 default_offset = new(17, 40);
 
@@ -90,20 +94,23 @@ namespace Core.util {
         public static Box2DX.Common.Vec2 convert_Vector_x(OpenTK.Mathematics.Vector2 vector) { return new Box2DX.Common.Vec2(vector.X, vector.Y); }
 
         // Function to generate a UInt64 value with specified density of bits flipped
-        public static ulong generate_random_UInt64_with_density(double density, Random? random = null) {
+        public static ulong generate_random_UInt64_with_density(double density, Random? random = null)
+        {
 
             Random loc_random = random ?? new Random();
             ulong result = 0;
-            for(int i = 0; i < 64; i++) {
+            for (int i = 0; i < 64; i++)
+            {
 
                 double randomValue = loc_random.NextDouble();
-                if(randomValue < density)
+                if (randomValue < density)
                     result |= (ulong)1 << i;
             }
             return result;
         }
-        
-        public static int Count_Number_Of_Following_Ones(byte target, int index_of_first_one) {
+
+        public static int Count_Number_Of_Following_Ones(byte target, int index_of_first_one)
+        {
 
             int count = 0;
             byte buffer = target;
@@ -112,7 +119,8 @@ namespace Core.util {
             int buffer_index = index_of_first_one;
 
             // Iterate over each bit of the byte value
-            while((buffer & mask) != 0 && buffer_index < 8) {
+            while ((buffer & mask) != 0 && buffer_index < 8)
+            {
                 count++; // Increment the count for each '1' encountered
                 mask <<= 1; // Shift the mask to the left to check the next bit
             }
@@ -122,11 +130,14 @@ namespace Core.util {
 
     }
 
-    public static class Imgui_Fonts {
-        public static Dictionary<string, ImFontPtr> fonts = new ();
+    public static class Imgui_Fonts
+    {
+        public static Dictionary<string, ImFontPtr> fonts = new();
 
-        public static void LoadFont(string path, float size) {
-            if (!File.Exists(path)) {
+        public static void LoadFont(string path, float size)
+        {
+            if (!File.Exists(path))
+            {
                 throw new FileNotFoundException($"Font file not found: {path}");
             }
 
@@ -137,10 +148,12 @@ namespace Core.util {
         }
     }
 
-    public sealed class ResourceNotAssignedException : Exception {
+    public sealed class ResourceNotAssignedException : Exception
+    {
 
         public ResourceNotAssignedException(string message)
-            : base(message) {
+            : base(message)
+        {
         }
     }
 }

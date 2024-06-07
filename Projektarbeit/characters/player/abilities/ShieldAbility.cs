@@ -1,8 +1,7 @@
-namespace Hell.player.ability
+namespace Projektarbeit.characters.player.abilities
 {
     using System.Timers;
     using Core.defaults;
-    using Core.render;
     using Core.world;
 
     public class ShieldAbility : Ability
@@ -12,41 +11,41 @@ namespace Hell.player.ability
 
         public ShieldAbility()
         {
-            this.Cooldown = 10.0f; // 10 seconds cooldown
-            this.timer = new Timer(2500); // 2 seconds duration
-            this.timer.Elapsed += this.OnTimerElapsed;
-            this.timer.AutoReset = false;
+            Cooldown = 10.0f; // 10 seconds cooldown
+            timer = new Timer(2500); // 2 seconds duration
+            timer.Elapsed += OnTimerElapsed;
+            timer.AutoReset = false;
 
             float scale = 1.6f;
             int fps = 8;
             bool loop = true;
 
-            this.Effect = new AbilityEffect("assets/animation/shield/shield.png", scale, 4, 1, fps, loop);
-            this.IconPath = "assets/textures/abilities/shield.png";
+            Effect = new AbilityEffect("assets/animation/shield/shield.png", scale, 4, 1, fps, loop);
+            IconPath = "assets/textures/abilities/shield.png";
         }
 
         public override void Use(Character character)
         {
             this.character = character;
             character.Invincible = true;
-            this.timer.Start();
+            timer.Start();
             Console.WriteLine("Shield ability used!");
 
-            this.AddEffectToCharacter(character);
+            AddEffectToCharacter(character);
 
-            Game.Instance.get_active_map().Add_Game_Object(this.Effect);
-            this.IsActive = true;
+            Core.Game.Instance.get_active_map().Add_Game_Object(Effect);
+            IsActive = true;
         }
 
         private void OnTimerElapsed(object? source, ElapsedEventArgs e)
         {
-            if (this.character != null)
+            if (character != null)
             {
-                this.character.Invincible = false;
+                character.Invincible = false;
                 Console.WriteLine("Shield ability expired!");
 
-                Game.Instance.get_active_map().Remove_Game_Object(this.Effect);
-                this.IsActive = false;
+                Core.Game.Instance.get_active_map().Remove_Game_Object(Effect);
+                IsActive = false;
             }
         }
     }

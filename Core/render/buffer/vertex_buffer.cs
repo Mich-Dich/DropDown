@@ -1,13 +1,15 @@
 ﻿
-namespace Core.render.buffer {
+using OpenTK.Graphics.OpenGL4;
 
-    using OpenTK.Graphics.OpenGL4;
-
-    public sealed class Vertex_Buffer : I_Buffer, IDisposable {
+namespace Core.render.buffer
+{
+    public sealed class Vertex_Buffer : I_Buffer, IDisposable
+    {
 
         public int id { get; private set; }
 
-        public Vertex_Buffer(float[] vertices) {
+        public Vertex_Buffer(float[] vertices)
+        {
 
             id = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, id);
@@ -16,14 +18,16 @@ namespace Core.render.buffer {
         }
 
         private bool disposed = false;
-        public void Dispose() {
+        public void Dispose()
+        {
 
-            if(!disposed)
+            if (!disposed)
                 GL.DeleteBuffer(id);
             disposed = true;
         }
 
-        public void Update_content(float[] vertices) {
+        public void Update_content(float[] vertices)
+        {
 
             // id = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, id);

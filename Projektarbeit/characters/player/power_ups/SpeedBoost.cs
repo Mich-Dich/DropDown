@@ -1,43 +1,43 @@
-namespace Hell.player.power
+namespace Projektarbeit.characters.player.power_ups
 {
     using Core.defaults;
     using Core.render;
     using Core.world;
-    using Hell.player;
     using OpenTK.Mathematics;
+    using Projektarbeit.characters.player;
 
     public class SpeedBoost : PowerUp
     {
         public float SpeedIncrease { get; set; } = 1000f;
 
-        private static readonly Texture Texture = new ("assets/textures/power-ups/speed_increaser.png");
-        private static readonly Vector2 Size = new (30, 30);
-
         public SpeedBoost(Vector2 position)
-            : base(position, Size, new Sprite(Texture))
+            : base(position, new Vector2(30, 30), new Sprite(new Texture("assets/textures/power-ups/speed_increaser.png")))
         {
-            Console.WriteLine("SpeedBoost created");
-            this.IconPath = "assets/textures/abilities/fireboost.png";
-            this.activation = (Character target) =>
+            IconPath = "assets/textures/abilities/fireboost.png";
+
+            activation = ActivatePowerUp;
+
+            deactivation = DeactivatePowerUp;
+        }
+
+        private void ActivatePowerUp(Character target)
+        {
+            Core.Game.Instance.player.ActivePowerUps.Add(this);
+
+            if (target is CH_player player)
             {
-                Game.Instance.player.ActivePowerUps.Add(this);
+                player.movement_speed += SpeedIncrease;
+            }
+        }
 
-                if (target is CH_player player)
-                {
-                    player.movement_speed += this.SpeedIncrease;
-                }
-            };
+        private void DeactivatePowerUp(Character target)
+        {
+            Core.Game.Instance.player.ActivePowerUps.Remove(this);
 
-            this.deactivation = (Character target) =>
+            if (target is CH_player player)
             {
-                Console.WriteLine("SpeedBoost deactivation");
-                Game.Instance.player.ActivePowerUps.Remove(this);
-
-                if (target is CH_player player)
-                {
-                    player.movement_speed -= this.SpeedIncrease;
-                }
-            };
+                player.movement_speed -= SpeedIncrease;
+            }
         }
     }
 }

@@ -1,8 +1,9 @@
-namespace Core.defaults {
-    using Core.world;
-    using Core.render;
-    using OpenTK.Mathematics;
+using Core.render;
+using Core.world;
+using OpenTK.Mathematics;
 
+namespace Core.defaults
+{
     public class AbilityEffect : Game_Object
     {
         public string SpriteSheet { get; set; }
@@ -43,8 +44,10 @@ namespace Core.defaults {
             this.Set_Sprite(sprite);
         }
 
-        public void set_animation(string animationDataPath, int numOfColumns, int numOfRows, int fps, bool loop) {
-            if(sprite != null) {
+        public void set_animation(string animationDataPath, int numOfColumns, int numOfRows, int fps, bool loop)
+        {
+            if (sprite != null)
+            {
                 Texture textureAtlas = new(animationDataPath);
                 sprite.animation = new Animation(sprite, textureAtlas, numOfColumns, numOfRows, fps, loop);
             }

@@ -1,2 +1,3 @@
-﻿namespace Core.Defaults.AI {
+﻿namespace Core.Defaults.AI
+{
 }

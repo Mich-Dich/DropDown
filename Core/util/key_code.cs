@@ -1,7 +1,9 @@
 ﻿#pragma warning disable
-namespace Core.util {
+namespace Core.util
+{
 
-    public enum Key_Code {
+    public enum Key_Code
+    {
 
         /// <summary> An unknown key. </summary>
         Unknown = -1,
@@ -36,8 +38,8 @@ namespace Core.util {
         CursorPositionX = 8,
         CursorPositionY = 9,
 
-        MouseWheelX= 10,
-        MouseWheelY= 11,
+        MouseWheelX = 10,
+        MouseWheelY = 11,
 
         // ======================================== keyboard ========================================
 

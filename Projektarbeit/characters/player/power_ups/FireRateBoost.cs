@@ -1,54 +1,52 @@
-namespace Hell.player.power
+namespace Projektarbeit.characters.player.power_ups
 {
     using Core.defaults;
     using Core.render;
-    using Core.util;
     using Core.world;
-    using Hell.player;
     using OpenTK.Mathematics;
+    using Projektarbeit.characters.player;
 
     public class FireRateBoost : PowerUp
     {
         public float FireDelayDecrease { get; set; } = 0.3f;
 
-        private static readonly Texture Texture = new ("assets/textures/power-ups/firerate_increaser.png");
-        private static readonly Vector2 Size = new (30, 30);
-        private readonly float originalFireDelay = 1.0f;
+        private float originalFireDelay;
 
         public FireRateBoost(Vector2 position)
-            : base(position, Size, new Sprite(Texture))
+            : base(position, new Vector2(30, 30), new Sprite(new Texture("assets/textures/power-ups/firerate_increaser.png")))
         {
-            Console.WriteLine("FireRateBoost created");
-            this.IconPath = "assets/textures/abilities/fireboost.png";
-            this.originalFireDelay = (Game.Instance.playerController as Hell.player.PC_main).character.fireDelay;
+            IconPath = "assets/textures/abilities/fireboost.png";
 
-            this.activation = (Character target) =>
+            activation = ActivatePowerUp;
+
+            deactivation = DeactivatePowerUp;
+        }
+
+        private void ActivatePowerUp(Character target)
+        {
+            Core.Game.Instance.player.ActivePowerUps.Add(this);
+
+            if (target is CH_player player)
             {
-                Console.WriteLine("FireRateBoost activation");
-                Game.Instance.player.ActivePowerUps.Add(this);
-
-                if (target is CH_player player)
+                if (Core.Game.Instance.playerController is PC_main pcMain)
                 {
-                    if (Game.Instance.playerController is Hell.player.PC_main pcMain)
-                    {
-                        pcMain.character.fireDelay -= this.FireDelayDecrease;
-                    }
+                    originalFireDelay = pcMain.character.fireDelay;
+                    pcMain.character.fireDelay -= FireDelayDecrease;
                 }
-            };
+            }
+        }
 
-            this.deactivation = (Character target) =>
+        private void DeactivatePowerUp(Character target)
+        {
+            Core.Game.Instance.player.ActivePowerUps.Remove(this);
+
+            if (target is CH_player player)
             {
-                Console.WriteLine("FireRateBoost deactivation");
-                Game.Instance.player.ActivePowerUps.Remove(this);
-
-                if (target is CH_player player)
+                if (Core.Game.Instance.playerController is PC_main pcMain)
                 {
-                    if (Game.Instance.playerController is Hell.player.PC_main pcMain)
-                    {
-                        pcMain.character.fireDelay = this.originalFireDelay;
-                    }
+                    pcMain.character.fireDelay = originalFireDelay;
                 }
-            };
+            }
         }
     }
 }

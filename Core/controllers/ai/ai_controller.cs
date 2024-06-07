@@ -1,10 +1,9 @@
-﻿namespace Core.Controllers.ai
-{
-    using Core.controllers;
-    using Core.util;
-    using Core.world;
-    using System.Collections.Generic;
+﻿using Core.controllers;
+using Core.util;
+using Core.world;
 
+namespace Core.Controllers.ai
+{
     public class AI_Controller : I_Controller
     {
         public List<Character> characters { get; set; } = new List<Character>();
@@ -16,18 +15,18 @@
             state_machine = new state_machine<AI_Controller>(this);
         }
 
-        public virtual void Update(float deltaTime) 
+        public virtual void Update(float deltaTime)
         {
             state_machine.Update(deltaTime);
-            foreach (Character character in characters) 
+            foreach (Character character in characters)
             {
                 character.Update(deltaTime);
             }
         }
 
-        public state_machine<AI_Controller> get_state_machine() 
-        { 
-            return state_machine; 
+        public state_machine<AI_Controller> get_state_machine()
+        {
+            return state_machine;
         }
     }
 }

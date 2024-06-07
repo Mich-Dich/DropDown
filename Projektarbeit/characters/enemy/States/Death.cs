@@ -1,10 +1,10 @@
-namespace Hell.enemy
+namespace Projektarbeit.characters.enemy.States
 {
     using System;
-    using Core;
     using Core.Controllers.ai;
     using Core.util;
     using Core.world;
+    using Projektarbeit.characters.enemy.character;
 
     public class Death : I_state<AI_Controller>
     {

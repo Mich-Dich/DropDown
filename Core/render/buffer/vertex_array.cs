@@ -1,9 +1,10 @@
-﻿
-namespace Core.render.buffer {
+﻿namespace Core.render.buffer
+{
     using Core.util;
     using OpenTK.Graphics.OpenGL4;
 
-    public sealed class Vertex_Array : I_Buffer, IDisposable {
+    public sealed class Vertex_Array : I_Buffer, IDisposable
+    {
 
         public int id { get; private set; }
 
@@ -11,21 +12,24 @@ namespace Core.render.buffer {
 
         private bool disposed = false;
 
-        public void Dispose() {
+        public void Dispose()
+        {
 
-            if(disposed)
+            if (disposed)
                 GL.DeleteVertexArray(id);
             disposed = true;
         }
 
-        public void Add_Buffer(Vertex_Buffer buffer, Buffer_Layout layout) {
+        public void Add_Buffer(Vertex_Buffer buffer, Buffer_Layout layout)
+        {
 
             Bind();
             buffer.Bind();
             var elements = layout.get_buffer_elements();
             int offset = 0;
 
-            for(int x = 0; x < elements.Count; x++) {
+            for (int x = 0; x < elements.Count; x++)
+            {
 
                 var current_element = elements[x];
                 GL.EnableVertexAttribArray(x);

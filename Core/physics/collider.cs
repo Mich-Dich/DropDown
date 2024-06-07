@@ -1,16 +1,17 @@
 ﻿
-namespace Core.physics {
+using Box2DX.Dynamics;
+using Core.util;
+using Core.world;
+using OpenTK.Mathematics;
 
-    using Box2DX.Dynamics;
-    using Core.util;
-    using Core.world;
-    using OpenTK.Mathematics;
+namespace Core.physics
+{
+    public sealed class Collider
+    {
 
-    public sealed class Collider {
-
-        public Collision_Shape  shape;
-        public Collision_Type   type;
-        public Transform        offset;
+        public Collision_Shape shape;
+        public Collision_Type type;
+        public Transform offset;
 
         public Body body { get; set; }
         public float mass;
@@ -32,20 +33,23 @@ namespace Core.physics {
                 }
         */
 
-        public Collider(Body body) {
+        public Collider(Body body)
+        {
 
             this.body = body;
             this.offset = new Transform(Vector2.Zero, Vector2.Zero);
         }
 
-        public Collider() {
+        public Collider()
+        {
 
             this.shape = Collision_Shape.Square;
             this.type = Collision_Type.world;
             this.offset = new Transform();
         }
 
-        public Collider(Collision_Shape shape = Collision_Shape.Circle, Collision_Type type = Collision_Type.world, Transform? offset = null, float mass = 100.0f, Vector2? velocity = null) {
+        public Collider(Collision_Shape shape = Collision_Shape.Circle, Collision_Type type = Collision_Type.world, Transform? offset = null, float mass = 100.0f, Vector2? velocity = null)
+        {
 
             this.shape = shape;
             this.type = type;
@@ -54,27 +58,31 @@ namespace Core.physics {
             this.velocity = velocity == null ? new Vector2() : velocity.Value;
         }
 
-        public Collider Set_Offset(Transform offset) {
+        public Collider Set_Offset(Transform offset)
+        {
 
             this.offset = offset;
             return this;
         }
 
-        public Collider Set_Mass(float mass) {
+        public Collider Set_Mass(float mass)
+        {
 
             this.mass = mass;
             return this;
         }
     }
 
-    public enum Collision_Shape {
+    public enum Collision_Shape
+    {
 
         None = 0,
         Circle = 1,
         Square = 2,
     }
 
-    public enum Collision_Type {
+    public enum Collision_Type
+    {
 
         None = 0,
         world = 1,
@@ -82,7 +90,8 @@ namespace Core.physics {
         bullet = 3,
     }
 
-    public struct hitData {
+    public struct hitData
+    {
 
         public bool is_hit;
         public float hit_force;
@@ -94,7 +103,8 @@ namespace Core.physics {
 
         public hitData(Single hit_force) : this() { this.hit_force = hit_force; }
 
-        public hitData(Boolean is_hit, Single hit_force, Vector2 hit_position, Vector2 hit_direction, Vector2 hit_normal, Vector2 hit_impact_point) : this() {
+        public hitData(Boolean is_hit, Single hit_force, Vector2 hit_position, Vector2 hit_direction, Vector2 hit_normal, Vector2 hit_impact_point) : this()
+        {
 
             this.is_hit = is_hit;
             this.hit_force = hit_force;

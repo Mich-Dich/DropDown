@@ -1,7 +1,9 @@
 ﻿
-namespace Core.render.buffer {
+namespace Core.render.buffer
+{
 
-    public interface I_Buffer {
+    public interface I_Buffer
+    {
 
         int id { get; }
 

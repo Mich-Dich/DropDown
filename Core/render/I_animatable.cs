@@ -1,8 +1,10 @@
 using Core.world;
 
-namespace Core.render {
+namespace Core.render
+{
 
-    public interface I_animatable {
+    public interface I_animatable
+    {
 
         Animation? animation { get; set; }
         float animationTimer { get; set; }

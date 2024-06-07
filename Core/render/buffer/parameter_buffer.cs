@@ -1,13 +1,15 @@
 ﻿
-namespace Core.render.buffer {
+using OpenTK.Graphics.OpenGL4;
 
-    using OpenTK.Graphics.OpenGL4;
-
-    public sealed class Parameter_Buffer : I_Buffer, IDisposable {
+namespace Core.render.buffer
+{
+    public sealed class Parameter_Buffer : I_Buffer, IDisposable
+    {
 
         public int id { get; }
 
-        public Parameter_Buffer(float[] indecies, int stride) {
+        public Parameter_Buffer(float[] indecies, int stride)
+        {
 
             id = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ParameterBuffer, id);
@@ -17,9 +19,10 @@ namespace Core.render.buffer {
 
         private bool disposed = false;
 
-        public void Dispose() {
+        public void Dispose()
+        {
 
-            if(!disposed)
+            if (!disposed)
                 GL.DeleteBuffer(id);
             disposed = true;
         }

@@ -1,17 +1,19 @@
-namespace Core.util {
 
-    using ImGuiNET;
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Mathematics;
-    using OpenTK.Windowing.Desktop;
-    using OpenTK.Windowing.GraphicsLibraryFramework;
-    using System.Diagnostics;
-    using System.Runtime.CompilerServices;
-    using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
+using ImGuiNET;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
 
-    public class ImguI_Controller : IDisposable {
+namespace Core.util
+{
+    public class ImguI_Controller : IDisposable
+    {
         private static bool kHRDebugAvailable = false;
-        private readonly List<char> pressedChars = new ();
+        private readonly List<char> pressedChars = new();
         private readonly int gLVersion;
         private readonly bool compatibilityProfile;
         private bool frameBegun;
@@ -33,7 +35,8 @@ namespace Core.util {
 
         private System.Numerics.Vector2 scaleFactor = System.Numerics.Vector2.One;
 
-        public ImguI_Controller(int width, int height, float scaleFactorX = 1, float scaleFactorY = 1) {
+        public ImguI_Controller(int width, int height, float scaleFactorX = 1, float scaleFactorY = 1)
+        {
             this.windowWidth = width;
             this.windowHeight = height;
 
@@ -84,13 +87,16 @@ namespace Core.util {
         }
 
         // ================================================================= public =================================================================
-        public static void LabelObject(ObjectLabelIdentifier objLabelIdent, int glObject, string name) {
-            if(kHRDebugAvailable) {
+        public static void LabelObject(ObjectLabelIdentifier objLabelIdent, int glObject, string name)
+        {
+            if (kHRDebugAvailable)
+            {
                 GL.ObjectLabel(objLabelIdent, glObject, name.Length, name);
             }
         }
 
-        public static int CreateProgram(string name, string vertexSource, string fragmentSoruce) {
+        public static int CreateProgram(string name, string vertexSource, string fragmentSoruce)
+        {
             int program = GL.CreateProgram();
             LabelObject(ObjectLabelIdentifier.Program, program, $"Program: {name}");
 
@@ -103,7 +109,8 @@ namespace Core.util {
             GL.LinkProgram(program);
 
             GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int success);
-            if(success == 0) {
+            if (success == 0)
+            {
                 string info = GL.GetProgramInfoLog(program);
                 Debug.WriteLine($"GL.LinkProgram had info log [{name}]:\n{info}");
             }
@@ -117,32 +124,40 @@ namespace Core.util {
             return program;
         }
 
-        public static void CheckGLError(string title) {
+        public static void CheckGLError(string title)
+        {
             ErrorCode error;
             int i = 1;
-            while((error = GL.GetError()) != ErrorCode.NoError) {
+            while ((error = GL.GetError()) != ErrorCode.NoError)
+            {
                 Debug.Print($"{title} ({i++}): {error}");
             }
         }
 
-        public static ImGuiKey TranslateKey(Keys key) {
-            if(key >= Keys.D0 && key <= Keys.D9) {
+        public static ImGuiKey TranslateKey(Keys key)
+        {
+            if (key >= Keys.D0 && key <= Keys.D9)
+            {
                 return key - Keys.D0 + ImGuiKey._0;
             }
 
-            if(key >= Keys.A && key <= Keys.Z) {
+            if (key >= Keys.A && key <= Keys.Z)
+            {
                 return key - Keys.A + ImGuiKey.A;
             }
 
-            if(key >= Keys.KeyPad0 && key <= Keys.KeyPad9) {
+            if (key >= Keys.KeyPad0 && key <= Keys.KeyPad9)
+            {
                 return key - Keys.KeyPad0 + ImGuiKey.Keypad0;
             }
 
-            if(key >= Keys.F1 && key <= Keys.F24) {
+            if (key >= Keys.F1 && key <= Keys.F24)
+            {
                 return key - Keys.F1 + ImGuiKey.F24;
             }
 
-            switch(key) {
+            switch (key)
+            {
                 case Keys.Tab: return ImGuiKey.Tab;
                 case Keys.Left: return ImGuiKey.LeftArrow;
                 case Keys.Right: return ImGuiKey.RightArrow;
@@ -194,16 +209,19 @@ namespace Core.util {
             }
         }
 
-        public void WindowResized(int width, int height) {
+        public void WindowResized(int width, int height)
+        {
             this.windowWidth = (int)(width * this.scaleFactor.X);
             this.windowHeight = (int)(height * this.scaleFactor.Y);
         }
 
-        public void DestroyDeviceObjects() {
+        public void DestroyDeviceObjects()
+        {
             this.Dispose();
         }
 
-        public void CreateDeviceResources() {
+        public void CreateDeviceResources()
+        {
             this.vertexBufferSize = 10000;
             this.indexBufferSize = 2000;
 
@@ -276,7 +294,8 @@ void main()
             CheckGLError("End of ImGui setup");
         }
 
-        public void RecreateFontDeviceTexture() {
+        public void RecreateFontDeviceTexture()
+        {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out int bytesPerPixel);
 
@@ -312,16 +331,20 @@ void main()
             io.Fonts.ClearTexData();
         }
 
-        public void Render() {
-            if(this.frameBegun) {
+        public void Render()
+        {
+            if (this.frameBegun)
+            {
                 this.frameBegun = false;
                 ImGui.Render();
                 this.RenderImDrawData(ImGui.GetDrawData());
             }
         }
 
-        public void Update(GameWindow wnd, float deltaSeconds) {
-            if(this.frameBegun) {
+        public void Update(GameWindow wnd, float deltaSeconds)
+        {
+            if (this.frameBegun)
+            {
                 ImGui.Render();
             }
 
@@ -332,7 +355,8 @@ void main()
             ImGui.NewFrame();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GL.DeleteVertexArray(this.vertexArray);
             GL.DeleteBuffer(this.vertexBuffer);
             GL.DeleteBuffer(this.indexBuffer);
@@ -342,22 +366,27 @@ void main()
         }
 
         // ================================================================= internal =================================================================
-        internal void PressChar(char keyChar) {
+        internal void PressChar(char keyChar)
+        {
             this.pressedChars.Add(keyChar);
         }
 
-        internal void MouseScroll(Vector2 offset) {
+        internal void MouseScroll(Vector2 offset)
+        {
             ImGuiIOPtr io = ImGui.GetIO();
             io.MouseWheel = offset.Y;
             io.MouseWheelH = offset.X;
         }
 
         // ================================================================= statis =================================================================
-        private static bool IsExtensionSupported(string name) {
+        private static bool IsExtensionSupported(string name)
+        {
             int n = GL.GetInteger(GetPName.NumExtensions);
-            for(int i = 0; i < n; i++) {
+            for (int i = 0; i < n; i++)
+            {
                 string extension = GL.GetString(StringNameIndexed.Extensions, i);
-                if(extension == name) {
+                if (extension == name)
+                {
                     return true;
                 }
             }
@@ -365,7 +394,8 @@ void main()
             return false;
         }
 
-        private static int CompileShader(string name, ShaderType type, string source) {
+        private static int CompileShader(string name, ShaderType type, string source)
+        {
             int shader = GL.CreateShader(type);
             LabelObject(ObjectLabelIdentifier.Shader, shader, $"Shader: {name}");
 
@@ -373,7 +403,8 @@ void main()
             GL.CompileShader(shader);
 
             GL.GetShader(shader, ShaderParameter.CompileStatus, out int success);
-            if(success == 0) {
+            if (success == 0)
+            {
                 string info = GL.GetShaderInfoLog(shader);
                 Debug.WriteLine($"GL.CompileShader for shader '{name}' [{type}] had info log:\n{info}");
             }
@@ -382,7 +413,8 @@ void main()
         }
 
         // ================================================================= private =================================================================
-        private void SetPerFrameImGuiData(float deltaSeconds) {
+        private void SetPerFrameImGuiData(float deltaSeconds)
+        {
             ImGuiIOPtr io = ImGui.GetIO();
             io.DisplaySize = new System.Numerics.Vector2(
                 this.windowWidth / this.scaleFactor.X,
@@ -391,7 +423,8 @@ void main()
             io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
         }
 
-        private void UpdateImGuiInput(GameWindow wnd) {
+        private void UpdateImGuiInput(GameWindow wnd)
+        {
             ImGuiIOPtr io = ImGui.GetIO();
             MouseState mouseState = wnd.MouseState;
             KeyboardState keyboardState = wnd.KeyboardState;
@@ -406,15 +439,18 @@ void main()
             var point = screenPoint; // wnd.PointToClient(screenPoint);
             io.MousePos = new System.Numerics.Vector2(point.X, point.Y);
 
-            foreach(Keys key in Enum.GetValues(typeof(Keys))) {
-                if(key == Keys.Unknown) {
+            foreach (Keys key in Enum.GetValues(typeof(Keys)))
+            {
+                if (key == Keys.Unknown)
+                {
                     continue;
                 }
 
                 io.AddKeyEvent(TranslateKey(key), keyboardState.IsKeyDown(key));
             }
 
-            foreach(var c in this.pressedChars) {
+            foreach (var c in this.pressedChars)
+            {
                 io.AddInputCharacter(c);
             }
 
@@ -426,8 +462,10 @@ void main()
             io.KeySuper = keyboardState.IsKeyDown(Keys.LeftSuper) || keyboardState.IsKeyDown(Keys.RightSuper);
         }
 
-        private void RenderImDrawData(ImDrawDataPtr draw_data) {
-            if(draw_data.CmdListsCount == 0) {
+        private void RenderImDrawData(ImDrawDataPtr draw_data)
+        {
+            if (draw_data.CmdListsCount == 0)
+            {
                 return;
             }
 
@@ -449,24 +487,30 @@ void main()
             GL.ActiveTexture(TextureUnit.Texture0);
             int prevTexture2D = GL.GetInteger(GetPName.TextureBinding2D);
             Span<int> prevScissorBox = stackalloc int[4];
-            unsafe {
-                fixed(int* iptr = &prevScissorBox[0]) {
+            unsafe
+            {
+                fixed (int* iptr = &prevScissorBox[0])
+                {
                     GL.GetInteger(GetPName.ScissorBox, iptr);
                 }
             }
 
             Span<int> prevPolygonMode = stackalloc int[2];
-            unsafe {
-                fixed(int* iptr = &prevPolygonMode[0]) {
+            unsafe
+            {
+                fixed (int* iptr = &prevPolygonMode[0])
+                {
                     GL.GetInteger(GetPName.PolygonMode, iptr);
                 }
             }
 
-            if(this.gLVersion <= 310 || this.compatibilityProfile) {
+            if (this.gLVersion <= 310 || this.compatibilityProfile)
+            {
                 GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
                 GL.PolygonMode(MaterialFace.Back, PolygonMode.Fill);
             }
-            else {
+            else
+            {
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
 
@@ -475,11 +519,13 @@ void main()
 
             // Bind the vertex buffer so that we can resize it.
             GL.BindBuffer(BufferTarget.ArrayBuffer, this.vertexBuffer);
-            for(int i = 0; i < draw_data.CmdListsCount; i++) {
+            for (int i = 0; i < draw_data.CmdListsCount; i++)
+            {
                 ImDrawListPtr cmd_list = draw_data.CmdLists[i];
 
                 int vertexSize = cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>();
-                if(vertexSize > this.vertexBufferSize) {
+                if (vertexSize > this.vertexBufferSize)
+                {
                     int newSize = (int)Math.Max(this.vertexBufferSize * 1.5f, vertexSize);
 
                     GL.BufferData(BufferTarget.ArrayBuffer, newSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
@@ -489,7 +535,8 @@ void main()
                 }
 
                 int indexSize = cmd_list.IdxBuffer.Size * sizeof(ushort);
-                if(indexSize > this.indexBufferSize) {
+                if (indexSize > this.indexBufferSize)
+                {
                     int newSize = (int)Math.Max(this.indexBufferSize * 1.5f, indexSize);
                     GL.BufferData(BufferTarget.ElementArrayBuffer, newSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
                     this.indexBufferSize = newSize;
@@ -526,7 +573,8 @@ void main()
             GL.Disable(EnableCap.DepthTest);
 
             // Render command lists
-            for(int n = 0; n < draw_data.CmdListsCount; n++) {
+            for (int n = 0; n < draw_data.CmdListsCount; n++)
+            {
                 ImDrawListPtr cmd_list = draw_data.CmdLists[n];
 
                 GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
@@ -535,12 +583,15 @@ void main()
                 GL.BufferSubData(BufferTarget.ElementArrayBuffer, IntPtr.Zero, cmd_list.IdxBuffer.Size * sizeof(ushort), cmd_list.IdxBuffer.Data);
                 CheckGLError($"Data Idx {n}");
 
-                for(int cmd_i = 0; cmd_i < cmd_list.CmdBuffer.Size; cmd_i++) {
+                for (int cmd_i = 0; cmd_i < cmd_list.CmdBuffer.Size; cmd_i++)
+                {
                     ImDrawCmdPtr pcmd = cmd_list.CmdBuffer[cmd_i];
-                    if(pcmd.UserCallback != IntPtr.Zero) {
+                    if (pcmd.UserCallback != IntPtr.Zero)
+                    {
                         throw new NotImplementedException();
                     }
-                    else {
+                    else
+                    {
                         GL.ActiveTexture(TextureUnit.Texture0);
                         GL.BindTexture(TextureTarget.Texture2D, (int)pcmd.TextureId);
                         CheckGLError("Texture");
@@ -550,10 +601,12 @@ void main()
                         GL.Scissor((int)clip.X, this.windowHeight - (int)clip.W, (int)(clip.Z - clip.X), (int)(clip.W - clip.Y));
                         CheckGLError("Scissor");
 
-                        if((io.BackendFlags & ImGuiBackendFlags.RendererHasVtxOffset) != 0) {
+                        if ((io.BackendFlags & ImGuiBackendFlags.RendererHasVtxOffset) != 0)
+                        {
                             GL.DrawElementsBaseVertex(PrimitiveType.Triangles, (int)pcmd.ElemCount, DrawElementsType.UnsignedShort, (IntPtr)(pcmd.IdxOffset * sizeof(ushort)), unchecked((int)pcmd.VtxOffset));
                         }
-                        else {
+                        else
+                        {
                             GL.DrawElements(BeginMode.Triangles, (int)pcmd.ElemCount, DrawElementsType.UnsignedShort, (int)pcmd.IdxOffset * sizeof(ushort));
                         }
 
@@ -578,39 +631,49 @@ void main()
                 (BlendingFactorDest)prevBlendFuncDstRgb,
                 (BlendingFactorSrc)prevBlendFuncSrcAlpha,
                 (BlendingFactorDest)prevBlendFuncDstAlpha);
-            if(prevBlendEnabled) {
+            if (prevBlendEnabled)
+            {
                 GL.Enable(EnableCap.Blend);
             }
-            else {
+            else
+            {
                 GL.Disable(EnableCap.Blend);
             }
 
-            if(prevDepthTestEnabled) {
+            if (prevDepthTestEnabled)
+            {
                 GL.Enable(EnableCap.DepthTest);
             }
-            else {
+            else
+            {
                 GL.Disable(EnableCap.DepthTest);
             }
 
-            if(prevCullFaceEnabled) {
+            if (prevCullFaceEnabled)
+            {
                 GL.Enable(EnableCap.CullFace);
             }
-            else {
+            else
+            {
                 GL.Disable(EnableCap.CullFace);
             }
 
-            if(prevScissorTestEnabled) {
+            if (prevScissorTestEnabled)
+            {
                 GL.Enable(EnableCap.ScissorTest);
             }
-            else {
+            else
+            {
                 GL.Disable(EnableCap.ScissorTest);
             }
 
-            if(this.gLVersion <= 310 || this.compatibilityProfile) {
+            if (this.gLVersion <= 310 || this.compatibilityProfile)
+            {
                 GL.PolygonMode(MaterialFace.Front, (PolygonMode)prevPolygonMode[0]);
                 GL.PolygonMode(MaterialFace.Back, (PolygonMode)prevPolygonMode[1]);
             }
-            else {
+            else
+            {
                 GL.PolygonMode(MaterialFace.FrontAndBack, (PolygonMode)prevPolygonMode[0]);
             }
         }

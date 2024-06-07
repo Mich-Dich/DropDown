@@ -1,29 +1,39 @@
-
-namespace Hell {
-
-    using Hell.Levels;
-    using Hell.player;
-    using Hell.UI;
-    using Projektarbeit.Levels;
+namespace Projektarbeit
+{
     using Core;
+    using Projektarbeit.characters.player;
+    using Projektarbeit.Levels;
+    using Projektarbeit.UI;
 
     internal class Game : Core.Game
     {
         private MainHUD mainHUD;
         private GameOver gameOver;
         private MainMenu mainMenu;
+
         public Game(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) { }
 
+        public override void StartGame()
+        {
+            set_active_map(new MAP_base());
+            play_state = Play_State.Playing;
+            player.health = 100;
+            player.IsDead = false;
+            player.IsRemoved = false;
+            Score = 0;
+        }
+
         // ========================================================= functions =========================================================
-        protected override void Init() {
+        protected override void Init()
+        {
 
             Set_Update_Frequency(144.0f);
 
-            this.activeMap = new MAP_main_menu();
-            this.player = new CH_player();
-            this.player.IsRemoved = true;
-            this.playerController = new PC_main(player);
+            activeMap = new MAP_main_menu();
+            player = new CH_player();
+            player.IsRemoved = true;
+            playerController = new PC_main(player);
 
             mainMenu = new MainMenu();
             mainHUD = new MainHUD();
@@ -31,7 +41,7 @@ namespace Hell {
 #if DEBUG
             Show_Performance(true);
             showDebugData(true);
-            this.camera.Set_min_Max_Zoom(0.03f, 1.4f);
+            camera.Set_min_Max_Zoom(0.03f, 1.4f);
 #endif
         }
 
@@ -41,9 +51,11 @@ namespace Hell {
 
         protected override void Render(float deltaTime) { }
 
-        protected override void Render_Imgui(float deltaTime) {
+        protected override void Render_Imgui(float deltaTime)
+        {
 
-            switch(this.play_state) {
+            switch (play_state)
+            {
 
                 case Play_State.main_menu:
                     mainMenu.Render();
@@ -55,15 +67,6 @@ namespace Hell {
                     gameOver.Render();
                     break;
             }
-        }
-
-        public override void StartGame() {
-            this.set_active_map(new MAP_base());
-            this.play_state = Play_State.Playing;
-            this.player.health = 100;
-            this.player.IsDead = false;
-            this.player.IsRemoved = false;
-            this.Score = 0;
         }
     }
 }

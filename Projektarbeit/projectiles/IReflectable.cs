@@ -1,4 +1,4 @@
-namespace Hell.weapon
+namespace Projektarbeit.projectiles
 {
     using OpenTK.Mathematics;
 

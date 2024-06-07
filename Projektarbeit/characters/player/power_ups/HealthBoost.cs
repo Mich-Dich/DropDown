@@ -1,38 +1,37 @@
-namespace Hell.player.power
+namespace Projektarbeit.characters.player.power_ups
 {
     using Core.defaults;
     using Core.render;
     using Core.world;
-    using Hell.player;
     using OpenTK.Mathematics;
+    using Projektarbeit.characters.player;
 
     public class HealthBoost : PowerUp
     {
         public float HealthIncrease { get; set; } = 100f;
 
-        private static readonly Texture Texture = new ("assets/textures/power-ups/health.png");
-        private static readonly Vector2 Size = new (30, 30);
-
         public HealthBoost(Vector2 position)
-            : base(position, Size, new Sprite(Texture))
+            : base(position, new Vector2(30, 30), new Sprite(new Texture("assets/textures/power-ups/health.png")))
         {
-            Console.WriteLine("HealthBoost created");
+            activation = ActivatePowerUp;
 
-            this.activation = (Character target) =>
-            {
-                if (target is CH_player player)
-                {
-                    player.health_max += this.HealthIncrease;
-                }
-            };
+            deactivation = DeactivatePowerUp;
+        }
 
-            this.deactivation = (Character target) =>
+        private void ActivatePowerUp(Character target)
+        {
+            if (target is CH_player player)
             {
-                if (target is CH_player player)
-                {
-                    player.health_max -= this.HealthIncrease;
-                }
-            };
+                player.health_max += HealthIncrease;
+            }
+        }
+
+        private void DeactivatePowerUp(Character target)
+        {
+            if (target is CH_player player)
+            {
+                player.health_max -= HealthIncrease;
+            }
         }
     }
 }

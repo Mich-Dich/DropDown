@@ -1,98 +1,74 @@
-﻿namespace Hell.player
+﻿namespace Projektarbeit.characters.player
 {
     using Core.physics;
     using Core.util;
     using Core.world;
-    using Hell.player.ability;
-    using Hell.weapon;
     using ImGuiNET;
     using OpenTK.Mathematics;
+    using Projektarbeit.characters.player.abilities;
+    using Projektarbeit.projectiles;
 
     internal class CH_player : Character
     {
-        public float CooldownBarWidth { get; set; } = 40;
+        private const float DefaultCooldownBarWidth = 40;
+        private const float DefaultCooldownBarHeight = 4;
+        private readonly uint defaultCooldownColTransparent;
 
-        public float CooldownBarHeight { get; set; } = 4;
+        public float CooldownBarWidth { get; set; } = DefaultCooldownBarWidth;
 
-        private uint cooldownColTransparent = 0;
+        public float CooldownBarHeight { get; set; } = DefaultCooldownBarHeight;
+
+        private uint cooldownColTransparent;
 
         public CH_player()
         {
-            this.IsDead = false;
-            this.transform.size = new Vector2(100);
-            this.health = 100;
-            this.auto_heal_amout = 0;
-            this.Set_Sprite(new Sprite(Resource_Manager.Get_Texture("assets/textures/player/Angel-1.png")));
-            this.Add_Collider(new Collider(Collision_Shape.Circle)
-                .Set_Offset(new Transform(Vector2.Zero, new Vector2(-10))));
-
-            this.movement_speed = 400.0f;
-            this.rotation_offset = float.Pi / 2;
-
-            this.Ability = new ShieldAbility();
+            defaultCooldownColTransparent = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
+            cooldownColTransparent = defaultCooldownColTransparent;
+            InitializePlayer();
         }
 
         public void DisplayCooldownBar(System.Numerics.Vector2? display_size = null, System.Numerics.Vector2? pos_offset = null, System.Numerics.Vector2? padding = null, float rounding = 0.0f)
         {
-            if(!this.IsRemoved)
+            if (IsRemoved) return;
+
+            string uniqueId = $"Helthbar_for_character_{GetHashCode()}";
+            display_size ??= new System.Numerics.Vector2(CooldownBarWidth, CooldownBarHeight);
+
+            ImGuiWindowFlags window_flags = GetWindowFlags();
+
+            System.Numerics.Vector2 position = util.convert_Vector(util.Convert_World_To_Screen_Coords(transform.position)) + (pos_offset ?? System.Numerics.Vector2.Zero);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding ?? new System.Numerics.Vector2(4));
+
+            if (rounding != 0.0f)
             {
-                string uniqueId = $"Helthbar_for_character_{this.GetHashCode()}";
-                if (display_size == null)
-                {
-                    display_size = new System.Numerics.Vector2(this.CooldownBarWidth, this.CooldownBarHeight);
-                }
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, rounding);
+                ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, rounding);
+            }
 
-                ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
-                    | ImGuiWindowFlags.NoDocking
-                    | ImGuiWindowFlags.AlwaysAutoResize
-                    | ImGuiWindowFlags.NoSavedSettings
-                    | ImGuiWindowFlags.NoFocusOnAppearing
-                    | ImGuiWindowFlags.NoNav
-                    | ImGuiWindowFlags.NoMove;
+            // Disable the border
+            ImGui.PushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
 
-                System.Numerics.Vector2 position =
-                    Core.util.util.convert_Vector(Core.util.util.Convert_World_To_Screen_Coords(this.transform.position)) + (pos_offset ?? System.Numerics.Vector2.Zero);
-                ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding ?? new System.Numerics.Vector2(4));
+            ImGui.SetNextWindowPos(position, ImGuiCond.Always, new System.Numerics.Vector2(0.5f));
+            ImGui.Begin(uniqueId, window_flags);
 
-                if (rounding != 0.0f)
-                {
-                    ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, rounding);
-                    ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, rounding);
-                }
+            // Calculate Cooldown
+            float cooldownRatio = CalculateCooldownRatio();
 
-                // Set the transparent color
-                this.cooldownColTransparent = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
+            Imgui_Util.Progress_Bar_Stylised(
+                cooldownRatio,
+                display_size.Value,
+                4294944000,
+                cooldownColTransparent,
+                0f,
+                0f,
+                0.35f);
 
-                // Disable the border
-                ImGui.PushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
+            ImGui.End();
+            ImGui.PopStyleVar();
 
-                ImGui.SetNextWindowPos(position, ImGuiCond.Always, new System.Numerics.Vector2(0.5f));
-                ImGui.Begin(uniqueId, window_flags);
-
-                // Calculate Cooldown
-                float cooldownRemaining = Math.Max(0, this.fireDelay - (Game_Time.total - this.lastFireTime));
-                float cooldownRatio = cooldownRemaining / this.fireDelay;
-
-                Imgui_Util.Progress_Bar_Stylised(
-                    cooldownRatio,
-                    display_size.Value,
-                    4294944000,
-                    this.cooldownColTransparent,
-                    0f,
-                    0f,
-                    0.35f);
-
-                if (cooldownRemaining > 0)
-                {
-                }
-
-                ImGui.End();
-                ImGui.PopStyleVar();
-
-                if (rounding != 0.0f)
-                {
-                    ImGui.PopStyleVar(2);
-                }
+            if (rounding != 0.0f)
+            {
+                ImGui.PopStyleVar(2);
             }
         }
 
@@ -100,10 +76,9 @@
         {
             base.draw_imgui();
 
-            float cooldownRemaining = Math.Max(0, this.fireDelay - (Game_Time.total - this.lastFireTime));
-            if (cooldownRemaining > 0)
+            if (CalculateCooldownRemaining() > 0)
             {
-                this.DisplayCooldownBar(null, new System.Numerics.Vector2(0, 20), new System.Numerics.Vector2(1), 5);
+                DisplayCooldownBar(null, new System.Numerics.Vector2(0, 20), new System.Numerics.Vector2(1), 5);
             }
         }
 
@@ -111,7 +86,7 @@
         {
             if (hit.hit_object is IProjectile testProjectile && !testProjectile.HasHit)
             {
-                this.apply_damage(testProjectile.Damage);
+                apply_damage(testProjectile.Damage);
                 testProjectile.HasHit = true;
             }
             else
@@ -119,5 +94,40 @@
                 base.Hit(hit);
             }
         }
+
+        private void InitializePlayer()
+        {
+            IsDead = false;
+            transform.size = new Vector2(100);
+            health = 100;
+            auto_heal_amout = 0;
+            Set_Sprite(new Sprite(Resource_Manager.Get_Texture("assets/textures/player/Angel-1.png")));
+            Add_Collider(new Collider(Collision_Shape.Circle).Set_Offset(new Transform(Vector2.Zero, new Vector2(-10))));
+            movement_speed = 400.0f;
+            rotation_offset = float.Pi / 2;
+            Ability = new ShieldAbility();
+        }
+
+        private ImGuiWindowFlags GetWindowFlags()
+        {
+            return ImGuiWindowFlags.NoDecoration
+                | ImGuiWindowFlags.NoDocking
+                | ImGuiWindowFlags.AlwaysAutoResize
+                | ImGuiWindowFlags.NoSavedSettings
+                | ImGuiWindowFlags.NoFocusOnAppearing
+                | ImGuiWindowFlags.NoNav
+                | ImGuiWindowFlags.NoMove;
+        }
+
+        private float CalculateCooldownRemaining()
+        {
+            return Math.Max(0, fireDelay - (Game_Time.total - lastFireTime));
+        }
+
+        private float CalculateCooldownRatio()
+        {
+            return CalculateCooldownRemaining() / fireDelay;
+        }
+
     }
 }

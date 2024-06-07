@@ -1,7 +1,7 @@
-namespace Core.defaults {
-    using Core.world;
-    using Core.util;
+using Core.world;
 
+namespace Core.defaults
+{
     public abstract class Ability
     {
         public float Cooldown { get; set; }

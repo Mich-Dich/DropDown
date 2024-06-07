@@ -1,13 +1,13 @@
-﻿
-namespace Core.defaults {
-
+﻿namespace Core.defaults
+{
     using Core.Controllers.player;
     using Core.physics;
     using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
 
-    public class PC_Default : Player_Controller {
+    public class PC_Default : Player_Controller
+    {
 
         public Action move { get; set; }
         public Action look { get; set; }
@@ -15,7 +15,8 @@ namespace Core.defaults {
         public Action interact { get; set; }
 
         public PC_Default(Character character)
-            : base(character, null) {
+            : base(character, null)
+        {
 
             actions.Clear();
 
@@ -78,14 +79,16 @@ namespace Core.defaults {
             Game.Instance.camera.zoom_offset = 0.2f;
         }
 
-        protected override void Update(float deltaTime) {
+        protected override void Update(float deltaTime)
+        {
 
             float total_speed = character.movement_speed;
-            if((bool)sprint.GetValue())
+            if ((bool)sprint.GetValue())
                 total_speed += sprint_speed;
 
             // simple movement
-            if(move.X != 0 || move.Y != 0) {
+            if (move.X != 0 || move.Y != 0)
+            {
 
                 Vector2 direction = Vector2.NormalizeFast((Vector2)move.GetValue());
                 character.Add_Linear_Velocity(new Box2DX.Common.Vec2(direction.X, direction.Y) * total_speed * deltaTime);
@@ -95,12 +98,14 @@ namespace Core.defaults {
             Game.Instance.camera.transform.position = character.transform.position;     // camera follows player
             Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);          // change zoom
 
-            if((bool)interact.GetValue()) {
+            if ((bool)interact.GetValue())
+            {
 
                 List<Game_Object> intersected_game_objects = new();
                 character.perception_check(ref intersected_game_objects, (float.Pi / 2), 16, 2, 60, true, 1.5f);
 
-                foreach(var obj in intersected_game_objects) {
+                foreach (var obj in intersected_game_objects)
+                {
 
                     Character buffer = (Character)(obj);
                     buffer.Hit(new hitData(20));

@@ -1,10 +1,11 @@
-using ImGuiNET;
-using System;
-using System.Numerics;
 using Core.util;
+using ImGuiNET;
+using System.Numerics;
 
-namespace Core.UI {
-    public class ProgressBar : UIElement {
+namespace Core.UI
+{
+    public class ProgressBar : UIElement
+    {
         public System.Numerics.Vector4 FillColor { get; set; }
         public System.Numerics.Vector4 BackgroundColor { get; set; }
         public Func<float> ValueProvider { get; set; }
@@ -16,7 +17,8 @@ namespace Core.UI {
 
 
         public ProgressBar(Vector2 position, Vector2 size, Vector4 fillColor, Vector4 backgroundColor, Func<float> valueProvider, float minValue, float maxValue, bool showPercentageText = false, float backgroundAlpha = 1.0f)
-            : base(position, size) {
+            : base(position, size)
+        {
             FillColor = fillColor;
             BackgroundColor = new Vector4(backgroundColor.X, backgroundColor.Y, backgroundColor.Z, backgroundAlpha);
             ValueProvider = valueProvider;
@@ -27,7 +29,8 @@ namespace Core.UI {
             windowName = $"ProgressBar{counter++}";
         }
 
-        public override void Render() {
+        public override void Render()
+        {
             if (!IsActive) return;
 
             ImGui.SetNextWindowPos(Position);
@@ -38,13 +41,16 @@ namespace Core.UI {
             float clampedValue = Math.Clamp(value, MinValue, MaxValue);
             float fraction = (clampedValue - MinValue) / (MaxValue - MinValue);
 
-            if (ShowPercentageText) {
+            if (ShowPercentageText)
+            {
                 ImGui.PushStyleColor(ImGuiCol.PlotHistogram, FillColor);
                 ImGui.PushStyleColor(ImGuiCol.FrameBg, BackgroundColor);
                 ImGui.ProgressBar(fraction, Size, $"{fraction * 100}%");
                 ImGui.PopStyleColor();
                 ImGui.PopStyleColor();
-            } else {
+            }
+            else
+            {
                 uint color = ImGui.GetColorU32(FillColor);
                 uint transparentColor = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
 

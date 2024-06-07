@@ -1,4 +1,4 @@
-namespace Hell.enemy
+namespace Projektarbeit.Levels
 {
     using Core.Controllers.ai;
     using Core.util;
@@ -19,14 +19,14 @@ namespace Hell.enemy
         {
             get
             {
-                return this.enemyControllerType;
+                return enemyControllerType;
             }
 
             set
             {
                 if (value.BaseType == typeof(AI_Controller))
                 {
-                    this.enemyControllerType = value;
+                    enemyControllerType = value;
                 }
                 else
                 {
@@ -41,39 +41,39 @@ namespace Hell.enemy
         public Spawner(Vector2 position, Type controllerType, int maxSpawn, bool active = false, float rate = 5, float delay = 0)
             : base(position, new Vector2(10, 10), 0, Mobility.STATIC)
         {
-            this.startTime = Game_Time.total;
-            Console.WriteLine("Start time:" + this.startTime);
-            this.ControllerType = controllerType;
-            this.SpawnRate = rate;
-            this.Delay = delay;
-            this.MaxSpawn = maxSpawn;
-            this.Active = active;
+            startTime = Game_Time.total;
+            Console.WriteLine("Start time:" + startTime);
+            ControllerType = controllerType;
+            SpawnRate = rate;
+            Delay = delay;
+            MaxSpawn = maxSpawn;
+            Active = active;
         }
 
         public override void Update(float delta)
         {
-            if (!this.Active)
+            if (!Active)
             {
                 return;
             }
 
-            if (this.spawned >= this.MaxSpawn)
+            if (spawned >= MaxSpawn)
             {
-                this.Active = false;
+                Active = false;
                 return;
             }
 
-            if (this.Delay > 0)
+            if (Delay > 0)
             {
-                this.Delay -= delta;
+                Delay -= delta;
                 return;
             }
 
-            if (Game_Time.total > this.startTime + (this.spawned * this.SpawnRate))
+            if (Game_Time.total > startTime + (spawned * SpawnRate))
             {
-                this.spawned++;
-                AI_Controller controller = (AI_Controller)Activator.CreateInstance(this.ControllerType, this.transform.position);
-                Game.Instance.get_active_map().add_AI_Controller(controller);
+                spawned++;
+                AI_Controller controller = (AI_Controller)Activator.CreateInstance(ControllerType, transform.position);
+                Core.Game.Instance.get_active_map().add_AI_Controller(controller);
             }
         }
 

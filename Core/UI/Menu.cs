@@ -1,9 +1,10 @@
-namespace Core.UI {
 
-    using ImGuiNET;
-    using System.Collections.Generic;
+using ImGuiNET;
 
-    public abstract class Menu {
+namespace Core.UI
+{
+    public abstract class Menu
+    {
 
         private List<UIElement> elements;
         public Action custom_UI_logic_bevor_elements { get; set; }
@@ -13,7 +14,8 @@ namespace Core.UI {
 
         public void AddElement(UIElement element) { elements.Add(element); }
 
-        public virtual void Render() {
+        public virtual void Render()
+        {
             ImGuiIOPtr io = ImGui.GetIO();
 
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
@@ -34,7 +36,7 @@ namespace Core.UI {
 
             foreach (var element in elements)
                 element.Render();
-             
+
             custom_UI_logic_after_elements?.Invoke();
 
             ImGui.End();

@@ -1,23 +1,27 @@
 
-namespace Core.util {
+using System.Xml.Linq;
 
-    using System.Xml.Linq;
+namespace Core.util
+{
+    public class Level_Parser
+    {
 
-    public class Level_Parser {
-
-        public static Level_Data Parse_Level(string tmxFilePath, string tsxFilePath) {
+        public static Level_Data Parse_Level(string tmxFilePath, string tsxFilePath)
+        {
 
             Map_Data mapData = Parse_TMX(tmxFilePath);
             Tileset_Data tilesetData = Parse_TSX(tsxFilePath);
 
-            return new Level_Data {
+            return new Level_Data
+            {
 
                 Map = mapData,
                 Tileset = tilesetData,
             };
         }
 
-        private static Map_Data Parse_TMX(string tmxFilePath) {
+        private static Map_Data Parse_TMX(string tmxFilePath)
+        {
 
             XDocument doc = XDocument.Load(tmxFilePath);
             XElement? mapElement = doc.Element("map");
@@ -27,25 +31,29 @@ namespace Core.util {
             int tileWidth = Convert.ToInt32(mapElement.Attribute("tilewidth").Value);
             int tileHeight = Convert.ToInt32(mapElement.Attribute("tileheight").Value);
 
-            List<Tileset_Data> tilesets = new ();
-            foreach(XElement tilesetElement in mapElement.Elements("tileset")) {
+            List<Tileset_Data> tilesets = new();
+            foreach (XElement tilesetElement in mapElement.Elements("tileset"))
+            {
 
                 string source = tilesetElement.Attribute("source").Value;
                 int firstgid = Convert.ToInt32(tilesetElement.Attribute("firstgid").Value);
                 tilesets.Add(new Tileset_Data { Source = source, FirstGid = firstgid });
             }
 
-            List<Layer_Data> layers = new ();
-            foreach(XElement layerElement in mapElement.Elements("layer")) {
+            List<Layer_Data> layers = new();
+            foreach (XElement layerElement in mapElement.Elements("layer"))
+            {
 
                 string name = layerElement.Attribute("name").Value;
-                Layer_Data layerData = new () { Name = name, Tiles = new int[width, height] };
+                Layer_Data layerData = new() { Name = name, Tiles = new int[width, height] };
 
                 XElement dataElement = layerElement.Element("data");
 
                 string[] gidStrings = dataElement.Value.Split(',');
-                for(int y = 0; y < height; y++) {
-                    for(int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
 
                         int gid = Convert.ToInt32(gidStrings[(y * width) + x]);
                         layerData.Tiles[x, y] = gid > 0 ? gid - 1 : gid;        // Automatically adjust the tile ID by subtracting 1 from each non-zero ID
@@ -55,7 +63,8 @@ namespace Core.util {
                 layers.Add(layerData);
             }
 
-            return new Map_Data {
+            return new Map_Data
+            {
 
                 Width = width,
                 Height = height,
@@ -66,12 +75,13 @@ namespace Core.util {
             };
         }
 
-        private static Tileset_Data Parse_TSX(string tsxFilePath) {
+        private static Tileset_Data Parse_TSX(string tsxFilePath)
+        {
 
             XDocument doc = XDocument.Load(tsxFilePath);
             XElement? tilesetElement = doc.Element("tileset");
 
-            if(tilesetElement == null)
+            if (tilesetElement == null)
                 throw new Exception("Could not load level content from TSX file");
 
             string name = tilesetElement.Attribute("name").Value;
@@ -84,21 +94,24 @@ namespace Core.util {
             int imageHeight = Convert.ToInt32(tilesetElement.Element("image").Attribute("height").Value);
 
             // New: Parse custom properties for each tile
-            Dictionary<int, bool> collidableTiles = new ();
-            foreach(XElement tileElement in tilesetElement.Elements("tile")) {
+            Dictionary<int, bool> collidableTiles = new();
+            foreach (XElement tileElement in tilesetElement.Elements("tile"))
+            {
 
                 int id = Convert.ToInt32(tileElement.Attribute("id").Value);
                 XElement propertiesElement = tileElement.Element("properties");
-                if(propertiesElement == null)
+                if (propertiesElement == null)
                     continue;
 
-                foreach(XElement property in propertiesElement.Elements("property")) {
-                    if(property.Attribute("name").Value == "collidable" && property.Attribute("value").Value == "true")
+                foreach (XElement property in propertiesElement.Elements("property"))
+                {
+                    if (property.Attribute("name").Value == "collidable" && property.Attribute("value").Value == "true")
                         collidableTiles[id] = true;
                 }
             }
 
-            return new Tileset_Data {
+            return new Tileset_Data
+            {
 
                 Name = name,
                 TileWidth = tileWidth,
@@ -113,13 +126,15 @@ namespace Core.util {
         }
     }
 
-    public class Level_Data {
+    public class Level_Data
+    {
 
         required public Map_Data Map { get; set; }
         required public Tileset_Data Tileset { get; set; }
     }
 
-    public class Tileset_Data {
+    public class Tileset_Data
+    {
 
         public string? Source { get; set; }
         public int FirstGid { get; set; }
@@ -136,7 +151,8 @@ namespace Core.util {
         public Dictionary<int, bool> CollidableTiles { get; set; } = new Dictionary<int, bool>();
     }
 
-    public class Map_Data {
+    public class Map_Data
+    {
 
         public int Width { get; set; }
         public int Height { get; set; }
@@ -150,7 +166,8 @@ namespace Core.util {
         public int LevelPixelHeight => this.Height * this.TileHeight;
     }
 
-    public class Layer_Data {
+    public class Layer_Data
+    {
 
         required public string Name { get; set; }
         required public int[,] Tiles { get; set; }

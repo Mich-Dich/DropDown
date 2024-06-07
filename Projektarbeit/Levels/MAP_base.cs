@@ -1,10 +1,11 @@
-﻿namespace Hell.Levels
+﻿namespace Projektarbeit.Levels
 {
+    using System.Collections.Generic;
     using Core.util;
     using Core.world;
-    using Hell.enemy;
-    using Hell.player.power;
     using OpenTK.Mathematics;
+    using Projektarbeit.characters.enemy.controller;
+    using Projektarbeit.characters.player.power_ups;
 
     internal class MAP_base : Map
     {
@@ -12,82 +13,114 @@
         private readonly Random random;
         private float timeStamp;
         private float timeInterval;
+        private Dictionary<int, Action<Vector2>> enemyControllers;
+        private Dictionary<int, Action<Vector2>> powerUps;
 
         public MAP_base()
         {
-            this.use_garbage_collector = true;
-            this.camera = Game.Instance.camera;
-            this.random = new Random();
+            use_garbage_collector = true;
+            camera = Core.Game.Instance.camera;
+            random = new Random();
 
-            this.timeStamp = Game_Time.total;
-            this.timeInterval = this.random.Next(2, 4);
+            timeStamp = Game_Time.total;
+            timeInterval = GetRandomTimeInterval();
 
-            this.Set_Background_Image("assets/textures/background/background.png", 1.18f);
+            Set_Background_Image("assets/textures/background/background.png", 1.18f);
 
-            Add_Player(Game.Instance.player);
+            Add_Player(Core.Game.Instance.player);
+
+            InitializeEnemyControllers();
+            InitializePowerUps();
         }
 
         public override void update(float deltaTime)
         {
-            if ((this.timeStamp + this.timeInterval) <= Game_Time.total)
+            if (timeStamp + timeInterval <= Game_Time.total)
             {
-                int maxEnemies = 10 + (Game.Instance.Score / 10);
-                int currentEnemies = Game.Instance.get_active_map().allCharacter.Count;
+                SpawnEnemies();
+                SpawnPowerUps();
 
-                if (currentEnemies < maxEnemies)
-                {
-                    int enemyType = this.random.Next(0, 0);
-                    Vector2 spawnPosition = new (this.random.Next(-250, 250), -600);
-
-                    switch (enemyType)
-                    {
-                        case 0:
-                            this.add_AI_Controller(new SwarmEnemyController(spawnPosition));
-                            break;
-                        case 1:
-                            this.add_AI_Controller(new SniperEnemyController(spawnPosition));
-                            break;
-                        case 2:
-                            this.add_AI_Controller(new SwarmEnemyController(spawnPosition));
-                            break;
-                        case 3:
-                            this.add_AI_Controller(new TankEnemyController(spawnPosition));
-                            break;
-                    }
-                }
-
-                if (this.random.NextDouble() < 0.1)
-                {
-                    Vector2 powerUpPosition = new (this.random.Next(-400, 400), this.random.Next(-400, 400));
-
-                    if (Game.Instance.player.health < 50 && this.random.NextDouble() < 0.5)
-                    {
-                        HealthBoost healthBoost = new (powerUpPosition);
-                        this.Add_Game_Object(healthBoost);
-                    }
-                    else
-                    {
-                        switch (this.random.Next(0, 3))
-                        {
-                            case 0:
-                                SpeedBoost speedBoost = new (powerUpPosition);
-                                this.Add_Game_Object(speedBoost);
-                                break;
-                            case 1:
-                                HealthIncrease healthBoost = new (powerUpPosition);
-                                this.Add_Game_Object(healthBoost);
-                                break;
-                            case 2:
-                                FireRateBoost fireRateBoost = new (powerUpPosition);
-                                this.Add_Game_Object(fireRateBoost);
-                                break;
-                        }
-                    }
-                }
-
-                this.timeStamp = Game_Time.total;
-                this.timeInterval = this.random.Next(2, 4);
+                timeStamp = Game_Time.total;
+                timeInterval = GetRandomTimeInterval();
             }
+        }
+
+        private void InitializeEnemyControllers()
+        {
+            enemyControllers = new Dictionary<int, Action<Vector2>>
+            {
+                { 0, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
+                { 1, spawnPosition => add_AI_Controller(new SniperEnemyController(spawnPosition)) },
+                { 2, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
+                { 3, spawnPosition => add_AI_Controller(new TankEnemyController(spawnPosition)) },
+            };
+        }
+
+        private void InitializePowerUps()
+        {
+            powerUps = new Dictionary<int, Action<Vector2>>
+            {
+                { 0, powerUpPosition => Add_Game_Object(new SpeedBoost(powerUpPosition)) },
+                { 1, powerUpPosition => Add_Game_Object(new HealthIncrease(powerUpPosition)) },
+                { 2, powerUpPosition => Add_Game_Object(new FireRateBoost(powerUpPosition)) },
+            };
+        }
+
+        private float GetRandomTimeInterval()
+        {
+            return random.Next(2, 4);
+        }
+
+        private void SpawnEnemies()
+        {
+            if (ShouldSpawnEnemies())
+            {
+                SpawnEnemy();
+            }
+        }
+
+        private bool ShouldSpawnEnemies()
+        {
+            int maxEnemies = 10 + (Core.Game.Instance.Score / 10);
+            int currentEnemies = Core.Game.Instance.get_active_map().allCharacter.Count;
+
+            return currentEnemies < maxEnemies;
+        }
+
+        private void SpawnEnemy()
+        {
+            int enemyType = random.Next(0, enemyControllers.Count);
+            Vector2 spawnPosition = new(random.Next(-250, 250), -600);
+
+            enemyControllers[enemyType](spawnPosition);
+        }
+
+        private void SpawnPowerUps()
+        {
+            if (random.NextDouble() < 0.1)
+            {
+                Vector2 powerUpPosition = new(random.Next(-400, 400), random.Next(-400, 400));
+
+                if (ShouldSpawnHealthBoost())
+                {
+                    Add_Game_Object(new HealthBoost(powerUpPosition));
+                }
+                else
+                {
+                    SpawnPowerUp(powerUpPosition);
+                }
+            }
+        }
+
+        private bool ShouldSpawnHealthBoost()
+        {
+            return Core.Game.Instance.player.health < 50 && random.NextDouble() < 0.5;
+        }
+
+        private void SpawnPowerUp(Vector2 powerUpPosition)
+        {
+            int powerUpType = random.Next(0, powerUps.Count);
+            powerUps[powerUpType](powerUpPosition);
         }
     }
 }

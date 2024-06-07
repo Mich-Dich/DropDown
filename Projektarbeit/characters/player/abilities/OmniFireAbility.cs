@@ -1,4 +1,4 @@
-namespace Hell.player.ability
+namespace Projektarbeit.characters.player.abilities
 {
     using System.Timers;
     using Core.defaults;
@@ -11,29 +11,29 @@ namespace Hell.player.ability
 
         public OmniFireAbility()
         {
-            this.Cooldown = 15.0f; // 15 seconds cooldown
-            this.timer = new Timer(5000); // 5 seconds duration
-            this.timer.Elapsed += this.OnTimerElapsed;
-            this.timer.AutoReset = false;
-            this.IconPath = "assets/textures/abilities/fireboost.png";
+            Cooldown = 15.0f; // 15 seconds cooldown
+            timer = new Timer(5000); // 5 seconds duration
+            timer.Elapsed += OnTimerElapsed;
+            timer.AutoReset = false;
+            IconPath = "assets/textures/abilities/fireboost.png";
         }
 
         public override void Use(Character character)
         {
             this.character = character;
-            this.timer.Start();
+            timer.Start();
             Console.WriteLine("OmniFire ability used!");
-            this.IsActive = true;
+            IsActive = true;
         }
 
         private void OnTimerElapsed(object? source, ElapsedEventArgs e)
         {
-            if (this.character != null)
+            if (character != null)
             {
                 Console.WriteLine("OmniFire ability expired!");
             }
 
-            this.IsActive = false;
+            IsActive = false;
         }
     }
 }

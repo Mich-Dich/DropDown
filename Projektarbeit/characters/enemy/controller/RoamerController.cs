@@ -1,12 +1,5 @@
-namespace Hell.enemy
+namespace Projektarbeit.characters.enemy.controller
 {
-    using System;
-    using System.Collections.Generic;
-    using Core.Controllers.ai;
-    using Core.util;
-    using Core.world;
-    using Hell.player;
-    using OpenTK.Mathematics;
     /*public class RoamerController : AI_Controller<Roamer>
     {
         public readonly float maxDistanceOffset = 80f;

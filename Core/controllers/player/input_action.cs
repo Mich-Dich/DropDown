@@ -1,12 +1,13 @@
 ﻿
-namespace Core.Controllers.player {
+using Core.util;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
-    using Core.util;
-    using OpenTK.Mathematics;
-    using OpenTK.Windowing.GraphicsLibraryFramework;
-
+namespace Core.Controllers.player
+{
     // ----------------------- class -----------------------
-    public sealed class Action {
+    public sealed class Action
+    {
 
         // ======================================= public =======================================
         public string name { get; set; } = string.Empty;
@@ -21,7 +22,8 @@ namespace Core.Controllers.player {
         public float Y { get; set; } = 0;
         public float Z { get; set; } = 0;
 
-        public Action(string name, uint modefierFlags, bool trigerWhenPaued, ActionType actionType, float durationInSec, List<KeyBindingDetail> keys) {
+        public Action(string name, uint modefierFlags, bool trigerWhenPaued, ActionType actionType, float durationInSec, List<KeyBindingDetail> keys)
+        {
 
             this.name = name;
             this.modefierFlags = modefierFlags;
@@ -31,9 +33,11 @@ namespace Core.Controllers.player {
             this.keysBindings = keys;
         }
 
-        public object GetValue() {
+        public object GetValue()
+        {
 
-            switch(this.ActionType) {
+            switch (this.ActionType)
+            {
                 case ActionType.BOOL:
                     return this.X > 0;
 
@@ -53,14 +57,16 @@ namespace Core.Controllers.player {
     }
 
     // ----------------------- data -----------------------
-    public readonly struct InputEvent {
+    public readonly struct InputEvent
+    {
 
         public Key_Code key { get; }
         public KeyModifiers modifiers { get; }
         public KeyState KeyState { get; }
         public int repeatAmout { get; }
 
-        public InputEvent(Key_Code key, KeyModifiers modifiers, int repeatAmout, KeyState keyState) {
+        public InputEvent(Key_Code key, KeyModifiers modifiers, int repeatAmout, KeyState keyState)
+        {
             this.key = key;
             this.modifiers = modifiers;
             this.repeatAmout = repeatAmout;
@@ -68,7 +74,8 @@ namespace Core.Controllers.player {
         }
     }
 
-    public struct KeyBindingDetail {
+    public struct KeyBindingDetail
+    {
 
         public Key_Code key { get; set; }
         public uint ResetFlags { get; set; } = 0;
@@ -76,7 +83,8 @@ namespace Core.Controllers.player {
         public uint modefierFlags { get; set; } = 0;
         public MouseButton button { get; set; } = 0;
 
-        public KeyBindingDetail(Key_Code key, ResetFlags resetFlags, TriggerFlags triggerFlags, KeyModefierFlags modifierFlags = KeyModefierFlags.axis_1) {
+        public KeyBindingDetail(Key_Code key, ResetFlags resetFlags, TriggerFlags triggerFlags, KeyModefierFlags modifierFlags = KeyModefierFlags.axis_1)
+        {
 
             this.key = key;
             this.ResetFlags = (uint)resetFlags;
@@ -85,14 +93,16 @@ namespace Core.Controllers.player {
         }
     }
 
-    public enum KeyState {
+    public enum KeyState
+    {
 
         Pressed = 0,
         Release = 1,
         Repeat = 2,
     }
 
-    public enum ActionType {
+    public enum ActionType
+    {
 
         BOOL = 0,
         VEC_1D = 1,
@@ -101,7 +111,8 @@ namespace Core.Controllers.player {
     }
 
     [Flags]
-    public enum TriggerFlags : uint {
+    public enum TriggerFlags : uint
+    {
 
         none = 0,
         key_down = 1 << 0,   // activate when key is pressed down (can repeat)
@@ -117,7 +128,8 @@ namespace Core.Controllers.player {
     }
 
     [Flags]
-    public enum KeyModefierFlags : uint {
+    public enum KeyModefierFlags : uint
+    {
 
         none = 0,
         negate = 1 << 0,
@@ -129,7 +141,8 @@ namespace Core.Controllers.player {
     }
 
     [Flags]
-    public enum ResetFlags : uint {
+    public enum ResetFlags : uint
+    {
 
         none = 0,
         reset_on_key_down = 1 << 0,
@@ -145,7 +158,8 @@ namespace Core.Controllers.player {
     }
 
     [Flags]
-    public enum Action_ModefierFlags : uint {
+    public enum Action_ModefierFlags : uint
+    {
 
         none = 0,
         normalize_vec = 1 << 0,

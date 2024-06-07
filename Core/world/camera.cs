@@ -1,16 +1,18 @@
 ﻿
-namespace Core.world {
+using OpenTK.Mathematics;
 
-    using OpenTK.Mathematics;
-
-    public sealed class Camera : Game_Object {
+namespace Core.world
+{
+    public sealed class Camera : Game_Object
+    {
 
         public float zoom_offset { get; set; } = 0;
 
         public float zoom = 0;
 
         public Camera(Vector2 position, Vector2 window_size, float zoom)
-            : base(position, window_size, 0, Mobility.DYNAMIC) {
+            : base(position, window_size, 0, Mobility.DYNAMIC)
+        {
 
             this.transform.position = position;
             this.transform.size = window_size;
@@ -18,48 +20,55 @@ namespace Core.world {
             this.Calc_Scale();
         }
 
-        public void Set_View_Size(Vector2 window_size) {
+        public void Set_View_Size(Vector2 window_size)
+        {
 
             this.transform.size = window_size;
         }
 
-        public void Set_min_Max_Zoom(float min, float max) {
+        public void Set_min_Max_Zoom(float min, float max)
+        {
 
             this.minZoom = (min >= 0.01f) ? min : 0.01f;
             this.maxZoom = max;
             this.Calc_Scale();
         }
 
-        public void Add_Zoom(float zoom) {
+        public void Add_Zoom(float zoom)
+        {
 
             this.zoom += zoom;
             this.Calc_Scale();
         }
 
-        public void Add_Zoom_Offset(float zoom_offset) {
+        public void Add_Zoom_Offset(float zoom_offset)
+        {
 
-            if(zoom + (this.zoom_offset + zoom_offset) >= minZoom
+            if (zoom + (this.zoom_offset + zoom_offset) >= minZoom
                 && zoom + (this.zoom_offset + zoom_offset) < maxZoom)
                 this.zoom_offset += zoom_offset;
 
             this.Calc_Scale();
         }
 
-        public void Set_Zoom(float zoom) {
+        public void Set_Zoom(float zoom)
+        {
 
-            if(zoom + this.zoom_offset >= minZoom
+            if (zoom + this.zoom_offset >= minZoom
                 && zoom + this.zoom_offset < maxZoom)
                 this.zoom = zoom;
             this.Calc_Scale();
         }
 
-        public void Set_Position(Vector2 position) {
+        public void Set_Position(Vector2 position)
+        {
 
             this.transform.position = position;
             this.Calc_Scale();
         }
 
-        public Matrix4 Get_Projection_Matrix() {
+        public Matrix4 Get_Projection_Matrix()
+        {
 
             float left = this.transform.position.X - (this.transform.size.X / 2f);
             float right = this.transform.position.X + (this.transform.size.X / 2f);
@@ -72,9 +81,10 @@ namespace Core.world {
             return orthographic_matrix * zoom_matrix;
         }
 
-        public Vector2 Get_Uper_Left_Screen_Corner_In_World_Coordinates() {
+        public Vector2 Get_Uper_Left_Screen_Corner_In_World_Coordinates()
+        {
 
-            Vector2 result = new ();
+            Vector2 result = new();
 
             result = this.transform.position * this.scale;
             result -= Game.Instance.window.Size / 2;
@@ -83,9 +93,10 @@ namespace Core.world {
             return result;
         }
 
-        public Vector2 Get_Lower_Right_Screen_Corner_In_World_Coordinates() {
+        public Vector2 Get_Lower_Right_Screen_Corner_In_World_Coordinates()
+        {
 
-            Vector2 result = new ();
+            Vector2 result = new();
 
             result = this.transform.position * this.scale;
             result += Game.Instance.window.Size / 2;
@@ -94,7 +105,8 @@ namespace Core.world {
             return result;
         }
 
-        public Vector2 Get_View_Size_In_World_Coord() {
+        public Vector2 Get_View_Size_In_World_Coord()
+        {
 
             Vector2 camera_view_min = this.Get_Uper_Left_Screen_Corner_In_World_Coordinates();
             Vector2 camera_view_max = this.Get_Lower_Right_Screen_Corner_In_World_Coordinates();
@@ -104,12 +116,14 @@ namespace Core.world {
                 camera_view_max.Y - camera_view_min.Y);
         }
 
-        public float GetScale() {
+        public float GetScale()
+        {
             return this.scale;
         }
 
         // ========================================== private ==========================================
-        private void Calc_Scale() {
+        private void Calc_Scale()
+        {
 
             this.scale = Math.Clamp(this.zoom + this.zoom_offset, this.minZoom, this.maxZoom);
         }
