@@ -5,27 +5,21 @@ namespace Projektarbeit.UI
 
     public class MainMenu : Menu
     {
-        private readonly VerticalBox vbox;
-
         public MainMenu()
         {
             var background = new Background(new Vector4(0.2f, 0.2f, 0.2f, 1));
             AddElement(background);
 
-            var titleText = new Text(Vector2.Zero, "Projektarbeit", Vector4.One, new Vector2(100, 100));
-            var playButton = CreatePlayButton();
-            var exitButton = CreateExitButton();
-
             Vector2 windowSize = new Vector2(Core.Game.Instance.window.Size.X, Core.Game.Instance.window.Size.Y);
-            Vector2 vboxSize = new Vector2(200, 400);
-            Vector2 vboxPosition = (windowSize - vboxSize) / 2;
 
-            vbox = new VerticalBox(vboxPosition, vboxSize, new Vector2(10, 10));
-            vbox.AddElement(titleText);
-            vbox.AddElement(playButton);
-            vbox.AddElement(exitButton);
+            var titleText = new Text(windowSize / 2, "Projektarbeit", Vector4.One, 3f);
+            AddElement(titleText);
 
-            AddElement(vbox);
+            var playButton = CreatePlayButton((windowSize / 2) + new Vector2(-100, titleText.Size.Y + 10));
+            AddElement(playButton);
+
+            var exitButton = CreateExitButton((windowSize / 2) + new Vector2(-100, titleText.Size.Y + playButton.Size.Y + 20));
+            AddElement(exitButton);
         }
 
         public override void Render()
@@ -33,10 +27,10 @@ namespace Projektarbeit.UI
             base.Render();
         }
 
-        private Button CreatePlayButton()
+        private Button CreatePlayButton(Vector2 position)
         {
             return new Button(
-                Vector2.Zero,
+                position,
                 new Vector2(200, 50),
                 "Play",
                 () => Core.Game.Instance.StartGame(),
@@ -49,10 +43,10 @@ namespace Projektarbeit.UI
                 Vector4.One);
         }
 
-        private Button CreateExitButton()
+        private Button CreateExitButton(Vector2 position)
         {
             return new Button(
-                Vector2.Zero,
+                position,
                 new Vector2(200, 50),
                 "Exit",
                 () => Environment.Exit(0),

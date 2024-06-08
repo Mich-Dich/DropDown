@@ -40,7 +40,7 @@ namespace Projektarbeit.UI
             statusEffectsBox = new HorizontalBox(new Vector2(0, 0), new Vector2(100, 30), new Vector2(10, 10));
             healthBar = CreateProgressBar(() => Core.Game.Instance.player.HealthRatio, Core.Game.Instance.player.health_max, new Vector4(0.9f, 0.2f, 0.2f, 1));
             cooldownBar = CreateProgressBar(() => cooldownProgress, 100, new Vector4(0.2f, 0.2f, 0.9f, 1));
-            scoreText = new Text(new Vector2(0, 0), "Score");
+            scoreText = new Text(new Vector2(0, 0), "Score", new Vector4(1, 1, 1, 1), 1f, TextAlign.Left);
 
             verticalBox.AddElement(statusEffectsBox);
             verticalBox.AddElement(healthBar);
@@ -64,7 +64,7 @@ namespace Projektarbeit.UI
 
         private void UpdateScoreText()
         {
-            scoreText.Content = $"Score: {Core.Game.Instance.Score}";
+            scoreText.Content = $"Score: {Game.Instance.Score}";
         }
 
         private void UpdateAbilityIcons()
@@ -86,10 +86,15 @@ namespace Projektarbeit.UI
             {
                 if (powerUp.IconPath != null)
                 {
-                    powerUpTexture = Resource_Manager.Get_Texture(powerUp.IconPath);
-                    if (powerUpTexture != null)
+                    this.powerUpTexture = Resource_Manager.Get_Texture(powerUp.IconPath);
+                    if (this.powerUpTexture != null)
                     {
-                        UpdateStatusEffectImage(true, powerUpTexture, powerUp.IconPath);
+                        var statusEffectImage = this.statusEffectsBox.GetElementByTextureId(this.powerUpTexture.Handle);
+                        if (statusEffectImage == null)
+                        {
+                            statusEffectImage = new Image(this.statusEffectsBox.Position, new Vector2(30, 30), powerUp.IconPath);
+                            this.statusEffectsBox.AddElement(statusEffectImage);
+                        }
                     }
                 }
             }

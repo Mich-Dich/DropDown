@@ -15,6 +15,9 @@
     <None Update="assets/animation/bolt/bolt.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets/fonts/Roboto/fa-brands-400.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets/animation/bolt/bolt.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

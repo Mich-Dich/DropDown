@@ -6,25 +6,19 @@ namespace Projektarbeit.UI
 
     public class GameOver : Menu
     {
-        private readonly VerticalBox vbox;
-
         public GameOver()
         {
             var background = new Background(new Vector4(0, 0, 0, 0.5f));
             AddElement(background);
 
-            var gameOverText = new Text(Vector2.Zero, "Game Over", new Vector4(0.9f, 0.2f, 0.2f, 1), new Vector2(100, 100));
-            var restartButton = CreateRestartButton();
-
             Vector2 windowSize = new Vector2(Game.Instance.window.Size.X, Game.Instance.window.Size.Y);
-            Vector2 vboxSize = new Vector2(200, 200);
-            Vector2 vboxPosition = (windowSize - vboxSize) / 2;
+            float fontSize = 8f;
 
-            vbox = new VerticalBox(vboxPosition, vboxSize, new Vector2(10, 10));
-            vbox.AddElement(gameOverText);
-            vbox.AddElement(restartButton);
+            var gameOverText = new Text(windowSize / 2, "Game Over", new Vector4(0.9f, 0.2f, 0.2f, 1), fontSize);
+            AddElement(gameOverText);
 
-            AddElement(vbox);
+            var restartButton = CreateRestartButton((windowSize / 2) + new Vector2(-100, gameOverText.Size.Y + 10));
+            AddElement(restartButton);
         }
 
         public override void Render()
@@ -32,10 +26,10 @@ namespace Projektarbeit.UI
             base.Render();
         }
 
-        private Button CreateRestartButton()
+        private Button CreateRestartButton(Vector2 position)
         {
             return new Button(
-                Vector2.Zero,
+                position,
                 new Vector2(200, 50),
                 "Restart",
                 () => Game.Instance.StartGame(),
