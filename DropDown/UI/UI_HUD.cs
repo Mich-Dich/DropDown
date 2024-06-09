@@ -26,9 +26,9 @@ namespace DropDown.UI {
         public UI_HUD() {
             
             // HUD
-            image_blood_overlay = Resource_Manager.Get_Texture("assets/textures/BloodOverlay.png");
-            image_hud_box = Resource_Manager.Get_Texture("assets/textures/box.png");
-            image_hud_box_selected = Resource_Manager.Get_Texture("assets/textures/box_selected.png");
+            image_blood_overlay = Resource_Manager.Get_Texture("assets/textures/UI/BloodOverlay.png");
+            image_hud_box = Resource_Manager.Get_Texture("assets/textures/UI/box.png");
+            image_hud_box_selected = Resource_Manager.Get_Texture("assets/textures/UI/box_selected.png");
 
             col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
             col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.8f, 1));
@@ -93,19 +93,19 @@ namespace DropDown.UI {
                     if(x == 0) {
                         ImGui.SetCursorPos(cursor_pos);
                         Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
-                        ImGui.Image(Resource_Manager.Get_Texture("assets/textures/weapon.png").Handle, icon_box_size - (icon_offset * 2));
+                        ImGui.Image(Resource_Manager.Get_Texture("assets/textures/UI/weapon.png").Handle, icon_box_size - (icon_offset * 2));
                     }
 
                     if(x == 1) {
                         ImGui.SetCursorPos(cursor_pos);
                         Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
-                        ImGui.Image(Resource_Manager.Get_Texture("assets/textures/bow.png").Handle, icon_box_size - (icon_offset * 2));
+                        ImGui.Image(Resource_Manager.Get_Texture("assets/textures/UI/bow.png").Handle, icon_box_size - (icon_offset * 2));
                     }
 
                     if(x == 4) {
                         ImGui.SetCursorPos(cursor_pos);
                         Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
-                        ImGui.Image(Resource_Manager.Get_Texture("assets/textures/torch.png").Handle, icon_box_size - (icon_offset * 2));
+                        ImGui.Image(Resource_Manager.Get_Texture("assets/textures/UI/torch.png").Handle, icon_box_size - (icon_offset * 2));
                     }
 
                     ImGui.SetCursorPos(cursor_pos);
@@ -123,6 +123,7 @@ namespace DropDown.UI {
         private float _boold_overlay_intencity = 0.0f;
 
         public void flash_blood_overlay() { _boold_overlay_intencity += 0.3f; }
+        public void reset_blood_overlay() { _boold_overlay_intencity = 0; }
 
         private void display_blood_overlay(float deltaTime) {
 

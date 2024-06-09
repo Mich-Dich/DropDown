@@ -31,6 +31,9 @@ namespace DropDown.player {
 
             rotation_offset = float.Pi / 2;
             movement_speed = 350.0f;
+
+            death_callback = () => { ((Drop_Down)Game.Instance).set_play_state(DropDown.Play_State.dead); };
+
         }
 
         public override void Update(Single deltaTime) {
@@ -39,24 +42,32 @@ namespace DropDown.player {
             if((health / health_max) <= health_visual_display_limit
                 && ((last_blood_stain + 2 * (health / health_max)) <= Game_Time.total)) {
 
-                ((Drop_Down)Game.Instance).HUD.flash_blood_overlay();
-                ((MAP_base)Game.Instance.get_active_map()).add_blood_splater(transform.position);
-                last_blood_stain = Game_Time.total;
+                blood_stuff();
             }
         }
 
         public override void apply_damage(float damage) {
 
+            float loc_damage = damage;
             if(health <= 0)
                 death_callback?.Invoke();
 
-            float loc_damage = damage;
             if((health / health_max) <= health_lower_limit_area)
                 loc_damage /= 3;
 
             base.apply_damage(loc_damage);
             if((health / health_max) <= health_visual_display_limit) {
-                ((Drop_Down)Game.Instance).HUD.flash_blood_overlay();
+
+                blood_stuff();
+            }
+
+        }
+        
+        private void blood_stuff() {
+
+            ((Drop_Down)Game.Instance).HUD.flash_blood_overlay();
+            if(typeof(MAP_base) == Game.Instance.get_active_map().GetType()) {
+
                 ((MAP_base)Game.Instance.get_active_map()).add_blood_splater(transform.position);
                 last_blood_stain = Game_Time.total;
             }

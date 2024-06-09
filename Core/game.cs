@@ -321,6 +321,8 @@ namespace Core
 #endif
         }
 
+        public void exit_game() { this.window.Close(); }
+
         public void Show_Performance(bool enable) { show_performance = enable; }
 
         public Vector2 Get_Mouse_Relative_Pos() { return this.window.MousePosition - (this.window.Size / 2) + this.cursorPosOffset; }
@@ -333,31 +335,24 @@ namespace Core
         protected abstract void Render(float deltaTime);
         protected abstract void Render_Imgui(float deltaTime);
         protected virtual void Window_Resize() { this.camera.Set_Zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset); }
-
-        protected void Set_Update_Frequency(double frequency)
-        {
+        
+        protected void Set_Update_Frequency(double frequency) {
 
             this.window.VSync = VSyncMode.Off;
             this.window.UpdateFrequency = frequency;
         }
 
-        protected void ResetInputEvent_List()
-        {
-
-            this.inputEvent.Clear();
-        }
+        protected void ResetInputEvent_List() { this.inputEvent.Clear(); }
 
         // ============================================================================== private ==============================================================================
-        private void Internal_Render()
-        {
+        private void Internal_Render() {
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
             this.defaultSpriteShader.Use();
             this.defaultSpriteShader.Set_Matrix_4x4("projection", this.camera.Get_Projection_Matrix());
 
             this.activeMap.Draw();
-            if (this.showDebug)
-            {
+            if (this.showDebug) {
 
                 this.activeMap.Draw_Debug();
                 global_Debug_Drawer.draw();
@@ -374,8 +369,7 @@ namespace Core
         }
 
         // ============================================ IMGUI ============================================
-        private void Imgui_Render(float deltaTime)
-        {
+        private void Imgui_Render(float deltaTime) {
 
             this.imguiController.Update(this.window, (float)Game_Time.delta);
 
@@ -390,8 +384,7 @@ namespace Core
             DebugData.Reset();
         }
 
-        private void InitImGuiController()
-        {
+        private void InitImGuiController() {
 
             // Get the FrameBuffer size and compute the scale factor for ImGuiController
             Vector2i fb = this.window.FramebufferSize;
