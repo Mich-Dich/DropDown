@@ -20,6 +20,38 @@ namespace Projektarbeit.UI
 
             var exitButton = CreateExitButton((windowSize / 2) + new Vector2(-100, titleText.Size.Y + playButton.Size.Y + 20));
             AddElement(exitButton);
+
+            // Add XP bar
+            var xpBar = new ProgressBar(
+                new Vector2(10, 10), // Position
+                new Vector2(200, 20), // Size
+                new Vector4(0, 1, 0, 1), // Fill color
+                new Vector4(1, 1, 1, 1), // Background color
+                () => { try { return Core.Game.Instance.GameState.AccountXP; } catch { return 0; } },
+                0, // Min value
+                100, // Max value
+                true // Show percentage text
+            );
+            AddElement(xpBar);
+
+            // Add level text
+            var levelText = new Text(
+            new Vector2(10, 40), // Position
+            () => 
+            {
+                try 
+                {
+                    return $"Level: {Core.Game.Instance.GameState.AccountLevel}";
+                } 
+                catch 
+                {
+                    return "Level: Error";
+                }
+            },
+            Vector4.One, // Color
+            1f // Scale
+        );
+        AddElement(levelText);
         }
 
         public override void Render()

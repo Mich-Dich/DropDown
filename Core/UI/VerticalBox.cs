@@ -5,12 +5,14 @@ namespace Core.UI
     public class VerticalBox : UIElement
     {
         public readonly List<UIElement> elements;
+        public Align Alignment { get; set; }
         private Vector2 padding;
 
-        public VerticalBox(Vector2 position, Vector2 size, Vector2 padding) : base(position, size)
+        public VerticalBox(Vector2 position, Vector2 size, Vector2 padding, Align align) : base(position, size)
         {
             elements = new List<UIElement>();
             this.padding = padding;
+            this.Alignment = align;
         }
 
         public void AddElement(UIElement element)
@@ -46,13 +48,28 @@ namespace Core.UI
         }
 
         private void OrganizeElements()
+{
+    Vector2 currentPosition = Position;
+    foreach (var element in elements)
+    {
+        switch (Alignment)
         {
-            Vector2 currentPosition = Position;
-            foreach (var element in elements)
-            {
+            case Align.Left:
                 element.Position = currentPosition;
-                currentPosition.Y += element.Size.Y + padding.Y;
-            }
+                break;
+            case Align.Center:
+                element.Position = new Vector2(Position.X + (Size.X - element.Size.X) / 2, currentPosition.Y);
+                break;
+            case Align.Right:
+                currentPosition.X = Position.X + Size.X - element.Size.X - padding.X;
+                element.Position = currentPosition;
+                break;
+            default:
+                element.Position = currentPosition;
+                break;
         }
+        currentPosition.Y += element.Size.Y + padding.Y;
+    }
+}
     }
 }

@@ -86,6 +86,7 @@ namespace Core
         private readonly DebugDataViualizer debugDataViualizer = new();
         private double updateFrequencyBuffer = 0;
         public Debug_Drawer Debug_Drawer;
+        public GameState GameState { get; set; }
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight)
         {

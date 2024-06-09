@@ -36,11 +36,20 @@ namespace Projektarbeit.UI
 
         private void InitializeUIElements()
         {
-            verticalBox = new VerticalBox(new Vector2(15, Core.Game.Instance.window.Size.Y - 150), new Vector2(100, 200), new Vector2(10, 10));
-            statusEffectsBox = new HorizontalBox(new Vector2(0, 0), new Vector2(100, 30), new Vector2(10, 10));
+            Vector2 windowSize = new Vector2(Core.Game.Instance.window.Size.X, Core.Game.Instance.window.Size.Y);
+            Vector2 boxSize = new Vector2(100, 200);
+            Vector2 padding = new Vector2(10, 10);
+
+            float xPosition = (windowSize.X - boxSize.X) / 2;
+            float yPosition = windowSize.Y - boxSize.Y - padding.Y;
+
+            Align align = Align.Center;
+
+            verticalBox = new VerticalBox(new Vector2(xPosition, yPosition), boxSize, padding, align);
+            statusEffectsBox = new HorizontalBox(new Vector2(0, 0), new Vector2(100, 30), new Vector2(10, 10), Align.Center);
             healthBar = CreateProgressBar(() => Core.Game.Instance.player.HealthRatio, Core.Game.Instance.player.health_max, new Vector4(0.9f, 0.2f, 0.2f, 1));
             cooldownBar = CreateProgressBar(() => cooldownProgress, 100, new Vector4(0.2f, 0.2f, 0.9f, 1));
-            scoreText = new Text(new Vector2(0, 0), "Score", new Vector4(1, 1, 1, 1), 1f, TextAlign.Left);
+            scoreText = new Text(new Vector2(0, 0), "Score", new Vector4(0, 0, 0, 1), 1f, TextAlign.Left);
 
             verticalBox.AddElement(statusEffectsBox);
             verticalBox.AddElement(healthBar);

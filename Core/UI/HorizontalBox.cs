@@ -5,12 +5,14 @@ namespace Core.UI
     public class HorizontalBox : UIElement
     {
         public List<UIElement> elements;
+        public Align Alignment { get; set; }
         private Vector2 padding;
 
-        public HorizontalBox(Vector2 position, Vector2 size, Vector2 padding) : base(position, size)
+        public HorizontalBox(Vector2 position, Vector2 size, Vector2 padding, Align align) : base(position, size)
         {
             elements = new List<UIElement>();
             this.padding = padding;
+            this.Alignment = align;
         }
 
         public void AddElement(UIElement element)
@@ -47,11 +49,23 @@ namespace Core.UI
 
         private void OrganizeElements()
         {
-            Vector2 currentPosition = Position;
+            float totalWidth = elements.Sum(e => e.Size.X + padding.X) - padding.X;
+            Vector2 startPosition = Position;
+
+            switch (Alignment)
+            {
+                case Align.Center:
+                    startPosition.X += (Size.X - totalWidth) / 2;
+                    break;
+                case Align.Right:
+                    startPosition.X += Size.X - totalWidth;
+                    break;
+            }
+
             foreach (var element in elements)
             {
-                element.Position = currentPosition;
-                currentPosition.X += element.Size.X + padding.X;
+                element.Position = new Vector2(startPosition.X, Position.Y + (Size.Y - element.Size.Y) / 2);
+                startPosition.X += element.Size.X + padding.X;
             }
         }
     }

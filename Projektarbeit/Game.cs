@@ -4,6 +4,7 @@ namespace Projektarbeit
     using Projektarbeit.characters.player;
     using Projektarbeit.Levels;
     using Projektarbeit.UI;
+    using Core.world;
 
     internal class Game : Core.Game
     {
@@ -27,7 +28,6 @@ namespace Projektarbeit
         // ========================================================= functions =========================================================
         protected override void Init()
         {
-
             Set_Update_Frequency(144.0f);
 
             activeMap = new MAP_main_menu();
@@ -35,14 +35,17 @@ namespace Projektarbeit
             player.IsRemoved = true;
             playerController = new PC_main(player);
 
-            mainMenu = new MainMenu();
+            GameState = GameStateManager.LoadGameState("save.json");
+
             mainHUD = new MainHUD();
             gameOver = new GameOver();
-#if DEBUG
-            Show_Performance(true);
-            showDebugData(true);
+            mainMenu = new MainMenu();
+
+        #if DEBUG
+            Show_Performance(false);
+            showDebugData(false);
             camera.Set_min_Max_Zoom(0.03f, 1.4f);
-#endif
+        #endif
         }
 
         protected override void Shutdown() { }
@@ -53,10 +56,8 @@ namespace Projektarbeit
 
         protected override void Render_Imgui(float deltaTime)
         {
-
             switch (play_state)
             {
-
                 case Play_State.main_menu:
                     mainMenu.Render();
                     break;

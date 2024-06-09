@@ -1,6 +1,12 @@
 
 namespace Core.UI
 {
+    public enum Align
+    {
+        Left,
+        Center,
+        Right
+    }
 
     public abstract class UIElement
     {
