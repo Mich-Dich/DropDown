@@ -8,6 +8,42 @@ namespace Core.world
     {
         public int AccountLevel { get; set; }
         public int AccountXP { get; set; }
+        public int Currency { get; set; }
+
+        public int XPForNextLevel()
+        {
+            return (int)(25 * Math.Pow(AccountLevel, 1.5));
+        }
+
+        public void AddXP(int amount)
+        {
+            AccountXP += amount;
+            while (AccountXP >= XPForNextLevel())
+            {
+                AccountXP -= XPForNextLevel();
+                AccountLevel++;
+                Currency += CalculateCurrencyIncrease(AccountLevel);
+            }
+            GameStateManager.SaveGameState(this, "save.json");
+        }
+
+        public void IncreaseLevel()
+        {
+            AccountLevel++;
+            AccountXP = 0;
+            Currency += CalculateCurrencyIncrease(AccountLevel);
+            GameStateManager.SaveGameState(this, "save.json");
+        }
+
+        public float GetXPProgress()
+        {
+            return (float)AccountXP / XPForNextLevel();
+        }
+
+        private int CalculateCurrencyIncrease(int level)
+        {
+            return (int)(10 * Math.Log(level + 1));
+        }
     }
 
     public static class GameStateManager
@@ -60,7 +96,14 @@ namespace Core.world
             if (!File.Exists(filePath))
             {
                 Console.WriteLine($"File {filePath} does not exist. Creating a new one...");
-                SaveGameState(new GameState(), fileName);
+                var newGameState = new GameState
+                {
+                    AccountLevel = 1,
+                    AccountXP = 0,
+                    Currency = 0
+                };
+                SaveGameState(newGameState, fileName);
+                return newGameState;
             }
 
             string json = File.ReadAllText(filePath);

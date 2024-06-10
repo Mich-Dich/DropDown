@@ -37,6 +37,15 @@ namespace Core.UI
         public float FontSize { get; set; }
         public TextAlign Alignment { get; set; }
 
+        public Text(Vector2 position, Func<string> contentProvider, Vector4 color, float fontSize, Vector2 size)
+            : base(position, size)
+        {
+            this.contentProvider = contentProvider;
+            Color = color;
+            FontSize = fontSize;
+            Alignment = TextAlign.Center;
+        }
+
         public Text(Vector2 position, string content, Vector4 color, float fontSize, TextAlign alignment = TextAlign.Center)
             : base(position, Vector2.Zero)
         {

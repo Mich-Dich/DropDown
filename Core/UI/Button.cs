@@ -1,10 +1,9 @@
+using ImGuiNET;
 
-namespace Core.UI {
-
-    using ImGuiNET;
-
-    public class Button : UIElement {
-
+namespace Core.UI
+{
+    public class Button : UIElement
+    {
         public string Label { get; set; }
         public Action OnClick { get; set; }
         public Action OnHover { get; set; }
@@ -16,14 +15,12 @@ namespace Core.UI {
         public System.Numerics.Vector4 ClickTextColor { get; set; }
         public float BorderRadius { get; set; }
 
-        public Button(System.Numerics.Vector2 position, System.Numerics.Vector2 size, string label, Action? onClick, Action? onHover, System.Numerics.Vector4 color, System.Numerics.Vector4 hoverColor, System.Numerics.Vector4 clickColor, System.Numerics.Vector4 textColor, System.Numerics.Vector4 hoverTextColor, System.Numerics.Vector4 clickTextColor)
-            : base(position, size) {
-
+        public Button(System.Numerics.Vector2 position, System.Numerics.Vector2 size, string label, Action onClick, Action onHover, System.Numerics.Vector4 color, System.Numerics.Vector4 hoverColor, System.Numerics.Vector4 clickColor, System.Numerics.Vector4 textColor, System.Numerics.Vector4 hoverTextColor, System.Numerics.Vector4 clickTextColor)
+            : base(position, size)
+        {
             Label = label;
-            if (onClick != null)
-                OnClick = onClick;
-            if (onHover != null)
-                OnHover = onHover;
+            OnClick = onClick;
+            OnHover = onHover;
             Color = color;
             HoverColor = hoverColor;
             ClickColor = clickColor;
@@ -33,9 +30,15 @@ namespace Core.UI {
             Size = size;
         }
 
-        public void SetOnClick(Action onClick) { OnClick = onClick; }
+        public void SetOnClick(Action onClick)
+        {
+            OnClick = onClick;
+        }
 
-        public void SetOnHover(Action onHover) { OnHover = onHover; }
+        public void SetOnHover(Action onHover)
+        {
+            OnHover = onHover;
+        }
 
         public override void Render()
         {
@@ -53,9 +56,13 @@ namespace Core.UI {
             ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, BorderRadius);
 
             if (ImGui.Button(Label, Size))
+            {
                 OnClick?.Invoke();
+            }
             else if (ImGui.IsItemHovered())
+            {
                 OnHover?.Invoke();
+            }
 
             ImGui.PopStyleColor(2);
             ImGui.PopStyleVar();

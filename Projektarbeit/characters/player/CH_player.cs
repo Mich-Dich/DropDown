@@ -1,9 +1,5 @@
-<<<<<<< Updated upstream
 ﻿namespace Projektarbeit.characters.player
 {
-=======
-﻿namespace Hell.player {
->>>>>>> Stashed changes
     using Core.physics;
     using Core.util;
     using Core.world;
@@ -52,14 +48,8 @@
             // Disable the border
             ImGui.PushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
 
-<<<<<<< Updated upstream
             ImGui.SetNextWindowPos(position, ImGuiCond.Always, new System.Numerics.Vector2(0.5f));
             ImGui.Begin(uniqueId, window_flags);
-=======
-                System.Numerics.Vector2 position =
-                    util.convert_Vector<System.Numerics.Vector2>(util.Convert_World_To_Screen_Coords(this.transform.position)) + (pos_offset ?? System.Numerics.Vector2.Zero);
-                ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding ?? new System.Numerics.Vector2(4));
->>>>>>> Stashed changes
 
             // Calculate Cooldown
             float cooldownRatio = CalculateCooldownRatio();

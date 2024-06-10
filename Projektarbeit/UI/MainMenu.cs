@@ -12,46 +12,23 @@ namespace Projektarbeit.UI
 
             Vector2 windowSize = new Vector2(Core.Game.Instance.window.Size.X, Core.Game.Instance.window.Size.Y);
 
-            var titleText = new Text(windowSize / 2, "Projektarbeit", Vector4.One, 3f);
+            var titleText = new Text(windowSize / 2 + new Vector2(0, -150), "Projektarbeit", Vector4.One, 3f);
             AddElement(titleText);
 
-            var playButton = CreatePlayButton((windowSize / 2) + new Vector2(-100, titleText.Size.Y + 10));
+            var playButton = CreatePlayButton((windowSize / 2) + new Vector2(-100, (titleText.Size.Y + 10) - 150));
             AddElement(playButton);
 
-            var exitButton = CreateExitButton((windowSize / 2) + new Vector2(-100, titleText.Size.Y + playButton.Size.Y + 20));
+            var exitButton = CreateExitButton((windowSize / 2) + new Vector2(-100, (titleText.Size.Y + playButton.Size.Y + 20) -150));
             AddElement(exitButton);
 
-            // Add XP bar
-            var xpBar = new ProgressBar(
-                new Vector2(10, 10), // Position
-                new Vector2(200, 20), // Size
-                new Vector4(0, 1, 0, 1), // Fill color
-                new Vector4(1, 1, 1, 1), // Background color
-                () => { try { return Core.Game.Instance.GameState.AccountXP; } catch { return 0; } },
-                0, // Min value
-                100, // Max value
-                true // Show percentage text
-            );
-            AddElement(xpBar);
+            var xpButton = CreateXPButton((windowSize / 2) + new Vector2(-100, (titleText.Size.Y + playButton.Size.Y + exitButton.Size.Y + 30) -150));
+            AddElement(xpButton);
 
-            // Add level text
-            var levelText = new Text(
-            new Vector2(10, 40), // Position
-            () => 
-            {
-                try 
-                {
-                    return $"Level: {Core.Game.Instance.GameState.AccountLevel}";
-                } 
-                catch 
-                {
-                    return "Level: Error";
-                }
-            },
-            Vector4.One, // Color
-            1f // Scale
-        );
-        AddElement(levelText);
+            var skillTreeButton = CreateSkillTreeButton((windowSize / 2) + new Vector2(-100, (titleText.Size.Y + playButton.Size.Y + exitButton.Size.Y + xpButton.Size.Y + 40) -150));
+            AddElement(skillTreeButton);
+
+            var profilePanel = new ProfilePanel(new Vector2(10, 10));
+            AddElement(profilePanel);
         }
 
         public override void Render()
@@ -86,6 +63,38 @@ namespace Projektarbeit.UI
                 new Vector4(0.7f, 0.2f, 0.2f, 1),
                 new Vector4(0.6f, 0.1f, 0.1f, 1),
                 new Vector4(0.5f, 0.1f, 0.1f, 1),
+                Vector4.One,
+                Vector4.One,
+                Vector4.One);
+        }
+
+        private Button CreateXPButton(Vector2 position)
+        {
+            return new Button(
+                position,
+                new Vector2(200, 50),
+                "Increase XP",
+                () => Core.Game.Instance.GameState.AddXP(1),
+                null,
+                new Vector4(0.2f, 0.7f, 0.2f, 1), // Normal color
+                new Vector4(0.0f, 0.8f, 0.1f, 1), // Hover color
+                new Vector4(0.1f, 0.5f, 0.1f, 1), // Click color
+                Vector4.One,
+                Vector4.One,
+                Vector4.One);
+        }
+
+        private Button CreateSkillTreeButton(Vector2 position)
+        {
+            return new Button(
+                position,
+                new Vector2(200, 50),
+                "Skill Tree",
+                () => Core.Game.Instance.play_state = Core.Play_State.skill_tree,
+                null,
+                new Vector4(0.2f, 0.7f, 0.2f, 1), // Normal color
+                new Vector4(0.0f, 0.8f, 0.1f, 1), // Hover color
+                new Vector4(0.1f, 0.5f, 0.1f, 1), // Click color
                 Vector4.One,
                 Vector4.One,
                 Vector4.One);

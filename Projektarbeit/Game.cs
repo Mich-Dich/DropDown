@@ -11,6 +11,8 @@ namespace Projektarbeit
         private MainHUD mainHUD;
         private GameOver gameOver;
         private MainMenu mainMenu;
+        private SkillTreeMenu skillTreeMenu;
+        private AbilitySkillTree abilitySkillTree;
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) { }
@@ -40,6 +42,8 @@ namespace Projektarbeit
             mainHUD = new MainHUD();
             gameOver = new GameOver();
             mainMenu = new MainMenu();
+            skillTreeMenu = new SkillTreeMenu();
+            abilitySkillTree = new AbilitySkillTree();
 
         #if DEBUG
             Show_Performance(false);
@@ -50,7 +54,12 @@ namespace Projektarbeit
 
         protected override void Shutdown() { }
 
-        protected override void Update(float deltaTime) { }
+        protected override void Update(float deltaTime) {
+            if (GameState.AccountXP >= GameState.XPForNextLevel())
+            {
+                GameState.IncreaseLevel();
+            }
+         }
 
         protected override void Render(float deltaTime) { }
 
@@ -66,6 +75,12 @@ namespace Projektarbeit
                     break;
                 case Play_State.dead:
                     gameOver.Render();
+                    break;
+                case Play_State.skill_tree:
+                    skillTreeMenu.Render();
+                    break;
+                case Play_State.ability_skill_tree:
+                    abilitySkillTree.Render();
                     break;
             }
         }
