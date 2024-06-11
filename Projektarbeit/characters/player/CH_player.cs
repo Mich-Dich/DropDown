@@ -36,7 +36,9 @@
 
             ImGuiWindowFlags window_flags = GetWindowFlags();
 
-            System.Numerics.Vector2 position = util.convert_Vector(util.Convert_World_To_Screen_Coords(transform.position)) + (pos_offset ?? System.Numerics.Vector2.Zero);
+            System.Numerics.Vector2 position = util.convert_Vector<System.Numerics.Vector2>(util.Convert_World_To_Screen_Coords(transform.position))
+                + (pos_offset ?? System.Numerics.Vector2.Zero);
+
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding ?? new System.Numerics.Vector2(4));
 
             if (rounding != 0.0f)

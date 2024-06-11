@@ -23,7 +23,7 @@ namespace DropDown.UI {
                 new ImageButton(
                     new System.Numerics.Vector2(280, 400),
                     new System.Numerics.Vector2(200, 57),
-                    "##start_button",
+                    "##start",
                     () => { ((Drop_Down)Game.Instance).set_play_state(DropDown.Play_State.hub_area); },
                     () => { },
                     "assets/textures/UI/bu_start.png",
@@ -59,7 +59,7 @@ namespace DropDown.UI {
                 new ImageButton(
                     new System.Numerics.Vector2(200, window_size.Y - 150),
                     new System.Numerics.Vector2(200, 57),
-                    "##exit_button",
+                    "##exit",
                     () => { Game.Instance.exit_game(); },
                     () => { },
                     "assets/textures/UI/bu_exit.png",

@@ -2,11 +2,9 @@
 namespace DropDown {
 
     using Core;
-    using Core.defaults;
     using Core.util;
     using DropDown.player;
     using DropDown.UI;
-    using ImGuiNET;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
 
@@ -18,13 +16,14 @@ namespace DropDown {
         hub_area = 3,
     }
 
-    internal class Drop_Down : Core.Game {
+    internal class Drop_Down : Game {
 
         public Drop_Down(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) { }
 
         public UI_HUD HUD { get; set; }
         private UI_main_menu main_menu;
+        private UI_death ui_death;
 
         MAP_start start_map;
 
@@ -56,6 +55,7 @@ namespace DropDown {
 
             main_menu = new UI_main_menu();
             HUD = new UI_HUD();
+            ui_death = new UI_death(() => { set_play_state(Play_State.hub_area); });
         }
 
         protected override void Shutdown() { }
@@ -81,7 +81,7 @@ namespace DropDown {
                     HUD.Render();
                 break;
                 case Play_State.dead:
-            
+                    ui_death.Render();
                 break;
                 case Play_State.hub_area:
             

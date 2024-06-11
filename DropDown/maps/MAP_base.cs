@@ -7,7 +7,6 @@ namespace DropDown {
     using Core.util;
     using Core.world;
     using DropDown.enemy;
-    using DropDown.maps;
     using DropDown.utility;
     using OpenTK.Mathematics;
     using System;

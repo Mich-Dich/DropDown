@@ -1,16 +1,17 @@
-namespace Projektarbeit.characters.player.abilities
-{
+
+namespace Projektarbeit.characters.player.abilities {
+
     using System.Timers;
     using Core.defaults;
     using Core.world;
 
-    public class OmniFireAbility : Ability
-    {
+    public class OmniFireAbility : Ability {
+
         private readonly Timer timer;
         private Character character;
 
-        public OmniFireAbility()
-        {
+        public OmniFireAbility() {
+
             Cooldown = 15.0f; // 15 seconds cooldown
             timer = new Timer(5000); // 5 seconds duration
             timer.Elapsed += OnTimerElapsed;
@@ -24,22 +25,21 @@ namespace Projektarbeit.characters.player.abilities
             BaseUpgradeCost = 30;
         }
 
-        public override void Use(Character character)
-        {
+        public override void Use(Character character) {
+
             this.character = character;
             timer.Start();
             Console.WriteLine("OmniFire ability used!");
             IsActive = true;
         }
 
-        private void OnTimerElapsed(object? source, ElapsedEventArgs e)
-        {
+        private void OnTimerElapsed(object? source, ElapsedEventArgs e) {
+
             if (character != null)
-            {
                 Console.WriteLine("OmniFire ability expired!");
-            }
 
             IsActive = false;
         }
+
     }
 }
