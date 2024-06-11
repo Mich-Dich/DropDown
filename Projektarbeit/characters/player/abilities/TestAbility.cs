@@ -9,6 +9,12 @@ namespace Projektarbeit.characters.player.abilities
         {
             Cooldown = 5.0f;
             Effect = null;
+
+            Name = "Test";
+            Description = "Test ability.";
+            UnlockCost = 10;
+            UpgradeMultiplier = 1.5f;
+            BaseUpgradeCost = 10;
         }
 
         public override void Use(Character character)

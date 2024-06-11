@@ -3,15 +3,48 @@ namespace Projektarbeit.UI
     using System.Numerics;
     using Core.UI;
     using Core.defaults;
+    using Projektarbeit.characters.player.abilities;
+    using ImGuiNET;
+    using Core.world;
+    using System.Drawing;
 
     public class AbilitySkillTree : Menu
     {
         private Ability selectedAbility;
+        private OmniFireAbility omniFireAbility;
+        private ShieldAbility shieldAbility;
+        private TestAbility testAbility;
         private const float ButtonHeight = 50;
         private const float ButtonPadding = 10;
+        private bool displayDialog = false;
+
+        private Button omniFireButton;
+        private Button shieldButton;
+        private Button testButton;
 
         public AbilitySkillTree()
         {
+            omniFireAbility = Game.Instance.GameState.Abilities.OfType<OmniFireAbility>().FirstOrDefault();
+            if (omniFireAbility == null)
+            {
+                omniFireAbility = new OmniFireAbility();
+                Game.Instance.GameState.Abilities.Add(omniFireAbility);
+            }
+
+            shieldAbility = Game.Instance.GameState.Abilities.OfType<ShieldAbility>().FirstOrDefault();
+            if (shieldAbility == null)
+            {
+                shieldAbility = new ShieldAbility();
+                Game.Instance.GameState.Abilities.Add(shieldAbility);
+            }
+
+            testAbility = Game.Instance.GameState.Abilities.OfType<TestAbility>().FirstOrDefault();
+            if (testAbility == null)
+            {
+                testAbility = new TestAbility();
+                Game.Instance.GameState.Abilities.Add(testAbility);
+            }
+
             var background = new Background(new Vector4(0.2f, 0.2f, 0.2f, 1));
             AddElement(background);
 
@@ -22,31 +55,31 @@ namespace Projektarbeit.UI
 
             float buttonY = titleText.Size.Y + ButtonPadding;
 
-            var omniFireButton = CreateButton(
+            omniFireButton = CreateButton(
                 (windowSize / 2) + new Vector2(-100, buttonY - 150),
                 "OmniFireAbility",
-                () => { /*SelectAbility(omniFireAbility);*/ },
-                null
+                () => { SelectAbility(omniFireAbility); },
+                omniFireAbility
             );
             AddElement(omniFireButton);
 
             buttonY += ButtonHeight + ButtonPadding;
 
-            var shieldButton = CreateButton(
+            shieldButton = CreateButton(
                 (windowSize / 2) + new Vector2(-100, buttonY - 150),
                 "ShieldAbility",
-                () => { /*SelectAbility(shieldAbility);*/ },
-                null
+                () => { SelectAbility(shieldAbility); },
+                shieldAbility
             );
             AddElement(shieldButton);
 
             buttonY += ButtonHeight + ButtonPadding;
 
-            var testButton = CreateButton(
+            testButton = CreateButton(
                 (windowSize / 2) + new Vector2(-100, buttonY - 150),
                 "TestAbility",
-                () => { /*SelectAbility(testAbility);*/ },
-                null
+                () => { SelectAbility(testAbility); },
+                testAbility
             );
             AddElement(testButton);
 
@@ -54,16 +87,27 @@ namespace Projektarbeit.UI
 
             var backButton = CreateBackButton((windowSize / 2) + new Vector2(-100, buttonY - 150));
             AddElement(backButton);
+
+            var profilePanel = new ProfilePanel(new Vector2(10, 10));
+            AddElement(profilePanel);
         }
 
         public override void Render()
         {
             base.Render();
 
-            // If an ability is selected, render its details
-            if (selectedAbility != null)
+            // Update the color of the buttons
+            UpdateButtonColor(omniFireButton, omniFireAbility);
+            UpdateButtonColor(shieldButton, shieldAbility);
+            UpdateButtonColor(testButton, testAbility);
+
+            if(displayDialog && selectedAbility.IsLocked)
             {
-                RenderAbilityDetails();
+                DisplayUnlockDialog(selectedAbility);
+            }
+            else if(displayDialog && !selectedAbility.IsLocked)
+            {
+                DisplayUpgradeDialog(selectedAbility);
             }
         }
 
@@ -74,46 +118,69 @@ namespace Projektarbeit.UI
                 new Vector2(200, 50), // Size
                 text, 
                 () => {
-                    if (ability != null)
-                    {
-                        if (ability.IsLocked)
-                        {
-                            // Open unlock dialog
-                            OpenUnlockDialog(ability);
-                        }
-                        else
-                        {
-                            // Select ability
-                            SelectAbility(ability);
-                        }
-                    }
+                    this.selectedAbility = ability;
+                    displayDialog = true;
                 }, 
                 null, // OnHover
-                new Vector4(1, 1, 1, 1), // Color
-                new Vector4(1, 1, 1, 1), // HoverColor
-                new Vector4(1, 1, 1, 1), // ClickColor
-                new Vector4(1, 1, 1, 1), // TextColor
-                new Vector4(1, 1, 1, 1), // HoverTextColor
-                new Vector4(1, 1, 1, 1)  // ClickTextColor
+                new Vector4(0.8f, 0.8f, 0.8f, 1), // Color
+                new Vector4(0.7f, 0.7f, 0.7f, 1), // HoverColor
+                new Vector4(0.6f, 0.6f, 0.6f, 1), // ClickColor
+                new Vector4(0, 0, 0, 1), // TextColor
+                new Vector4(0, 0, 0, 1), // HoverTextColor
+                new Vector4(0, 0, 0, 1)  // ClickTextColor
             );
 
-            if (ability != null && ability.IsEquipped)
+            // In the CreateButton method
+            if (Core.Game.Instance.GameState.Abilities.Contains(ability))
             {
-                button.Color = new Vector4(0, 1, 0, 1); // Green for equipped
-            }
-            else if (ability != null && ability.IsUnlocked)
-            {
-                button.Color = new Vector4(1, 1, 0, 1); // Yellow for unlocked
+                if (ability != null && ability.IsEquipped)
+                {
+                    button.Color = new Vector4(0.4f, 0.8f, 0.4f, 1); // Subtle green for equipped
+                }
+                else if (ability != null && !ability.IsLocked)
+                {
+                    Console.WriteLine("Ability is not locked");
+                    button.Color = new Vector4(0.8f, 0.8f, 0.4f, 1); // Subtle yellow for unlocked
+                }
+                else {
+                    button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1); // Subtle red for locked
+                    if (ability != null)
+                    {
+                        button.Label += $" (Cost to unlock: {ability.UnlockCost})";
+                    }
+                }
             }
             else
             {
-                button.Color = new Vector4(1, 0, 0, 1); // Red for locked
+                button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1); // Subtle red for locked
                 if (ability != null)
                 {
                     button.Label += $" (Cost to unlock: {ability.UnlockCost})";
                 }
             }
             return button;
+        }
+
+        private void UpdateButtonColor(Button button, Ability ability)
+        {
+            if (Core.Game.Instance.GameState.Abilities.Contains(ability))
+            {
+                if (ability != null && ability.IsEquipped)
+                {
+                    button.Color = new Vector4(0.4f, 0.8f, 0.4f, 1); // Subtle green for equipped
+                }
+                else if (ability != null && !ability.IsLocked)
+                {
+                    button.Color = new Vector4(0.8f, 0.8f, 0.4f, 1); // Subtle yellow for unlocked
+                }
+                else {
+                    button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1); // Subtle red for locked
+                }
+            }
+            else
+            {
+                button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1); // Subtle red for locked
+            }
         }
 
         private Button CreateBackButton(Vector2 position)
@@ -137,88 +204,122 @@ namespace Projektarbeit.UI
             selectedAbility = ability;
         }
 
-        private void RenderAbilityDetails()
+        private void DisplayUpgradeDialog(Ability ability)
         {
-            // Create a backdrop
-            var backdrop = new Background(new Vector4(0, 0, 0, 0.5f));
-            AddElement(backdrop);
+            Vector2 Size = new Vector2(400, 200);
+            Vector2 Position = new Vector2((Game.Instance.window.Size.X / 2) - (Size.X / 2), (Game.Instance.window.Size.Y / 2) - (Size.Y / 2));
+            ImGui.SetNextWindowPos(Position);
+            ImGui.SetNextWindowSize(Size);
+            ImGui.Begin("PopupWindow", ImGuiWindowFlags.NoDecoration);
 
-            // Create a window frame
-            var popupWindow = new PopupWindow(new Vector2(200, 200), new Vector2(400, 400), new Vector4(1, 1, 1, 1));
-            AddElement(popupWindow);
+            Vector2 windowSize = ImGui.GetWindowSize();
+            Vector2 nameSize = ImGui.CalcTextSize(ability.Name);
+            Vector2 descSize = ImGui.CalcTextSize(ability.Description);
 
-            // Add ability details to the window
-            var abilityName = new Text(popupWindow.Position + new Vector2(20, 20), selectedAbility.Name, Vector4.One, 2f);
-            AddElement(abilityName);
+            ImGui.SetCursorPos(new Vector2((windowSize.X - nameSize.X) * 0.5f, 20));
+            ImGui.Text(ability.Name);
 
-            var abilityDescription = new Text(abilityName.Position + new Vector2(0, 30), selectedAbility.Description, Vector4.One, 1f);
-            AddElement(abilityDescription);
+            ImGui.SetCursorPos(new Vector2((windowSize.X - descSize.X) * 0.5f, nameSize.Y + 40));
+            ImGui.Text(ability.Description);
 
-            var abilityLevel = new Text(abilityDescription.Position + new Vector2(0, 30), $"Level: {selectedAbility.Level}", Vector4.One, 1f);
-            AddElement(abilityLevel);
+            Vector2 levelSize = ImGui.CalcTextSize($"Level: {ability.Level}");
+            ImGui.SetCursorPos(new Vector2((windowSize.X - levelSize.X) * 0.5f, nameSize.Y + descSize.Y + 60));
+            ImGui.Text($"Level: {ability.Level}");
 
-            var upgradeButton = new Button(
-                abilityLevel.Position + new Vector2(0, 50), 
-                new Vector2(200, 50), // Size
-                "Upgrade", 
-                () => { /*selectedAbility.Upgrade();*/ }, 
-                null, // OnHover
-                new Vector4(1, 1, 1, 1), // Color
-                new Vector4(1, 1, 1, 1), // HoverColor
-                new Vector4(1, 1, 1, 1), // ClickColor
-                new Vector4(1, 1, 1, 1), // TextColor
-                new Vector4(1, 1, 1, 1), // HoverTextColor
-                new Vector4(1, 1, 1, 1)  // ClickTextColor
-            );
-            AddElement(upgradeButton);
+            Vector2 upgradeCostSize = ImGui.CalcTextSize($"Upgrade Cost: {ability.UnlockCost}");
+            ImGui.SetCursorPos(new Vector2((windowSize.X - upgradeCostSize.X) * 0.5f, nameSize.Y + descSize.Y + levelSize.Y + 80));
+            ImGui.Text($"Upgrade Cost: {ability.UnlockCost}");
 
-            var equipButton = new Button(
-                upgradeButton.Position + new Vector2(0, 30), 
-                new Vector2(200, 50), // Size
-                "Equip", 
-                () => Core.Game.Instance.player.Ability = selectedAbility, 
-                null, // OnHover
-                new Vector4(1, 1, 1, 1), // Color
-                new Vector4(1, 1, 1, 1), // HoverColor
-                new Vector4(1, 1, 1, 1), // ClickColor
-                new Vector4(1, 1, 1, 1), // TextColor
-                new Vector4(1, 1, 1, 1), // HoverTextColor
-                new Vector4(1, 1, 1, 1)  // ClickTextColor
-            );
-            AddElement(equipButton);
+            ImGui.SetCursorPos(new Vector2(10, windowSize.Y - 60));
+            if (ImGui.Button("<--", new Vector2(100, 50)))
+            {
+                displayDialog = false;
+            }
+
+            Vector2 upgradeSize = ImGui.CalcTextSize("Upgrade");
+            ImGui.SetCursorPos(new Vector2(windowSize.X - upgradeSize.X - 172, windowSize.Y - 60));
+            
+            if (Core.Game.Instance.GameState.Currency < ability.UnlockCost)
+            {
+                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.5f);
+            }
+
+            if (ImGui.Button("Upgrade", new Vector2(100, 50)))
+            {
+                ability.Upgrade();
+                int index = Core.Game.Instance.GameState.Abilities.IndexOf(ability);
+                if (index != -1)
+                {
+                    Core.Game.Instance.GameState.Abilities[index] = ability;
+                    GameStateManager.SaveGameState(Game.Instance.GameState, "save.json");
+                }
+            }
+
+            if (Core.Game.Instance.GameState.Currency < ability.UnlockCost)
+            {
+                ImGui.PopStyleVar();
+            }
+
+            Vector2 equipSize = ImGui.CalcTextSize("Equip/Unequip");
+            ImGui.SetCursorPos(new Vector2(windowSize.X - equipSize.X - 20, windowSize.Y - 60));
+            if (ImGui.Button("Equip/Unequip", new Vector2(100, 50)))
+            {
+                // Logic for when the "Equip/Unequip" button is clicked
+            }
+
+            ImGui.End();
         }
 
-        private void OpenUnlockDialog(Ability ability)
+        private void DisplayUnlockDialog(Ability ability)
         {
-            // Create a backdrop
-            var backdrop = new Background(new Vector4(0, 0, 0, 0.5f));
-            AddElement(backdrop);
+            Vector2 Size = new Vector2(400, 200);
+            Vector2 Position = new Vector2((Game.Instance.window.Size.X / 2) - (Size.X / 2), (Game.Instance.window.Size.Y / 2) - (Size.Y / 2));
+            ImGui.SetNextWindowPos(Position);
+            ImGui.SetNextWindowSize(Size);
+            ImGui.Begin("PopupWindow", ImGuiWindowFlags.NoDecoration);
 
-            // Create a window frame
-            var popupWindow = new PopupWindow(new Vector2(200, 200), new Vector2(400, 400), new Vector4(1, 1, 1, 1));
-            AddElement(popupWindow);
+            Vector2 windowSize = ImGui.GetWindowSize();
+            Vector2 nameSize = ImGui.CalcTextSize(ability.Name);
+            Vector2 descSize = ImGui.CalcTextSize(ability.Description);
 
-            // Add ability details to the window
-            var abilityName = new Text(popupWindow.Position + new Vector2(20, 20), ability.Name, Vector4.One, 2f);
-            AddElement(abilityName);
+            ImGui.SetCursorPos(new Vector2((windowSize.X - nameSize.X) * 0.5f, 20));
+            ImGui.Text(ability.Name);
 
-            var unlockText = new Text(abilityName.Position + new Vector2(0, 30), $"Unlock cost: {ability.UnlockCost}", Vector4.One, 1f);
-            AddElement(unlockText);
+            ImGui.SetCursorPos(new Vector2((windowSize.X - descSize.X) * 0.5f, nameSize.Y + 40));
+            ImGui.Text(ability.Description);
 
-            var unlockButton = new Button(
-                unlockText.Position + new Vector2(0, 50), 
-                new Vector2(200, 50), // Size
-                "Unlock", 
-                () => { /*ability.Unlock();*/ }, 
-                null, // OnHover
-                new Vector4(1, 1, 1, 1), // Color
-                new Vector4(1, 1, 1, 1), // HoverColor
-                new Vector4(1, 1, 1, 1), // ClickColor
-                new Vector4(1, 1, 1, 1), // TextColor
-                new Vector4(1, 1, 1, 1), // HoverTextColor
-                new Vector4(1, 1, 1, 1)  // ClickTextColor
-            );
-            AddElement(unlockButton);
+            Vector2 unlockCostSize = ImGui.CalcTextSize($"Unlock Cost: {ability.UnlockCost}");
+            ImGui.SetCursorPos(new Vector2((windowSize.X - unlockCostSize.X) * 0.5f, nameSize.Y + descSize.Y + 60));
+            ImGui.Text($"Unlock Cost: {ability.UnlockCost}");
+
+            ImGui.SetCursorPos(new Vector2(10, windowSize.Y - 60));
+            if (ImGui.Button("<--", new Vector2(100, 50)))
+            {
+                displayDialog = false;
+            }
+
+            Vector2 unlockSize = ImGui.CalcTextSize("Unlock");
+            ImGui.SetCursorPos(new Vector2(windowSize.X - unlockSize.X - 70, windowSize.Y - 60));
+            
+            if (Core.Game.Instance.GameState.Currency < ability.UnlockCost)
+            {
+                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.5f);
+            }
+
+            if (ImGui.Button("Unlock", new Vector2(100, 50)))
+            {
+                if (Core.Game.Instance.GameState.Currency >= ability.UnlockCost)
+                {
+                    ability.Unlock();
+                }
+            }
+
+            if (Core.Game.Instance.GameState.Currency < ability.UnlockCost)
+            {
+                ImGui.PopStyleVar();
+            }
+
+            ImGui.End();
         }
     }
 }

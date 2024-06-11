@@ -1,14 +1,14 @@
-using Newtonsoft.Json;
-using System;
-using System.IO;
-
 namespace Core.world
 {
+    using Core.defaults;
+    using Newtonsoft.Json;
+
     public class GameState
     {
         public int AccountLevel { get; set; }
         public int AccountXP { get; set; }
         public int Currency { get; set; }
+        public List<Ability> Abilities { get; set; } = new List<Ability>();
 
         public int XPForNextLevel()
         {
@@ -76,7 +76,12 @@ namespace Core.world
         public static void SaveGameState(GameState gameState, string fileName)
         {
             string filePath = Path.Combine(saveFolderPath, fileName);
-            string json = JsonConvert.SerializeObject(gameState, Formatting.Indented);
+            var settings = new JsonSerializerSettings 
+            { 
+                TypeNameHandling = TypeNameHandling.Auto,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore // Add this line
+            };
+            string json = JsonConvert.SerializeObject(gameState, Formatting.Indented, settings);
 
             if (!File.Exists(filePath))
             {
@@ -107,7 +112,8 @@ namespace Core.world
             }
 
             string json = File.ReadAllText(filePath);
-            GameState loadedGameState = JsonConvert.DeserializeObject<GameState>(json);
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+            GameState loadedGameState = JsonConvert.DeserializeObject<GameState>(json, settings);
             return loadedGameState;
         }
     }

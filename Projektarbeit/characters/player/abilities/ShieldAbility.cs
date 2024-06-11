@@ -22,6 +22,12 @@ namespace Projektarbeit.characters.player.abilities
 
             Effect = new AbilityEffect("assets/animation/shield/shield.png", scale, 4, 1, fps, loop);
             IconPath = "assets/textures/abilities/shield.png";
+
+            Name = "Shield";
+            Description = "Makes you invincible for 2 seconds.";
+            UnlockCost = 20;
+            UpgradeMultiplier = 1.5f;
+            BaseUpgradeCost = 20;
         }
 
         public override void Use(Character character)

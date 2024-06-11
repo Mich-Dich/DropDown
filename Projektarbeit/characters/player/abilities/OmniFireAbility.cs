@@ -16,6 +16,12 @@ namespace Projektarbeit.characters.player.abilities
             timer.Elapsed += OnTimerElapsed;
             timer.AutoReset = false;
             IconPath = "assets/textures/abilities/fireboost.png";
+
+            Name = "OmniFire";
+            Description = "Boosts your fire damage for 5 seconds.";
+            UnlockCost = 30;
+            UpgradeMultiplier = 1.5f;
+            BaseUpgradeCost = 30;
         }
 
         public override void Use(Character character)
