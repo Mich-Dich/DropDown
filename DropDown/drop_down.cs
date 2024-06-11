@@ -65,7 +65,7 @@ namespace DropDown {
         protected override void Window_Resize() {
 
             base.Window_Resize();
-            HUD.screen_size_buffer = util.convert_Vector<System.Numerics.Vector2>(Game.Instance.window.ClientSize + new Vector2(3));
+            HUD.screen_size_buffer = util.convert_Vector<System.Numerics.Vector2>(Game.Instance.window.ClientSize + new OpenTK.Mathematics.Vector2(3));
         }
 
         protected override void Render(float deltaTime) { }
@@ -95,21 +95,21 @@ namespace DropDown {
             
             if (play_state == Play_State.main_menu && new_play_state == Play_State.hub_area)
                 this.playerController = new DropDown.player.PC_Default(CH_player);
+            
+            else if (new_play_state == Play_State.hub_area) {
 
-            if(play_state == Play_State.Playing && new_play_state == Play_State.dead) {
+                CH_player.health = CH_player.health_max;
+                HUD.reset_blood_overlay();
+                this.set_active_map(new MAP_start());
+            }
+
+            else if(new_play_state == Play_State.dead) {
 
                 // TODO: add timer to change level
                 {
                     set_play_state(Play_State.hub_area);
                     return;
                 }
-            }
-
-            else if (new_play_state == Play_State.hub_area) {
-
-                CH_player.health = CH_player.health_max;
-                HUD.reset_blood_overlay();
-                this.set_active_map(new MAP_start());
             }
 
             play_state = new_play_state; 

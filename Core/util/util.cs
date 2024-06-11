@@ -88,10 +88,36 @@ namespace Core.util
             return world_position + Game.Instance.window.Size / 2;
         }
 
-        public static OpenTK.Mathematics.Vector2 convert_Vector(System.Numerics.Vector2 vector) { return new OpenTK.Mathematics.Vector2(vector.X, vector.Y); }
-        public static System.Numerics.Vector2 convert_Vector(OpenTK.Mathematics.Vector2 vector) { return new System.Numerics.Vector2(vector.X, vector.Y); }
-        public static OpenTK.Mathematics.Vector2 convert_Vector(Box2DX.Common.Vec2 vector_box2d) { return new OpenTK.Mathematics.Vector2(vector_box2d.X, vector_box2d.Y); }
-        public static Box2DX.Common.Vec2 convert_Vector_x(OpenTK.Mathematics.Vector2 vector) { return new Box2DX.Common.Vec2(vector.X, vector.Y); }
+        // Generic method to convert between different Vector2 types
+        public static T convert_Vector<T>(object vector) where T : struct {
+
+            if(typeof(T) == typeof(OpenTK.Mathematics.Vector2) && vector is System.Numerics.Vector2) {
+                var vec = (System.Numerics.Vector2)vector;
+                return (T)(object)new OpenTK.Mathematics.Vector2(vec.X, vec.Y);
+            }
+
+            else if(typeof(T) == typeof(System.Numerics.Vector2) && vector is OpenTK.Mathematics.Vector2) {
+                var vec = (OpenTK.Mathematics.Vector2)vector;
+                return (T)(object)new System.Numerics.Vector2(vec.X, vec.Y);
+            }
+
+            else if(typeof(T) == typeof(System.Numerics.Vector2) && vector is OpenTK.Mathematics.Vector2i) {
+                var vec = (OpenTK.Mathematics.Vector2i)vector;
+                return (T)(object)new System.Numerics.Vector2(vec.X, vec.Y);
+            }
+
+            else if(typeof(T) == typeof(OpenTK.Mathematics.Vector2) && vector is Box2DX.Common.Vec2) {
+                var vec = (Box2DX.Common.Vec2)vector;
+                return (T)(object)new OpenTK.Mathematics.Vector2(vec.X, vec.Y);
+            }
+
+            else if(typeof(T) == typeof(Box2DX.Common.Vec2) && vector is OpenTK.Mathematics.Vector2) {
+                var vec = (OpenTK.Mathematics.Vector2)vector;
+                return (T)(object)new Box2DX.Common.Vec2(vec.X, vec.Y);
+            }
+
+            throw new InvalidOperationException($"Conversion from {vector.GetType()} to {typeof(T)} is not supported.");
+        }
 
         // Function to generate a UInt64 value with specified density of bits flipped
         public static ulong generate_random_UInt64_with_density(double density, Random? random = null)
