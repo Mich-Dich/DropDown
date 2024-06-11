@@ -107,7 +107,8 @@
             Add_Collider(new Collider(Collision_Shape.Circle).Set_Offset(new Transform(Vector2.Zero, new Vector2(-10))));
             movement_speed = 400.0f;
             rotation_offset = float.Pi / 2;
-            Ability = new ShieldAbility();
+
+            Ability = new NoAbility();
         }
 
         private ImGuiWindowFlags GetWindowFlags()

@@ -44,6 +44,18 @@ namespace Core.world
         {
             return (int)(10 * Math.Log(level + 1));
         }
+
+        public void SetPlayerAbility()
+        {
+            foreach (var ability in Abilities)
+            {
+                if (ability.IsEquipped)
+                {
+                    Game.Instance.player.Ability = ability;
+                    break;
+                }
+            }
+        }
     }
 
     public static class GameStateManager
@@ -114,6 +126,7 @@ namespace Core.world
             string json = File.ReadAllText(filePath);
             var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
             GameState loadedGameState = JsonConvert.DeserializeObject<GameState>(json, settings);
+            loadedGameState?.SetPlayerAbility();
             return loadedGameState;
         }
     }

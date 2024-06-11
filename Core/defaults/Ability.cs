@@ -48,5 +48,35 @@ namespace Core.defaults
                 // Display a message to the user that they don't have enough currency
             }
         }
+
+        public void ToggleEquip()
+        {
+            if (IsEquipped)
+            {
+                // Unequip the ability
+                IsEquipped = false;
+                if (Game.Instance.player.Ability == this)
+                {
+                    
+                }
+            }
+            else
+            {
+                // Unequip all other abilities
+                foreach (var ability in Game.Instance.GameState.Abilities)
+                {
+                    if (ability.IsEquipped)
+                    {
+                        ability.IsEquipped = false;
+                    }
+                }
+
+                // Equip this ability
+                IsEquipped = true;
+                Game.Instance.player.Ability = this;
+            }
+
+            GameStateManager.SaveGameState(Game.Instance.GameState, "save.json");
+        }
     }
 }
