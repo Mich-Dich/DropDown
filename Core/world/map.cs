@@ -555,21 +555,18 @@
 
         // ================================================================= internal =================================================================
 
-        internal void Draw()
-        {
+        internal void Draw() {
 
             Vector2 camera_pos = Game.Instance.camera.transform.position;
             Vector2 camera_size = Game.Instance.camera.Get_View_Size_In_World_Coord() + new Vector2(cellSize * 2);
             float tiel_size = tileSize * cellSize;
 
-            foreach (var tile in mapTiles)
-            {
+            foreach (var tile in mapTiles) {
 
                 float overlapX = camera_size.X / 2 + tiel_size / 2 - Math.Abs(camera_pos.X - tile.Key.X);
                 float overlapY = camera_size.Y / 2 + tiel_size / 2 - Math.Abs(camera_pos.Y - tile.Key.Y);
 
-                if (overlapX > 0 && overlapY > 0)
-                {
+                if (overlapX > 0 && overlapY > 0) {
 
                     if (Game.Instance.show_performance)
                         DebugData.numOfTielsDisplayed++;
@@ -581,10 +578,6 @@
                 }
             }
 
-            // Draw the background first
-            for (int x = 0; x < backgound.Count; x++)
-                backgound[x].Draw();
-
             foreach (var character in allCharacter)
                 if (!character.IsRemoved)
                     character.Draw();
@@ -592,23 +585,25 @@
             for (int x = 0; x < world.Count; x++)
                 if (!world[x].IsRemoved)
                     world[x].Draw();
+
+            // Draw the background first
+            for(int x = 0; x < backgound.Count; x++)
+                backgound[x].Draw();
         }
 
-        internal void Draw_Debug()
-        {
+        internal void Draw_Debug() {
 
             Vector2 camera_pos = Game.Instance.camera.transform.position;
             Vector2 camera_size = Game.Instance.camera.Get_View_Size_In_World_Coord() + new Vector2(300);
             float tiel_size = tileSize * cellSize;
 
-            foreach (var tile in mapTiles)
-            {
+            foreach (var tile in mapTiles) {
 
                 float overlapX = camera_size.X / 2 + tiel_size / 2 - Math.Abs(camera_pos.X - tile.Key.X);
                 float overlapY = camera_size.Y / 2 + tiel_size / 2 - Math.Abs(camera_pos.Y - tile.Key.Y);
 
-                if (overlapX > 0 && overlapY > 0)
-                {
+                if (overlapX > 0 && overlapY > 0) {
+
                     foreach (var game_object in tile.Value.staticGameObject)
                         game_object.Draw_Debug();
                 }

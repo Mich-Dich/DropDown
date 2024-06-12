@@ -15,16 +15,17 @@ namespace DropDown {
     internal class Drop_Hole : Game_Object {
 
         public Action enter { get; set; }
+        private bool can_be_used = true;
 
         public override void Hit(hitData hit) {
             base.Hit(hit);
 
-            if(hit.hit_object == Game.Instance.player) {
+            if(hit.hit_object == Game.Instance.player && can_be_used) {
 
                 ((Drop_Down)Game.Instance).current_drop_level++;
                 Game.Instance.set_active_map(new MAP_base(((Drop_Down)Game.Instance).current_drop_level));
+                can_be_used = false;
             }
-
         }
     }
 
@@ -38,21 +39,15 @@ namespace DropDown {
         private double mapGenerationDuration = 0;
         private double collisionGenerationDuration = 0;
 
+        private const int boss_level_itervall = 2;
+
         private Vector2i texture_regon_main;
         private Vector2i texture_regon_detail;
         private Vector2i texture_regon_detail_small;
 
         public MAP_base(int dificulty_level, int seed = -1)   {
 
-            int coord_x = (dificulty_level * 3);
-            texture_regon_main          = new Vector2i(coord_x + 2  , 5);
-            texture_regon_detail        = new Vector2i(coord_x + 1  , 5);
-            texture_regon_detail_small  = new Vector2i(coord_x      , 5);
-
-
-            ((Drop_Down)Game.Instance).set_play_state(Play_State.Playing);
-
-            if(seed != -1)
+            if (seed != -1)
                 random = new Random(seed);
             else
                 random = new Random();
@@ -65,9 +60,22 @@ namespace DropDown {
             this.cellSize = 150;
             this.minDistancForCollision = (float)(this.cellSize * this.tileSize);
 
-            cellular_automata = new Cellular_Automata();
-            cellular_automata.Generate_Bit_Map();
+            int coord_x = (((dificulty_level-1)/boss_level_itervall) * 3);
+            texture_regon_main = new Vector2i(coord_x + 2, 5);
+            texture_regon_detail = new Vector2i(coord_x + 1, 5);
+            texture_regon_detail_small = new Vector2i(coord_x, 5);
 
+
+            cellular_automata = new Cellular_Automata();
+
+            // change default settings for a boss level
+            if((dificulty_level % boss_level_itervall) == 0 && dificulty_level != 0) {
+
+                Console.WriteLine($"Boss level");
+                cellular_automata.iterations = new int[] { 4, 5, 6, 7 };
+            }
+
+            cellular_automata.Generate_Bit_Map();
             Generate_Actual_Map();
 
             // spawn enemys
@@ -83,29 +91,32 @@ namespace DropDown {
 
                 iteration++;
                 player_pos = cellular_automata.find_random_free_positon();
+#if DEBUG
                 if((hole_location - player_pos).Length < (10 * cellSize))
+#else
+                if((hole_location - player_pos).Length > (40 * cellSize))
+#endif
                     found = true;
             }
 
-            //spawn random sparkel
-            //for(int x = 0; x < 50; x++) {
-            //    this.Add_Background_Sprite(
-            //        new Sprite { transform = new Transform { size = new Vector2(300) } }.set_animation("assets/animation/spell_00.png", 5, 6, true, false, 20, true),
-            //        cellular_automata.find_random_free_positon(),
-            //        false);
-            //}
-
-            //for(int x = 0; x < 1000; x++)
-            //    add_blood_splater(find_random_free_positon());
+            for(int x = 0; x < 1000; x++)
+                add_blood_splater(cellular_automata.find_random_free_positon());
 
             Add_Player(Game.Instance.player, player_pos);
+            ((Drop_Down)Game.Instance).set_play_state(Play_State.Playing);
         }
 
 
 
         public void add_blood_splater(Vector2 position) {
             
-            this.Add_Sprite(new Sprite(new Transform { position = position, rotation = (2*float.Pi) * random.NextSingle() }, blood_textures[random.Next(blood_textures.Length - 1)]));
+            this.Add_Sprite(
+                new Sprite(
+                    new Transform { 
+                        position = position, 
+                        rotation = (2*float.Pi) * random.NextSingle() },
+                    blood_textures[random.Next(blood_textures.Length - 1)]
+                    ));
         }
 
 

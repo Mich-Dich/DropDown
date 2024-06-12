@@ -100,6 +100,7 @@ namespace DropDown {
             else if (new_play_state == Play_State.hub_area) {
 
                 CH_player.health = CH_player.health_max;
+                current_drop_level = 0;
                 HUD.reset_blood_overlay();
                 this.set_active_map(new MAP_start());
             }

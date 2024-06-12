@@ -12,26 +12,22 @@ namespace DropDown.utility {
 
         public ulong[] bit_map = new ulong[64];
         public List<Vector2> empty_tile_location = new List<Vector2>();
+        public int[] iterations = new int[] {4,4,4,4,4};
+        public int cellSize = 150;
+        public float initalDensity = 0.37f;
 
-        // imgui Window
         private float tileDisplaySize = 4.5f;
         private double bitMapGenerationDuration = 0;
         private double bitMapGenerationIteration = 0;
-
         private ulong[] bit_map_buffer = new ulong[64];
         private Random random;
-        private int cellSize = 150;
-        private float initalDensity = 0.37f;
-        private int[] iterations = new int[] {4,4,4,4,4};
 
         public Cellular_Automata(int seed = -1) {
-
 
             if(seed != -1)
                 random = new Random(seed);
             else
                 random = new Random();
-
         }
 
         // ====================================================================================================================================================================

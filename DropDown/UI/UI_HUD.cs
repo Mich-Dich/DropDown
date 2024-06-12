@@ -66,6 +66,7 @@ namespace DropDown.UI {
                 Imgui_Util.Progress_Bar_Stylised(1f, new System.Numerics.Vector2(210, 12), col_blue, col_black, 0.24f, 0.28f, 0.6f);
 
                 ImGui.Spacing();
+                Imgui_Util.Title($"Floor {((Drop_Down)Game.Instance).current_drop_level}");
                 Imgui_Util.Title($"Level {player.level}");
                 ImGui.SameLine();
                 Imgui_Util.Shift_Cursor_Pos(15, 0);
