@@ -19,12 +19,15 @@ namespace DropDown {
         public override void Hit(hitData hit) {
             base.Hit(hit);
 
-            if(hit.hit_object == Game.Instance.player)
-                Game.Instance.set_active_map(new MAP_base());
+            if(hit.hit_object == Game.Instance.player) {
+
+                ((Drop_Down)Game.Instance).current_drop_level++;
+                Game.Instance.set_active_map(new MAP_base(((Drop_Down)Game.Instance).current_drop_level));
+            }
 
         }
-
     }
+
     public class MAP_base : Map {
 
         private Texture[] blood_textures = new Texture[4];
@@ -35,7 +38,17 @@ namespace DropDown {
         private double mapGenerationDuration = 0;
         private double collisionGenerationDuration = 0;
 
-        public MAP_base(int seed = -1)   {
+        private Vector2i texture_regon_main;
+        private Vector2i texture_regon_detail;
+        private Vector2i texture_regon_detail_small;
+
+        public MAP_base(int dificulty_level, int seed = -1)   {
+
+            int coord_x = (dificulty_level * 3);
+            texture_regon_main          = new Vector2i(coord_x + 2  , 5);
+            texture_regon_detail        = new Vector2i(coord_x + 1  , 5);
+            texture_regon_detail_small  = new Vector2i(coord_x      , 5);
+
 
             ((Drop_Down)Game.Instance).set_play_state(Play_State.Playing);
 
@@ -70,7 +83,7 @@ namespace DropDown {
 
                 iteration++;
                 player_pos = cellular_automata.find_random_free_positon();
-                if((hole_location - player_pos).Length > (40 * cellSize))
+                if((hole_location - player_pos).Length < (10 * cellSize))
                     found = true;
             }
 
@@ -133,21 +146,21 @@ namespace DropDown {
                     if(probebilits < 0.05f) {
 
                         this.Add_Background_Sprite(
-                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, 3, 5),
+                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, texture_regon_detail_small.X, texture_regon_detail_small.Y),
                             position);
                     }
 
                     else if(probebilits < 0.2f) {
 
                         this.Add_Background_Sprite(
-                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, 4, 5),
+                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, texture_regon_detail.X, texture_regon_detail.Y),
                             position);
                     }
                     
                     else {
 
                         this.Add_Background_Sprite(
-                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, 5, 5),
+                            new Sprite(textureBuffer).Select_Texture_Region(32, 64, texture_regon_main.X, texture_regon_main.Y),
                             position);
                     }
 

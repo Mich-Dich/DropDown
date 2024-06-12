@@ -21,6 +21,7 @@ namespace DropDown {
         public Drop_Down(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) { }
 
+        public int current_drop_level = 0; // current level the player is on (0 => Hub area, 1 => Dungon entrance)
         public UI_HUD HUD { get; set; }
         private UI_main_menu main_menu;
         private UI_death ui_death;

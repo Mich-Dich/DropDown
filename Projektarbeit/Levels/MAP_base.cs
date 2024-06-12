@@ -1,5 +1,6 @@
-﻿namespace Projektarbeit.Levels
-{
+﻿
+namespace Projektarbeit.Levels {
+
     using System.Collections.Generic;
     using Core.util;
     using Core.world;
@@ -7,8 +8,8 @@
     using Projektarbeit.characters.enemy.controller;
     using Projektarbeit.characters.player.power_ups;
 
-    internal class MAP_base : Map
-    {
+    internal class MAP_base : Map {
+
         private readonly Camera camera;
         private readonly Random random;
         private float timeStamp;
@@ -16,8 +17,8 @@
         private Dictionary<int, Action<Vector2>> enemyControllers;
         private Dictionary<int, Action<Vector2>> powerUps;
 
-        public MAP_base()
-        {
+        public MAP_base() {
+
             use_garbage_collector = true;
             camera = Core.Game.Instance.camera;
             random = new Random();
@@ -33,22 +34,21 @@
             InitializePowerUps();
         }
 
-        public override void update(float deltaTime)
-        {
-            if (timeStamp + timeInterval <= Game_Time.total)
-            {
+        public override void update(float deltaTime) {
+
+            if (timeStamp + timeInterval <= Game_Time.total) {
+
                 SpawnEnemies();
                 SpawnPowerUps();
-
                 timeStamp = Game_Time.total;
                 timeInterval = GetRandomTimeInterval();
             }
         }
 
-        private void InitializeEnemyControllers()
-        {
-            enemyControllers = new Dictionary<int, Action<Vector2>>
-            {
+        private void InitializeEnemyControllers() {
+
+            enemyControllers = new Dictionary<int, Action<Vector2>> {
+
                 { 0, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
                 { 1, spawnPosition => add_AI_Controller(new SniperEnemyController(spawnPosition)) },
                 { 2, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
@@ -56,10 +56,10 @@
             };
         }
 
-        private void InitializePowerUps()
-        {
-            powerUps = new Dictionary<int, Action<Vector2>>
-            {
+        private void InitializePowerUps() {
+
+            powerUps = new Dictionary<int, Action<Vector2>> {
+
                 { 0, powerUpPosition => Add_Game_Object(new SpeedBoost(powerUpPosition)) },
                 { 1, powerUpPosition => Add_Game_Object(new HealthIncrease(powerUpPosition)) },
                 { 2, powerUpPosition => Add_Game_Object(new FireRateBoost(powerUpPosition)) },
