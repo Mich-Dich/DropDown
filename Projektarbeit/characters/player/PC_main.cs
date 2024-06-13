@@ -10,39 +10,35 @@
     using Projektarbeit.characters.player.abilities;
     using Projektarbeit.projectiles;
 
-    internal class PC_main : Player_Controller
-    {
-        private static readonly List<KeyBindingDetail> MoveBindings = new()
-        {
+    internal class PC_main : Player_Controller {
+
+        private static readonly List<KeyBindingDetail> MoveBindings = new() {
+
             new (Key_Code.W, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_2 | KeyModefierFlags.negate),
             new (Key_Code.S, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_2),
             new (Key_Code.D, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_1),
             new (Key_Code.A, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_1 | KeyModefierFlags.negate),
         };
 
-        private static readonly List<KeyBindingDetail> LookBindings = new()
-        {
+        private static readonly List<KeyBindingDetail> LookBindings = new() {
+
             new (Key_Code.MouseWheelY, ResetFlags.reset_on_key_move_up, TriggerFlags.mouse_pos_and_neg),
         };
 
-        private static readonly List<KeyBindingDetail> FireBindings = new()
-        {
+        private static readonly List<KeyBindingDetail> FireBindings = new() {
+
             new (Key_Code.Space, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
         };
 
-        private static readonly List<KeyBindingDetail> UseAbilityBindings = new()
-        {
+        private static readonly List<KeyBindingDetail> UseAbilityBindings = new() {
+
             new (Key_Code.E, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
         };
 
         public Action move { get; } = new Action("move", (uint)Action_ModefierFlags.auto_reset, false, ActionType.VEC_2D, 0f, MoveBindings);
-
         public Action look { get; } = new Action("look", (uint)Action_ModefierFlags.none, false, ActionType.VEC_1D, 0f, LookBindings);
-
         public Action fire { get; } = new Action("fire", (uint)Action_ModefierFlags.auto_reset, false, ActionType.BOOL, 0f, FireBindings);
-
         public Action useAbility { get; } = new Action("useAbility", (uint)Action_ModefierFlags.auto_reset, false, ActionType.BOOL, 0f, UseAbilityBindings);
-
         public Type ProjectileType { get; set; } = typeof(Reflect);
 
         public PC_main(Character character)

@@ -4,9 +4,11 @@ namespace DropDown.player {
     using Box2DX.Common;
     using Core;
     using Core.Controllers.player;
+    using Core.defaults;
     using Core.physics;
     using Core.util;
     using Core.world;
+    using DropDown.spells;
     using OpenTK.Mathematics;
 
     public class PC_Default : Player_Controller {
@@ -105,6 +107,7 @@ namespace DropDown.player {
 
             if ((bool)interact.GetValue()) {
 
+                // mele attack
                 List<Game_Object> intersected_game_objects = new List<Game_Object>();
                 character.perception_check(ref intersected_game_objects, (float.Pi/2),  16, 2, 60, true, 1.5f);
                 //Console.WriteLine($"hit objects count: {intersected_game_objects.Count}");
@@ -114,11 +117,16 @@ namespace DropDown.player {
                         intersected_character.apply_damage(20);
                 }
 
+                // spawn projectily
+                Vector2 proj_rot = util.vector_from_angle(character.transform.rotation);
+                Vector2 pooj_pos = character.transform.position + (proj_rot*80);
+                var projectile = (Projectile)Activator.CreateInstance(ProjectileType, pooj_pos, proj_rot);
+                Game.Instance.get_active_map().Add_Game_Object(projectile);
             }
-
         }
 
         private readonly float sprint_speed = 350.0f;
+        private Type ProjectileType { get; set; } = typeof(P_base);
 
     }
 }
