@@ -78,12 +78,6 @@ namespace DropDown {
             cellular_automata.Generate_Bit_Map();
             Generate_Actual_Map();
 
-            // spawn enemys
-            for(int x = 0; x < 80; x++)
-                spaw_enemy(typeof(CH_small_bug));
-            for(int x = 0; x < 10; x++)
-                spaw_enemy(typeof(CH_spider));
-
             int iteration = 0;
             bool found = false;
             Vector2 player_pos = new Vector2();
@@ -104,6 +98,22 @@ namespace DropDown {
 
             Add_Player(Game.Instance.player, player_pos);
             ((Drop_Down)Game.Instance).set_play_state(Play_State.Playing);
+
+
+            Console.WriteLine($"posible number of enemys: {450 - physicsWorld.GetBodyCount()}");
+
+            const int max_body_count = 450;
+            int spanable_count = max_body_count- physicsWorld.GetBodyCount();
+
+            // spawn enemys
+            for(int x = 0; x < (spanable_count * 0.8f); x++)
+                spaw_enemy(typeof(CH_small_bug));
+            for(int x = 0; x < (spanable_count * 0.2f); x++)
+                spaw_enemy(typeof(CH_spider));
+
+            Console.WriteLine($"number of colliders: {physicsWorld.GetBodyCount()}");
+
+
         }
 
 

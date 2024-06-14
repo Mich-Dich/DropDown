@@ -16,10 +16,12 @@ namespace Core.defaults {
         public float Lifetime { get; set; } = 5f;
         public DateTime CreationTime { get; set; }
         public bool HasHit { get; set; } = false;
+        private bool should_destroy = false;
 
         public Projectile(Vector2 position, Vector2 direction, Vector2 size, float speed = 10f, float damage = 1f, Collision_Shape shape = Collision_Shape.Square) : base(position, size) {
 
-            if (Game.Instance == null || Game.Instance.get_active_map() == null || Game.Instance.get_active_map().physicsWorld == null)
+            Console.WriteLine($"Creating projectile => body count: {Game.Instance.get_active_map().physicsWorld.GetBodyCount()}");
+            if(Game.Instance == null || Game.Instance.get_active_map() == null || Game.Instance.get_active_map().physicsWorld == null)
                 throw new Exception("Game instance, active map, or physics world is not initialized");
 
             Speed = speed;
@@ -53,29 +55,37 @@ namespace Core.defaults {
 
             rotate_to_vector(direction);
             CreationTime = DateTime.Now;
+            Console.WriteLine($"               => body count: {Game.Instance.get_active_map().physicsWorld.GetBodyCount()}");
         }
 
         public override void Update(float deltaTime) {
 
-            if ((DateTime.Now - CreationTime).TotalSeconds > Lifetime)
-                destroy();
+            if ((DateTime.Now - CreationTime).TotalSeconds > Lifetime || should_destroy) {
 
-        }
+                // destroy projectile and body
+                Console.WriteLine($"Destrox projectile => body count: {Game.Instance.get_active_map().physicsWorld.GetBodyCount()}");
+                if(Game.Instance != null && Game.Instance.get_active_map() != null) {
 
-        public void destroy() {
+                    if(collider != null && collider.body != null) {
 
-            if(Game.Instance != null && Game.Instance.get_active_map() != null) {
+                        Console.WriteLine($"destroying some more stuff");
 
-                Game.Instance.get_active_map().Remove_Game_Object(this);
-                if(collider != null && collider.body != null) {
+                        collider.body.SetUserData(null);
+                        Game.Instance.get_active_map().physicsWorld.DestroyBody(collider.body);
+                        collider.body = null;
+                    }
 
-                    var world = Game.Instance.get_active_map().physicsWorld;
-                    world.DestroyBody(collider.body);
-                    collider.body = null;
+                    Game.Instance.get_active_map().Remove_Game_Object(this);
                 }
+
+                Console.WriteLine($"body count: {Game.Instance.get_active_map().physicsWorld.GetBodyCount()}");
             }
+
         }
 
+        public void destroy() { should_destroy = true; }
+
+        
         public override void Hit(hitData hit) { }
     }
 }

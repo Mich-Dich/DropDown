@@ -105,6 +105,7 @@ namespace DropDown.player {
             // set zoom
             Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);
 
+
             if ((bool)interact.GetValue()) {
 
                 // mele attack
@@ -119,9 +120,13 @@ namespace DropDown.player {
 
                 // spawn projectily
                 Vector2 proj_rot = util.vector_from_angle(character.transform.rotation);
-                Vector2 pooj_pos = character.transform.position + (proj_rot*80);
-                var projectile = (Projectile)Activator.CreateInstance(ProjectileType, pooj_pos, proj_rot);
-                Game.Instance.get_active_map().Add_Game_Object(projectile);
+                Vector2 pooj_pos = character.transform.position + (proj_rot*110);
+                try {
+                    var projectile = (Projectile)Activator.CreateInstance(ProjectileType, pooj_pos, proj_rot);
+                    Game.Instance.get_active_map().Add_Game_Object(projectile);
+                }catch {
+                    Console.WriteLine($"Exeption thrown when adding projectile");
+                }
             }
         }
 

@@ -21,6 +21,7 @@ namespace DropDown.spells {
 
         public override void Hit(hitData hit) {
 
+            Console.WriteLine($"HIT");
             if(hit.hit_object is Character && hit.hit_object != Game.Instance.player) {
 
                 var hit_char = ((Character)hit.hit_object);
@@ -28,10 +29,7 @@ namespace DropDown.spells {
                 hit_char.Add_Linear_Velocity(util.convert_Vector<Box2DX.Common.Vec2>(collider.velocity / 100));
             }
 
-            //if(hit.hit_object != Game.Instance.player)
-                destroy();
-
-            Console.WriteLine($"HIT");
+            destroy();
         }
 
     }

@@ -39,7 +39,7 @@ namespace DropDown {
             
             CH_player = new CH_player();
             this.player = CH_player;
-            this.playerController = new PC_empty(this.player);
+            this.playerController = new PC_empty(CH_player);
 
             start_map = new MAP_start();
             this.activeMap = start_map;
@@ -48,6 +48,8 @@ namespace DropDown {
             Show_Performance(true);
             showDebugData(true);
             this.camera.Set_min_Max_Zoom(0.03f, 1.4f);
+            play_state = Play_State.Playing;
+            this.playerController = new PC_Default(CH_player);
 #else
             this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
 #endif
@@ -95,7 +97,7 @@ namespace DropDown {
         public void set_play_state(Play_State new_play_state) { 
             
             if (play_state == Play_State.main_menu && new_play_state == Play_State.hub_area)
-                this.playerController = new DropDown.player.PC_Default(CH_player);
+                this.playerController = new PC_Default(CH_player);
             
             else if (new_play_state == Play_State.hub_area) {
 

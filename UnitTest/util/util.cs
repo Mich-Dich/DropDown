@@ -22,6 +22,25 @@ namespace UnitTest {
 
         [Fact]
         public void TestUtilDegreeToRadians() { Assert.Equal(Math.PI, util.Degree_To_Radians(180)); }
+        
+        [Fact]
+        public void VectorFromAngle_ShouldReturnCorrectVector() {
+
+            for(int degrees = -720; degrees <= 2600; degrees++) {
+
+                float angleRadians = degrees * (float)Math.PI / 180f;
+                Vector2 result = util.vector_from_angle(angleRadians);
+
+                float expectedX = (float)Math.Cos(angleRadians);
+                float expectedY = (float)Math.Sin(angleRadians);
+
+                Console.WriteLine($"Vector: {result.X} | {result.Y}");
+
+                Assert.Equal(expectedX, result.X, 1e-6);
+                Assert.Equal(expectedY, result.Y, 1e-6);
+                Assert.True(result.Length > 0);
+            }
+        }
 
         [Fact]
         public void TestRadiansToDegree() {

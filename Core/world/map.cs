@@ -10,8 +10,7 @@
     using Core.util;
     using OpenTK.Mathematics;
 
-    public class Map
-    {
+    public class Map {
 
         public List<Game_Object> all_game_objects { get; set; } = new List<Game_Object>();
         private readonly List<I_Controller> all_AI_Controller = new();
@@ -23,8 +22,7 @@
         public readonly World physicsWorld;
         private const int MaxPhysicsBodies = 400;
 
-        public Map()
-        {
+        public Map() {
 
             AABB aabb = new();
             aabb.LowerBound.Set(-100000, -100000);
@@ -37,29 +35,22 @@
 
         public virtual void update(float deltaTime) { }
 
-        public bool ray_cast(Vector2 start, Vector2 end, out Vec2 normal, out float distance, out Game_Object? intersected_game_object, bool draw_debug = false, float duration_in_sec = 2.0f)
-        {
+        public bool ray_cast(Vector2 start, Vector2 end, out Vec2 normal, out float distance, out Game_Object? intersected_game_object, bool draw_debug = false, float duration_in_sec = 2.0f) {
 
-            Segment ray = new()
-            {
+            Segment ray = new() {
                 P1 = new Vec2(start.X, start.Y),
                 P2 = new Vec2(end.X, end.Y),
             };
 
             var shape = physicsWorld.RaycastOne(ray, out distance, out normal, false, null);
+            intersected_game_object = shape != null ? (Game_Object)shape.GetBody().GetUserData() : null;
 
-            if (shape != null)
-                intersected_game_object = (Game_Object)shape.GetBody().GetUserData();
-            else
-                intersected_game_object = null;
-
-            if (draw_debug)
-            {
+            if (draw_debug) {
 
                 if (shape == null)
                     Game.Instance.draw_debug_line(start, end, duration_in_sec, DebugColor.Red);
-                else
-                {
+
+                else {
 
                     Vector2 direaction = end - start;
                     Vector2 normal_display = new Vector2(normal.X, normal.Y) * 10;
@@ -68,9 +59,6 @@
                     Game.Instance.draw_debug_line(start + direaction * distance, end, duration_in_sec, DebugColor.Green);    // hit - end
                     Game.Instance.draw_debug_line(start + direaction * distance, start + direaction * distance + normal_display, duration_in_sec, DebugColor.Blue);    // normal
                 }
-
-
-                //duration_in_sec
             }
 
             return shape != null;
@@ -83,22 +71,19 @@
         public int TilesOnScreenWidth { get; set; }
         public int TilesOnScreenHeight { get; set; }
 
-        internal struct Tile_Data
-        {
+        internal struct Tile_Data {
 
             public int texture_slot { get; set; }
             public Matrix4 modle_matrix { get; set; }
 
-            public Tile_Data(int texture_slot, Matrix4 modle_matrix)
-            {
+            public Tile_Data(int texture_slot, Matrix4 modle_matrix){
+
                 this.texture_slot = texture_slot;
                 this.modle_matrix = modle_matrix;
             }
         }
 
-        public virtual void Draw_Imgui()
-        {
-
+        public virtual void Draw_Imgui() {
 
             foreach (var character in allCharacter)
                 character.draw_imgui();
@@ -108,8 +93,7 @@
         }
 
         [Obsolete("")]
-        public void Add_Game_Object(Game_Object game_object)
-        {
+        public void Add_Game_Object(Game_Object game_object) {
 
             world.Add(game_object);
 
@@ -119,23 +103,21 @@
                 DebugData.colidableObjectsStatic++;
         }
 
-        public void Remove_Game_Object(Game_Object game_object)
-        {
+        public void Remove_Game_Object(Game_Object game_object) {
+
             game_object.IsRemoved = true;
             world.Remove(game_object);
             all_game_objects.Remove(game_object);
             projectiles.Remove(game_object);
             allCharacter.Remove(game_object as Character);
 
-            if (game_object.collider != null && game_object.collider.body != null)
-            {
-                int bodyCountBefore = physicsWorld.GetBodyCount();
+            if (game_object.collider != null && game_object.collider.body != null) {
 
+                //int bodyCountBefore = physicsWorld.GetBodyCount();
                 game_object.collider.body.SetUserData(null);
                 physicsWorld.DestroyBody(game_object.collider.body);
                 game_object.collider.body = null;
-
-                int bodyCountAfter = physicsWorld.GetBodyCount();
+                //int bodyCountAfter = physicsWorld.GetBodyCount();
             }
 
             if (game_object.transform.mobility == Mobility.DYNAMIC)
@@ -529,16 +511,15 @@
             }
         }
 
-        private void ResetPhysicsWorld()
-        {
-            Body body = physicsWorld.GetBodyList();
-            while (body != null)
-            {
-                Body nextBody = body.GetNext();
+        private void ResetPhysicsWorld() {
 
+            Body body = physicsWorld.GetBodyList();
+            while (body != null) {
+
+                Body nextBody = body.GetNext();
                 var userData = body.GetUserData();
-                if (!(userData is Character))
-                {
+                if (!(userData is Character)) {
+
                     body.SetUserData(null);
                     physicsWorld.DestroyBody(body);
                 }
@@ -618,15 +599,14 @@
                     world[x].Draw_Debug();
         }
 
-        internal void update_internal(float deltaTime)
-        {
+        internal void update_internal(float deltaTime) {
 
             physicsWorld.Step(deltaTime * 10, velocityIterations, positionIterations);
 
             List<Character> charactersToRemove = new();
 
-            foreach (var character in allCharacter)
-            {
+            foreach (var character in allCharacter) {
+
                 character.Update_position();
                 character.Update(deltaTime);
                 if (character.health <= 0 && character.auto_remove_on_death)
@@ -636,29 +616,26 @@
             foreach (var AI_Controller in all_AI_Controller)
                 AI_Controller.Update(deltaTime);
 
-            foreach (var game_object in all_game_objects.ToList())
-            {
+            foreach (var game_object in all_game_objects.ToList()) {
+
                 if (!game_object.IsRemoved)
                     game_object.Update(deltaTime);
             }
 
-            for (int x = 0; x < world.Count; x++)
-            {
-                if (!world[x].IsRemoved)
-                {
-                    if (world[x].collider != null)
-                    {
-                        if (world[x].collider.body != null)
-                        {
-                            world[x].Update_position();
-                        }
-                    }
-                    world[x].Update(deltaTime);
+            for (int x = 0; x < world.Count; x++) {
+
+                if(world[x].IsRemoved)
+                    continue;
+
+                if (world[x].collider != null) {
+                    if (world[x].collider.body != null)
+                        world[x].Update_position();
                 }
+                world[x].Update(deltaTime);
             }
 
-            foreach (var character in charactersToRemove)
-            {
+            foreach (var character in charactersToRemove) {
+
                 allCharacter.Remove(character);
                 if (character.death_callback != null)
                     character.death_callback();
@@ -667,10 +644,9 @@
             update(deltaTime);
 
 
-            if (use_garbage_collector)
-            {
-                if (physicsWorld.GetBodyCount() > MaxPhysicsBodies)
-                {
+            if (use_garbage_collector) {
+
+                if (physicsWorld.GetBodyCount() > MaxPhysicsBodies) {
 
                     Console.WriteLine($"WARNING: Physics body count exceeded limit ({MaxPhysicsBodies}). Resetting physics world.");
                     ResetPhysicsWorld();
@@ -692,16 +668,14 @@
 
         private Dictionary<Vector2i, Map_Tile> mapTiles { get; set; } = new Dictionary<Vector2i, Map_Tile>();
 
-        private Map_Tile Get_Correct_Map_Tile(Vector2 position)
-        {
+        private Map_Tile Get_Correct_Map_Tile(Vector2 position) {
 
             int final_tileSize = tileSize * cellSize;
             Vector2i key = new((int)System.Math.Floor(position.X / final_tileSize), (int)System.Math.Floor(position.Y / final_tileSize));
             key *= final_tileSize;
             key += new Vector2i(final_tileSize / 2, final_tileSize / 3);
 
-            if (!mapTiles.ContainsKey(key))
-            {
+            if (!mapTiles.ContainsKey(key)) {
 
                 mapTiles.Add(key, new Map_Tile(key));
 
@@ -714,8 +688,7 @@
         }
     }
 
-    public struct Map_Tile
-    {
+    public struct Map_Tile {
 
         public Vector2 position = new();
 
@@ -723,14 +696,14 @@
         public List<Game_Object> staticGameObject = new();
         public List<Body> staticColliders = new();
 
-        public Map_Tile(Vector2 position)
-        {
+        public Map_Tile(Vector2 position) {
+
             this.position = position;
         }
     }
 
-    public enum World_Layer
-    {
+    public enum World_Layer {
+
         None = 0,
         backgound = 1,      // will only be drawn (no collision)    eg. background image
         world = 2,          // can Draw/interact/collide            eg. walls/chest
