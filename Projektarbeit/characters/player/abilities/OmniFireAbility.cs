@@ -7,7 +7,6 @@ namespace Projektarbeit.characters.player.abilities {
 
     public class OmniFireAbility : Ability {
 
-        private readonly Timer timer;
         private Character character;
 
         public OmniFireAbility() {
@@ -28,9 +27,10 @@ namespace Projektarbeit.characters.player.abilities {
         public override void Use(Character character) {
 
             this.character = character;
-            timer.Start();
             Console.WriteLine("OmniFire ability used!");
             IsActive = true;
+
+            timer.Start();
         }
 
         private void OnTimerElapsed(object? source, ElapsedEventArgs e) {

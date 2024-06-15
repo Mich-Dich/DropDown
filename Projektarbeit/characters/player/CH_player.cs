@@ -108,7 +108,7 @@
             movement_speed = 400.0f;
             rotation_offset = float.Pi / 2;
 
-            Ability = new NoAbility();
+            Ability = null;
         }
 
         private ImGuiWindowFlags GetWindowFlags()

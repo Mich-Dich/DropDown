@@ -15,7 +15,7 @@ namespace Projektarbeit.characters.enemy.States
             Type nextState = typeof(Retreat);
             foreach (Character character in aiController.characters)
             {
-                if (character is CH_base_NPC npc)
+                if (character is SwarmEnemy npc)
                 {
                     npc.Retreat();
                     if (!npc.IsHealthLow())

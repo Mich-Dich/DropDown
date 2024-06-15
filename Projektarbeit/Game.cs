@@ -2,9 +2,13 @@ namespace Projektarbeit
 {
     using Core;
     using Projektarbeit.characters.player;
+    using Projektarbeit.characters.player.power_ups;
+    using Projektarbeit.characters.player.abilities;
     using Projektarbeit.Levels;
     using Projektarbeit.UI;
     using Core.world;
+    using Core.util;
+    using Core.defaults;
 
     internal class Game : Core.Game
     {
@@ -13,6 +17,12 @@ namespace Projektarbeit
         private MainMenu mainMenu;
         private SkillTreeMenu skillTreeMenu;
         private AbilitySkillTree abilitySkillTree;
+        private PowerupSkillTree powerupSkillTree;
+        private PauseMenu pauseMenu;
+        private LevelUpMenu levelUpMenu;
+        private PauseMenuSkillTree pauseMenuSkillTree;
+        private PauseAbilitySkillTree pauseAbilitySkillTree;
+        private PausePowerupSkillTree pausePowerupSkillTree;
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) { }
@@ -25,6 +35,65 @@ namespace Projektarbeit
             player.IsDead = false;
             player.IsRemoved = false;
             Score = 0;
+            mainHUD.clearStatusEffects();
+            get_active_map().allPowerUps.Clear();
+            player.ActivePowerUps.Clear();
+        }
+
+        public override List<PowerUp> loadPowerups(List<PowerUpSaveData> PowerUpsSaveData)
+        {
+            List<PowerUp> powerUps = new List<PowerUp>();
+            foreach (var powerUpSaveData in PowerUpsSaveData)
+            {
+                switch(powerUpSaveData.PowerUpType)
+                {
+                    case "FireRateBoost":
+                        var fireRateBoost = new FireRateBoost(new OpenTK.Mathematics.Vector2(999, 999));
+                        fireRateBoost.LoadFromSaveData(powerUpSaveData);
+                        powerUps.Add(fireRateBoost);
+                        break;
+                    case "HealthIncrease":
+                        var healthIncrease = new HealthIncrease(new OpenTK.Mathematics.Vector2(999, 999));
+                        healthIncrease.LoadFromSaveData(powerUpSaveData);
+                        powerUps.Add(healthIncrease);
+                        break;
+                    case "SpeedBoost":
+                        var speedBoost = new SpeedBoost(new OpenTK.Mathematics.Vector2(999, 999));
+                        speedBoost.LoadFromSaveData(powerUpSaveData);
+                        powerUps.Add(speedBoost);
+                        break;
+                }  
+            }
+
+            return powerUps;
+        }
+
+        public override List<Ability> loadAbilities(List<AbilitySaveData> AbilitesSaveData)
+        {
+            List<Ability> abilities = new List<Ability>();
+            foreach (var abilitySaveData in AbilitesSaveData)
+            {
+                switch(abilitySaveData.AbilityType)
+                {
+                    case "OmniFireAbility":
+                        var omniFireAbility = new OmniFireAbility();
+                        omniFireAbility.LoadFromSaveData(abilitySaveData);
+                        abilities.Add(omniFireAbility);
+                        break;
+                    case "ShieldAbility":
+                        var shieldAbility = new ShieldAbility();
+                        shieldAbility.LoadFromSaveData(abilitySaveData);
+                        abilities.Add(shieldAbility);
+                        break;
+                    case "TestAbility":
+                        var testAbility = new TestAbility();
+                        testAbility.LoadFromSaveData(abilitySaveData);
+                        abilities.Add(testAbility);
+                        break;
+                }  
+            }
+
+            return abilities;
         }
 
         // ========================================================= functions =========================================================
@@ -44,6 +113,12 @@ namespace Projektarbeit
             mainMenu = new MainMenu();
             skillTreeMenu = new SkillTreeMenu();
             abilitySkillTree = new AbilitySkillTree();
+            powerupSkillTree = new PowerupSkillTree();
+            pauseMenu = new PauseMenu();
+            levelUpMenu = new LevelUpMenu();
+            pauseMenuSkillTree = new PauseMenuSkillTree();
+            pauseAbilitySkillTree = new PauseAbilitySkillTree();
+            pausePowerupSkillTree = new PausePowerupSkillTree();
 
         #if DEBUG
             Show_Performance(false);
@@ -59,12 +134,14 @@ namespace Projektarbeit
             {
                 GameState.IncreaseLevel();
             }
-         }
+        }
 
         protected override void Render(float deltaTime) { }
 
         protected override void Render_Imgui(float deltaTime)
         {
+            var oldState = play_state;
+
             switch (play_state)
             {
                 case Play_State.main_menu:
@@ -82,6 +159,29 @@ namespace Projektarbeit
                 case Play_State.ability_skill_tree:
                     abilitySkillTree.Render();
                     break;
+                case Play_State.powerup_skill_tree:
+                    powerupSkillTree.Render();
+                    break;
+                case Play_State.InGameMenu:
+                    pauseMenu.Render();
+                    break;
+                case Play_State.LevelUp:
+                    levelUpMenu.Render();
+                    break;
+                case Play_State.PauseMenuSkillTree:
+                    pauseMenuSkillTree.Render();
+                    break;
+                case Play_State.PauseAbilitySkillTree:
+                    pauseAbilitySkillTree.Render();
+                    break;
+                case Play_State.PausePowerupSkillTree:
+                    pausePowerupSkillTree.Render();
+                    break;
+            }
+
+            if (oldState != play_state)
+            {
+                OnGameStateChanged(oldState, play_state);
             }
         }
     }

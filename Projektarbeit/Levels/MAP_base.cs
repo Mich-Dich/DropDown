@@ -1,27 +1,36 @@
-﻿
-namespace Projektarbeit.Levels {
-
+﻿namespace Projektarbeit.Levels
+{
     using System.Collections.Generic;
     using Core.util;
     using Core.world;
+    using Core.defaults;
     using OpenTK.Mathematics;
     using Projektarbeit.characters.enemy.controller;
     using Projektarbeit.characters.player.power_ups;
 
-    internal class MAP_base : Map {
-
+    internal class MAP_base : Map
+    {
         private readonly Camera camera;
         private readonly Random random;
         private float timeStamp;
         private float timeInterval;
         private Dictionary<int, Action<Vector2>> enemyControllers;
-        private Dictionary<int, Action<Vector2>> powerUps;
+        private Dictionary<int, Func<Vector2, PowerUp>> powerUps;   
+        private const int MaxPowerUps = 5;
+        private int powerUpCounter = 0;
+        private const int PowerUpSpawnThreshold = 1;
+        private bool bossFightTriggered = false;
 
-        public MAP_base() {
+        private int lastScore;
 
+
+        public MAP_base()
+        {
             use_garbage_collector = true;
             camera = Core.Game.Instance.camera;
             random = new Random();
+            scoreGoal = 400;
+            previousScoreGoal = 0;
 
             timeStamp = Game_Time.total;
             timeInterval = GetRandomTimeInterval();
@@ -34,21 +43,81 @@ namespace Projektarbeit.Levels {
             InitializePowerUps();
         }
 
-        public override void update(float deltaTime) {
-
-            if (timeStamp + timeInterval <= Game_Time.total) {
-
+        public override void update(float deltaTime)
+        {
+            if (timeStamp + timeInterval <= Game_Time.total)
+            {
                 SpawnEnemies();
-                SpawnPowerUps();
+                if (powerUpCounter >= PowerUpSpawnThreshold)
+                {
+                    SpawnPowerUps();
+                    powerUpCounter = 0;
+                }
+                else
+                {
+                    powerUpCounter++;
+                }
+
                 timeStamp = Game_Time.total;
                 timeInterval = GetRandomTimeInterval();
             }
+
+            // Start of new logic
+            // Check if the score has changed
+            if (Core.Game.Instance.Score != lastScore)
+            {
+                // Calculate the score difference
+                int scoreDifference = Core.Game.Instance.Score - lastScore;
+
+                // Add the score difference to the XP
+                Game.Instance.GameState.AddXP(scoreDifference);
+
+                // Update the last score
+                lastScore = Core.Game.Instance.Score;
+            }
+            // End of new logic
+
+            CheckScoreGoal();
         }
 
-        private void InitializeEnemyControllers() {
+        private void CheckScoreGoal()
+        {
+            if (Core.Game.Instance.Score >= scoreGoal && !bossFightTriggered)
+            {
+                TriggerBossFight();
+                bossFightTriggered = true;
+            }
+            else if (Core.Game.Instance.Score < scoreGoal)
+            {
+                bossFightTriggered = false;
+            }
+        }
 
-            enemyControllers = new Dictionary<int, Action<Vector2>> {
+        private void TriggerBossFight()
+        {
+            Console.WriteLine("Boss fight triggered!");
+            CalculateScoreGoal();
+        }
 
+        public override void PlayerLevelUp()
+        {
+            Game.Instance.play_state = Core.Play_State.LevelUp;
+        }
+
+        private void CalculateScoreGoal()
+        {
+            previousScoreGoal = scoreGoal;
+            scoreGoal += 200;
+            if (scoreGoal - previousScoreGoal > 600)
+            {
+                scoreGoal = previousScoreGoal + 600;
+            }
+        }
+
+        private void InitializeEnemyControllers()
+        {
+            enemyControllers = new Dictionary<int, Action<Vector2>>
+            {
                 { 0, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
                 { 1, spawnPosition => add_AI_Controller(new SniperEnemyController(spawnPosition)) },
                 { 2, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
@@ -56,14 +125,26 @@ namespace Projektarbeit.Levels {
             };
         }
 
-        private void InitializePowerUps() {
+        private void InitializePowerUps()
+        {
+            powerUps = new Dictionary<int, Func<Vector2, PowerUp>>();
+            var unlockedPowerUps = Game.Instance.GameState.PowerUps.Where(p => !p.IsLocked).ToList();
 
-            powerUps = new Dictionary<int, Action<Vector2>> {
+            Console.WriteLine($"Unlocked power-ups: {unlockedPowerUps.Count}");
 
-                { 0, powerUpPosition => Add_Game_Object(new SpeedBoost(powerUpPosition)) },
-                { 1, powerUpPosition => Add_Game_Object(new HealthIncrease(powerUpPosition)) },
-                { 2, powerUpPosition => Add_Game_Object(new FireRateBoost(powerUpPosition)) },
-            };
+            for (int i = 0; i < unlockedPowerUps.Count; i++)
+            {
+                var powerUp = unlockedPowerUps[i];
+                powerUps.Add(i, powerUpPosition => 
+                {
+                    var instance = Activator.CreateInstance(powerUp.GetType(), powerUpPosition);
+                    if (instance == null)
+                    {
+                        throw new InvalidOperationException($"Failed to create an instance of {powerUp.GetType().Name}");
+                    }
+                    return (PowerUp)instance;
+                });
+            }
         }
 
         private float GetRandomTimeInterval()
@@ -97,13 +178,22 @@ namespace Projektarbeit.Levels {
 
         private void SpawnPowerUps()
         {
-            if (random.NextDouble() < 0.1)
+            if (!Game.Instance.GameState.PowerUps.Any(p => !p.IsLocked))
+            {
+                return;
+            }
+
+            double spawnRate = Core.Game.Instance.player.health < 50 ? 0.2 : 0.1;
+
+            if (random.NextDouble() < spawnRate && allPowerUps.Count < MaxPowerUps)
             {
                 Vector2 powerUpPosition = new(random.Next(-400, 400), random.Next(-400, 400));
 
                 if (ShouldSpawnHealthBoost())
                 {
-                    Add_Game_Object(new HealthBoost(powerUpPosition));
+                    var healthBoost = new HealthIncrease(powerUpPosition);
+                    Add_Game_Object(healthBoost);
+                    allPowerUps.Add(healthBoost);
                 }
                 else
                 {
@@ -114,13 +204,28 @@ namespace Projektarbeit.Levels {
 
         private bool ShouldSpawnHealthBoost()
         {
-            return Core.Game.Instance.player.health < 50 && random.NextDouble() < 0.5;
+            if (!Game.Instance.GameState.PowerUps.Any(p => p.GetType() == typeof(HealthIncrease) && !p.IsLocked))
+            {
+                return false;
+            }
+
+            double spawnRate = Core.Game.Instance.player.health < 50 ? 0.7 : 0.5;
+            return random.NextDouble() < spawnRate;
         }
 
         private void SpawnPowerUp(Vector2 powerUpPosition)
         {
             int powerUpType = random.Next(0, powerUps.Count);
-            powerUps[powerUpType](powerUpPosition);
+            if (powerUps.ContainsKey(powerUpType))
+            {
+                var powerUp = powerUps[powerUpType](powerUpPosition);
+                Add_Game_Object(powerUp);
+                allPowerUps.Add(powerUp);
+            }
+            else
+            {
+                Console.WriteLine($"Error: PowerUp type {powerUpType} does not exist.");
+            }
         }
     }
 }

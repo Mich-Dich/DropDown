@@ -29,28 +29,28 @@ namespace Projektarbeit.characters.enemy.character
             hitAnim = new animation_data("assets/animation/enemy/enemy-hit.png", 5, 1, true, false, 10, true);
         }
 
-        public override bool IsPlayerInRange()
+        public virtual bool IsPlayerInRange()
         {
             return IsPlayerInProximity(DetectionRange);
         }
 
-        public override bool IsPlayerInAttackRange()
+        public virtual bool IsPlayerInAttackRange()
         {
             return IsPlayerInProximity(StopDistance);
         }
 
-        public override bool IsHealthLow()
+        public virtual bool IsHealthLow()
         {
             return health <= health_max * 0.2;
         }
 
-        public override void Move()
+        public virtual void Move()
         {
             Vector2 direction = GetRandomDirection();
             ApplyForceInDirection(direction, movement_speed);
         }
 
-        public override void Pursue()
+        public virtual void Pursue()
         {
             if (!IsPlayerInProximity(StopDistance))
             {
@@ -60,7 +60,7 @@ namespace Projektarbeit.characters.enemy.character
             }
         }
 
-        public override void Attack()
+        public virtual void Attack()
         {
             if (Game_Time.total - lastFireTime >= fireDelay + ((float)random.NextDouble() * (1f - 0.2f)) + 0.2f)
             {
@@ -75,7 +75,7 @@ namespace Projektarbeit.characters.enemy.character
             }
         }
 
-        public override void Retreat()
+        public virtual void Retreat()
         {
             Vector2 direction = GetDirectionAwayFromPlayer();
             ApplyForceInDirection(direction, movement_speed);

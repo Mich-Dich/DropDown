@@ -6,7 +6,6 @@ namespace Projektarbeit.characters.player.abilities
 
     public class ShieldAbility : Ability
     {
-        private readonly Timer timer;
         private Character character;
 
         public ShieldAbility()
@@ -34,13 +33,14 @@ namespace Projektarbeit.characters.player.abilities
         {
             this.character = character;
             character.Invincible = true;
-            timer.Start();
             Console.WriteLine("Shield ability used!");
 
             AddEffectToCharacter(character);
 
             Core.Game.Instance.get_active_map().Add_Game_Object(Effect);
             IsActive = true;
+
+            timer.Start();
         }
 
         private void OnTimerElapsed(object? source, ElapsedEventArgs e)

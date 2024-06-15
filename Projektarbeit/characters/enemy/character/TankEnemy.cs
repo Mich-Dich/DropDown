@@ -7,7 +7,7 @@ namespace Projektarbeit.characters.enemy.character
     using OpenTK.Mathematics;
     using Projektarbeit.projectiles;
 
-    public class TankEnemy : CH_base_NPC
+    public class TankEnemy : SwarmEnemy
     {
         private const float StopDistance = 200f;
         private const float PursueSpeed = 30;

@@ -13,11 +13,13 @@ namespace Projektarbeit.UI
 
             Vector2 windowSize = new Vector2(Game.Instance.window.Size.X, Game.Instance.window.Size.Y);
             float fontSize = 8f;
+            var buttonSize = new Vector2(200, 50);
+            float padding = 10f;
 
-            var gameOverText = new Text(windowSize / 2, "Game Over", new Vector4(0.9f, 0.2f, 0.2f, 1), fontSize);
+            var gameOverText = new Text(new Vector2(windowSize.X / 2, windowSize.Y / 2 - buttonSize.Y / 2 - padding - fontSize - 80), "Game Over", new Vector4(0.9f, 0.2f, 0.2f, 1), fontSize);
             AddElement(gameOverText);
 
-            var restartButton = CreateRestartButton((windowSize / 2) + new Vector2(-100, gameOverText.Size.Y + 10));
+            var restartButton = CreateRestartButton(new Vector2(windowSize.X / 2, windowSize.Y / 2 + buttonSize.Y / 2));
             AddElement(restartButton);
         }
 
@@ -28,9 +30,10 @@ namespace Projektarbeit.UI
 
         private Button CreateRestartButton(Vector2 position)
         {
+            var buttonSize = new Vector2(200, 50);
             return new Button(
-                position,
-                new Vector2(200, 50),
+                new Vector2(position.X - buttonSize.X / 2, position.Y - buttonSize.Y / 2),
+                buttonSize,
                 "Restart",
                 () => Game.Instance.StartGame(),
                 null,

@@ -15,7 +15,7 @@ namespace Core.UI
             this.Alignment = align;
         }
 
-        public void AddElement(UIElement element)
+        public new void AddElement(UIElement element)
         {
             elements.Add(element);
             OrganizeElements();
@@ -48,28 +48,28 @@ namespace Core.UI
         }
 
         private void OrganizeElements()
-{
-    Vector2 currentPosition = Position;
-    foreach (var element in elements)
-    {
-        switch (Alignment)
         {
-            case Align.Left:
-                element.Position = currentPosition;
-                break;
-            case Align.Center:
-                element.Position = new Vector2(Position.X + (Size.X - element.Size.X) / 2, currentPosition.Y);
-                break;
-            case Align.Right:
-                currentPosition.X = Position.X + Size.X - element.Size.X - padding.X;
-                element.Position = currentPosition;
-                break;
-            default:
-                element.Position = currentPosition;
-                break;
+            Vector2 currentPosition = Position;
+            foreach (var element in elements)
+            {
+                switch (Alignment)
+                {
+                    case Align.Left:
+                        element.Position = currentPosition;
+                        break;
+                    case Align.Center:
+                        element.Position = new Vector2(Position.X + (Size.X - element.Size.X) / 2, currentPosition.Y);
+                        break;
+                    case Align.Right:
+                        currentPosition.X = Position.X + Size.X - element.Size.X - padding.X;
+                        element.Position = currentPosition;
+                        break;
+                    default:
+                        element.Position = currentPosition;
+                        break;
+                }
+                currentPosition.Y += element.Size.Y + padding.Y;
+            }
         }
-        currentPosition.Y += element.Size.Y + padding.Y;
-    }
-}
     }
 }

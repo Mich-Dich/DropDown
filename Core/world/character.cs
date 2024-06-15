@@ -190,17 +190,20 @@ namespace Core.world
         // ---------------------------------------------------------------------------------------------------------------
         public void UseAbility()
         {
-            var currentTime = Game_Time.total;
-            if (currentTime - abilityLastUsedTime >= Ability.Cooldown)
+            if(Game.Instance.player.Ability != null)
             {
-                Ability.Use(this);
-                abilityLastUsedTime = currentTime;
-
-                if (Ability.Effect != null)
+                var currentTime = Game_Time.total;
+                if (currentTime - abilityLastUsedTime >= Ability.Cooldown)
                 {
-                    Console.WriteLine("Adding effect to character");
-                    Ability.AddEffectToCharacter(this);
-                    Ability.Effect.Animation.Play();
+                    Ability.Use(this);
+                    abilityLastUsedTime = currentTime;
+
+                    if (Ability.Effect != null)
+                    {
+                        Console.WriteLine("Adding effect to character");
+                        Ability.AddEffectToCharacter(this);
+                        Ability.Effect.Animation.Play();
+                    }
                 }
             }
         }

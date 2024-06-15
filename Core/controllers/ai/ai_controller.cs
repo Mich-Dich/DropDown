@@ -17,6 +17,13 @@ namespace Core.Controllers.ai
 
         public virtual void Update(float deltaTime)
         {
+            if(Game.Instance.play_state == Play_State.LevelUp) { return; }
+            if(Game.Instance.play_state == Play_State.InGameMenu) { return; }
+            if(Game.Instance.play_state == Play_State.PauseMenuSkillTree) { return; }
+            if(Game.Instance.play_state == Play_State.PauseAbilitySkillTree) { return; }
+            if(Game.Instance.play_state == Play_State.PausePowerupSkillTree) { return; }
+
+
             state_machine.Update(deltaTime);
             foreach (Character character in characters)
             {

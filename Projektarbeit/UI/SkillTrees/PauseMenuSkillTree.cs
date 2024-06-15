@@ -3,11 +3,11 @@ namespace Projektarbeit.UI
     using System.Numerics;
     using Core.UI;
 
-    public class SkillTreeMenu : Menu
+    public class PauseMenuSkillTree : Menu
     {
-        public SkillTreeMenu()
+        public PauseMenuSkillTree()
         {
-            var background = new Background(new Vector4(0.2f, 0.2f, 0.2f, 1));
+            var background = new Background(new Vector4(0, 0, 0, 0.5f));
             AddElement(background);
 
             Vector2 windowSize = new Vector2(Core.Game.Instance.window.Size.X, Core.Game.Instance.window.Size.Y);
@@ -58,7 +58,7 @@ namespace Projektarbeit.UI
                 position,
                 new Vector2(200, 50),
                 "Back",
-                () => Core.Game.Instance.play_state = Core.Play_State.main_menu,
+                () => Core.Game.Instance.play_state = Core.Play_State.LevelUp,
                 null,
                 new Vector4(0.2f, 0.7f, 0.2f, 1), // Normal color
                 new Vector4(0.0f, 0.8f, 0.1f, 1), // Hover color
@@ -71,13 +71,13 @@ namespace Projektarbeit.UI
         private void NavigateToAbilities()
         {
             // Set the game state to the AbilitySkillTree menu
-            Core.Game.Instance.play_state = Core.Play_State.ability_skill_tree;
+            Core.Game.Instance.play_state = Core.Play_State.PauseAbilitySkillTree;
         }
 
         private void NavigateToPowerups()
         {
             // Implement navigation to Powerups menu
-            Core.Game.Instance.play_state = Core.Play_State.powerup_skill_tree;
+            Core.Game.Instance.play_state = Core.Play_State.PausePowerupSkillTree;
         }
 
         private void NavigateToProjectiles()

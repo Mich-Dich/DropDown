@@ -7,7 +7,7 @@
     using Core.world;
     using OpenTK.Mathematics;
 
-    public abstract class CH_base_NPC : Character
+    public class CH_base_NPC : Character
     {
         protected CH_base_NPC()
         {
@@ -133,18 +133,5 @@
             Add_Linear_Velocity(separationVelocity);
         }
 
-        public abstract bool IsPlayerInRange();
-
-        public abstract bool IsPlayerInAttackRange();
-
-        public abstract bool IsHealthLow();
-
-        public abstract void Move();
-
-        public abstract void Pursue();
-
-        public abstract void Attack();
-
-        public abstract void Retreat();
     }
 }

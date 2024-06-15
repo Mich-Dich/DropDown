@@ -15,7 +15,7 @@ namespace Core.UI
             this.Alignment = align;
         }
 
-        public void AddElement(UIElement element)
+        public new void AddElement(UIElement element)
         {
             elements.Add(element);
             OrganizeElements();

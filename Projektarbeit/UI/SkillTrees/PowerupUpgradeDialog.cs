@@ -6,11 +6,11 @@ using Projektarbeit.characters.player.abilities;
 
 namespace Core.UI
 {
-    public class UpgradeDialog
+    public class PowerupUpgradeDialog
     {
         public bool IsOpen { get; private set; }
 
-        public UpgradeDialog()
+        public PowerupUpgradeDialog()
         {
             IsOpen = false;
         }
@@ -25,7 +25,7 @@ namespace Core.UI
             IsOpen = false;
         }
 
-        public void Render(Ability ability)
+        public void Render(PowerUp powerUp)
         {
             if (!IsOpen)
             {
@@ -39,22 +39,22 @@ namespace Core.UI
             ImGui.Begin("PopupWindow", ImGuiWindowFlags.NoDecoration);
 
             Vector2 windowSize = ImGui.GetWindowSize();
-            Vector2 nameSize = ImGui.CalcTextSize(ability.Name);
-            Vector2 descSize = ImGui.CalcTextSize(ability.Description);
+            Vector2 nameSize = ImGui.CalcTextSize(powerUp.Name);
+            Vector2 descSize = ImGui.CalcTextSize(powerUp.Description);
 
             ImGui.SetCursorPos(new Vector2((windowSize.X - nameSize.X) * 0.5f, 20));
-            ImGui.Text(ability.Name);
+            ImGui.Text(powerUp.Name);
 
             ImGui.SetCursorPos(new Vector2((windowSize.X - descSize.X) * 0.5f, nameSize.Y + 40));
-            ImGui.Text(ability.Description);
+            ImGui.Text(powerUp.Description);
 
-            Vector2 levelSize = ImGui.CalcTextSize($"Level: {ability.Level}");
+            Vector2 levelSize = ImGui.CalcTextSize($"Level: {powerUp.Level}");
             ImGui.SetCursorPos(new Vector2((windowSize.X - levelSize.X) * 0.5f, nameSize.Y + descSize.Y + 60));
-            ImGui.Text($"Level: {ability.Level}");
+            ImGui.Text($"Level: {powerUp.Level}");
 
-            Vector2 upgradeCostSize = ImGui.CalcTextSize($"Upgrade Cost: {ability.UnlockCost}");
+            Vector2 upgradeCostSize = ImGui.CalcTextSize($"Upgrade Cost: {powerUp.UnlockCost}");
             ImGui.SetCursorPos(new Vector2((windowSize.X - upgradeCostSize.X) * 0.5f, nameSize.Y + descSize.Y + levelSize.Y + 80));
-            ImGui.Text($"Upgrade Cost: {ability.UnlockCost}");
+            ImGui.Text($"Upgrade Cost: {powerUp.UnlockCost}");
 
             ImGui.SetCursorPos(new Vector2(10, windowSize.Y - 60));
             if (ImGui.Button("<--", new Vector2(100, 50)))
@@ -63,35 +63,27 @@ namespace Core.UI
             }
 
             Vector2 upgradeSize = ImGui.CalcTextSize("Upgrade");
-            ImGui.SetCursorPos(new Vector2(windowSize.X - upgradeSize.X - 172, windowSize.Y - 60));
+            ImGui.SetCursorPos(new Vector2(290, windowSize.Y - 60));
             
-            if (Core.Game.Instance.GameState.Currency < ability.UnlockCost)
+            if (Core.Game.Instance.GameState.Currency < powerUp.UnlockCost)
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.5f);
             }
 
             if (ImGui.Button("Upgrade", new Vector2(100, 50)))
             {
-                ability.Upgrade();
-                int index = Core.Game.Instance.GameState.Abilities.IndexOf(ability);
+                powerUp.Upgrade();
+                int index = Core.Game.Instance.GameState.PowerUps.IndexOf(powerUp);
                 if (index != -1)
                 {
-                    Core.Game.Instance.GameState.Abilities[index] = ability;
+                    Core.Game.Instance.GameState.PowerUps[index] = powerUp;
                     GameStateManager.SaveGameState(Game.Instance.GameState, "save.json");
                 }
             }
 
-            if (Core.Game.Instance.GameState.Currency < ability.UnlockCost)
+            if (Core.Game.Instance.GameState.Currency < powerUp.UnlockCost)
             {
                 ImGui.PopStyleVar();
-            }
-
-            Vector2 equipSize = ImGui.CalcTextSize(ability.IsEquipped ? "Unequip" : "Equip");
-            ImGui.SetCursorPos(new Vector2(290, windowSize.Y - 60));
-            
-            if (ImGui.Button(ability.IsEquipped ? "Unequip" : "Equip", new Vector2(100, 50)))
-            {
-                ability.ToggleEquip();
             }
 
             ImGui.End();

@@ -117,6 +117,7 @@ namespace Core.Controllers.player
         none = 0,
         key_down = 1 << 0,   // activate when key is pressed down (can repeat)
         key_up = 1 << 1,   // activate when key NOT pressed (can repeat)
+        key_press = 1 << 2,   // activate when key is pressed down and released (can NOT repeat)
         key_hold = 1 << 2,   // activate when key down LONGER than [durationInSec] in input_action struct (can repeat)
         key_tap = 1 << 3,   // activate when key down SHORTER than [durationInSec] in input_action struct (can repeat)
         key_move_down = 1 << 4,   // activate when starting to press a key (can NOT repeat)

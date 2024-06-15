@@ -92,39 +92,5 @@ namespace Projektarbeit.characters.enemy.character
             }
         }
 
-        public override bool IsPlayerInRange()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IsPlayerInAttackRange()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IsHealthLow()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Move()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Pursue()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Attack()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Retreat()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

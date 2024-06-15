@@ -1,6 +1,7 @@
 namespace Core.world
 {
     using Core.defaults;
+    using Core.util;
     using Newtonsoft.Json;
 
     public class GameState
@@ -8,7 +9,12 @@ namespace Core.world
         public int AccountLevel { get; set; }
         public int AccountXP { get; set; }
         public int Currency { get; set; }
+        [JsonIgnore]
         public List<Ability> Abilities { get; set; } = new List<Ability>();
+        [JsonIgnore]
+        public List<PowerUp> PowerUps { get; set; } = new List<PowerUp>();
+        public List<PowerUpSaveData> PowerUpsSaveData { get; set; } = new List<PowerUpSaveData>();
+        public List<AbilitySaveData> AbilitiesSaveData { get; set; } = new List<AbilitySaveData>();
 
         public int XPForNextLevel()
         {
@@ -23,6 +29,9 @@ namespace Core.world
                 AccountXP -= XPForNextLevel();
                 AccountLevel++;
                 Currency += CalculateCurrencyIncrease(AccountLevel);
+
+                // Call PlayerLevelUp when the player levels up
+                Game.Instance.get_active_map().PlayerLevelUp();
             }
             GameStateManager.SaveGameState(this, "save.json");
         }
@@ -32,6 +41,9 @@ namespace Core.world
             AccountLevel++;
             AccountXP = 0;
             Currency += CalculateCurrencyIncrease(AccountLevel);
+
+            Game.Instance.get_active_map().PlayerLevelUp();
+
             GameStateManager.SaveGameState(this, "save.json");
         }
 
@@ -87,11 +99,23 @@ namespace Core.world
 
         public static void SaveGameState(GameState gameState, string fileName)
         {
+            gameState.PowerUpsSaveData.Clear();
+            gameState.AbilitiesSaveData.Clear();
+            foreach (var powerUp in gameState.PowerUps)
+            {
+                gameState.PowerUpsSaveData.Add(powerUp.ToSaveData());
+            }
+
+            foreach (var ability in gameState.Abilities)
+            {
+                gameState.AbilitiesSaveData.Add(ability.ToSaveData());
+            }
+
             string filePath = Path.Combine(saveFolderPath, fileName);
             var settings = new JsonSerializerSettings 
             { 
                 TypeNameHandling = TypeNameHandling.Auto,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore // Add this line
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
             string json = JsonConvert.SerializeObject(gameState, Formatting.Indented, settings);
 
@@ -126,7 +150,21 @@ namespace Core.world
             string json = File.ReadAllText(filePath);
             var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
             GameState loadedGameState = JsonConvert.DeserializeObject<GameState>(json, settings);
+
+            Console.WriteLine("Loaded PowerUpSaveData: " + loadedGameState.PowerUpsSaveData.Count);
+
+            loadedGameState.PowerUps = Game.Instance.loadPowerups(loadedGameState.PowerUpsSaveData);
+
+            Console.WriteLine("Loaded Projectiles:" + loadedGameState.PowerUps.Count);
+
+            Console.WriteLine("Loaded AbilitySaveData: " + loadedGameState.AbilitiesSaveData.Count);
+
+            loadedGameState.Abilities = Game.Instance.loadAbilities(loadedGameState.AbilitiesSaveData);
+
+            Console.WriteLine("Loaded Abilities:" + loadedGameState.Abilities.Count);
+
             loadedGameState?.SetPlayerAbility();
+
             return loadedGameState;
         }
     }

@@ -20,6 +20,12 @@ namespace Projektarbeit.characters.player.power_ups
             activation = ActivatePowerUp;
 
             deactivation = DeactivatePowerUp;
+
+            Name = "FireRateBoost";
+            Description = "Decreases the fire delay for 2 seconds.";
+            UnlockCost = 20;
+            UpgradeMultiplier = 1.5f;
+            BaseUpgradeCost = 20;
         }
 
         private void ActivatePowerUp(Character target)

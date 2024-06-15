@@ -3,6 +3,7 @@ namespace Projektarbeit.UI
     using System.Collections.Generic;
     using System.Linq;
     using System.Numerics;
+    using Core;
     using Core.render;
     using Core.UI;
     using Core.util;
@@ -12,10 +13,10 @@ namespace Projektarbeit.UI
         private readonly List<string> abilityIcons = new();
         private ProgressBar healthBar;
         private ProgressBar cooldownBar;
-        private Text scoreText;
         private VerticalBox verticalBox;
         private HorizontalBox statusEffectsBox;
         private float cooldownProgress;
+        private ProgressBar scoreGoalBar;
         private Texture powerUpTexture;
 
         public MainHUD()
@@ -28,10 +29,14 @@ namespace Projektarbeit.UI
             base.Render();
 
             UpdateCooldownProgress();
-            UpdateScoreText();
             UpdateAbilityIcons();
             UpdatePowerUpIcons();
             RemoveUnusedIcons();
+        }
+
+        public void clearStatusEffects()
+        {
+            statusEffectsBox.elements.Clear();
         }
 
         private void InitializeUIElements()
@@ -49,43 +54,67 @@ namespace Projektarbeit.UI
             statusEffectsBox = new HorizontalBox(new Vector2(0, 0), new Vector2(100, 30), new Vector2(10, 10), Align.Center);
             healthBar = CreateProgressBar(() => Core.Game.Instance.player.HealthRatio, Core.Game.Instance.player.health_max, new Vector4(0.9f, 0.2f, 0.2f, 1));
             cooldownBar = CreateProgressBar(() => cooldownProgress, 100, new Vector4(0.2f, 0.2f, 0.9f, 1));
-            scoreText = new Text(new Vector2(0, 0), "Score", new Vector4(0, 0, 0, 1), 1f, TextAlign.Left);
 
             verticalBox.AddElement(statusEffectsBox);
             verticalBox.AddElement(healthBar);
             verticalBox.AddElement(cooldownBar);
-            verticalBox.AddElement(scoreText);
 
             AddElement(verticalBox);
+
+            Vector2 scoreGoalBarSize = new Vector2(800, 20);
+            Vector2 scoreGoalBarPosition = new Vector2((windowSize.X - boxSize.X - (scoreGoalBarSize.X / 2) ) / 2, padding.Y);
+            scoreGoalBar = CreateProgressBar(() => Core.Game.Instance.get_active_map().ScoreRatio, Core.Game.Instance.get_active_map().scoreGoal, new Vector4(0.2f, 0.9f, 0.2f, 1), scoreGoalBarPosition, scoreGoalBarSize);
+
+            AddElement(scoreGoalBar);
+        }
+
+        private ProgressBar CreateProgressBar(Func<float> progressFunc, float max, Vector4 color, Vector2 position, Vector2 size)
+        {
+            Vector4 backgroundColor = new Vector4(0.2f, 0.2f, 0.2f, 1);
+            return new ProgressBar(position, size, color, backgroundColor, progressFunc, 0, max, false);
         }
 
         private ProgressBar CreateProgressBar(Func<float> progressFunc, float max, Vector4 color)
         {
-            return new ProgressBar(new Vector2(0, 0), new Vector2(250, 15), color, new Vector4(0, 0, 0, 1), progressFunc, 0, max, false);
+            return new ProgressBar(new Vector2(0, 0), new Vector2(250, 15), color, new Vector4(0, 0, 0, 0), progressFunc, 0, max, false);
         }
 
         private void UpdateCooldownProgress()
         {
-            var currentTime = Game_Time.total;
-            cooldownProgress = (currentTime - Core.Game.Instance.player.abilityLastUsedTime) / Core.Game.Instance.player.Ability.Cooldown;
-            cooldownProgress = Math.Clamp(cooldownProgress, 0.0f, 1.0f);
-        }
+            if(Game.Instance.play_state == Play_State.LevelUp) { return; }
+            if(Game.Instance.play_state == Play_State.InGameMenu) { return; }
+            if(Game.Instance.play_state == Play_State.PauseMenuSkillTree) { return; }
+            if(Game.Instance.play_state == Play_State.PauseAbilitySkillTree) { return; }
+            if(Game.Instance.play_state == Play_State.PausePowerupSkillTree) { return; }
 
-        private void UpdateScoreText()
-        {
-            scoreText.Content = $"Score: {Game.Instance.Score}";
+            var player = Core.Game.Instance.player;
+                var equippedAbility = Core.Game.Instance.GameState.Abilities.FirstOrDefault(a => a.IsEquipped);
+
+                if (equippedAbility != null)
+                {
+                    var currentTime = Game_Time.total;
+                    cooldownProgress = (currentTime - player.abilityLastUsedTime) / player.Ability.Cooldown;
+                    cooldownProgress = Math.Clamp(cooldownProgress, 0.0f, 1.0f);
+                }
+                else
+                {
+                    cooldownProgress = 0.0f;
+                }
         }
 
         private void UpdateAbilityIcons()
         {
-            var player = Core.Game.Instance.player;
-            if (player.Ability.IconPath != null)
+            if(Game.Instance.player.Ability != null)
             {
-                var abilityTexture = Resource_Manager.Get_Texture(player.Ability.IconPath);
-                if (abilityTexture != null)
+                var player = Core.Game.Instance.player;
+                if (player.Ability.IconPath != null)
                 {
-                    UpdateStatusEffectImage(player.Ability.IsActive, abilityTexture, player.Ability.IconPath);
-                }
+                    var abilityTexture = Resource_Manager.Get_Texture(player.Ability.IconPath);
+                    if (abilityTexture != null)
+                    {
+                        UpdateStatusEffectImage(player.Ability.IsActive, abilityTexture, player.Ability.IconPath);
+                    }
+                }            
             }
         }
 

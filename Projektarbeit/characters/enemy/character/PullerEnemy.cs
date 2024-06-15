@@ -7,7 +7,7 @@ namespace Projektarbeit.characters.enemy.character
     using OpenTK.Mathematics;
     using Projektarbeit.projectiles;
 
-    public class PullerEnemy : CH_base_NPC
+    public class PullerEnemy : SwarmEnemy
     {
         private const float StopDistance = 450f;
         private const float PursueSpeed = 15;

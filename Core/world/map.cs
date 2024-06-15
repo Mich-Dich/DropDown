@@ -9,6 +9,7 @@
     using Core.render;
     using Core.util;
     using OpenTK.Mathematics;
+    using Core.defaults;
 
     public class Map {
 
@@ -16,7 +17,18 @@
         private readonly List<I_Controller> all_AI_Controller = new();
         public List<Character> allCharacter { get; set; } = new List<Character>();
         public List<Game_Object> projectiles { get; set; } = new List<Game_Object>();
+        public List<PowerUp> allPowerUps { get; set; } = new List<PowerUp>();     
         public bool player_is_spawned { get; private set; } = false;
+        public int scoreGoal { get; set; }
+        public int previousScoreGoal { get; set; }
+        public float ScoreRatio
+        {
+            get
+            {
+                return (float)(Core.Game.Instance.Score - previousScoreGoal) / (scoreGoal - previousScoreGoal);
+            }
+            set { }
+        }
         protected bool use_garbage_collector = false;
 
         public readonly World physicsWorld;
@@ -70,6 +82,8 @@
         public int tileWidth { get; set; }
         public int TilesOnScreenWidth { get; set; }
         public int TilesOnScreenHeight { get; set; }
+
+        public virtual void PlayerLevelUp() { }
 
         internal struct Tile_Data {
 
@@ -600,6 +614,13 @@
         }
 
         internal void update_internal(float deltaTime) {
+
+            if(Game.Instance.play_state == Play_State.LevelUp) { return; }
+            if(Game.Instance.play_state == Play_State.InGameMenu) { return; }
+            if(Game.Instance.play_state == Play_State.PauseMenuSkillTree) { return; }
+            if(Game.Instance.play_state == Play_State.PauseAbilitySkillTree) { return; }
+            if(Game.Instance.play_state == Play_State.PausePowerupSkillTree) { return; }
+
 
             physicsWorld.Step(deltaTime * 10, velocityIterations, positionIterations);
 

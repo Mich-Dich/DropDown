@@ -16,6 +16,12 @@ namespace Projektarbeit.characters.player.power_ups
             activation = ActivatePowerUp;
 
             deactivation = DeactivatePowerUp;
+
+            Name = "HealthBoost";
+            Description = "gives an instant health increased";
+            UnlockCost = 35;
+            UpgradeMultiplier = 1.7f;
+            BaseUpgradeCost = 30;
         }
 
         private void ActivatePowerUp(Character target)

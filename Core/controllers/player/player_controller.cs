@@ -92,6 +92,12 @@ namespace Core.Controllers.player
                             if (isKeyActive)
                                 break;
 
+                            if ((key_binding.TriggerFlags & (uint)TriggerFlags.key_press) != 0)
+                                isKeyActive = loc_event.KeyState == KeyState.Pressed;
+                            
+                            if (isKeyActive)
+                                break;
+
                             // mouse flags
                             if ((key_binding.TriggerFlags & (uint)TriggerFlags.mouse_positive) != 0)
                                 isKeyActive = loc_event.repeatAmout > 0;

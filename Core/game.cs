@@ -20,7 +20,25 @@ namespace Core {
         Playing = 1,
         dead = 2,
         skill_tree = 3,
-        ability_skill_tree = 4
+        ability_skill_tree = 4,
+        powerup_skill_tree = 5,
+        InGameMenu = 6,
+        LevelUp = 7,
+        PauseMenuSkillTree = 8,
+        PauseAbilitySkillTree = 9,
+        PausePowerupSkillTree = 10
+    }
+
+    public class GameStateChangedEventArgs : EventArgs
+    {
+        public Play_State OldState { get; }
+        public Play_State NewState { get; }
+
+        public GameStateChangedEventArgs(Play_State oldState, Play_State newState)
+        {
+            OldState = oldState;
+            NewState = newState;
+        }
     }
 
     public static class DebugData {
@@ -84,7 +102,8 @@ namespace Core {
         private readonly DebugDataViualizer debugDataViualizer = new();
         private double updateFrequencyBuffer = 0;
         public Debug_Drawer Debug_Drawer;
-        public GameState GameState { get; set; }
+        public GameState? GameState { get; set; }
+        public event EventHandler<GameStateChangedEventArgs> GameStateChanged;
 
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight) {
@@ -110,6 +129,8 @@ namespace Core {
 
         // ============================================================================== public ==============================================================================
         public abstract void StartGame();
+        public virtual List<PowerUp> loadPowerups(List<PowerUpSaveData> PowerUpsSaveData) { return new List<PowerUp>();}
+        public virtual List<Ability> loadAbilities(List<AbilitySaveData> AbilitiesSaveData) { return new List<Ability>();}
 
         public void Run() {
 
@@ -326,6 +347,11 @@ namespace Core {
         }
 
         protected void ResetInputEvent_List() { this.inputEvent.Clear(); }
+
+        protected virtual void OnGameStateChanged(Play_State oldState, Play_State newState)
+        {
+            GameStateChanged?.Invoke(this, new GameStateChangedEventArgs(oldState, newState));
+        }
 
         // ============================================================================== private ==============================================================================
         private void Internal_Render() {

@@ -16,7 +16,7 @@ namespace Projektarbeit.characters.enemy.States
 
             foreach (Character character in aiController.characters)
             {
-                if (character is CH_base_NPC npc)
+                if (character is SwarmEnemy npc)
                 {
                     npc.Attack();
                     if (!npc.IsPlayerInAttackRange())

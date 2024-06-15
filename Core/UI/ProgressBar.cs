@@ -20,7 +20,7 @@ namespace Core.UI
             : base(position, size)
         {
             FillColor = fillColor;
-            BackgroundColor = new Vector4(backgroundColor.X, backgroundColor.Y, backgroundColor.Z, backgroundAlpha);
+            BackgroundColor = backgroundColor;
             ValueProvider = valueProvider;
             MinValue = minValue;
             MaxValue = () => maxValue;
@@ -65,10 +65,10 @@ namespace Core.UI
             else
             {
                 uint color = ImGui.GetColorU32(FillColor);
-                uint transparentColor = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
+                uint backgroundColor = ImGui.GetColorU32(BackgroundColor);
 
                 float progressBarWidth = Size.X * (MaxValue() / 100f);
-                Imgui_Util.Progress_Bar_Stylised(ValueProvider(), new System.Numerics.Vector2(progressBarWidth, Size.Y), color, transparentColor, 0.32f, 0.28f, 0.6f);
+                Imgui_Util.Progress_Bar_Stylised(ValueProvider(), new System.Numerics.Vector2(progressBarWidth, Size.Y), color, backgroundColor, 0.32f, 0.28f, 0.6f);
             }
 
             ImGui.End();

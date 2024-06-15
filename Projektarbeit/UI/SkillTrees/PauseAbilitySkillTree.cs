@@ -5,7 +5,7 @@ namespace Projektarbeit.UI
     using Core.defaults;
     using Projektarbeit.characters.player.abilities;
 
-    public class AbilitySkillTree : Menu
+    public class PauseAbilitySkillTree : Menu
     {
         private Ability selectedAbility;
         private OmniFireAbility? omniFireAbility;
@@ -21,7 +21,7 @@ namespace Projektarbeit.UI
         private AbilityUnlockDialog unlockDialog;
         private AbilityUpgradeDialog upgradeDialog;
 
-        public AbilitySkillTree()
+        public PauseAbilitySkillTree()
         {
             omniFireAbility = Game.Instance.GameState.Abilities.OfType<OmniFireAbility>().FirstOrDefault();
             if (omniFireAbility == null)
@@ -44,7 +44,7 @@ namespace Projektarbeit.UI
                 Game.Instance.GameState.Abilities.Add(testAbility);
             }
 
-            var background = new Background(new Vector4(0.2f, 0.2f, 0.2f, 1));
+            var background = new Background(new Vector4(0f, 0f, 0f, 0.5f));
             AddElement(background);
 
             Vector2 windowSize = new Vector2(Core.Game.Instance.window.Size.X, Core.Game.Instance.window.Size.Y);
@@ -193,7 +193,7 @@ namespace Projektarbeit.UI
                 position,
                 new Vector2(200, 50),
                 "Back",
-                () => Core.Game.Instance.play_state = Core.Play_State.skill_tree,
+                () => Core.Game.Instance.play_state = Core.Play_State.PauseMenuSkillTree,
                 null,
                 new Vector4(0.2f, 0.7f, 0.2f, 1), // Normal color
                 new Vector4(0.0f, 0.8f, 0.1f, 1), // Hover color
