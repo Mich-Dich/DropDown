@@ -573,6 +573,10 @@
                 }
             }
 
+            // Draw the background first
+            for(int x = 0; x < backgound.Count; x++)
+                backgound[x].Draw();
+
             foreach (var character in allCharacter)
                 if (!character.IsRemoved)
                     character.Draw();
@@ -580,10 +584,6 @@
             for (int x = 0; x < world.Count; x++)
                 if (!world[x].IsRemoved)
                     world[x].Draw();
-
-            // Draw the background first
-            for(int x = 0; x < backgound.Count; x++)
-                backgound[x].Draw();
         }
 
         internal void Draw_Debug() {
