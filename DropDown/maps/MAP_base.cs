@@ -15,16 +15,18 @@ namespace DropDown {
     internal class Drop_Hole : Game_Object {
 
         public Action enter { get; set; }
-        private bool can_be_used = true;
+        private float last_interaction_time = 0;
+        private float reset_time = 1;
 
         public override void Hit(hitData hit) {
             base.Hit(hit);
 
-            if(hit.hit_object == Game.Instance.player && can_be_used) {
+            if(hit.hit_object == Game.Instance.player 
+                && last_interaction_time < (Game_Time.total - reset_time)) {
 
+                last_interaction_time = Game_Time.total;
                 ((Drop_Down)Game.Instance).current_drop_level++;
                 Game.Instance.set_active_map(new MAP_base(((Drop_Down)Game.Instance).current_drop_level));
-                can_be_used = false;
             }
         }
     }
@@ -98,12 +100,10 @@ namespace DropDown {
 
             Add_Player(Game.Instance.player, player_pos);
             ((Drop_Down)Game.Instance).set_play_state(Play_State.Playing);
-
-
-            Console.WriteLine($"posible number of enemys: {450 - physicsWorld.GetBodyCount()}");
-
-            const int max_body_count = 450;
+            
+            const int max_body_count = 490;
             int spanable_count = max_body_count- physicsWorld.GetBodyCount();
+            Console.WriteLine($"number of enemys: {spanable_count}");
 
             // spawn enemys
             for(int x = 0; x < (spanable_count * 0.8f); x++)

@@ -13,7 +13,7 @@ namespace DropDown.spells {
         private readonly animation_data projectileAnimationData;
 
         public P_base(Vector2 position, Vector2 direction)
-            : base(position, direction, new Vector2(50), 1700, 10, Collision_Shape.Circle) {
+            : base(position, direction, new Vector2(50), 1700, 25, Collision_Shape.Circle) {
             
             Lifetime = 1.0f;
             Sprite.set_animation("assets/animation/bolt.png", 1, 4, true, false, 30, true);
