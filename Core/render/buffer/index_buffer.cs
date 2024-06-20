@@ -1,15 +1,12 @@
 ﻿
 using OpenTK.Graphics.OpenGL4;
 
-namespace Core.render.buffer
-{
-    public sealed class Index_Buffer : I_Buffer, IDisposable
-    {
+namespace Core.render.buffer {
+    public sealed class Index_Buffer : I_Buffer, IDisposable {
 
         public int id { get; }
 
-        public Index_Buffer(uint[] indecies)
-        {
+        public Index_Buffer(uint[] indecies) {
 
             id = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, id);
@@ -23,10 +20,9 @@ namespace Core.render.buffer
 
         private bool disposed = false;
 
-        public void Dispose()
-        {
+        public void Dispose() {
 
-            if (!disposed)
+            if(!disposed)
                 GL.DeleteBuffer(id);
             disposed = true;
         }

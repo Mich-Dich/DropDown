@@ -3,11 +3,9 @@ using Core.util;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
-namespace Core.Controllers.player
-{
-    // ----------------------- class -----------------------
-    public sealed class Action
-    {
+namespace Core.Controllers.player {
+
+    public sealed class Action {
 
         // ======================================= public =======================================
         public string name { get; set; } = string.Empty;
@@ -22,8 +20,7 @@ namespace Core.Controllers.player
         public float Y { get; set; } = 0;
         public float Z { get; set; } = 0;
 
-        public Action(string name, uint modefierFlags, bool trigerWhenPaued, ActionType actionType, float durationInSec, List<KeyBindingDetail> keys)
-        {
+        public Action(string name, uint modefierFlags, bool trigerWhenPaued, ActionType actionType, float durationInSec, List<KeyBindingDetail> keys) {
 
             this.name = name;
             this.modefierFlags = modefierFlags;
@@ -32,12 +29,11 @@ namespace Core.Controllers.player
             this.durationInSec = durationInSec;
             this.keysBindings = keys;
         }
+        
+        public object GetValue() {
 
-        public object GetValue()
-        {
+            switch (this.ActionType) {
 
-            switch (this.ActionType)
-            {
                 case ActionType.BOOL:
                     return this.X > 0;
 

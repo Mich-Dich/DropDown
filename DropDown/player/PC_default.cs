@@ -5,7 +5,6 @@ namespace DropDown.player {
     using Core;
     using Core.Controllers.player;
     using Core.defaults;
-    using Core.physics;
     using Core.util;
     using Core.world;
     using DropDown.spells;
@@ -17,6 +16,9 @@ namespace DropDown.player {
         public Action look { get; set; }
         public Action sprint { get; set; }
         public Action interact { get; set; }
+        public Action pause { get; set; }
+
+        private float time_stap = 0;
 
         public PC_Default(Character character)
             : base (character, null) {
@@ -65,6 +67,20 @@ namespace DropDown.player {
                 });
             AddInputAction(sprint);
 
+
+            pause = new Action(
+                "shoot",
+                (uint)Action_ModefierFlags.none,
+                false,
+                ActionType.BOOL,
+                0f,
+                new List<KeyBindingDetail> {
+
+                    new(Key_Code.P, ResetFlags.reset_on_key_down, TriggerFlags.key_down | TriggerFlags.key_up),
+                    new(Key_Code.Pause, ResetFlags.reset_on_key_down, TriggerFlags.key_down),
+                });
+            AddInputAction(pause);
+
             
             interact = new Action(
                 "shoot",
@@ -105,6 +121,8 @@ namespace DropDown.player {
             // set zoom
             Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);
 
+            if((bool)pause.GetValue())
+                Game.Instance.pause(true);
 
             if ((bool)interact.GetValue()) {
 
@@ -118,15 +136,25 @@ namespace DropDown.player {
                         intersected_character.apply_damage(20);
                 }
 
+
                 // spawn projectily
-                Vector2 proj_rot = util.vector_from_angle(character.transform.rotation);
-                Vector2 pooj_pos = character.transform.position + (proj_rot*110);
-                try {
-                    var projectile = (Projectile)Activator.CreateInstance(ProjectileType, pooj_pos, proj_rot);
-                    Game.Instance.get_active_map().Add_Game_Object(projectile);
-                }catch {
-                    Console.WriteLine($"Exeption thrown when adding projectile");
+                if((time_stap + projectile_data.cooldown.current) < Game_Time.total) {
+
+                    Console.WriteLine($"cooldown: {projectile_data.cooldown.current}");
+
+                    Vector2 proj_rot = util.vector_from_angle(character.transform.rotation);
+                    Vector2 pooj_pos = character.transform.position + (proj_rot*110);
+                    try {
+                        var projectile = (Projectile)Activator.CreateInstance(ProjectileType, pooj_pos, proj_rot);
+                        Game.Instance.get_active_map().Add_Game_Object(projectile);
+                        time_stap = Game_Time.total;
+                        Console.WriteLine($"setting time spamp {time_stap} cooldown: {projectile_data.cooldown.current}");
+                    }
+                    catch {
+                        Console.WriteLine($"Exeption thrown when adding projectile");
+                    }
                 }
+
             }
         }
 

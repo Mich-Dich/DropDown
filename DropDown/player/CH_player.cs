@@ -13,6 +13,13 @@ namespace DropDown.player {
         public float stamina_max = 100;
 
         public uint level = 1;
+
+#if DEBUG
+        public uint assigned_AB_point = 10;
+#else
+        public uint assigned_AB_point = 0;
+#endif
+
         public uint XP_current = 0;
         public uint XP_needed = 10;
         public float health_visual_display_limit = 0.65f;
@@ -65,7 +72,7 @@ namespace DropDown.player {
         
         private void blood_stuff() {
 
-            ((Drop_Down)Game.Instance).HUD.flash_blood_overlay();
+            ((Drop_Down)Game.Instance).ui_HUD.flash_blood_overlay();
             if(typeof(MAP_base) == Game.Instance.get_active_map().GetType()) {
 
                 ((MAP_base)Game.Instance.get_active_map()).add_blood_splater(transform.position);
@@ -75,13 +82,21 @@ namespace DropDown.player {
 
         public void add_XP(uint amount) {
 
+#if DEBUG
+            XP_current += amount * 30;
+#else
             XP_current += amount;
+#endif
             if(XP_current >= XP_needed) {
                 level++;
+                assigned_AB_point++;
                 XP_current -= XP_needed;
                 XP_needed = (uint)(XP_needed * 1.5f);
             }
         }
+
+        public bool has_free_AB_point() { return (assigned_AB_point > 0); }
+        public void use_AB_point() { assigned_AB_point--; }
 
         private float last_blood_stain = 0;
 

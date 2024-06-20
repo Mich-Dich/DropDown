@@ -13,6 +13,7 @@ namespace Core {
     using OpenTK.Windowing.Desktop;
     using OpenTK.Windowing.GraphicsLibraryFramework;
     using System.Diagnostics;
+    using System.Transactions;
 
     public enum Play_State {
 
@@ -29,8 +30,8 @@ namespace Core {
         PausePowerupSkillTree = 10
     }
 
-    public class GameStateChangedEventArgs : EventArgs
-    {
+    public class GameStateChangedEventArgs : EventArgs {
+
         public Play_State OldState { get; }
         public Play_State NewState { get; }
 
@@ -186,10 +187,15 @@ namespace Core {
                     stopwatch.Restart();
 
                 this.Update_Game_Time((float)eventArgs.Time);
+
+                if (paused)
+                    this.Update(Game_Time.delta);
+                
+                // proccess handeling
                 this.playerController.Update_Internal(Game_Time.delta, this.inputEvent);
-                this.activeMap.update_internal(Game_Time.delta);
-                this.Update(Game_Time.delta);
                 this.inputEvent.Clear();
+
+                this.activeMap.update_internal(Game_Time.delta);
 
                 if (show_performance) {
 
@@ -327,6 +333,10 @@ namespace Core {
 
         public void exit_game() { this.window.Close(); }
 
+        public void pause(bool is_pause) { paused = is_pause; }
+        
+        public bool is_paused() { return paused; }
+
         public void Show_Performance(bool enable) { show_performance = enable; }
 
         public Vector2 Get_Mouse_Relative_Pos() { return this.window.MousePosition - (this.window.Size / 2) + this.cursorPosOffset; }
@@ -348,12 +358,12 @@ namespace Core {
 
         protected void ResetInputEvent_List() { this.inputEvent.Clear(); }
 
-        protected virtual void OnGameStateChanged(Play_State oldState, Play_State newState)
-        {
-            GameStateChanged?.Invoke(this, new GameStateChangedEventArgs(oldState, newState));
-        }
+        protected virtual void OnGameStateChanged(Play_State oldState, Play_State newState) { GameStateChanged?.Invoke(this, new GameStateChangedEventArgs(oldState, newState)); }
 
         // ============================================================================== private ==============================================================================
+
+        private bool paused = false;
+
         private void Internal_Render() {
 
             GL.Clear(ClearBufferMask.ColorBufferBit);

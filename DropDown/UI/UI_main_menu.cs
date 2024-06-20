@@ -10,7 +10,7 @@ namespace DropDown.UI {
 
     public class UI_main_menu : Menu {
 
-        private Texture background;
+        private Texture background; 
         private Texture title;
 
         public UI_main_menu() {
@@ -84,7 +84,7 @@ namespace DropDown.UI {
             ImGui.SetNextWindowBgAlpha(0f);
             ImGui.SetNextWindowPos(new System.Numerics.Vector2(-10), ImGuiCond.Always, new System.Numerics.Vector2(0, 0));
             ImGui.SetNextWindowSize( util.convert_Vector<System.Numerics.Vector2>(Game.Instance.window.Size) + new System.Numerics.Vector2(20));
-            ImGui.Begin("HUD", window_flags);
+            ImGui.Begin("ui_HUD", window_flags);
 
             System.Numerics.Vector2 pos = ImGui.GetCursorPos() + new System.Numerics.Vector2(10);
             ImGui.Image(background.Handle, new System.Numerics.Vector2(Game.Instance.window.Size.X * 0.4f, Game.Instance.window.Size.Y));

@@ -25,7 +25,7 @@ namespace DropDown.UI {
 
         public UI_HUD() {
             
-            // HUD
+            // ui_HUD
             image_blood_overlay = Resource_Manager.Get_Texture("assets/textures/UI/BloodOverlay.png");
             image_hud_box = Resource_Manager.Get_Texture("assets/textures/UI/box.png");
             image_hud_box_selected = Resource_Manager.Get_Texture("assets/textures/UI/box_selected.png");
@@ -43,7 +43,7 @@ namespace DropDown.UI {
 
             //ImGui.ShowStyleEditor();
 
-            // HUD
+            // ui_HUD
             ImGuiIOPtr io = ImGui.GetIO();
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
                 | ImGuiWindowFlags.NoDocking
