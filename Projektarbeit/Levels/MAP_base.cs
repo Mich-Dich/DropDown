@@ -134,10 +134,10 @@
 
             for (int i = 0; i < unlockedPowerUps.Count; i++)
             {
-                var powerUp = unlockedPowerUps[i];
+               var powerUp = unlockedPowerUps[i];
                 powerUps.Add(i, powerUpPosition => 
                 {
-                    var instance = Activator.CreateInstance(powerUp.GetType(), powerUpPosition);
+                    var instance = Activator.CreateInstance(powerUp.GetType(), powerUpPosition, powerUp.SpeedBoost, powerUp.Duration);
                     if (instance == null)
                     {
                         throw new InvalidOperationException($"Failed to create an instance of {powerUp.GetType().Name}");
@@ -219,7 +219,8 @@
             if (powerUps.ContainsKey(powerUpType))
             {
                 var powerUp = powerUps[powerUpType](powerUpPosition);
-                Add_Game_Object(powerUp);
+                powerUp.transform.position = powerUpPosition;
+                Add_Game_Object((Game_Object)powerUp);
                 allPowerUps.Add(powerUp);
             }
             else

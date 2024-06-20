@@ -45,24 +45,30 @@ namespace Projektarbeit
             List<PowerUp> powerUps = new List<PowerUp>();
             foreach (var powerUpSaveData in PowerUpsSaveData)
             {
+                PowerUp newPowerUp = null;
                 switch(powerUpSaveData.PowerUpType)
                 {
                     case "FireRateBoost":
-                        var fireRateBoost = new FireRateBoost(new OpenTK.Mathematics.Vector2(999, 999));
-                        fireRateBoost.LoadFromSaveData(powerUpSaveData);
-                        powerUps.Add(fireRateBoost);
+                        newPowerUp = new FireRateBoost(new OpenTK.Mathematics.Vector2(999, 999), fireDelayDecrease: 0.1f, duration: 4f);
                         break;
                     case "HealthIncrease":
-                        var healthIncrease = new HealthIncrease(new OpenTK.Mathematics.Vector2(999, 999));
-                        healthIncrease.LoadFromSaveData(powerUpSaveData);
-                        powerUps.Add(healthIncrease);
+                        newPowerUp = new HealthIncrease(new OpenTK.Mathematics.Vector2(999, 999));
                         break;
                     case "SpeedBoost":
-                        var speedBoost = new SpeedBoost(new OpenTK.Mathematics.Vector2(999, 999));
-                        speedBoost.LoadFromSaveData(powerUpSaveData);
-                        powerUps.Add(speedBoost);
+                        newPowerUp = new SpeedBoost(new OpenTK.Mathematics.Vector2(999, 999), speedIncrease: 300f, duration: 3.0f);
                         break;
                 }  
+
+                if (newPowerUp != null)
+                {
+                    newPowerUp.LoadFromSaveData(powerUpSaveData);
+
+                    // Check if a power-up of the same type and level already exists in the list
+                    if (!powerUps.Any(p => p.GetType() == newPowerUp.GetType() && p.Level == newPowerUp.Level))
+                    {
+                        powerUps.Add(newPowerUp);
+                    }
+                }
             }
 
             return powerUps;
@@ -129,11 +135,14 @@ namespace Projektarbeit
 
         protected override void Shutdown() { }
 
-        protected override void Update(float deltaTime) {
+        protected override void Update(float deltaTime) 
+        {
             if (GameState.AccountXP >= GameState.XPForNextLevel())
             {
                 GameState.IncreaseLevel();
             }
+
+            GameState.RemoveDuplicatePowerUps();
         }
 
         protected override void Render(float deltaTime) { }

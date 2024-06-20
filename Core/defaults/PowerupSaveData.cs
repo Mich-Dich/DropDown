@@ -14,5 +14,6 @@ namespace Core.util
         public float DurationBoost { get; set; }
         public float Duration { get; set; }
         public string PowerUpType { get; set; }
+        public float FireDelayDecrease { get; set; } 
     }
 }

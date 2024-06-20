@@ -68,6 +68,18 @@ namespace Core.world
                 }
             }
         }
+
+        public void RemoveDuplicatePowerUps()
+        {
+            var groupedPowerUps = PowerUps.GroupBy(p => p.GetType()).ToList();
+            PowerUps.Clear();
+
+            foreach (var group in groupedPowerUps)
+            {
+                var highestLevelPowerUp = group.OrderByDescending(p => p.Level).First();
+                PowerUps.Add(highestLevelPowerUp);
+            }
+        }
     }
 
     public static class GameStateManager

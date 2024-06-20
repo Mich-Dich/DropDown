@@ -8,9 +8,10 @@ namespace Projektarbeit.characters.player.power_ups
 
     public class SpeedBoost : PowerUp
     {
-        public float SpeedIncrease { get; set; } = 400f;
+        private float CustomSpeedIncrease;
+        private float CustomDuration;
 
-        public SpeedBoost(Vector2 position)
+        public SpeedBoost(Vector2 position, float speedIncrease, float duration)
             : base(position, new Vector2(30, 30), new Sprite(new Texture("assets/textures/power-ups/speed_increaser.png")))
         {
             IconPath = "assets/textures/abilities/fireboost.png";
@@ -25,24 +26,28 @@ namespace Projektarbeit.characters.player.power_ups
             UpgradeMultiplier = 1.5f;
             BaseUpgradeCost = 35;
 
-            SpeedBoost = 400f;
-            Duration = 3f;
+            this.SpeedBoost = 300.0f;
+            this.Duration = 3.0f;
+
+            this.CustomSpeedIncrease = speedIncrease;
+            this.CustomDuration = duration;
+
+            this.Duration = CustomDuration;
         }
 
         public override void Upgrade()
         {
             base.Upgrade();
 
-            SpeedIncrease += 100;
-            DurationBoost = 1; // Set DurationBoost to 1
-            Duration = Level % 2 != 0 ? Duration + DurationBoost : Duration;
+            CustomSpeedIncrease += 100;
+            Duration = Level % 2 != 0 ? Duration + 1 : Duration;
 
             // Update the properties in the PowerUp class
-            this.SpeedBoost = SpeedIncrease;
+            this.SpeedBoost = CustomSpeedIncrease;
             this.Duration = Duration;
 
             Console.WriteLine("SpeedBoost upgraded to level " + Level);
-            Console.WriteLine("SpeedBoost: " + SpeedIncrease + " activated for " + Duration + " seconds");
+            Console.WriteLine("SpeedBoost: " + SpeedBoost + " activated for " + Duration + " seconds");
 
             GameStateManager.SaveGameState(Game.Instance.GameState, "save.json");
         }
@@ -54,10 +59,10 @@ namespace Projektarbeit.characters.player.power_ups
 
             if (target is CH_player player)
             {
-                player.movement_speed += SpeedIncrease;
+                player.movement_speed += this.CustomSpeedIncrease;
             }
 
-            Console.WriteLine("SpeedBoost: " + SpeedIncrease + " activated for " + Duration + " seconds");
+            Console.WriteLine("SpeedBoost: " + this.CustomSpeedIncrease + " activated for " + this.CustomDuration + " seconds Level " + this.Level);
         }
 
         private void DeactivatePowerUp(Character target)
@@ -66,7 +71,7 @@ namespace Projektarbeit.characters.player.power_ups
 
             if (target is CH_player player)
             {
-                player.movement_speed -= SpeedIncrease;
+                player.movement_speed -= CustomSpeedIncrease;
             }
         }
     }

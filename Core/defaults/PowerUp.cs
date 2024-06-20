@@ -28,8 +28,8 @@ namespace Core.defaults
         public string Description { get; set; }
         public int Level { get; set; }
         public float SpeedBoost { get; set; }
-        public float DurationBoost { get; set; }
         public const int MaxLevel = 8;
+        public float FireDelayDecrease { get; set; } 
 
         public PowerUp(Vector2 position, Vector2 size, Sprite sprite) : base(position, size)
         {
@@ -105,9 +105,9 @@ namespace Core.defaults
             Name = saveData.Name;
             Description = saveData.Description;
             SpeedBoost = saveData.SpeedBoost;
-            DurationBoost = saveData.DurationBoost;
             Duration = saveData.Duration;
             Level = saveData.Level;
+            FireDelayDecrease = saveData.FireDelayDecrease;
         }
 
         public PowerUpSaveData ToSaveData()
@@ -123,10 +123,16 @@ namespace Core.defaults
                 Description = this.Description,
                 Level = this.Level,
                 SpeedBoost = this.SpeedBoost,
-                DurationBoost = this.DurationBoost,
                 Duration = this.Duration,
-                PowerUpType = this.GetType().Name
+                PowerUpType = this.GetType().Name,
+                FireDelayDecrease = this.FireDelayDecrease
             };
+        }
+
+        public PowerUp Clone()
+        {
+            var clone = (PowerUp)this.MemberwiseClone();
+            return clone;
         }
     }
 }

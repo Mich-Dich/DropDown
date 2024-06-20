@@ -13,6 +13,8 @@
     internal class PC_main : Player_Controller
     {
         private bool isEscapeKeyPressed = false;
+        private bool isTestingKeyPressed = false;
+
         private static readonly List<KeyBindingDetail> MoveBindings = new()
         {
             new (Key_Code.W, ResetFlags.reset_on_key_up, TriggerFlags.key_down, KeyModefierFlags.axis_2 | KeyModefierFlags.negate),
@@ -41,6 +43,11 @@
             new (Key_Code.Escape, ResetFlags.reset_on_key_up, TriggerFlags.key_press),
         };
 
+        private static readonly List<KeyBindingDetail> testBindings = new()
+        {
+            new (Key_Code.F, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
+        };
+
         public Action move { get; } = new Action("move", (uint)Action_ModefierFlags.auto_reset, false, ActionType.VEC_2D, 0f, MoveBindings);
 
         public Action look { get; } = new Action("look", (uint)Action_ModefierFlags.none, false, ActionType.VEC_1D, 0f, LookBindings);
@@ -49,6 +56,7 @@
 
         public Action useAbility { get; } = new Action("useAbility", (uint)Action_ModefierFlags.auto_reset, false, ActionType.BOOL, 0f, UseAbilityBindings);
         public Action inGameMenu { get; } = new Action("inGameMenu", (uint)Action_ModefierFlags.auto_reset, false, ActionType.BOOL, 0f, InGameMenuBindings);
+        public Action testing { get; } = new Action("testing", (uint)Action_ModefierFlags.auto_reset, false, ActionType.BOOL, 0f, testBindings);
 
         public Type ProjectileType { get; set; } = typeof(Reflect);
 
@@ -73,6 +81,7 @@
             AddInputAction(fire);
             AddInputAction(useAbility);
             AddInputAction(inGameMenu);
+            AddInputAction(testing);
 
             Game.Instance.camera.Add_Zoom_Offset(0.2f);
             Game.Instance.camera.zoom_offset = 0.2f;
@@ -104,6 +113,36 @@
             else
             {
                 isEscapeKeyPressed = false;
+            }
+
+            if((bool)testing.GetValue())
+            {
+                if (!isTestingKeyPressed)
+                {
+                    Game.Instance.GameState.RemoveDuplicatePowerUps();
+
+                    // Print all powerups
+                    foreach (var powerUp in Game.Instance.GameState.PowerUps)
+                    {
+                        var saveData = powerUp.ToSaveData();
+                        Console.WriteLine("PowerUp: " + saveData.Name + 
+                                        " Level: " + saveData.Level + 
+                                        " IsLocked: " + saveData.IsLocked + 
+                                        " IsEquipped: " + saveData.IsEquipped + 
+                                        " UnlockCost: " + saveData.UnlockCost + 
+                                        " BaseUpgradeCost: " + saveData.BaseUpgradeCost + 
+                                        " UpgradeMultiplier: " + saveData.UpgradeMultiplier + 
+                                        " SpeedBoost: " + saveData.SpeedBoost + 
+                                        " DurationBoost: " + saveData.DurationBoost + 
+                                        " Duration: " + saveData.Duration);
+                    }
+
+                    isTestingKeyPressed = true;
+                }
+            }
+            else
+            {
+                isTestingKeyPressed = false;
             }
 
             if(Game.Instance.play_state == Play_State.LevelUp) { return; }

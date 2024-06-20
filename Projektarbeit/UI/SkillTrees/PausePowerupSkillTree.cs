@@ -26,7 +26,7 @@ namespace Projektarbeit.UI
             fireRateBoost = Game.Instance.GameState.PowerUps.OfType<FireRateBoost>().FirstOrDefault();
             if (fireRateBoost == null)
             {
-                fireRateBoost = new FireRateBoost(new OpenTK.Mathematics.Vector2(999, 999));
+                fireRateBoost = new FireRateBoost(new OpenTK.Mathematics.Vector2(999, 999), fireDelayDecrease: 0.1f, duration: 4f);
                 Game.Instance.GameState.PowerUps.Add(fireRateBoost);
             }
 
@@ -40,7 +40,7 @@ namespace Projektarbeit.UI
             speedBoost = Game.Instance.GameState.PowerUps.OfType<SpeedBoost>().FirstOrDefault();
             if (speedBoost == null)
             {
-                speedBoost = new SpeedBoost(new OpenTK.Mathematics.Vector2(999, 999));
+                speedBoost = new SpeedBoost(new OpenTK.Mathematics.Vector2(999, 999), speedIncrease: 300f, duration: 3f);
                 Game.Instance.GameState.PowerUps.Add(speedBoost);
             }
 
