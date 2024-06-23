@@ -62,20 +62,14 @@
                 timeInterval = GetRandomTimeInterval();
             }
 
-            // Start of new logic
-            // Check if the score has changed
             if (Core.Game.Instance.Score != lastScore)
             {
-                // Calculate the score difference
                 int scoreDifference = Core.Game.Instance.Score - lastScore;
 
-                // Add the score difference to the XP
                 Game.Instance.GameState.AddXP(scoreDifference);
 
-                // Update the last score
                 lastScore = Core.Game.Instance.Score;
             }
-            // End of new logic
 
             CheckScoreGoal();
         }
@@ -134,10 +128,11 @@
 
             for (int i = 0; i < unlockedPowerUps.Count; i++)
             {
-               var powerUp = unlockedPowerUps[i];
+                var powerUp = unlockedPowerUps[i];
                 powerUps.Add(i, powerUpPosition => 
                 {
-                    var instance = Activator.CreateInstance(powerUp.GetType(), powerUpPosition, powerUp.SpeedBoost, powerUp.Duration);
+                    // Corrected to only pass the parameters that match the constructor
+                    var instance = Activator.CreateInstance(powerUp.GetType(), powerUpPosition);
                     if (instance == null)
                     {
                         throw new InvalidOperationException($"Failed to create an instance of {powerUp.GetType().Name}");

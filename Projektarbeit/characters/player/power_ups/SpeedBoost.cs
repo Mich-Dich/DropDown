@@ -40,14 +40,14 @@ namespace Projektarbeit.characters.player.power_ups
             base.Upgrade();
 
             CustomSpeedIncrease += 100;
-            Duration = Level % 2 != 0 ? Duration + 1 : Duration;
+            CustomDuration = Level % 2 != 0 ? CustomDuration + 1 : CustomDuration;
 
             // Update the properties in the PowerUp class
             this.SpeedBoost = CustomSpeedIncrease;
-            this.Duration = Duration;
+            this.Duration = CustomDuration;
 
             Console.WriteLine("SpeedBoost upgraded to level " + Level);
-            Console.WriteLine("SpeedBoost: " + SpeedBoost + " activated for " + Duration + " seconds");
+            Console.WriteLine("SpeedBoost: " + SpeedBoost + " activated for " + CustomDuration + " seconds");
 
             GameStateManager.SaveGameState(Game.Instance.GameState, "save.json");
         }

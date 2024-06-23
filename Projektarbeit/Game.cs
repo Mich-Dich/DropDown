@@ -92,9 +92,6 @@ namespace Projektarbeit
                         abilities.Add(shieldAbility);
                         break;
                     case "TestAbility":
-                        var testAbility = new TestAbility();
-                        testAbility.LoadFromSaveData(abilitySaveData);
-                        abilities.Add(testAbility);
                         break;
                 }  
             }

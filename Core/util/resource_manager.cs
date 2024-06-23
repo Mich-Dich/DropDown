@@ -1,5 +1,6 @@
 ﻿using Core.render;
 using Core.render.shaders;
+using System.Collections.Generic;
 
 namespace Core.util
 {
@@ -8,6 +9,7 @@ namespace Core.util
         private static readonly Dictionary<string, Shader> Shaders = new();
         private static readonly Dictionary<string, Texture> Textures = new();
         private static readonly Dictionary<string, SpriteBatch> SpriteBatches = new();
+        private static readonly Dictionary<string, Sound> Sounds = new();
 
         public static Shader Get_Shader(string vertexPath, string fragmentPath)
         {
@@ -38,6 +40,16 @@ namespace Core.util
             }
 
             return SpriteBatches[directoryPath];
+        }
+
+        public static Sound Get_Sound(string filePath)
+        {
+            if (!Sounds.ContainsKey(filePath))
+            {
+                Sounds[filePath] = new Sound(filePath);
+            }
+
+            return Sounds[filePath];
         }
     }
 }

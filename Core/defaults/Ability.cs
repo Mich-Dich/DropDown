@@ -20,6 +20,7 @@ namespace Core.defaults
         public bool IsLocked { get; set; } = true;
         public int BaseUpgradeCost { get; set; }
         public float UpgradeMultiplier { get; set; }
+        public float Duration { get; set; }
 
         public System.Timers.Timer timer;
 
@@ -103,6 +104,7 @@ namespace Core.defaults
             Name = saveData.Name;
             Description = saveData.Description;
             Level = saveData.Level;
+            Duration = saveData.Duration; 
         }
 
         public AbilitySaveData ToSaveData()
@@ -117,6 +119,7 @@ namespace Core.defaults
                 Name = this.Name,
                 Description = this.Description,
                 Level = this.Level,
+                Duration = this.Duration,
                 AbilityType = this.GetType().Name
             };
         }

@@ -10,7 +10,6 @@ namespace Projektarbeit.UI
         private Ability selectedAbility;
         private OmniFireAbility? omniFireAbility;
         private ShieldAbility? shieldAbility;
-        private TestAbility? testAbility;
         private const float ButtonHeight = 50;
         private const float ButtonPadding = 10;
 
@@ -35,13 +34,6 @@ namespace Projektarbeit.UI
             {
                 shieldAbility = new ShieldAbility();
                 Game.Instance.GameState.Abilities.Add(shieldAbility);
-            }
-
-            testAbility = Game.Instance.GameState.Abilities.OfType<TestAbility>().FirstOrDefault();
-            if (testAbility == null)
-            {
-                testAbility = new TestAbility();
-                Game.Instance.GameState.Abilities.Add(testAbility);
             }
 
             var background = new Background(new Vector4(0f, 0f, 0f, 0.5f));
@@ -77,8 +69,8 @@ namespace Projektarbeit.UI
             testButton = CreateButton(
                 (windowSize / 2) + new Vector2(-100, buttonY - 150),
                 "TestAbility",
-                () => { SelectAbility(testAbility); },
-                testAbility
+                () => { /* implementation */ },
+                null
             );
             AddElement(testButton);
 
@@ -101,7 +93,7 @@ namespace Projektarbeit.UI
             // Update the color of the buttons
             UpdateButtonColor(omniFireButton, omniFireAbility);
             UpdateButtonColor(shieldButton, shieldAbility);
-            UpdateButtonColor(testButton, testAbility);
+            UpdateButtonColor(testButton, null);
 
             // Display the dialog
             if (unlockDialog.IsOpen && selectedAbility.IsLocked)

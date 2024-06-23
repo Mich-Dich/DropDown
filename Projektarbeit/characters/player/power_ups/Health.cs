@@ -8,20 +8,23 @@ namespace Projektarbeit.characters.player.power_ups
 
     public class HealthIncrease : PowerUp
     {
-        public float HealthIncreaseAmount { get; set; } = 30f;
-
         public HealthIncrease(Vector2 position)
             : base(position, new Vector2(30, 30), new Sprite(new Texture("assets/textures/power-ups/health.png")))
         {
             activation = ActivatePowerUp;
-
             deactivation = (target) => { };
-
             Name = "HealthIncrease";
-            Description = "gives an instant health increased";
+            Description = "Gives an instant health increase";
             UnlockCost = 30;
             UpgradeMultiplier = 1.7f;
             BaseUpgradeCost = 30;
+            HealthIncreaseAmount = 30f;
+        }
+
+        public override void Upgrade()
+        {
+            base.Upgrade();
+            HealthIncreaseAmount += 5;
         }
 
         private void ActivatePowerUp(Character target)

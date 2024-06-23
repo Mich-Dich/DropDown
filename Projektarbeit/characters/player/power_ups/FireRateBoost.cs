@@ -43,15 +43,15 @@ namespace Projektarbeit.characters.player.power_ups
         {
             base.Upgrade();
 
-            FireDelayDecrease += 0.1f;
-            Duration = Level % 2 != 0 ? Duration + 1 : Duration;
+            CustomFireDelayDecrease += 0.1f;
+            CustomDuration = Level % 2 != 0 ? CustomDuration + 1 : CustomDuration;
 
             // Update the properties in the PowerUp class
-            this.FireDelayDecrease = FireDelayDecrease;
-            this.Duration = Duration;
+            this.FireDelayDecrease = CustomFireDelayDecrease;
+            this.Duration = CustomDuration;
 
             Console.WriteLine("FireRateBoost upgraded to level " + Level);
-            Console.WriteLine("FireRateBoost: " + FireDelayDecrease + " activated for " + Duration + " seconds");
+            Console.WriteLine("FireRateBoost: " + FireDelayDecrease + " activated for " + CustomDuration + " seconds");
 
             GameStateManager.SaveGameState(Game.Instance.GameState, "save.json");
         }

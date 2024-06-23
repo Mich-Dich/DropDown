@@ -11,6 +11,7 @@ namespace Core.util
         public bool IsLocked { get; set; }
         public int BaseUpgradeCost { get; set; }
         public float UpgradeMultiplier { get; set; }
+        public float Duration { get; set; }
 
         public string AbilityType { get; set; }
     }
