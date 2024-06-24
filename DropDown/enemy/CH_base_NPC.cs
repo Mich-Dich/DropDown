@@ -5,12 +5,14 @@ namespace DropDown.enemy {
     using Core.render;
     using Core.util;
     using Core.world;
+    using DropDown.player;
     using OpenTK.Mathematics;
 
     public class CH_base_NPC : Character{
 
         public uint XP = 0;
-        public Sound attack_sopund_00;
+        public Sound attack_sound_00;
+        public Sound hit_sound_00;
 
         public CH_base_NPC() {
 
@@ -20,7 +22,8 @@ namespace DropDown.enemy {
             movement_force = 5000000;
             rotation_offset = float.Pi/2;
 
-            attack_sopund_00 = new Sound("assets/sounds/punch_00.wav", 15);
+            attack_sound_00 = new Sound("assets/sounds/punch_01.wav", 5);
+            hit_sound_00 = new Sound("assets/sounds/impact-blood-2.wav", 0.6f);
 
             Add_Collider(new Collider(Collision_Shape.Circle));
             this.Set_Sprite(new Sprite());
@@ -28,7 +31,7 @@ namespace DropDown.enemy {
 
         public void play_attack_sound() {
             
-            attack_sopund_00.Play();
+            attack_sound_00.Play();
         }
 
         public override void draw_imgui() {
@@ -63,6 +66,11 @@ namespace DropDown.enemy {
                 animation_data.loop);
         }
 
+        public override void apply_damage(Single damage) {
+            base.apply_damage(damage);
+
+            hit_sound_00.Play();
+        }
     }
 
 }

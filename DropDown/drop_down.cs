@@ -82,10 +82,11 @@ namespace DropDown {
 
         private CH_player CH_player;
         private Game_State play_state = Game_State.main_menu;
+        public Sound battle_music;
 
         // ========================================================= functions =========================================================
         protected override void Init() {
-
+            
             GL.ClearColor(new Color4(.05f, .05f, .05f, 1f));
             Set_Update_Frequency(144.0f);
             
@@ -114,9 +115,14 @@ namespace DropDown {
             ui_HUD = new UI_HUD();
             ui_hub = new UI_hub(CH_player);
             ui_death = new UI_death(() => { Console.WriteLine($"Execute Function"); set_play_state(Game_State.hub_area); });
+
+            battle_music = new Sound("assets/sounds/battle-sword.wav", 9);
         }
 
-        protected override void Shutdown() { }
+        protected override void Shutdown() { 
+        
+            battle_music.Stop();
+        }
 
         protected override void Update(float deltaTime) { }
 
@@ -157,6 +163,7 @@ namespace DropDown {
                 case Game_State.Playing: {
 
                     this.playerController = new PC_Default(CH_player);
+                    battle_music.Play();
                 } break;
             
                 case Game_State.dead: {

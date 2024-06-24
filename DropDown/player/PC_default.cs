@@ -135,6 +135,7 @@ namespace DropDown.player {
                     if(obj is Character intersected_character)
                         intersected_character.apply_damage(20);
                 }
+                ((CH_player)character).play_swing_sound(intersected_game_objects.Count > 0);
 
 
                 // spawn projectily

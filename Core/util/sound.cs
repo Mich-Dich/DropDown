@@ -1,7 +1,8 @@
-
 namespace Core.util {
 
     using NAudio.Wave;
+    using System;
+    using System.Collections.Generic;
 
     public class Sound : IDisposable {
 
@@ -9,40 +10,65 @@ namespace Core.util {
         public float Volume { get; set; } = 1.0f;
         public bool Loop { get; set; } = false;
 
-        private AudioFileReader _audioFileReader;
-        private WaveOutEvent _event;
+        private List<WaveOutEvent> _playingEvents;
+        private List<AudioFileReader> _audioFileReaders;
 
-        public Sound(string filePath, float Volume = 10.0f, bool Loop = false) {
-            
+        public Sound(string filePath, float volume = 1.0f, bool loop = false) {
+
             FilePath = filePath;
-            Volume = Volume;
-            Loop = Loop;
-
-            // Play the .wav file
-            _audioFileReader = new AudioFileReader(filePath);
-            _event = new WaveOutEvent();
-            _event.Init(_audioFileReader);
-            _event.PlaybackStopped += (object sender, StoppedEventArgs e) => {
-
-                _audioFileReader.Position = 0; // Reset position to start
-                if(Loop)
-                    _event.Play();
-            };
+            Volume = volume;
+            Loop = loop;
+            _playingEvents = new List<WaveOutEvent>();
+            _audioFileReaders = new List<AudioFileReader>();
         }
 
         public void Dispose() {
-            _event.Dispose();
-            _audioFileReader.Dispose();
+
+            foreach(var waveOut in _playingEvents)
+                waveOut.Dispose();
+            
+            foreach(var reader in _audioFileReaders)
+                reader.Dispose();
+            
+            _playingEvents.Clear();
+            _audioFileReaders.Clear();
         }
 
-        public void Play() { _event.Play(); }
+        public void Play() {
 
-        public void Pause() { _event.Pause(); }
+            var audioFileReader = new AudioFileReader(FilePath) {
+                Volume = Volume
+            };
+            var waveOutEvent = new WaveOutEvent();
+            waveOutEvent.Init(audioFileReader);
+            waveOutEvent.PlaybackStopped += (object sender, StoppedEventArgs e) => {
 
-        public void Stop() { 
+                audioFileReader.Dispose();
+                waveOutEvent.Dispose();
+                _playingEvents.Remove(waveOutEvent);
+                _audioFileReaders.Remove(audioFileReader);
+                if(Loop)
+                    Play();
+            };
 
-            _event.Stop();
-            _audioFileReader.Position = 0; // Reset position to start
+            _playingEvents.Add(waveOutEvent);
+            _audioFileReaders.Add(audioFileReader);
+            waveOutEvent.Play();
+        }
+
+        public void Pause() {
+
+            foreach(var waveOut in _playingEvents)
+                waveOut.Pause();
+        }
+
+        public void Stop() {
+
+            foreach(var waveOut in _playingEvents)
+                waveOut.Stop();
+
+            _playingEvents.Clear();
+            _audioFileReaders.Clear();
         }
     }
 }
