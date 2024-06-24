@@ -1,43 +1,48 @@
-namespace Core.util
-{
-    using NetCoreAudio;
-    using System;
-    
-    public class Sound
-    {
+
+namespace Core.util {
+
+    using NAudio.Wave;
+
+    public class Sound : IDisposable {
+
         public string FilePath { get; private set; }
         public float Volume { get; set; } = 1.0f;
         public bool Loop { get; set; } = false;
 
-        private readonly Player player = new();
+        private AudioFileReader _audioFileReader;
+        private WaveOutEvent _event;
 
-        public Sound(string filePath)
-        {
+        public Sound(string filePath, float Volume = 10.0f, bool Loop = false) {
+            
             FilePath = filePath;
-            player.PlaybackFinished += Player_PlaybackFinished;
+            Volume = Volume;
+            Loop = Loop;
+
+            // Play the .wav file
+            _audioFileReader = new AudioFileReader(filePath);
+            _event = new WaveOutEvent();
+            _event.Init(_audioFileReader);
+            _event.PlaybackStopped += (object sender, StoppedEventArgs e) => {
+
+                _audioFileReader.Position = 0; // Reset position to start
+                if(Loop)
+                    _event.Play();
+            };
         }
 
-        private async void Player_PlaybackFinished(object? sender, EventArgs e)
-        {
-            if (Loop)
-            {
-                await Play();
-            }
+        public void Dispose() {
+            _event.Dispose();
+            _audioFileReader.Dispose();
         }
 
-        public async Task Play()
-        {
-            await player.Play(FilePath);
-        }
+        public void Play() { _event.Play(); }
 
-        public void Stop()
-        {
-            player.Stop();
-        }
+        public void Pause() { _event.Pause(); }
 
-        public void Pause()
-        {
-            player.Pause();
+        public void Stop() { 
+
+            _event.Stop();
+            _audioFileReader.Position = 0; // Reset position to start
         }
     }
 }

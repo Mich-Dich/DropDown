@@ -10,6 +10,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Projektarbeit", "Projektarbeit\Projektarbeit.csproj", "{6A695312-DDF2-40C8-8618-3D9D69F9E6AD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTest.csproj", "{D83E6E78-5748-4F74-90E5-E823A2A33943}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9EF13788-31F2-4C81-AF70-02EAC36FFE0F} = {9EF13788-31F2-4C81-AF70-02EAC36FFE0F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

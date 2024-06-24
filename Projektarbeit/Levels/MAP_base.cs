@@ -1,5 +1,6 @@
-﻿namespace Projektarbeit.Levels
-{
+﻿
+namespace Projektarbeit.Levels {
+
     using System.Collections.Generic;
     using Core.util;
     using Core.world;
@@ -8,8 +9,8 @@
     using Projektarbeit.characters.enemy.controller;
     using Projektarbeit.characters.player.power_ups;
 
-    internal class MAP_base : Map
-    {
+    internal class MAP_base : Map {
+
         private readonly Camera camera;
         private readonly Random random;
         private float timeStamp;

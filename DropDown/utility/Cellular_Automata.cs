@@ -262,7 +262,6 @@ namespace DropDown.utility {
         }
 
 
-
         private void Log_U64(ulong number) {
 
             string binaryRepresentation = Convert.ToString((long)number, 2).PadLeft(64, '0');
