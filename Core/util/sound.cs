@@ -1,63 +1,43 @@
-using System;
-using System.IO;
-using System.Runtime.InteropServices;
-using OpenTK.Audio.OpenAL;
-
 namespace Core.util
 {
+    using NetCoreAudio;
+    using System;
+    
     public class Sound
     {
         public string FilePath { get; private set; }
         public float Volume { get; set; } = 1.0f;
         public bool Loop { get; set; } = false;
 
-        private int bufferId;
-        private int sourceId;
+        private readonly Player player = new();
 
         public Sound(string filePath)
         {
             FilePath = filePath;
-            bufferId = AL.GenBuffer();
-            sourceId = AL.GenSource();
-
-            var soundData = LoadSoundData(filePath);
-
-            GCHandle handle = GCHandle.Alloc(soundData.RawData, GCHandleType.Pinned);
-            try
-            {
-                IntPtr pointer = handle.AddrOfPinnedObject();
-                AL.BufferData(bufferId, soundData.SoundFormat, pointer, soundData.RawData.Length, soundData.SampleRate);
-            }
-            finally
-            {
-                if (handle.IsAllocated)
-                    handle.Free();
-            }
-
-            AL.Source(sourceId, ALSourcei.Buffer, bufferId);
+            player.PlaybackFinished += Player_PlaybackFinished;
         }
 
-        private (byte[] RawData, ALFormat SoundFormat, int SampleRate) LoadSoundData(string filePath)
+        private async void Player_PlaybackFinished(object? sender, EventArgs e)
         {
-            // Implementation for loading WAV files and extracting PCM data
-            throw new NotImplementedException("LoadSoundData method needs to be implemented based on your sound file format.");
+            if (Loop)
+            {
+                await Play();
+            }
         }
 
-        public void Play()
+        public async Task Play()
         {
-            AL.Source(sourceId, ALSourcef.Gain, Volume);
-            AL.Source(sourceId, ALSourceb.Looping, Loop);
-            AL.SourcePlay(sourceId);
+            await player.Play(FilePath);
         }
 
         public void Stop()
         {
-            AL.SourceStop(sourceId);
+            player.Stop();
         }
 
         public void Pause()
         {
-            AL.SourcePause(sourceId);
+            player.Pause();
         }
     }
 }

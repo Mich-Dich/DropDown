@@ -57,5 +57,8 @@
     <None Update="assets\textures\projectiles\beam\beam.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets/sounds/sample1.WAV">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

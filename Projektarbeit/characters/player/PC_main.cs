@@ -14,6 +14,7 @@
     {
         private bool isEscapeKeyPressed = false;
         private bool isTestingKeyPressed = false;
+        private SoundManager soundManager = new SoundManager();
 
         private static readonly List<KeyBindingDetail> MoveBindings = new()
         {
@@ -85,6 +86,7 @@
 
             Game.Instance.camera.Add_Zoom_Offset(0.2f);
             Game.Instance.camera.zoom_offset = 0.2f;
+            soundManager.LoadSound("testSound", "assets/sounds/sample1.WAV");
         }
 
         protected override void Update(float deltaTime)
@@ -120,6 +122,7 @@
                 if (!isTestingKeyPressed)
                 {
                     Game.Instance.GameState.RemoveDuplicatePowerUps();
+                    _ = soundManager.PlaySound("testSound", 10.0f, false);
 
                     // Print all powerups
                     foreach (var powerUp in Game.Instance.GameState.PowerUps)
