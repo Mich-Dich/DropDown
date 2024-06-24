@@ -24,7 +24,7 @@ namespace DropDown.UI {
                     new System.Numerics.Vector2(280, 400),
                     new System.Numerics.Vector2(200, 57),
                     "##start",
-                    () => { ((Drop_Down)Game.Instance).set_play_state(DropDown.Game_State.hub_area); },
+                    () => { ((Drop_Down)Game.Instance).set_game_state(DropDown.Game_State.hub_area); },
                     () => { },
                     "assets/textures/UI/bu_start.png",
                     "assets/textures/UI/bu_start_hover.png",

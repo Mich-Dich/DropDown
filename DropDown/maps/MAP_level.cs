@@ -43,7 +43,7 @@ namespace DropDown.maps {
                     found = true;
             }
             Add_Player(Game.Instance.player, player_pos);
-            ((Drop_Down)Game.Instance).set_play_state(DropDown.Game_State.Playing);
+            ((Drop_Down)Game.Instance).set_game_state(DropDown.Game_State.Playing);
             
 
             //for(int x = 0; x < 1000; x++)

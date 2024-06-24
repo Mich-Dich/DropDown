@@ -65,7 +65,7 @@ namespace DropDown {
         private map_entry_status map_Entry_Status = map_entry_status.entering;
         private float last_interaction_time = 0;
         private float level_fall_duration = 1;
-        private float buffer_zoom_offset;
+        //private float buffer_zoom_offset;
         private Character player;
         private Vector2 player_size;
         public void start_droping_into_hole() { map_Entry_Status = map_entry_status.exeting; }

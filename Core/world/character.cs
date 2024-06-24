@@ -9,21 +9,19 @@ using Core.util;
 using ImGuiNET;
 using OpenTK.Mathematics;
 
-namespace Core.world
-{
-    public class Character : Game_Object
-    {
+namespace Core.world {
+
+    public class Character : Game_Object {
 
         public float movement_speed { get; set; } = 100.0f;
         public float movement_speed_max { get; set; } = 100.0f;
         public float movement_force { get; set; } = 100000.0f;
         public float movement_force_max { get; set; } = 100000.0f;
         public float auto_heal_amout { get; set; } = 5;
-        public float health
-        {
+        public float health {
+
             get { return _health; }
-            set
-            {
+            set {
                 _health = value;
                 UpdateHealthRatio();
             }
@@ -31,18 +29,17 @@ namespace Core.world
         public float HealthRatio { get; private set; }
         public bool auto_remove_on_death = false;
         public bool IsDead { get; set; } = false;
-        public float health_max
-        {
+        public float health_max {
+
             get { return _health_max; }
-            set
-            {
+            set {
                 _health_max = value;
                 UpdateHealthRatio();
             }
         }
         public bool Invincible { get; set; } = false;
         public Action death_callback { get; set; }
-        public Ability Ability { get; set; }
+        public Ability? Ability { get; set; }
         public List<PowerUp> ActivePowerUps { get; set; } = new List<PowerUp>();
         public float abilityLastUsedTime;
         public float fireDelay = 1.0f;
@@ -52,8 +49,8 @@ namespace Core.world
         private float _health;
         private float _health_max;
 
-        public Character()
-        {
+        public Character() {
+
             _health = 100;
             _health_max = 100;
             transform.mobility = Mobility.DYNAMIC;
@@ -63,8 +60,8 @@ namespace Core.world
         // controller
         // ---------------------------------------------------------------------------------------------------------------
 
-        public void Set_Controller(AI_Controller controller)
-        {
+        public void Set_Controller(AI_Controller controller) {
+
             this.controller = controller;
             controller.characters.Add(this);
         }
@@ -72,47 +69,42 @@ namespace Core.world
         // ---------------------------------------------------------------------------------------------------------------
         // default setters/getters
         // ---------------------------------------------------------------------------------------------------------------
-        public void set_animation(Animation animation)
-        {
+        public void set_animation(Animation animation) {
 
-            if (sprite != null)
+            if(sprite != null)
                 sprite.animation = animation;
 
             sprite.animation.Play();
         }
 
-        public void Set_Velocity(Vector2 new_velocity)
-        {
+        public void Set_Velocity(Vector2 new_velocity) {
 
-            if (this.collider != null)
+            if(this.collider != null)
                 this.collider.velocity = new_velocity;
         }
 
-        public void Add_Linear_Velocity(Vec2 add_velocity)
-        {
+        public void Add_Linear_Velocity(Vec2 add_velocity) {
 
-            if (this.collider != null && this.collider.body != null)
+            if(this.collider != null && this.collider.body != null)
                 this.collider.body.SetLinearVelocity(this.collider.body.GetLinearVelocity() + add_velocity);
         }
 
-        public void Set_Velocity(Vec2 new_velocity)
-        {
+        public void Set_Velocity(Vec2 new_velocity) {
 
-            if (this.collider != null && this.collider.body != null)
+            if(this.collider != null && this.collider.body != null)
                 this.collider.body.SetLinearVelocity(new_velocity);
         }
 
-        public Vec2 Get_Velocity()
-        {
-            if (this.collider != null && this.collider.body != null)
+        public Vec2 Get_Velocity() {
+
+            if(this.collider != null && this.collider.body != null)
                 return this.collider.body.GetLinearVelocity();
             return Vec2.Zero;
         }
 
-        public void add_force(Vec2 force)
-        {
+        public void add_force(Vec2 force) {
 
-            if (this.collider != null && this.collider.body != null)
+            if(this.collider != null && this.collider.body != null)
                 this.collider.body.ApplyForce(force, Vec2.Zero);
         }
 
@@ -132,32 +124,29 @@ namespace Core.world
 
         public override void Hit(hitData hit) { }
 
-        public virtual void apply_damage(float damage)
-        {
-            if (!Invincible)
-            {
+        public virtual void apply_damage(float damage) {
+
+            if(!Invincible) {
                 health -= damage;
-                if (health <= 0 && death_callback != null)
+                if(health <= 0 && death_callback != null)
                     death_callback();
             }
         }
 
-        public void perception_check(ref List<Game_Object> intersected_game_objects, float check_direction = 0, int num_of_rays = 6, float angle = float.Pi, float look_distance = 800, bool display_debug = false, float display_duration = 1f)
-        {
+        public void perception_check(ref List<Game_Object> intersected_game_objects, float check_direction = 0, int num_of_rays = 6, float angle = float.Pi, float look_distance = 800, bool display_debug = false, float display_duration = 1f) {
 
             float angle_per_ray = angle / (float)(num_of_rays - 1);
-            for (int x = 0; x < num_of_rays; x++)
-            {
+            for(int x = 0; x < num_of_rays; x++) {
 
                 var look_dir = Core.util.util.vector_from_angle(transform.rotation - rotation_offset + check_direction - (angle / 2) + (angle_per_ray * x));
                 Vector2 start = transform.position + (look_dir * (transform.size.X / 2));
                 Vector2 end = start + (look_dir * look_distance);
 
-                if (!Game.Instance.get_active_map().ray_cast(start, end, out Box2DX.Common.Vec2 intersection_point, out float distance, out var buffer, display_debug, display_duration))
+                if(!Game.Instance.get_active_map().ray_cast(start, end, out Box2DX.Common.Vec2 intersection_point, out float distance, out var buffer, display_debug, display_duration))
                     continue;
 
-                if (buffer != null)
-                    if (!intersected_game_objects.Contains(buffer))
+                if(buffer != null)
+                    if(!intersected_game_objects.Contains(buffer))
                         intersected_game_objects.Add(buffer);
             }
 
@@ -167,18 +156,16 @@ namespace Core.world
         // power up
         // ---------------------------------------------------------------------------------------------------------------
 
-        public void add_power_up(PowerUp power_up)
-        {
-            if (all_power_ups.Contains(power_up))
+        public void add_power_up(PowerUp power_up) {
+            if(all_power_ups.Contains(power_up))
                 return;
 
             all_power_ups.Add(power_up);
             power_up.activation(this);
         }
 
-        public void force_remove_power_up(PowerUp power_up)
-        {
-            if (!all_power_ups.Contains(power_up))
+        public void force_remove_power_up(PowerUp power_up) {
+            if(!all_power_ups.Contains(power_up))
                 return;
 
             power_up.deactivation(this);
@@ -188,18 +175,14 @@ namespace Core.world
         // ---------------------------------------------------------------------------------------------------------------
         // abilities
         // ---------------------------------------------------------------------------------------------------------------
-        public void UseAbility()
-        {
-            if(Game.Instance.player.Ability != null)
-            {
+        public void UseAbility() {
+            if(Game.Instance.player.Ability != null) {
                 var currentTime = Game_Time.total;
-                if (currentTime - abilityLastUsedTime >= Ability.Cooldown)
-                {
+                if(currentTime - abilityLastUsedTime >= Ability.Cooldown) {
                     Ability.Use(this);
                     abilityLastUsedTime = currentTime;
 
-                    if (Ability.Effect != null)
-                    {
+                    if(Ability.Effect != null) {
                         Console.WriteLine("Adding effect to character");
                         Ability.AddEffectToCharacter(this);
                         Ability.Effect.Animation.Play();
@@ -212,11 +195,10 @@ namespace Core.world
         // display
         // ---------------------------------------------------------------------------------------------------------------
 
-        public void Display_Healthbar(System.Numerics.Vector2? display_size = null, System.Numerics.Vector2? pos_offset = null, System.Numerics.Vector2? padding = null, float rounding = 0.0f)
-        {
+        public void Display_Healthbar(System.Numerics.Vector2? display_size = null, System.Numerics.Vector2? pos_offset = null, System.Numerics.Vector2? padding = null, float rounding = 0.0f) {
 
             string UniqueId = $"Helthbar_for_character_{this.GetHashCode()}";
-            if (display_size == null)
+            if(display_size == null)
                 display_size = new System.Numerics.Vector2(healthbar_width, healthbar_height);
 
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
@@ -227,13 +209,12 @@ namespace Core.world
                 | ImGuiWindowFlags.NoNav
                 | ImGuiWindowFlags.NoMove;
 
-            System.Numerics.Vector2 position = util.util.convert_Vector<System.Numerics.Vector2>(util.util.Convert_World_To_Screen_Coords(transform.position)) 
+            System.Numerics.Vector2 position = util.util.convert_Vector<System.Numerics.Vector2>(util.util.Convert_World_To_Screen_Coords(transform.position))
                 + (pos_offset ?? System.Numerics.Vector2.Zero);
 
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, padding ?? new System.Numerics.Vector2(4));
 
-            if (rounding != 0.0f)
-            {
+            if(rounding != 0.0f) {
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, rounding);
                 ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, rounding);
             }
@@ -252,7 +233,7 @@ namespace Core.world
             ImGui.End();
             ImGui.PopStyleVar();
 
-            if (rounding != 0.0f)
+            if(rounding != 0.0f)
                 ImGui.PopStyleVar(2);
 
         }
@@ -261,32 +242,25 @@ namespace Core.world
         // update
         // ---------------------------------------------------------------------------------------------------------------
 
-        public void UpdateHealthRatio()
-        {
-            HealthRatio = health / health_max;
-        }
+        public void UpdateHealthRatio() { HealthRatio = health / health_max; }
 
-        public override void Update(Single deltaTime)
-        {
+        public override void Update(Single deltaTime) {
             base.Update(deltaTime);
 
-            if (health < health_max)
+            if(health < health_max)
                 health += (auto_heal_amout * deltaTime);
 
-            if (all_power_ups.Count >= 0)
-            {
+            if(all_power_ups.Count >= 0) {
                 List<PowerUp> power_ups_to_remove = new();
 
-                foreach (var powerup in all_power_ups)
-                {
-                    if (Game_Time.total >= powerup.ActivationTime + powerup.Duration)
-                    {
+                foreach(var powerup in all_power_ups) {
+                    if(Game_Time.total >= powerup.ActivationTime + powerup.Duration) {
                         powerup.deactivation(this);
                         power_ups_to_remove.Add(powerup);
                     }
                 }
 
-                foreach (var powerup in power_ups_to_remove)
+                foreach(var powerup in power_ups_to_remove)
                     all_power_ups.Remove(powerup);
             }
 

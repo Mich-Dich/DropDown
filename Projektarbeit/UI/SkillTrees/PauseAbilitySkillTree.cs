@@ -7,7 +7,7 @@ namespace Projektarbeit.UI
 
     public class PauseAbilitySkillTree : Menu
     {
-        private Ability selectedAbility;
+        private Ability? selectedAbility;
         private OmniFireAbility? omniFireAbility;
         private ShieldAbility? shieldAbility;
         private const float ButtonHeight = 50;
@@ -86,8 +86,8 @@ namespace Projektarbeit.UI
             upgradeDialog = new AbilityUpgradeDialog();
         }
 
-        public override void Render()
-        {
+        public override void Render() {
+
             base.Render();
 
             // Update the color of the buttons
@@ -97,16 +97,14 @@ namespace Projektarbeit.UI
 
             // Display the dialog
             if (unlockDialog.IsOpen && selectedAbility.IsLocked)
-            {
                 unlockDialog.Render(selectedAbility);
-            }
+            
             else if (upgradeDialog.IsOpen && !selectedAbility.IsLocked)
-            {
                 upgradeDialog.Render(selectedAbility);
-            }
+            
         }
 
-        private Button CreateButton(Vector2 position, string text, Action onClick, Ability ability)
+        private Button CreateButton(Vector2 position, string text, Action onClick, Ability? ability)
         {
             var button = new Button(
                 position, 
@@ -130,57 +128,47 @@ namespace Projektarbeit.UI
             if (Core.Game.Instance.GameState.Abilities.Contains(ability))
             {
                 if (ability != null && ability.IsEquipped)
-                {
                     button.Color = new Vector4(0.4f, 0.8f, 0.4f, 1);
-                }
-                else if (ability != null && !ability.IsLocked)
-                {
+                
+                else if (ability != null && !ability.IsLocked) {
+
                     Console.WriteLine("Ability is not locked");
                     button.Color = new Vector4(0.8f, 0.8f, 0.4f, 1);
-                }
-                else {
+
+                } else {
                     button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1);
                     if (ability != null)
-                    {
                         button.Label += $" (Cost to unlock: {ability.UnlockCost})";
-                    }
                 }
             }
-            else
-            {
+            else {
+
                 button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1);
                 if (ability != null)
-                {
                     button.Label += $" (Cost to unlock: {ability.UnlockCost})";
-                }
             }
             return button;
         }
 
-        private void UpdateButtonColor(Button button, Ability ability)
-        {
-            if (Core.Game.Instance.GameState.Abilities.Contains(ability))
-            {
+        private void UpdateButtonColor(Button button, Ability? ability){
+
+            if (Core.Game.Instance.GameState.Abilities.Contains(ability)) {
+
                 if (ability != null && ability.IsEquipped)
-                {
                     button.Color = new Vector4(0.4f, 0.8f, 0.4f, 1);
-                }
+                
                 else if (ability != null && !ability.IsLocked)
-                {
                     button.Color = new Vector4(0.8f, 0.8f, 0.4f, 1);
-                }
-                else {
+                
+                else 
                     button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1);
-                }
             }
             else
-            {
                 button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1);
-            }
         }
 
-        private Button CreateBackButton(Vector2 position)
-        {
+        private Button CreateBackButton(Vector2 position) {
+
             return new Button(
                 position,
                 new Vector2(200, 50),
@@ -195,9 +183,6 @@ namespace Projektarbeit.UI
                 Vector4.One);
         }
 
-        private void SelectAbility(Ability ability)
-        {
-            selectedAbility = ability;
-        }
+        private void SelectAbility(Ability ability) { selectedAbility = ability; }
     }
 }

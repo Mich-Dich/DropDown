@@ -5,8 +5,8 @@ namespace Core.UI {
     public class Button : UIElement {
 
         public string Label { get; set; }
-        public Action OnClick { get; set; }
-        public Action OnHover { get; set; }
+        public Action? OnClick { get; set; }
+        public Action? OnHover { get; set; }
         public System.Numerics.Vector4 Color { get; set; }
         public System.Numerics.Vector4 HoverColor { get; set; }
         public System.Numerics.Vector4 ClickColor { get; set; }
@@ -15,7 +15,7 @@ namespace Core.UI {
         public System.Numerics.Vector4 ClickTextColor { get; set; }
         public float BorderRadius { get; set; }
 
-        public Button(System.Numerics.Vector2 position, System.Numerics.Vector2 size, string label, Action onClick, Action onHover, System.Numerics.Vector4 color, System.Numerics.Vector4 hoverColor, System.Numerics.Vector4 clickColor, System.Numerics.Vector4 textColor, System.Numerics.Vector4 hoverTextColor, System.Numerics.Vector4 clickTextColor)
+        public Button(System.Numerics.Vector2 position, System.Numerics.Vector2 size, string label, Action? onClick, Action? onHover, System.Numerics.Vector4 color, System.Numerics.Vector4 hoverColor, System.Numerics.Vector4 clickColor, System.Numerics.Vector4 textColor, System.Numerics.Vector4 hoverTextColor, System.Numerics.Vector4 clickTextColor)
             : base(position, size) {
 
             Label = label;

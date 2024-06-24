@@ -6,10 +6,10 @@ namespace Core.Controllers.player
     public abstract class Player_Controller
     {
 
-        public Character character { get; set; }
+        public Character? character { get; set; }
 
         // public character character { get; set; }
-        public Player_Controller(Character character, List<Action>? actions = null)
+        public Player_Controller(Character? character, List<Action>? actions = null)
         {
             this.actions = actions ?? new List<Action>();
             this.character = character;

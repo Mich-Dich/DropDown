@@ -79,7 +79,7 @@ namespace DropDown {
         private UI_hub ui_hub;
         private MAP_start start_map;
         private CH_player CH_player;
-        private Game_State play_state = Game_State.main_menu;
+        private Game_State game_state = Game_State.main_menu;
         private Sound battle_music;
         private Sound menu_music;
 
@@ -102,21 +102,21 @@ namespace DropDown {
             showDebugData(true);
 #endif
             this.playerController = new PC_hub(CH_player);
-            play_state = Game_State.hub_area;
+            game_state = Game_State.hub_area;
             this.camera.Set_Zoom(0.7f);
 #else
             this.camera.Set_Zoom(0.7f);
 #endif
-            this.camera.Set_min_Max_Zoom(0.03f, 5f);
+            this.camera.Set_min_Max_Zoom(0.03f, 10f);
             this.camera.transform.position = new Vector2(-300, -300);
 
             ui_main_menu = new UI_main_menu();
             ui_HUD = new UI_HUD();
             ui_hub = new UI_hub(CH_player);
-            ui_death = new UI_death(() => { Console.WriteLine($"Execute Function"); set_play_state(Game_State.hub_area); });
+            ui_death = new UI_death(() => { Console.WriteLine($"Execute Function"); set_game_state(Game_State.hub_area); });
 
             battle_music = new Sound("assets/sounds/battle-sword.wav", 9);
-            menu_music = new Sound("assets/sounds/menu_music.wav", 9);
+            menu_music = new Sound("assets/sounds/Space_Taxi.wav", 9);
             menu_music.Play();
         }
 
@@ -138,7 +138,7 @@ namespace DropDown {
 
         protected override void Render_Imgui(float deltaTime) {
 
-            switch(play_state) {
+            switch(game_state) {
 
                 case Game_State.main_menu:
                     ui_main_menu.Render();
@@ -155,7 +155,7 @@ namespace DropDown {
             }
         }
 
-        public void set_play_state(Game_State new_play_state) {
+        public void set_game_state(Game_State new_play_state) {
 
             switch(new_play_state) {
                 case Game_State.main_menu: {
@@ -185,7 +185,7 @@ namespace DropDown {
                     this.set_active_map(new MAP_start());
                 } break;
             }
-            play_state = new_play_state; 
+            game_state = new_play_state; 
         }
 
         public override void StartGame() {

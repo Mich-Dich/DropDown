@@ -1131,6 +1131,9 @@
     <None Update="assets\sounds\punch_01.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\sounds\Space_Taxi.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\sounds\swinging_whoosh.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

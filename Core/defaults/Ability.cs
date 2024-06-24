@@ -124,7 +124,7 @@ namespace Core.defaults
             };
         }
 
-        private void OnGameStateChanged(object sender, GameStateChangedEventArgs e)
+        private void OnGameStateChanged(object? sender, GameStateChangedEventArgs e)
         {
             if (timer == null) return;
 

@@ -55,7 +55,7 @@ namespace DropDown.player {
 
                 used_death_callback = true;
                 death_sound.Play();
-                ((Drop_Down)Game.Instance).set_play_state(DropDown.Game_State.dead);
+                ((Drop_Down)Game.Instance).set_game_state(DropDown.Game_State.dead);
             };
 
         }

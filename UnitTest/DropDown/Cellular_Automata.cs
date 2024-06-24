@@ -1,11 +1,9 @@
 ﻿
 using DropDown.utility;
+using System.Reflection;
+using Xunit;
 
 namespace UnitTest.DropDown {
-
-    using System;
-    using System.Reflection;
-    using Xunit;
 
     public class Cellular_AutomataTests {
 
@@ -23,9 +21,10 @@ namespace UnitTest.DropDown {
             Assert.Equal(0.37f, automata.initalDensity);
         }
 
+
         [Fact]
         public void Generate_Bit_Map_ShouldGenerateValidMap() {
-
+            
             var automata = new Cellular_Automata(seed: 42);
             automata.Generate_Bit_Map();
 
@@ -38,7 +37,7 @@ namespace UnitTest.DropDown {
 
         [Fact]
         public void Get8x8_Block_ShouldReturnValidBlock() {
-
+            
             var automata = new Cellular_Automata(seed: 42);
             automata.Generate_Bit_Map();
 
@@ -59,7 +58,7 @@ namespace UnitTest.DropDown {
 
         [Fact]
         public void FindRandomFreePosition_ShouldReturnValidPosition() {
-
+         
             var automata = new Cellular_Automata(seed: 42);
             automata.Generate_Bit_Map();
             var position = automata.find_random_free_positon();
@@ -68,10 +67,9 @@ namespace UnitTest.DropDown {
             Assert.True(position.Y >= -32 * automata.cellSize && position.Y <= 32 * automata.cellSize);
         }
 
-
         [Fact]
         public void IsCoordInBitMapFree_ShouldReturnCorrectValue() {
-
+           
             var automata = new Cellular_Automata(seed: 42);
             automata.Generate_Bit_Map();
 
@@ -103,7 +101,7 @@ namespace UnitTest.DropDown {
             ulong[] bitMapBeforeIteration = (ulong[])automata.bit_map.Clone();
 
             MethodInfo Iterate_Over_Bit_Map_method = typeof(Cellular_Automata).GetMethod("Iterate_Over_Bit_Map", BindingFlags.NonPublic | BindingFlags.Instance);
-            Iterate_Over_Bit_Map_method.Invoke(automata, new object[] {} );
+            Iterate_Over_Bit_Map_method.Invoke(automata, new object[] { 4 }); // Pass the threshold parameter
 
             // Ensure bit_map is different after iteration
             bool isDifferent = false;
@@ -119,28 +117,26 @@ namespace UnitTest.DropDown {
 
         [Fact]
         public void Count_Ones_ShouldReturnCorrectCount() {
-
             var automata = new Cellular_Automata();
             MethodInfo Count_Ones_method = typeof(Cellular_Automata).GetMethod("Count_Ones", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            Assert.Equal(0, Count_Ones_method.Invoke(automata, new object[] { 0b000 }));
-            Assert.Equal(1, Count_Ones_method.Invoke(automata, new object[] { 0b001 }));
-            Assert.Equal(1, Count_Ones_method.Invoke(automata, new object[] { 0b010 }));
-            Assert.Equal(2, Count_Ones_method.Invoke(automata, new object[] { 0b101 }));
-            Assert.Equal(1, Count_Ones_method.Invoke(automata, new object[] { 0b111 }));
+            Assert.Equal(0, Count_Ones_method.Invoke(automata, new object[] { 0b000U }));
+            Assert.Equal(1, Count_Ones_method.Invoke(automata, new object[] { 0b001U }));
+            Assert.Equal(1, Count_Ones_method.Invoke(automata, new object[] { 0b010U }));
+            Assert.Equal(2, Count_Ones_method.Invoke(automata, new object[] { 0b011U })); // Corrected value
+            Assert.Equal(3, Count_Ones_method.Invoke(automata, new object[] { 0b111U })); // Corrected value
         }
 
         [Fact]
         public void Count_Ones_Exclude_Middle_ShouldReturnCorrectCount() {
-
             var automata = new Cellular_Automata();
             MethodInfo Count_Ones_Exclude_Middle_method = typeof(Cellular_Automata).GetMethod("Count_Ones_Exclude_Middle", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            Assert.Equal(0, Count_Ones_Exclude_Middle_method.Invoke(automata, new object[] { 0b000 }));
-            Assert.Equal(1, Count_Ones_Exclude_Middle_method.Invoke(automata, new object[] { 0b001 }));
-            Assert.Equal(1, Count_Ones_Exclude_Middle_method.Invoke(automata, new object[] { 0b100 }));
-            Assert.Equal(2, Count_Ones_Exclude_Middle_method.Invoke(automata, new object[] { 0b101 }));
-            Assert.Equal(0, Count_Ones_Exclude_Middle_method.Invoke(automata, new object[] { 0b010 }));
+            Assert.Equal(0, Count_Ones_Exclude_Middle_method.Invoke(automata, new object[] { 0b000U }));
+            Assert.Equal(1, Count_Ones_Exclude_Middle_method.Invoke(automata, new object[] { 0b001U }));
+            Assert.Equal(1, Count_Ones_Exclude_Middle_method.Invoke(automata, new object[] { 0b100U }));
+            Assert.Equal(2, Count_Ones_Exclude_Middle_method.Invoke(automata, new object[] { 0b101U }));
+            Assert.Equal(0, Count_Ones_Exclude_Middle_method.Invoke(automata, new object[] { 0b010U }));
         }
     }
 }
