@@ -10,7 +10,7 @@ namespace Core.util {
             sounds[name] = new Sound(filePath);
         }
 
-        public async Task PlaySound(string name, float volume = 1.0f, bool loop = false) {
+        public void PlaySound(string name, float volume = 1.0f, bool loop = false) {
 
             if (sounds.TryGetValue(name, out Sound sound)) {
 
@@ -20,7 +20,7 @@ namespace Core.util {
             }
         }
 
-        public async Task PlayBackgroundMusic(string name, float volume = 1.0f, bool loop = true) {
+        public void PlayBackgroundMusic(string name, float volume = 1.0f, bool loop = true) {
 
             if(currentBackgroundMusic != null)
                 currentBackgroundMusic.Stop();

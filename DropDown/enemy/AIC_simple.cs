@@ -62,11 +62,14 @@ namespace DropDown.enemy {
         }
 
         public Type execute(AI_Controller aiController, float deltaTime) {
-            
+
+            if(Game.Instance.player.health < 0)
+                return typeof(idle);
+
             foreach(CH_base_NPC character in aiController.characters) {
                 intersectedGameObjects.Clear();
                 character.perception_check(ref intersectedGameObjects, 0, character.ray_number, character.ray_cast_angle, character.ray_cast_range);
-
+                
                 if(intersectedGameObjects.Contains(Game.Instance.player))
                     return typeof(pursue_player);
 
@@ -143,6 +146,9 @@ namespace DropDown.enemy {
         }
 
         public Type execute(AI_Controller aiController, float deltaTime) {
+
+            if(Game.Instance.player.health < 0)
+                return typeof(idle);
 
             foreach(CH_base_NPC character in aiController.characters) {
                 

@@ -1122,6 +1122,9 @@
     <None Update="assets\sounds\insect_01.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\sounds\menu_music.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\sounds\punch_00.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

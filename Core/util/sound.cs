@@ -1,3 +1,10 @@
+using Box2DX.Collision;
+using Newtonsoft.Json.Linq;
+using System.Globalization;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using Xunit.Sdk;
+
 namespace Core.util {
 
     using NAudio.Wave;
@@ -72,3 +79,28 @@ namespace Core.util {
         }
     }
 }
+
+
+
+/*
+
+Fehler UnitTest.DropDown.Cellular_AutomataTests.Generate_Bit_Map_ShouldGenerateValidMap[18 ms]
+  Fehlermeldung:
+System.InvalidCastException : Unable to cast object of type 'System.Double' to type 'System.Int32'.
+  Stapelverfolgung:
+     at UnitTest.DropDown.Cellular_AutomataTests.Generate_Bit_Map_ShouldGenerateValidMap() in C:\Agents\Agent1\_work\3\s\UnitTest\DropDown\Cellular_Automata.cs:line 34
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Fehler UnitTest.DropDown.Cellular_AutomataTests.Count_Ones_ShouldReturnCorrectCount [< 1 ms]
+Fehlermeldung:
+System.ArgumentException : Object of type 'System.Int32' cannot be converted to type 'System.UInt32'.
+  Stapelverfolgung:
+     at System.RuntimeType.CheckValue(Object & value, Binder binder, CultureInfo culture, BindingFlags invokeAttr)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at System.Reflection.MethodBase.Invoke(Object obj, Object[] parameters)
+   at UnitTest.DropDown.Cellular_AutomataTests.Count_Ones_ShouldReturnCorrectCount() in C:\Agents\Agent1\_work\3\s\UnitTest\DropDown\Cellular_Automata.cs:line 127
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Ergebnisdatei: C:\Agents\Agent1\_work\_temp\FBE-SWENP1$_FBE-SWENP1_2024-06-24_20_51_33.trx
+
+*/

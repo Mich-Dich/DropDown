@@ -12,7 +12,9 @@ namespace DropDown.player {
 
         public float stamina = 70;
         public float stamina_max = 100;
-
+        public uint XP_current = 0;
+        public uint XP_needed = 10;
+        public float health_visual_display_limit = 0.65f;
         public uint level = 1;
 
 #if DEBUG
@@ -21,11 +23,9 @@ namespace DropDown.player {
         public uint assigned_AB_point = 0;
 #endif
 
-        public uint XP_current = 0;
-        public uint XP_needed = 10;
-        public float health_visual_display_limit = 0.65f;
         private float health_lower_limit_area = 0.3f;
 
+        public bool used_death_callback = false;
         public Sound swing_sound_empty;
         public Sound swing_sound_hit;
         public Sound death_sound;
@@ -46,10 +46,14 @@ namespace DropDown.player {
 
             swing_sound_empty = new Sound("assets/sounds/swinging_whoosh.wav", 5);
             swing_sound_hit = new Sound("assets/sounds/swing_sword.wav", 5);
-            death_sound = new Sound("assets/sounds/death_scream.wav", 5);
+            death_sound = new Sound("assets/sounds/death_scream.wav", 10);
             
             death_callback = () => {
 
+                if(used_death_callback)
+                    return;
+
+                used_death_callback = true;
                 death_sound.Play();
                 ((Drop_Down)Game.Instance).set_play_state(DropDown.Game_State.dead);
             };

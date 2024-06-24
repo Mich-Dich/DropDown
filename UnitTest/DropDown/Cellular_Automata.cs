@@ -12,7 +12,6 @@ namespace UnitTest.DropDown {
         [Fact]
         public void Constructor_ShouldInitializeFields() {
 
-            
             var automata = new Cellular_Automata();
 
             Assert.NotNull(automata.bit_map);
@@ -31,7 +30,7 @@ namespace UnitTest.DropDown {
             automata.Generate_Bit_Map();
 
             FieldInfo bitMapGenerationIterationField = typeof(Cellular_Automata).GetField("bitMapGenerationIteration", BindingFlags.NonPublic | BindingFlags.Instance);
-            int bitMapGenerationIteration = (int)bitMapGenerationIterationField.GetValue(automata);
+            double bitMapGenerationIteration = (double)bitMapGenerationIterationField.GetValue(automata);
 
             Assert.True(automata.empty_tile_location.Count > 0);
             Assert.True(bitMapGenerationIteration <= 1000);
