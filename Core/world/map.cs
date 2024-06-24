@@ -664,7 +664,6 @@
 
             update(deltaTime);
 
-
             if (use_garbage_collector) {
 
                 if (physicsWorld.GetBodyCount() > MaxPhysicsBodies) {

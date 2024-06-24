@@ -5,6 +5,7 @@ namespace DropDown.player {
     using Core.physics;
     using Core.util;
     using Core.world;
+    using DropDown.maps;
     using OpenTK.Mathematics;
 
     public class CH_player : Character {
@@ -15,7 +16,7 @@ namespace DropDown.player {
         public uint level = 1;
 
 #if DEBUG
-        public uint assigned_AB_point = 10;
+        public uint assigned_AB_point = 20;
 #else
         public uint assigned_AB_point = 0;
 #endif
@@ -39,7 +40,7 @@ namespace DropDown.player {
             rotation_offset = float.Pi / 2;
             movement_speed = 350.0f;
 
-            death_callback = () => { ((Drop_Down)Game.Instance).set_play_state(DropDown.Play_State.dead); };
+            death_callback = () => { ((Drop_Down)Game.Instance).set_play_state(DropDown.Game_State.dead); };
 
         }
 
@@ -73,9 +74,9 @@ namespace DropDown.player {
         private void blood_stuff() {
 
             ((Drop_Down)Game.Instance).ui_HUD.flash_blood_overlay();
-            if(typeof(MAP_base) == Game.Instance.get_active_map().GetType()) {
+            if(typeof(MAP_level) == Game.Instance.get_active_map().GetType()) {
 
-                ((MAP_base)Game.Instance.get_active_map()).add_blood_splater(transform.position);
+                ((MAP_level)Game.Instance.get_active_map()).add_blood_splater(transform.position);
                 last_blood_stain = Game_Time.total;
             }
         }

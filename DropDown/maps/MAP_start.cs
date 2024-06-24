@@ -7,7 +7,7 @@ namespace DropDown {
     using DropDown.maps;
     using OpenTK.Mathematics;
 
-    internal class MAP_start : Map {
+    internal class MAP_start : MAP_base {
 
         private const int DefaultCellSize = 100;
 
@@ -19,7 +19,8 @@ namespace DropDown {
             right = 3,
         }
 
-        public MAP_start() {
+        public MAP_start()
+            : base(0) {
 
             this.cellSize = DefaultCellSize;
             this.minDistancForCollision = this.cellSize * this.tileSize;
@@ -27,25 +28,15 @@ namespace DropDown {
             Generate_Backgound_Tile(100, 100);
             Add_Player(Game.Instance.player, new Vector2(40, -600));
 
+
             // Add dungeon entrance
-            Add_Sprite(
-                new Sprite(
-                    new Transform(new Vector2(), new Vector2(cellSize * 8)),
-                    Resource_Manager.Get_Texture("assets/textures/hole.png")));
-            Add_Static_Game_Object(
-                new Drop_Hole { transform = new Transform(new Vector2(), new Vector2(cellSize * 8)) },
-                new Transform(new Vector2(50, 80), new Vector2(- (cellSize * 4))),
-                new Vector2(), 
-                false, 
-                true, 
-                true);
+            add_drop_hole(new Vector2());
 
 
             Add_Sprite(
                 new Sprite(
                     new Transform(new Vector2(210, -250), new Vector2(220, 160)),
                     Resource_Manager.Get_Texture("assets/textures/sign.png")));
-
 
 
             add_road(new Vector2(-120, -600), 10, road_direction.left);
@@ -140,6 +131,7 @@ namespace DropDown {
         }
 
         public override void update(float deltaTime) {
+            base.update(deltaTime);
 
 
 

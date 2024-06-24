@@ -6,8 +6,8 @@ namespace DropDown.player {
 
     public class PC_empty : Player_Controller {
 
-        public PC_empty(Character character)
-            : base(character, null) { }
+        public PC_empty()
+            : base(null, null) { }
 
         protected override void Update(float deltaTime) { }
 

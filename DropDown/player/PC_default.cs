@@ -95,8 +95,8 @@ namespace DropDown.player {
             AddInputAction(interact);
 
 
-            Game.Instance.camera.Add_Zoom_Offset(0.2f);
-            Game.Instance.camera.zoom_offset = 0.2f;
+            //Game.Instance.camera.Add_Zoom_Offset(0.2f);
+            //Game.Instance.camera.zoom_offset = 0.2f;
         }
 
         protected override void Update(float deltaTime) {
@@ -113,7 +113,7 @@ namespace DropDown.player {
             }
 
             // camera follows player
-            Game.Instance.camera.transform.position = character.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
+            Game.Instance.camera.transform.position = character.transform.position;
             
             // look at mouse
             character.rotate_to_vector(Game.Instance.Get_Mouse_Relative_Pos());

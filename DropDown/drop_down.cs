@@ -1,4 +1,6 @@
 
+#define DISPLAY_DEBUG
+
 namespace DropDown {
 
     using Core;
@@ -8,7 +10,7 @@ namespace DropDown {
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
 
-    internal enum Play_State {
+    public enum Game_State {
         
         main_menu = 0,
         Playing = 1,
@@ -70,6 +72,8 @@ namespace DropDown {
 
         public int current_drop_level = 0; // current level the player is on (0 => Hub area, 1 => Dungon entrance)
         public UI_HUD ui_HUD { get; set; }
+        public float buffer_zoom { get; set; } = 0.7f;
+
         private UI_main_menu ui_main_menu;
         private UI_death ui_death;
         private UI_hub ui_hub;
@@ -77,7 +81,7 @@ namespace DropDown {
         MAP_start start_map;
 
         private CH_player CH_player;
-        private Play_State play_state = Play_State.main_menu;
+        private Game_State play_state = Game_State.main_menu;
 
         // ========================================================= functions =========================================================
         protected override void Init() {
@@ -87,27 +91,29 @@ namespace DropDown {
             
             CH_player = new CH_player();
             this.player = CH_player;
-            this.playerController = new PC_empty(CH_player);
+            this.playerController = new PC_empty();
 
             start_map = new MAP_start();
             this.activeMap = start_map;
 
 #if DEBUG
+#if DISPLAY_DEBUG
             Show_Performance(true);
             showDebugData(true);
-            this.camera.Set_min_Max_Zoom(0.03f, 1.4f);
-            this.playerController = new PC_hub(CH_player);
-            play_state = Play_State.hub_area;
-#else
-            this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
 #endif
-            this.camera.Set_Zoom(0.04f);
+            this.playerController = new PC_hub(CH_player);
+            play_state = Game_State.hub_area;
+            this.camera.Set_Zoom(0.7f);
+#else
+            this.camera.Set_Zoom(0.7f);
+#endif
+            this.camera.Set_min_Max_Zoom(0.03f, 5f);
             this.camera.transform.position = new Vector2(-300, -300);
 
             ui_main_menu = new UI_main_menu();
             ui_HUD = new UI_HUD();
             ui_hub = new UI_hub(CH_player);
-            ui_death = new UI_death(() => { Console.WriteLine($"Execute Function"); set_play_state(Play_State.hub_area); });
+            ui_death = new UI_death(() => { Console.WriteLine($"Execute Function"); set_play_state(Game_State.hub_area); });
         }
 
         protected override void Shutdown() { }
@@ -126,38 +132,38 @@ namespace DropDown {
 
             switch(play_state) {
 
-                case Play_State.main_menu:
+                case Game_State.main_menu:
                     ui_main_menu.Render();
                     break;
-                case Play_State.Playing:
+                case Game_State.Playing:
                     ui_HUD.Render();
                     break;
-                case Play_State.dead:
+                case Game_State.dead:
                     ui_death.Render();
                     break;
-                case Play_State.hub_area:
+                case Game_State.hub_area:
                     ui_hub.Render();
                     break;
             }
         }
 
-        public void set_play_state(Play_State new_play_state) {
+        public void set_play_state(Game_State new_play_state) {
 
             switch(new_play_state) {
-                case Play_State.main_menu: {
+                case Game_State.main_menu: {
 
                 } break;
 
-                case Play_State.Playing: {
+                case Game_State.Playing: {
 
                     this.playerController = new PC_Default(CH_player);
                 } break;
             
-                case Play_State.dead: {
+                case Game_State.dead: {
 
                 } break;
 
-                case Play_State.hub_area: {
+                case Game_State.hub_area: {
 
                     CH_player.health = CH_player.health_max;
                     current_drop_level = 0;

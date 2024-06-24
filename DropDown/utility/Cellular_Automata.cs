@@ -5,10 +5,8 @@ namespace DropDown.utility {
     using ImGuiNET;
     using OpenTK.Mathematics;
     using System.Diagnostics;
-    using Xunit;
-    using Xunit.Sdk;
 
-    internal class Cellular_Automata {
+    public class Cellular_Automata {
 
         public ulong[] bit_map = new ulong[64];
         public List<Vector2> empty_tile_location = new List<Vector2>();
