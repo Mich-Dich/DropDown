@@ -1,10 +1,9 @@
 ﻿
-namespace DropDown {
+namespace DropDown.maps {
 
     using Core;
     using Core.util;
     using Core.world;
-    using DropDown.maps;
     using OpenTK.Mathematics;
 
     internal class MAP_start : MAP_base {

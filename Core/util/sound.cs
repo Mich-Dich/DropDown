@@ -4,15 +4,22 @@ namespace Core.util {
     using NAudio.Wave;
     using System;
     using System.Collections.Generic;
-
+    using System.IO;
     public class Sound : IDisposable {
-
         public string FilePath { get; private set; }
         public float Volume { get; set; } = 1.0f;
         public bool Loop { get; set; } = false;
 
+        private WaveFormat _waveFormat;
+        private byte[] _audioData;
         private List<WaveOutEvent> _playingEvents;
-        private List<AudioFileReader> _audioFileReaders;
+        private List<WaveStream> _waveStreams;
+
+        public event EventHandler<StoppedEventArgs> OnPlaybackStopped;
+
+        // ---------------------------------------------------------------------------------------------------------------
+        // CONSTRUCTOR / CLEANUP
+        // ---------------------------------------------------------------------------------------------------------------
 
         public Sound(string filePath, float volume = 1.0f, bool loop = false) {
 
@@ -20,56 +27,147 @@ namespace Core.util {
             Volume = volume;
             Loop = loop;
             _playingEvents = new List<WaveOutEvent>();
-            _audioFileReaders = new List<AudioFileReader>();
+            _waveStreams = new List<WaveStream>();
+
+            load_audio_data();
         }
 
         public void Dispose() {
 
-            foreach(var waveOut in _playingEvents)
-                waveOut.Dispose();
-            
-            foreach(var reader in _audioFileReaders)
-                reader.Dispose();
-            
+#if false
+            var playingEventsCopy = new List<WaveOutEvent>(_playingEvents);
+            var waveStreamsCopy = new List<WaveStream>(_waveStreams);
+
+            try {
+                foreach(var waveOut in playingEventsCopy) {
+                    waveOut.Dispose();
+                }
+
+                foreach(var waveStream in waveStreamsCopy) {
+                    waveStream.Dispose();
+                }
+            }
+            catch(Exception ex) {
+
+                Console.WriteLine($"Exeption trown in Sound.cs[stop()] => [{ex.ToString()}]");
+            }
+
             _playingEvents.Clear();
-            _audioFileReaders.Clear();
+            _waveStreams.Clear();
+#else
+            try {
+                foreach(var waveOut in _playingEvents)
+                    waveOut.Dispose();
+
+                foreach(var waveStream in _waveStreams)
+                    waveStream.Dispose();
+                                }
+            catch(Exception ex) {
+
+                Console.WriteLine($"Exeption trown in Sound.cs[stop()] => [{ex.ToString()}]");
+            }
+
+            _playingEvents.Clear();
+            _waveStreams.Clear();
+#endif
         }
 
-        public void Play() {
+        // ---------------------------------------------------------------------------------------------------------------
+        // PUBLIC
+        // ---------------------------------------------------------------------------------------------------------------
 
-            var audioFileReader = new AudioFileReader(FilePath) {
-                Volume = Volume
+        public void play() {
+
+            var memoryStream = new MemoryStream(_audioData);
+            var waveStream = new RawSourceWaveStream(memoryStream, _waveFormat);
+            var waveOutEvent = new WaveOutEvent
+            {
+                Volume = this.Volume
             };
-            var waveOutEvent = new WaveOutEvent();
-            waveOutEvent.Init(audioFileReader);
+            waveOutEvent.Init(waveStream);
             waveOutEvent.PlaybackStopped += (object? sender, StoppedEventArgs e) => {
-
-                audioFileReader.Dispose();
+                OnPlaybackStopped?.Invoke(this, e);
+                waveStream.Dispose();
                 waveOutEvent.Dispose();
                 _playingEvents.Remove(waveOutEvent);
-                _audioFileReaders.Remove(audioFileReader);
+                _waveStreams.Remove(waveStream);
                 if(Loop)
-                    Play();
+                    play();
             };
 
             _playingEvents.Add(waveOutEvent);
-            _audioFileReaders.Add(audioFileReader);
+            _waveStreams.Add(waveStream);
             waveOutEvent.Play();
         }
 
-        public void Pause() {
+        public bool is_playing() { return _playingEvents.Exists(waveOut => waveOut.PlaybackState == PlaybackState.Playing); }
+
+        public void pause() {
 
             foreach(var waveOut in _playingEvents)
                 waveOut.Pause();
         }
 
-        public void Stop() {
+        public void stop() {
 
-            foreach(var waveOut in _playingEvents)
+#if false
+            var playingEventsCopy = new List<WaveOutEvent>(_playingEvents);
+            var waveStreamsCopy = new List<WaveStream>(_waveStreams);
+
+            foreach(var waveOut in playingEventsCopy) {
                 waveOut.Stop();
+                waveOut.Dispose();
+            }
+
+            foreach(var waveStream in waveStreamsCopy) {
+                waveStream.Dispose();
+            }
 
             _playingEvents.Clear();
-            _audioFileReaders.Clear();
+            _waveStreams.Clear();
+#else
+            try {
+
+                foreach(var waveOut in _playingEvents)
+                    waveOut.Stop();
+            }
+            catch(Exception ex) {
+
+                Console.WriteLine($"Exeption trown in Sound.cs[stop()] => [{ex.ToString()}]");
+            }
+
+            _playingEvents.Clear();
+            _waveStreams.Clear();
+#endif
         }
+
+        // ---------------------------------------------------------------------------------------------------------------
+        // PRIVATE
+        // ---------------------------------------------------------------------------------------------------------------
+
+        private void load_audio_data() {
+
+            using(var reader = create_reader(FilePath)) {
+                _waveFormat = reader.WaveFormat;
+                using(var memoryStream = new MemoryStream()) {
+                    reader.CopyTo(memoryStream);
+                    _audioData = memoryStream.ToArray();
+                }
+            }
+        }
+
+        private WaveStream create_reader(string filePath) {
+
+            if(filePath.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase))
+                return new MediaFoundationReader(filePath);
+
+            else if(filePath.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+                return new AudioFileReader(filePath);
+
+            else
+                throw new NotSupportedException("Unsupported file format");
+        }
+
     }
+
 }

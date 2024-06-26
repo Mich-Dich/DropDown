@@ -10,6 +10,7 @@ namespace DropDown.enemy {
             init_health();
             init_attack();
             init_animations();
+            movement_speed = 450;
         }
 
         private void init_health() {

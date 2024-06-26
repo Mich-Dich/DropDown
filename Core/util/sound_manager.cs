@@ -16,23 +16,26 @@ namespace Core.util {
 
                 sound.Volume = volume;
                 sound.Loop = loop;
-                sound.Play();
+                sound.play();
             }
         }
 
         public void PlayBackgroundMusic(string name, float volume = 1.0f, bool loop = true) {
 
             if(currentBackgroundMusic != null)
-                currentBackgroundMusic.Stop();
+                currentBackgroundMusic.stop();
 
             if(sounds.TryGetValue(name, out Sound sound)) {
                 sound.Volume = volume;
                 sound.Loop = loop;
-                sound.Play();
+                sound.play();
                 currentBackgroundMusic = sound;
             }
         }
 
-        public void StopBackgroundMusic() { currentBackgroundMusic?.Stop(); }
+        public void StopBackgroundMusic() { currentBackgroundMusic?.stop(); }
     }
+
+
+
 }

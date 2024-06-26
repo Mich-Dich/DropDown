@@ -111,7 +111,7 @@ namespace DropDown.enemy {
                     return typeof(attack_player);
 
                 playerVec.NormalizeFast();
-                character.add_force(new Box2DX.Common.Vec2(playerVec.X, playerVec.Y) * character.movement_force * Game_Time.delta);
+                character.Add_Linear_Velocity(new Box2DX.Common.Vec2(playerVec.X, playerVec.Y) * character.movement_speed * Game_Time.delta);
                 character.rotate_to_vector_smooth(playerVec);
             }
 
@@ -120,8 +120,6 @@ namespace DropDown.enemy {
     }
 
     public class attack_player : I_state<AI_Controller> {
-
-        private SoundManager soundManager = new SoundManager();
 
         public bool exit(AI_Controller aiController) => true;
 

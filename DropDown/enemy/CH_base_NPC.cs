@@ -17,13 +17,13 @@ namespace DropDown.enemy {
         public CH_base_NPC() {
 
             transform.size = new Vector2(80);
-            movement_speed = 500;
+            movement_speed = 350;
             movement_speed_max = 1000;
             movement_force = 5000000;
             rotation_offset = float.Pi/2;
 
-            attack_sound_00 = new Sound("assets/sounds/punch_01.wav", 5);
-            hit_sound_00 = new Sound("assets/sounds/impact-blood-2.wav", 0.6f);
+            attack_sound_00 = new Sound("assets/sounds/punch_01.wav", 0.5f);
+            hit_sound_00 = new Sound("assets/sounds/impact-blood-2.wav", 0.03f);
 
             Add_Collider(new Collider(Collision_Shape.Circle));
             this.Set_Sprite(new Sprite());
@@ -31,7 +31,7 @@ namespace DropDown.enemy {
 
         public void play_attack_sound() {
             
-            attack_sound_00.Play();
+            attack_sound_00.play();
         }
 
         public override void draw_imgui() {
@@ -69,7 +69,7 @@ namespace DropDown.enemy {
         public override void apply_damage(Single damage) {
             base.apply_damage(damage);
 
-            hit_sound_00.Play();
+            //hit_sound_00.play();
         }
     }
 

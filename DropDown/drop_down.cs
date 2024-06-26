@@ -6,6 +6,7 @@ namespace DropDown {
     using Core;
     using Core.util;
     using DropDown.player;
+    using DropDown.maps;
     using DropDown.UI;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
@@ -46,7 +47,7 @@ namespace DropDown {
 
 
     internal static class projectile_data {
-        
+
         //              Type            Name                                    value range         Steps
         internal static ranged_int      knockback   = new( 1, 10 );         //  1 - 10              2
         internal static ranged_int      speed       = new( 1000, 3000 );    //  1000 - 3000         400
@@ -80,7 +81,8 @@ namespace DropDown {
         private MAP_start start_map;
         private CH_player CH_player;
         private Game_State game_state = Game_State.main_menu;
-        private Sound battle_music;
+        private List<Sound> battle_music = new List<Sound>();
+        private random_sound_player random_Sound_Player;
         private Sound menu_music;
 
         // ========================================================= functions =========================================================
@@ -103,10 +105,8 @@ namespace DropDown {
 #endif
             this.playerController = new PC_hub(CH_player);
             game_state = Game_State.hub_area;
-            this.camera.Set_Zoom(0.7f);
-#else
-            this.camera.Set_Zoom(0.7f);
 #endif
+            this.camera.Set_Zoom(0.7f);
             this.camera.Set_min_Max_Zoom(0.03f, 10f);
             this.camera.transform.position = new Vector2(-300, -300);
 
@@ -115,15 +115,23 @@ namespace DropDown {
             ui_hub = new UI_hub(CH_player);
             ui_death = new UI_death(() => { Console.WriteLine($"Execute Function"); set_game_state(Game_State.hub_area); });
 
-            battle_music = new Sound("assets/sounds/battle-sword.wav", 9);
-            menu_music = new Sound("assets/sounds/Space_Taxi.wav", 9);
-            menu_music.Play();
+            //battle_music.Add(new Sound("assets/sounds/battle-sword.wav", 0.9f));
+            battle_music.Add(new Sound("assets/sounds/music/action-stylish-rock-dedication.mp3", 0.9f));
+            battle_music.Add(new Sound("assets/sounds/music/four-shots_battle.mp3", 0.9f));
+            battle_music.Add(new Sound("assets/sounds/music/lets-go.mp3", 0.9f));
+            battle_music.Add(new Sound("assets/sounds/music/NoName_rock,action.mp3", 0.9f));
+            battle_music.Add(new Sound("assets/sounds/music/rockstar-(LiteSaturation)Rock,battle.mp3", 0.9f));
+            battle_music.Add(new Sound("assets/sounds/music/trap-auto-drift-sport(AlexAction)electro,action.mp3", 0.9f));
+            random_Sound_Player = new(battle_music);
+
+            menu_music = new Sound("assets/sounds/Space_Taxi.wav", 0.9f);
+            menu_music.play();
         }
 
         protected override void Shutdown() { 
         
-            menu_music.Stop();
-            battle_music.Stop();
+            menu_music.stop();
+            random_Sound_Player.stop();
         }
 
         protected override void Update(float deltaTime) { }
@@ -159,14 +167,17 @@ namespace DropDown {
 
             switch(new_play_state) {
                 case Game_State.main_menu: {
+                    random_Sound_Player.stop();
 
-                } break;
+                }
+            break;
 
                 case Game_State.Playing: {
 
                     this.playerController = new PC_Default(CH_player);
-                    menu_music.Stop();
-                    battle_music.Play();
+                    menu_music.stop();
+                    if (!random_Sound_Player.is_playing())
+                        random_Sound_Player.play();
                 } break;
             
                 case Game_State.dead: {
@@ -175,8 +186,8 @@ namespace DropDown {
 
                 case Game_State.hub_area: {
 
-                    menu_music.Play();
-                    battle_music.Stop();
+                    menu_music.play();
+                    random_Sound_Player.stop();
 
                     CH_player.health = CH_player.health_max;
                     current_drop_level = 0;

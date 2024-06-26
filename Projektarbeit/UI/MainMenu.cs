@@ -41,7 +41,7 @@ namespace Projektarbeit.UI
             return new Button(
                 position,
                 new Vector2(200, 50),
-                "Play",
+                "play",
                 () => Core.Game.Instance.StartGame(),
                 null,
                 new Vector4(0.2f, 0.7f, 0.2f, 1), // Normal color

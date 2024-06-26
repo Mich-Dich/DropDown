@@ -1,19 +1,15 @@
 ﻿
-#define CANCLE_ENEMY_SPAWN
-
-namespace DropDown {
+namespace DropDown.maps {
 
     using Core;
     using Core.physics;
     using Core.render;
     using Core.util;
     using Core.world;
-    using DropDown.maps;
     using DropDown.player;
     using DropDown.utility;
     using OpenTK.Mathematics;
     using System;
-
 
     internal class Drop_Hole : Game_Object {
 

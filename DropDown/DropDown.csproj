@@ -1125,6 +1125,27 @@
     <None Update="assets\sounds\menu_music.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="assets\sounds\music\action-stylish-rock-dedication.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\sounds\music\four-shots_battle.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\sounds\music\lets-go%28MarkJuly%29rock.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\sounds\music\lets-go.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\sounds\music\NoName_rock,action.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\sounds\music\rockstar-%28LiteSaturation%29Rock,battle.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\sounds\music\trap-auto-drift-sport%28AlexAction%29electro,action.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="assets\sounds\punch_00.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

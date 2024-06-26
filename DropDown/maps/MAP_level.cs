@@ -1,4 +1,6 @@
 ﻿
+//#define CANCLE_ENEMY_SPAWN
+
 namespace DropDown.maps {
 
     using Core;
