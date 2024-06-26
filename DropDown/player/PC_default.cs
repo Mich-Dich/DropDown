@@ -110,6 +110,8 @@ namespace DropDown.player {
 
                 Vector2 direction = Vector2.NormalizeFast((Vector2)move.GetValue());
                 character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * deltaTime);
+
+                Console.WriteLine($"total_speed: {total_speed}");
             }
 
             // camera follows player

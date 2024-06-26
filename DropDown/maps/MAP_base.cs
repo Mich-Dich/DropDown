@@ -32,7 +32,7 @@ namespace DropDown.maps {
         }
     }
 
-    internal enum map_entry_status {
+    public enum map_entry_status {
 
         None = 0,
         entering = 1,
@@ -58,7 +58,7 @@ namespace DropDown.maps {
         protected Vector2i texture_regon_detail_small;
 
         // data for level transition animation
-        private map_entry_status map_Entry_Status = map_entry_status.entering;
+        public map_entry_status map_Entry_Status = map_entry_status.entering;
         private float last_interaction_time = 0;
         private float level_fall_duration = 1;
         //private float buffer_zoom_offset;
@@ -108,7 +108,7 @@ namespace DropDown.maps {
                     last_interaction_time = Game_Time.total;
                     //buffer_zoom = Game.Instance.camera.zoom;
                     //buffer_zoom_offset = Game.Instance.camera.zoom_offset;
-                    Game.Instance.playerController = new PC_Default(player);
+                    Game.Instance.playerController = ((Drop_Down)Game.Instance).default_player_controller;
                 }
 
                 // transition END
@@ -134,7 +134,7 @@ namespace DropDown.maps {
 
         }
 
-            public MAP_base(int dificulty_level, int seed = -1)   {
+        public MAP_base(int dificulty_level, int seed = -1)   {
 
             if(seed != -1)
                 random = new Random(seed);

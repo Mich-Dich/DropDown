@@ -10,6 +10,7 @@ namespace DropDown {
     using DropDown.UI;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
+    using Core.Controllers.player;
 
     public enum Game_State {
         
@@ -84,6 +85,7 @@ namespace DropDown {
         private List<Sound> battle_music = new List<Sound>();
         private random_sound_player random_Sound_Player;
         private Sound menu_music;
+        public Player_Controller default_player_controller = new PC_empty();
 
         // ========================================================= functions =========================================================
         protected override void Init() {
@@ -92,8 +94,9 @@ namespace DropDown {
             Set_Update_Frequency(144.0f);
             
             CH_player = new CH_player();
+            CH_player.transform.position = new Vector2(800);
             this.player = CH_player;
-            this.playerController = new PC_empty();
+            this.playerController = new PC_hub(CH_player);
 
             start_map = new MAP_start();
             this.activeMap = start_map;
@@ -103,17 +106,23 @@ namespace DropDown {
             Show_Performance(true);
             showDebugData(true);
 #endif
+            this.camera.Set_min_Max_Zoom(0.03f, 10f);
             this.playerController = new PC_hub(CH_player);
             game_state = Game_State.hub_area;
+#else
+            this.camera.Set_min_Max_Zoom(0.65f, 0.85f);
 #endif
             this.camera.Set_Zoom(0.7f);
-            this.camera.Set_min_Max_Zoom(0.03f, 10f);
             this.camera.transform.position = new Vector2(-300, -300);
 
             ui_main_menu = new UI_main_menu();
             ui_HUD = new UI_HUD();
             ui_hub = new UI_hub(CH_player);
-            ui_death = new UI_death(() => { Console.WriteLine($"Execute Function"); set_game_state(Game_State.hub_area); });
+            ui_death = new UI_death(() => { 
+                
+                Console.WriteLine($"Execute Function"); 
+                set_game_state(Game_State.hub_area); 
+            });
 
             //battle_music.Add(new Sound("assets/sounds/battle-sword.wav", 0.9f));
             battle_music.Add(new Sound("assets/sounds/music/action-stylish-rock-dedication.mp3", 0.9f));
@@ -167,18 +176,20 @@ namespace DropDown {
 
             switch(new_play_state) {
                 case Game_State.main_menu: {
+                    
                     random_Sound_Player.stop();
-
-                }
-            break;
+                    default_player_controller = new PC_hub(CH_player);
+                    this.playerController = default_player_controller;
+                } break;
 
                 case Game_State.Playing: {
 
-                    this.playerController = new PC_Default(CH_player);
+                    default_player_controller = new PC_Default(CH_player);
+                    this.playerController = default_player_controller;
                     menu_music.stop();
                     if (!random_Sound_Player.is_playing())
-                        random_Sound_Player.play();
-                } break;
+                            random_Sound_Player.play();
+                    } break;
             
                 case Game_State.dead: {
 
@@ -192,8 +203,10 @@ namespace DropDown {
                     CH_player.health = CH_player.health_max;
                     current_drop_level = 0;
                     ui_HUD.reset_blood_overlay();
-                    this.playerController = new PC_hub(CH_player);
-                    this.set_active_map(new MAP_start());
+                    default_player_controller = new PC_hub(CH_player);
+                    this.playerController = default_player_controller;
+                    if(!(this.get_active_map() is MAP_start))
+                        this.set_active_map(new MAP_start());
                 } break;
             }
             game_state = new_play_state; 
