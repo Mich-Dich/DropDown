@@ -1,7 +1,7 @@
-namespace Core.world
+namespace Core.util
 {
+    using Core;
     using Core.defaults;
-    using Core.util;
     using Newtonsoft.Json;
 
     public class GameState
@@ -124,8 +124,8 @@ namespace Core.world
             }
 
             string filePath = Path.Combine(saveFolderPath, fileName);
-            var settings = new JsonSerializerSettings 
-            { 
+            var settings = new JsonSerializerSettings
+            {
                 TypeNameHandling = TypeNameHandling.Auto,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };

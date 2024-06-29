@@ -664,6 +664,8 @@
 
             update(deltaTime);
 
+            Game.Instance.camera.transform.Update(); // Update the camera Shake logic...
+
             if (use_garbage_collector) {
 
                 if (physicsWorld.GetBodyCount() > MaxPhysicsBodies) {

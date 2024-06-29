@@ -18,7 +18,7 @@ namespace Projektarbeit.characters.enemy.controller
             : base(new List<Character>())
         {
             characters = CreateEnemies(origin);
-            get_state_machine().Set_Statup_State(typeof(EnterScreen));
+            get_state_machine().Set_Statup_State(typeof(Pursue));
         }
 
         private List<Character> CreateEnemies(Vector2 origin)

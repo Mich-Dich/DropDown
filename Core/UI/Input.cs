@@ -6,11 +6,11 @@ namespace Core.UI
     {
         public string Text { get; set; }
         public System.Numerics.Vector4 Color { get; set; }
-        public Action<string>? OnTextChanged { get; set; }
+        public Action<string> OnTextChanged { get; set; }
 
-        public Input(System.Numerics.Vector2 position, System.Numerics.Vector2 size, string text, System.Numerics.Vector4 color, Action<string>? onTextChanged)
-            : base(position, size) {
-
+        public Input(System.Numerics.Vector2 position, System.Numerics.Vector2 size, string text, System.Numerics.Vector4 color, Action<string> onTextChanged)
+            : base(position, size)
+        {
             Text = text;
             Color = color;
             OnTextChanged = onTextChanged;

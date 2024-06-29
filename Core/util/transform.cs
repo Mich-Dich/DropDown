@@ -1,22 +1,27 @@
-﻿
-using Core.world;
+﻿using Core.world;
 using OpenTK.Mathematics;
+using System;
 
 namespace Core.util
 {
     public class Transform
     {
-
         public Vector2 size { get; set; } = new Vector2(0);
         public float rotation { get; set; } = 0;
         public Mobility mobility { get; set; } = Mobility.DYNAMIC;
         public Transform? parent { get; set; }
 
+        private float shakeIntensity = 0;
+        private float shakeDecay = 0.98f;
+        private Vector2 originalPosition;
+        private bool isShaking = false;
+
+        private static Random random = new Random();
+
         public Transform() { this.position = default(Vector2); }
 
         public Transform(Transform transform)
         {
-
             this.position = transform.position;
             this.size = transform.size;
             this.rotation = transform.rotation;
@@ -26,7 +31,6 @@ namespace Core.util
 
         public Transform(Vector2? position = null, Vector2? size = null, float rotation = 0, Mobility mobility = Mobility.DYNAMIC, Transform? parent = null)
         {
-
             this.position = position ?? default(Vector2);
             this.size = size ?? default(Vector2);
             this.rotation = rotation;
@@ -51,20 +55,18 @@ namespace Core.util
 
         public static Transform operator +(Transform t1, Transform t2)
         {
-
             return new Transform
             {
                 position = t1.position + t2.position,
                 size = t1.size + t2.size,
                 rotation = t1.rotation + t2.rotation,
                 mobility = (Mobility)Math.Max((int)t2.mobility, (int)t1.mobility),
-                parent = null, // When adding two transforms, the result should not have a parent
+                parent = null,
             };
         }
 
         public Matrix4 GetTransformationMatrix()
         {
-
             Vector2 position = this.position;
             Matrix4 translation = Matrix4.CreateTranslation(new Vector3(position.X, position.Y, 0));
             Matrix4 scale = Matrix4.CreateScale(new Vector3(this.size.X, this.size.Y, 1));
@@ -75,7 +77,6 @@ namespace Core.util
 
         public Vector2 TransformPoint(Vector2 point)
         {
-
             Vector4 homogenousPoint = new(point.X, point.Y, 0, 1);
             Vector4 transformedPoint = this.GetTransformationMatrix() * homogenousPoint;
             return new Vector2(transformedPoint.X, transformedPoint.Y);
@@ -83,7 +84,6 @@ namespace Core.util
 
         public Vector2 InverseTransformPoint(Vector2 point)
         {
-
             Matrix4 inverseTransform = Matrix4.Invert(this.GetTransformationMatrix());
             Vector4 homogenousPoint = new(point.X, point.Y, 0, 1);
             Vector4 transformedPoint = inverseTransform * homogenousPoint;
@@ -92,15 +92,44 @@ namespace Core.util
 
         public void Move(Vector2 direction, float speed)
         {
-
             direction = this.RotateVector(direction, this.rotation);
             Vector2 velocity = direction * speed * Game_Time.delta;
             this.position += velocity;
         }
 
+        public void ApplyShake(float intensity)
+        {
+            if (!isShaking) // If not already shaking, store the original position
+            {
+                originalPosition = this.position;
+                isShaking = true;
+            }
+            shakeIntensity = intensity * 18;
+        }
+
+        public void Update()
+        {
+            if (shakeIntensity > 0)
+            {
+                position += new Vector2((float)(random.NextDouble() * 2 - 1) * shakeIntensity,
+                                        (float)(random.NextDouble() * 2 - 1) * shakeIntensity);
+
+                shakeIntensity *= shakeDecay;
+
+                // Smoothly interpolate back to the original position as the shake intensity decreases
+                position = Vector2.Lerp(position, originalPosition, 1 - shakeIntensity / 10);
+
+                if (shakeIntensity < 0.01f)
+                {
+                    shakeIntensity = 0;
+                    position = originalPosition; // Ensure the position is exactly reset to the original at the end
+                    isShaking = false; // Reset shaking flag
+                }
+            }
+        }
+
         public override string ToString()
         {
-
             if (this.parent != null)
                 return $"position: {this.position} size: {this.size} rotation: [{this.rotation}] mobility: [{this.mobility}]\n" +
                        $"      parent: [{this.parent}]";
@@ -108,11 +137,8 @@ namespace Core.util
                 return $"position: {this.position} size: {this.size} rotation: [{this.rotation}] mobility: [{this.mobility}]";
         }
 
-
-        // ------------------------------------ private ------------------------------------
         private Vector2 RotateVector(Vector2 vector, float degrees)
         {
-
             float radians = MathHelper.DegreesToRadians(degrees);
             float x = (vector.X * MathF.Cos(radians)) - (vector.Y * MathF.Sin(radians));
             float y = (vector.X * MathF.Sin(radians)) + (vector.Y * MathF.Cos(radians));

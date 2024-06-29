@@ -1,10 +1,10 @@
 using Core.defaults;
 using System.Numerics;
 using ImGuiNET;
-using Core.world;
 using Projektarbeit.characters.player.abilities;
+using Core.util;
 
-namespace Core.UI
+namespace Projektarbeit.UI.SkillTrees
 {
     public class AbilityUpgradeDialog
     {
@@ -33,7 +33,7 @@ namespace Core.UI
             }
 
             Vector2 Size = new Vector2(400, 200);
-            Vector2 Position = new Vector2((Game.Instance.window.Size.X / 2) - (Size.X / 2), (Game.Instance.window.Size.Y / 2) - (Size.Y / 2));
+            Vector2 Position = new Vector2(Core.Game.Instance.window.Size.X / 2 - Size.X / 2, Core.Game.Instance.window.Size.Y / 2 - Size.Y / 2);
             ImGui.SetNextWindowPos(Position);
             ImGui.SetNextWindowSize(Size);
             ImGui.Begin("PopupWindow", ImGuiWindowFlags.NoDecoration);
@@ -64,7 +64,7 @@ namespace Core.UI
 
             Vector2 upgradeSize = ImGui.CalcTextSize("Upgrade");
             ImGui.SetCursorPos(new Vector2(windowSize.X - upgradeSize.X - 172, windowSize.Y - 60));
-            
+
             if (Core.Game.Instance.GameState.Currency < ability.UnlockCost)
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.5f);
@@ -77,7 +77,7 @@ namespace Core.UI
                 if (index != -1)
                 {
                     Core.Game.Instance.GameState.Abilities[index] = ability;
-                    GameStateManager.SaveGameState(Game.Instance.GameState, "save.json");
+                    GameStateManager.SaveGameState(Core.Game.Instance.GameState, "save.json");
                 }
             }
 
@@ -88,7 +88,7 @@ namespace Core.UI
 
             Vector2 equipSize = ImGui.CalcTextSize(ability.IsEquipped ? "Unequip" : "Equip");
             ImGui.SetCursorPos(new Vector2(290, windowSize.Y - 60));
-            
+
             if (ImGui.Button(ability.IsEquipped ? "Unequip" : "Equip", new Vector2(100, 50)))
             {
                 ability.ToggleEquip();

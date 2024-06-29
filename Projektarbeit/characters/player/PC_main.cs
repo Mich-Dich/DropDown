@@ -121,8 +121,7 @@
             {
                 if (!isTestingKeyPressed)
                 {
-                    Game.Instance.GameState.RemoveDuplicatePowerUps();
-                    _ = soundManager.PlaySound("testSound", 10.0f, false);
+                    Game.Instance.camera.transform.ApplyShake(CameraShake.LargeProjectileHit.Intensity);
 
                     // Print all powerups
                     foreach (var powerUp in Game.Instance.GameState.PowerUps)

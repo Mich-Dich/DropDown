@@ -13,7 +13,7 @@ namespace Core.physics
         public Collision_Type type;
         public Transform offset;
 
-        public Body? body { get; set; }
+        public Body body { get; set; }
         public float mass;
         public Vector2 velocity { get; set; }
         public bool blocking { get; set; } = true;
@@ -99,7 +99,7 @@ namespace Core.physics
         public Vector2 hit_direction;
         public Vector2 hit_normal;
         public Vector2 hit_impact_point;
-        public Game_Object? hit_object;
+        public Game_Object hit_object;
 
         public hitData(Single hit_force) : this() { this.hit_force = hit_force; }
 

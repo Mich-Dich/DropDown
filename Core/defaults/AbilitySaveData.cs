@@ -1,4 +1,4 @@
-namespace Core.util
+namespace Core.defaults
 {
     public class AbilitySaveData
     {

@@ -112,7 +112,7 @@ namespace Projektarbeit.characters.enemy.character
             }
         }
 
-        private void ApplySeparation()
+        protected void ApplySeparation()
         {
             (Vector2 totalSeparationForce, float separationSpeed) = CalculateSeparationForce();
 
@@ -137,17 +137,17 @@ namespace Projektarbeit.characters.enemy.character
             return new Vector2(MathF.Cos(angle), MathF.Sin(angle));
         }
 
-        private Vector2 GetDirectionToPlayer()
+        protected Vector2 GetDirectionToPlayer()
         {
             return (Game.Instance.player.transform.position - transform.position).Normalized();
         }
 
-        private Vector2 GetDirectionAwayFromPlayer()
+        protected Vector2 GetDirectionAwayFromPlayer()
         {
             return (transform.position - Game.Instance.player.transform.position).Normalized();
         }
 
-        private bool IsPlayerInProximity(float distance)
+        protected bool IsPlayerInProximity(float distance)
         {
             if (Game.Instance.player == null || Game.Instance.player.IsDead)
             {
@@ -159,7 +159,7 @@ namespace Projektarbeit.characters.enemy.character
             return distanceToPlayer <= distance;
         }
 
-        private void ApplyForceInDirection(Vector2 direction, float force)
+        protected void ApplyForceInDirection(Vector2 direction, float force)
         {
             direction.NormalizeFast();
             direction *= force;
@@ -171,7 +171,7 @@ namespace Projektarbeit.characters.enemy.character
             }
 
             Add_Linear_Velocity(velocity);
-            rotate_to_vector_smooth(direction);
+            //rotate_to_vector_smooth(direction);
         }
     }
 }

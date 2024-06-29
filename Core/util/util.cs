@@ -2,51 +2,52 @@
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 
-namespace Core.util {
+namespace Core.util
+{
+    public static class util
+    {
 
-    public static class util {
+        public static int Get_Size_Of_VertexAttribPointerType(VertexAttribPointerType attrib_type)
+        {
+            switch (attrib_type)
+            {
+                case VertexAttribPointerType.Byte:
+                case VertexAttribPointerType.UnsignedByte:
+                    return sizeof(byte);
 
-        private static Random _random = new Random();
+                case VertexAttribPointerType.Short:
+                case VertexAttribPointerType.UnsignedShort:
+                    return sizeof(short);
 
-        public static int Get_Size_Of_VertexAttribPointerType(VertexAttribPointerType attrib_type) {
-            switch(attrib_type) {
-            case VertexAttribPointerType.Byte:
-            case VertexAttribPointerType.UnsignedByte:
-            return sizeof(byte);
+                case VertexAttribPointerType.Int:
+                    return sizeof(int);
 
-            case VertexAttribPointerType.Short:
-            case VertexAttribPointerType.UnsignedShort:
-            return sizeof(short);
+                case VertexAttribPointerType.UnsignedInt:
+                    return sizeof(uint);
 
-            case VertexAttribPointerType.Int:
-            return sizeof(int);
+                case VertexAttribPointerType.Float:
+                    return sizeof(float);
 
-            case VertexAttribPointerType.UnsignedInt:
-            return sizeof(uint);
+                case VertexAttribPointerType.Double:
+                    return sizeof(double);
 
-            case VertexAttribPointerType.Float:
-            return sizeof(float);
+                case VertexAttribPointerType.HalfFloat: // Assuming sizeof(short) for HalfFloat
+                    return sizeof(short);
 
-            case VertexAttribPointerType.Double:
-            return sizeof(double);
+                case VertexAttribPointerType.Fixed: // Assuming sizeof(int) for Fixed
+                    return sizeof(int);
 
-            case VertexAttribPointerType.HalfFloat: // Assuming sizeof(short) for HalfFloat
-            return sizeof(short);
+                case VertexAttribPointerType.UnsignedInt2101010Rev: // Assuming sizeof(int) for UnsignedInt2101010Rev
+                    return sizeof(int);
 
-            case VertexAttribPointerType.Fixed: // Assuming sizeof(int) for Fixed
-            return sizeof(int);
+                case VertexAttribPointerType.UnsignedInt10F11F11FRev: // Assuming sizeof(int) for UnsignedInt10F11F11FRev
+                    return sizeof(int);
 
-            case VertexAttribPointerType.UnsignedInt2101010Rev: // Assuming sizeof(int) for UnsignedInt2101010Rev
-            return sizeof(int);
+                case VertexAttribPointerType.Int2101010Rev: // Assuming sizeof(int) for Int2101010Rev
+                    return sizeof(int);
 
-            case VertexAttribPointerType.UnsignedInt10F11F11FRev: // Assuming sizeof(int) for UnsignedInt10F11F11FRev
-            return sizeof(int);
-
-            case VertexAttribPointerType.Int2101010Rev: // Assuming sizeof(int) for Int2101010Rev
-            return sizeof(int);
-
-            default:
-            return 0;
+                default:
+                    return 0;
             }
         }
 
@@ -62,7 +63,8 @@ namespace Core.util {
 
         public static OpenTK.Mathematics.Vector2 vector_from_angle(float angle_radians) { return new OpenTK.Mathematics.Vector2((float)Math.Cos(angle_radians), (float)Math.Sin(angle_radians)); }
 
-        public static OpenTK.Mathematics.Vector2 Convert_Screen_To_World_Coords(float x, float y) {
+        public static OpenTK.Mathematics.Vector2 Convert_Screen_To_World_Coords(float x, float y)
+        {
 
             OpenTK.Mathematics.Vector2 result = new();
             OpenTK.Mathematics.Vector2 default_offset = new(17, 40);
@@ -75,7 +77,8 @@ namespace Core.util {
             return result;
         }
 
-        public static OpenTK.Mathematics.Vector2 Convert_World_To_Screen_Coords(OpenTK.Mathematics.Vector2 world_position) {
+        public static OpenTK.Mathematics.Vector2 Convert_World_To_Screen_Coords(OpenTK.Mathematics.Vector2 world_position)
+        {
 
             OpenTK.Mathematics.Vector2 default_offset = new(17, 40);
 
@@ -117,20 +120,23 @@ namespace Core.util {
         }
 
         // Function to generate a UInt64 value with specified density of bits flipped
-        public static ulong generate_random_UInt64_with_density(double density, Random? random = null) {
+        public static ulong generate_random_UInt64_with_density(double density, Random? random = null)
+        {
 
-            Random loc_random = random ?? _random;
+            Random loc_random = random ?? new Random();
             ulong result = 0;
-            for(int i = 0; i < 64; i++) {
+            for (int i = 0; i < 64; i++)
+            {
 
                 double randomValue = loc_random.NextDouble();
-                if(randomValue < density)
+                if (randomValue < density)
                     result |= (ulong)1 << i;
             }
             return result;
         }
 
-        public static int Count_Number_Of_Following_Ones(byte target, int index_of_first_one) {
+        public static int Count_Number_Of_Following_Ones(byte target, int index_of_first_one)
+        {
 
             int count = 0;
             byte buffer = target;
@@ -139,7 +145,8 @@ namespace Core.util {
             int buffer_index = index_of_first_one;
 
             // Iterate over each bit of the byte value
-            while((buffer & mask) != 0 && buffer_index < 8) {
+            while ((buffer & mask) != 0 && buffer_index < 8)
+            {
                 count++; // Increment the count for each '1' encountered
                 mask <<= 1; // Shift the mask to the left to check the next bit
             }
@@ -147,23 +154,16 @@ namespace Core.util {
         }
 
 
-        public static T get_random_entry<T>(this List<T> list) {
-
-            if(list == null || list.Count == 0)
-                throw new InvalidOperationException("The list is empty or null.");
-
-            int index = _random.Next(list.Count);
-            return list[index];
-        }
-
     }
 
-    public static class Imgui_Fonts {
-
+    public static class Imgui_Fonts
+    {
         public static Dictionary<string, ImFontPtr> fonts = new();
 
-        public static void LoadFont(string path, float size) {
-            if(!File.Exists(path)) {
+        public static void LoadFont(string path, float size)
+        {
+            if (!File.Exists(path))
+            {
                 throw new FileNotFoundException($"Font file not found: {path}");
             }
 
@@ -174,10 +174,12 @@ namespace Core.util {
         }
     }
 
-    public sealed class ResourceNotAssignedException : Exception {
+    public sealed class ResourceNotAssignedException : Exception
+    {
 
         public ResourceNotAssignedException(string message)
-            : base(message) {
+            : base(message)
+        {
         }
     }
 }

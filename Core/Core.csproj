@@ -10,10 +10,9 @@
   <ItemGroup>
     <PackageReference Include="Box2DX" Version="2.0.2" NoWarn="NU1701" />
     <PackageReference Include="ImGui.NET" Version="1.90.1.1" />
-    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="NetCoreAudio" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenTK" Version="4.8.2" />
-    <PackageReference Include="OpenTK.Audio.OpenAL" Version="4.8.2" />
     <PackageReference Include="OpenTK.Mathematics" Version="4.8.2" />
     <PackageReference Include="StbImageSharp" Version="2.27.13" />
     <PackageReference Include="xunit" Version="2.8.1" />

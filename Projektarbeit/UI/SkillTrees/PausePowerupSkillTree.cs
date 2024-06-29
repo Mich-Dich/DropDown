@@ -1,6 +1,7 @@
-namespace Projektarbeit.UI
+namespace Projektarbeit.UI.SkillTrees
 {
     using System.Numerics;
+    using System.Linq;
     using Core.UI;
     using Core.defaults;
     using Projektarbeit.characters.player.power_ups;
@@ -23,68 +24,51 @@ namespace Projektarbeit.UI
 
         public PausePowerupSkillTree()
         {
-            fireRateBoost = Game.Instance.GameState.PowerUps.OfType<FireRateBoost>().FirstOrDefault();
-            if (fireRateBoost == null)
-            {
-                fireRateBoost = new FireRateBoost(new OpenTK.Mathematics.Vector2(999, 999), fireDelayDecrease: 0.1f, duration: 4f);
-                Game.Instance.GameState.PowerUps.Add(fireRateBoost);
-            }
+            InitializePowerUps();
+            SetupUI();
+        }
 
-            healthIncreaseBoost = Game.Instance.GameState.PowerUps.OfType<HealthIncrease>().FirstOrDefault();
-            if (healthIncreaseBoost == null)
-            {
-                healthIncreaseBoost = new HealthIncrease(new OpenTK.Mathematics.Vector2(999, 999));
-                Game.Instance.GameState.PowerUps.Add(healthIncreaseBoost);
-            }
+        private void InitializePowerUps()
+        {
+            fireRateBoost = InitializePowerUp<FireRateBoost>(new FireRateBoost(new OpenTK.Mathematics.Vector2(999, 999), fireDelayDecrease: 0.1f, duration: 4f));
+            healthIncreaseBoost = InitializePowerUp<HealthIncrease>(new HealthIncrease(new OpenTK.Mathematics.Vector2(999, 999)));
+            speedBoost = InitializePowerUp<SpeedBoost>(new SpeedBoost(new OpenTK.Mathematics.Vector2(999, 999), speedIncrease: 300f, duration: 3f));
+        }
 
-            speedBoost = Game.Instance.GameState.PowerUps.OfType<SpeedBoost>().FirstOrDefault();
-            if (speedBoost == null)
+        private T InitializePowerUp<T>(T defaultPowerUp) where T : PowerUp
+        {
+            var powerUp = Core.Game.Instance.GameState.PowerUps.OfType<T>().FirstOrDefault();
+            if (powerUp == null)
             {
-                speedBoost = new SpeedBoost(new OpenTK.Mathematics.Vector2(999, 999), speedIncrease: 300f, duration: 3f);
-                Game.Instance.GameState.PowerUps.Add(speedBoost);
+                Core.Game.Instance.GameState.PowerUps.Add(defaultPowerUp);
+                return defaultPowerUp;
             }
+            return powerUp;
+        }
 
+        private void SetupUI()
+        {
             var background = new Background(new Vector4(0.0f, 0.0f, 0.0f, 0.5f));
             AddElement(background);
 
             Vector2 windowSize = new Vector2(Core.Game.Instance.window.Size.X, Core.Game.Instance.window.Size.Y);
-
             var titleText = new Text(windowSize / 2 + new Vector2(0, -150), "Powerup", Vector4.One, 3f);
             AddElement(titleText);
 
             float buttonY = titleText.Size.Y + ButtonPadding;
-
-            fireRateBoostButton = CreateButton(
-                (windowSize / 2) + new Vector2(-100, buttonY - 150),
-                "fireRateBoost",
-                () => { SelectPowerup(fireRateBoost); },
-                fireRateBoost
-            );
+            fireRateBoostButton = CreateButton(windowSize / 2 + new Vector2(-100, buttonY - 150), "fireRateBoost", () => { SelectPowerup(fireRateBoost); }, fireRateBoost);
             AddElement(fireRateBoostButton);
 
             buttonY += ButtonHeight + ButtonPadding;
-
-            healthIncreaseBoostButton = CreateButton(
-                (windowSize / 2) + new Vector2(-100, buttonY - 150),
-                "healthIncreaseBoost",
-                () => { SelectPowerup(healthIncreaseBoost); },
-                healthIncreaseBoost
-            );
+            healthIncreaseBoostButton = CreateButton(windowSize / 2 + new Vector2(-100, buttonY - 150), "healthIncreaseBoost", () => { SelectPowerup(healthIncreaseBoost); }, healthIncreaseBoost);
             AddElement(healthIncreaseBoostButton);
 
             buttonY += ButtonHeight + ButtonPadding;
-
-            speedBoostButton = CreateButton(
-                (windowSize / 2) + new Vector2(-100, buttonY - 150),
-                "speedBoost",
-                () => { SelectPowerup(speedBoost); },
-                speedBoost
-            );
+            speedBoostButton = CreateButton(windowSize / 2 + new Vector2(-100, buttonY - 150), "speedBoost", () => { SelectPowerup(speedBoost); }, speedBoost);
             AddElement(speedBoostButton);
 
             buttonY += ButtonHeight + ButtonPadding;
-
-            var backButton = CreateBackButton((windowSize / 2) + new Vector2(-100, buttonY - 150));
+            var backButton = CreateBackButton(windowSize / 2 + new Vector2(-100, buttonY - 150));
             AddElement(backButton);
 
             var profilePanel = new ProfilePanel(new Vector2(10, 10));
@@ -97,13 +81,10 @@ namespace Projektarbeit.UI
         public override void Render()
         {
             base.Render();
-
-            // Update the color of the buttons
             UpdateButtonColor(fireRateBoostButton, fireRateBoost);
             UpdateButtonColor(healthIncreaseBoostButton, healthIncreaseBoost);
             UpdateButtonColor(speedBoostButton, speedBoost);
 
-            // Display the dialog
             if (unlockDialog.IsOpen && selectedPowerup.IsLocked)
             {
                 unlockDialog.Render(selectedPowerup);
@@ -116,47 +97,8 @@ namespace Projektarbeit.UI
 
         private Button CreateButton(Vector2 position, string text, Action onClick, PowerUp powerUp)
         {
-            var button = new Button(
-                position, 
-                new Vector2(200, 50), // Size
-                text, 
-                () => {
-                    unlockDialog.Open();
-                    upgradeDialog.Open();
-                    this.selectedPowerup = powerUp;
-                }, 
-                null, // OnHover
-                new Vector4(0.8f, 0.8f, 0.8f, 1), // Color
-                new Vector4(0.7f, 0.7f, 0.7f, 1), // HoverColor
-                new Vector4(0.6f, 0.6f, 0.6f, 1), // ClickColor
-                new Vector4(0, 0, 0, 1), // TextColor
-                new Vector4(0, 0, 0, 1), // HoverTextColor
-                new Vector4(0, 0, 0, 1)  // ClickTextColor
-            );
-
-            // In the CreateButton method
-            if (Core.Game.Instance.GameState.PowerUps.Contains(powerUp))
-            {
-                if (powerUp != null && !powerUp.IsLocked)
-                {
-                    button.Color = new Vector4(0.4f, 0.8f, 0.4f, 1);
-                }
-                else {
-                    button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1);
-                    if (powerUp != null)
-                    {
-                        button.Label += $" (Cost to unlock: {powerUp.UnlockCost})";
-                    }
-                }
-            }
-            else
-            {
-                button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1);
-                if (powerUp != null)
-                {
-                    button.Label += $" (Cost to unlock: {powerUp.UnlockCost})";
-                }
-            }
+            var button = new Button(position, new Vector2(200, 50), text, () => { unlockDialog.Open(); upgradeDialog.Open(); selectedPowerup = powerUp; }, null, new Vector4(0.8f, 0.8f, 0.8f, 1), new Vector4(0.7f, 0.7f, 0.7f, 1), new Vector4(0.6f, 0.6f, 0.6f, 1), new Vector4(0, 0, 0, 1), new Vector4(0, 0, 0, 1), new Vector4(0, 0, 0, 1));
+            UpdateButtonLabelAndColor(button, powerUp);
             return button;
         }
 
@@ -172,7 +114,7 @@ namespace Projektarbeit.UI
                 {
                     button.Color = new Vector4(0, 1, 0, 1);
                 }
-                else 
+                else
                 {
                     button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1);
                 }
@@ -183,20 +125,36 @@ namespace Projektarbeit.UI
             }
         }
 
+        private void UpdateButtonLabelAndColor(Button button, PowerUp powerUp)
+        {
+            if (Core.Game.Instance.GameState.PowerUps.Contains(powerUp))
+            {
+                if (powerUp != null && !powerUp.IsLocked)
+                {
+                    button.Color = new Vector4(0.4f, 0.8f, 0.4f, 1);
+                }
+                else
+                {
+                    button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1);
+                    if (powerUp != null)
+                    {
+                        button.Label += $" (Cost to unlock: {powerUp.UnlockCost})";
+                    }
+                }
+            }
+            else
+            {
+                button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1);
+                if (powerUp != null)
+                {
+                    button.Label += $" (Cost to unlock: {powerUp.UnlockCost})";
+                }
+            }
+        }
+
         private Button CreateBackButton(Vector2 position)
         {
-            return new Button(
-                position,
-                new Vector2(200, 50),
-                "Back",
-                () => Core.Game.Instance.play_state = Core.Play_State.PauseMenuSkillTree,
-                null,
-                new Vector4(0.2f, 0.7f, 0.2f, 1), // Normal color
-                new Vector4(0.0f, 0.8f, 0.1f, 1), // Hover color
-                new Vector4(0.1f, 0.5f, 0.1f, 1), // Click color
-                Vector4.One,
-                Vector4.One,
-                Vector4.One);
+            return new Button(position, new Vector2(200, 50), "Back", () => Core.Game.Instance.play_state = Core.Play_State.PauseMenuSkillTree, null, new Vector4(0.2f, 0.7f, 0.2f, 1), new Vector4(0.0f, 0.8f, 0.1f, 1), new Vector4(0.1f, 0.5f, 0.1f, 1), Vector4.One, Vector4.One, Vector4.One);
         }
 
         private void SelectPowerup(PowerUp powerUp)

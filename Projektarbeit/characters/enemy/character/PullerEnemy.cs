@@ -19,22 +19,7 @@ namespace Projektarbeit.characters.enemy.character
             InitializeAnimations();
         }
 
-        public override bool IsPlayerInRange()
-        {
-            return GetDistanceToPlayer() <= DetectionRange;
-        }
-
-        public override bool IsPlayerInAttackRange()
-        {
-            return GetDistanceToPlayer() <= StopDistance;
-        }
-
-        public override bool IsHealthLow()
-        {
-            return health <= health_max * 0.2;
-        }
-
-        public override void Move()
+        /* public override void Move()
         {
             Vector2 direction = new Vector2(0, 1);
             Random random = new();
@@ -44,9 +29,9 @@ namespace Projektarbeit.characters.enemy.character
             direction *= movement_speed;
             movement_force = random.Next((int)movement_speed, (int)movement_speed_max);
             AddVelocityAndRotate(direction);
-        }
+        } */
 
-        public override void Pursue()
+        /* public override void Pursue()
         {
             Vector2 playerPosition = Game.Instance.player.transform.position;
             Vector2 direction = playerPosition - transform.position;
@@ -61,7 +46,7 @@ namespace Projektarbeit.characters.enemy.character
             AddVelocityAndRotate(direction);
 
             ApplySeparation();
-        }
+        } */
 
         public override void Attack()
         {
@@ -69,7 +54,7 @@ namespace Projektarbeit.characters.enemy.character
             ApplySeparation();
         }
 
-        public override void Retreat()
+        /* public override void Retreat()
         {
             Vector2 playerPosition = Game.Instance.player.transform.position;
             Vector2 direction = transform.position - playerPosition;
@@ -78,49 +63,7 @@ namespace Projektarbeit.characters.enemy.character
             AddVelocityAndRotate(direction);
 
             ApplySeparation();
-        }
-
-        public override void Hit(hitData hit)
-        {
-            if (hit.hit_object is IProjectile projectile && projectile.FiredByPlayer)
-            {
-                apply_damage(projectile.Damage);
-                set_animation_from_anim_data(hitAnim);
-            }
-
-            if (hit.hit_object is IReflectable reflectable && reflectable.Reflected)
-            {
-                if (reflectable is IProjectile reflectedProjectile)
-                {
-                    apply_damage(reflectedProjectile.Damage * 3);
-                    set_animation_from_anim_data(hitAnim);
-                }
-            }
-
-            if (hit.hit_object is Reflect reflect)
-            {
-                apply_damage(reflect.Damage);
-                Box2DX.Common.Vec2 direction = new(transform.position.X - hit.hit_position.X, transform.position.Y - hit.hit_position.Y);
-                collider.body.ApplyForce(direction * 100000f, collider.body.GetWorldCenter());
-                set_animation_from_anim_data(hitAnim);
-            }
-        }
-
-        private void ApplySeparation()
-        {
-            (Vector2 totalSeparationForce, float separationSpeed) = CalculateSeparationForce();
-
-            Box2DX.Common.Vec2 separationVelocity =
-                new Box2DX.Common.Vec2(totalSeparationForce.X, totalSeparationForce.Y) * Game_Time.delta;
-
-            if (separationVelocity.Length() > separationSpeed)
-            {
-                separationVelocity.Normalize();
-                separationVelocity *= separationSpeed;
-            }
-
-            Add_Linear_Velocity(separationVelocity);
-        }
+        } */
 
         private void InitializeCharacter()
         {
@@ -142,7 +85,7 @@ namespace Projektarbeit.characters.enemy.character
             hitAnim = new animation_data("assets/animation/enemy/Puller.png", 5, 1, true, false, 10, true);
         }
 
-        private float GetDistanceToPlayer()
+        /* private float GetDistanceToPlayer()
         {
             if (Game.Instance.player == null || Game.Instance.player.IsDead)
             {
@@ -164,7 +107,7 @@ namespace Projektarbeit.characters.enemy.character
 
             Add_Linear_Velocity(velocity);
             rotate_to_vector_smooth(direction);
-        }
+        } */
 
         private void ApplyForceToPlayer(float forceMagnitude)
         {

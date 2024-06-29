@@ -1,4 +1,4 @@
-namespace Projektarbeit.UI
+namespace Projektarbeit.UI.SkillTrees
 {
     using System.Numerics;
     using Core.UI;
@@ -15,16 +15,16 @@ namespace Projektarbeit.UI
             var titleText = new Text(windowSize / 2 + new Vector2(0, -150), "Skill Tree", Vector4.One, 3f);
             AddElement(titleText);
 
-            var abilityButton = CreateButton((windowSize / 2) + new Vector2(-100, (titleText.Size.Y + 10) -150), "Abilities", () => NavigateToAbilities());
+            var abilityButton = CreateButton(windowSize / 2 + new Vector2(-100, titleText.Size.Y + 10 - 150), "Abilities", () => NavigateToAbilities());
             AddElement(abilityButton);
 
-            var powerupButton = CreateButton((windowSize / 2) + new Vector2(-100, (titleText.Size.Y + abilityButton.Size.Y + 20) -150), "Powerups", () => NavigateToPowerups());
+            var powerupButton = CreateButton(windowSize / 2 + new Vector2(-100, titleText.Size.Y + abilityButton.Size.Y + 20 - 150), "Powerups", () => NavigateToPowerups());
             AddElement(powerupButton);
 
-            var projectileButton = CreateButton((windowSize / 2) + new Vector2(-100, (titleText.Size.Y + abilityButton.Size.Y + powerupButton.Size.Y + 30) -150), "Projectiles", () => NavigateToProjectiles());
+            var projectileButton = CreateButton(windowSize / 2 + new Vector2(-100, titleText.Size.Y + abilityButton.Size.Y + powerupButton.Size.Y + 30 - 150), "Projectiles", () => NavigateToProjectiles());
             AddElement(projectileButton);
 
-            var backButton = CreateBackButton((windowSize / 2) + new Vector2(-100, (titleText.Size.Y + abilityButton.Size.Y + powerupButton.Size.Y + projectileButton.Size.Y + 40) -150));
+            var backButton = CreateBackButton(windowSize / 2 + new Vector2(-100, titleText.Size.Y + abilityButton.Size.Y + powerupButton.Size.Y + projectileButton.Size.Y + 40 - 150));
             AddElement(backButton);
 
             var profilePanel = new ProfilePanel(new Vector2(10, 10));

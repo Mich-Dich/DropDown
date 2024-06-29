@@ -1,6 +1,5 @@
-﻿
-namespace Projektarbeit.Levels {
-
+﻿namespace Projektarbeit.Levels
+{
     using System.Collections.Generic;
     using Core.util;
     using Core.world;
@@ -9,8 +8,8 @@ namespace Projektarbeit.Levels {
     using Projektarbeit.characters.enemy.controller;
     using Projektarbeit.characters.player.power_ups;
 
-    internal class MAP_base : Map {
-
+    internal class MAP_base : Map
+    {
         private readonly Camera camera;
         private readonly Random random;
         private float timeStamp;
@@ -114,9 +113,10 @@ namespace Projektarbeit.Levels {
             enemyControllers = new Dictionary<int, Action<Vector2>>
             {
                 { 0, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
-                { 1, spawnPosition => add_AI_Controller(new SniperEnemyController(spawnPosition)) },
-                { 2, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
-                { 3, spawnPosition => add_AI_Controller(new TankEnemyController(spawnPosition)) },
+                { 1, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
+                { 2, spawnPosition => add_AI_Controller(new TankEnemyController(spawnPosition)) },
+                { 3, spawnPosition => add_AI_Controller(new ExplosivEnemyController(spawnPosition)) },
+                //{ 4, spawnPosition => add_AI_Controller(new SniperEnemyController(spawnPosition)) },
             };
         }
 
@@ -130,18 +130,38 @@ namespace Projektarbeit.Levels {
             for (int i = 0; i < unlockedPowerUps.Count; i++)
             {
                 var powerUp = unlockedPowerUps[i];
-                powerUps.Add(i, powerUpPosition => 
+                powerUps.Add(i, powerUpPosition =>
                 {
-                    // Corrected to only pass the parameters that match the constructor
-                    var instance = Activator.CreateInstance(powerUp.GetType(), powerUpPosition);
+                    PowerUp instance = null;
+                    var saveData = Game.Instance.GameState.PowerUpsSaveData.FirstOrDefault(p => p.PowerUpType == powerUp.GetType().Name);
+                    if (saveData != null)
+                    {
+                        if (powerUp.GetType() == typeof(SpeedBoost))
+                        {
+                            instance = new SpeedBoost(powerUpPosition, saveData.SpeedBoost, saveData.Duration);
+                        }
+                        else if (powerUp.GetType() == typeof(FireRateBoost))
+                        {
+                            instance = new FireRateBoost(powerUpPosition, saveData.FireDelayDecrease, saveData.Duration);
+                        }
+                        else if (powerUp.GetType() == typeof(HealthIncrease))
+                        {
+                            // Assuming HealthIncrease does not take custom parameters in its constructor
+                            // If it does, you should similarly fetch and pass those parameters
+                            instance = new HealthIncrease(powerUpPosition);
+                        }
+                    }
+
                     if (instance == null)
                     {
                         throw new InvalidOperationException($"Failed to create an instance of {powerUp.GetType().Name}");
                     }
-                    return (PowerUp)instance;
+
+                    return instance;
                 });
             }
         }
+
 
         private float GetRandomTimeInterval()
         {

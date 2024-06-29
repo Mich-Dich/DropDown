@@ -1,5 +1,6 @@
 
-namespace Core {
+namespace Core
+{
 
     using Core.Controllers.player;
     using Core.defaults;
@@ -12,8 +13,8 @@ namespace Core {
     using OpenTK.Windowing.Common;
     using OpenTK.Windowing.Desktop;
     using OpenTK.Windowing.GraphicsLibraryFramework;
-    using System;
     using System.Diagnostics;
+    using System.Transactions;
 
     public enum Play_State {
 
@@ -84,18 +85,17 @@ namespace Core {
         public Character player { get; set; }
         public int Score { get; set; } = 0;
         public Play_State play_state = Play_State.main_menu;
-        public Player_Controller playerController { get; set; }
-        public Map get_active_map() { return activeMap; }
-        public Debug_Drawer Debug_Drawer;
-        public GameState? GameState { get; set; }
-        public event EventHandler<GameStateChangedEventArgs> GameStateChanged;
-
-        public void set_active_map(Map new_map) { activeMap = new_map; }
+        private global_debug_drawer global_Debug_Drawer { get; set; }
 
         protected string title { get; set; }
         protected int initalWindowWidth { get; set; }
         protected int initalWindowHeight { get; set; }
+        public Player_Controller playerController { get; set; }
         protected Map activeMap { get; set; }
+
+        public Map get_active_map() { return activeMap; }
+        public void set_active_map(Map new_map) { activeMap = new_map; }
+
         protected List<InputEvent> inputEvent { get; } = new List<InputEvent>();
 
         private readonly Vector2 cursorPosOffset = new(0, 20);
@@ -103,8 +103,9 @@ namespace Core {
         private readonly NativeWindowSettings nativeWindowSettings = NativeWindowSettings.Default;
         private readonly DebugDataViualizer debugDataViualizer = new();
         private double updateFrequencyBuffer = 0;
-        private global_debug_drawer global_Debug_Drawer { get; set; }
-
+        public Debug_Drawer Debug_Drawer;
+        public GameState? GameState { get; set; }
+        public event EventHandler<GameStateChangedEventArgs> GameStateChanged;
 
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight) {
@@ -132,7 +133,6 @@ namespace Core {
         public abstract void StartGame();
         public virtual List<PowerUp> loadPowerups(List<PowerUpSaveData> PowerUpsSaveData) { return new List<PowerUp>();}
         public virtual List<Ability> loadAbilities(List<AbilitySaveData> AbilitiesSaveData) { return new List<Ability>();}
-
 
         public void Run() {
 
@@ -163,6 +163,7 @@ namespace Core {
                 if (this.playerController == null)
                     this.playerController = new PC_Default(player);
 
+
                 // ----------------------------------- finish setup -----------------------------------
                 this.playerController.character = this.player;
                 if (!this.activeMap.player_is_spawned)
@@ -172,13 +173,12 @@ namespace Core {
 
             this.window.Unload += () => {
 
-                this.Shutdown();
-
                 // kill OpenGL
                 GL.BindVertexArray(0);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.UseProgram(0);
 
+                this.Shutdown();
             };
 
             // internal game update_internal

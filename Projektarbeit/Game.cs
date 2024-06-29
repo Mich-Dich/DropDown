@@ -6,9 +6,9 @@ namespace Projektarbeit
     using Projektarbeit.characters.player.abilities;
     using Projektarbeit.Levels;
     using Projektarbeit.UI;
-    using Core.world;
     using Core.util;
     using Core.defaults;
+    using Projektarbeit.UI.SkillTrees;
 
     internal class Game : Core.Game
     {

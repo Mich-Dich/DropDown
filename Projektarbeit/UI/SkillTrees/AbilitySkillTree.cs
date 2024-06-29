@@ -1,4 +1,4 @@
-namespace Projektarbeit.UI
+namespace Projektarbeit.UI.SkillTrees
 {
     using System.Numerics;
     using Core.UI;
@@ -22,18 +22,18 @@ namespace Projektarbeit.UI
 
         public AbilitySkillTree()
         {
-            omniFireAbility = Game.Instance.GameState.Abilities.OfType<OmniFireAbility>().FirstOrDefault();
+            omniFireAbility = Core.Game.Instance.GameState.Abilities.OfType<OmniFireAbility>().FirstOrDefault();
             if (omniFireAbility == null)
             {
                 omniFireAbility = new OmniFireAbility();
-                Game.Instance.GameState.Abilities.Add(omniFireAbility);
+                Core.Game.Instance.GameState.Abilities.Add(omniFireAbility);
             }
 
-            shieldAbility = Game.Instance.GameState.Abilities.OfType<ShieldAbility>().FirstOrDefault();
+            shieldAbility = Core.Game.Instance.GameState.Abilities.OfType<ShieldAbility>().FirstOrDefault();
             if (shieldAbility == null)
             {
                 shieldAbility = new ShieldAbility();
-                Game.Instance.GameState.Abilities.Add(shieldAbility);
+                Core.Game.Instance.GameState.Abilities.Add(shieldAbility);
             }
 
             var background = new Background(new Vector4(0.2f, 0.2f, 0.2f, 1));
@@ -47,7 +47,7 @@ namespace Projektarbeit.UI
             float buttonY = titleText.Size.Y + ButtonPadding;
 
             omniFireButton = CreateButton(
-                (windowSize / 2) + new Vector2(-100, buttonY - 150),
+                windowSize / 2 + new Vector2(-100, buttonY - 150),
                 "OmniFireAbility",
                 () => { SelectAbility(omniFireAbility); },
                 omniFireAbility
@@ -57,7 +57,7 @@ namespace Projektarbeit.UI
             buttonY += ButtonHeight + ButtonPadding;
 
             shieldButton = CreateButton(
-                (windowSize / 2) + new Vector2(-100, buttonY - 150),
+                windowSize / 2 + new Vector2(-100, buttonY - 150),
                 "ShieldAbility",
                 () => { SelectAbility(shieldAbility); },
                 shieldAbility
@@ -67,7 +67,7 @@ namespace Projektarbeit.UI
             buttonY += ButtonHeight + ButtonPadding;
 
             testButton = CreateButton(
-                (windowSize / 2) + new Vector2(-100, buttonY - 150),
+                windowSize / 2 + new Vector2(-100, buttonY - 150),
                 "TestAbility",
                 () => { /* call logic */ },
                 null
@@ -76,7 +76,7 @@ namespace Projektarbeit.UI
 
             buttonY += ButtonHeight + ButtonPadding;
 
-            var backButton = CreateBackButton((windowSize / 2) + new Vector2(-100, buttonY - 150));
+            var backButton = CreateBackButton(windowSize / 2 + new Vector2(-100, buttonY - 150));
             AddElement(backButton);
 
             var profilePanel = new ProfilePanel(new Vector2(10, 10));
@@ -109,14 +109,15 @@ namespace Projektarbeit.UI
         private Button CreateButton(Vector2 position, string text, Action onClick, Ability ability)
         {
             var button = new Button(
-                position, 
+                position,
                 new Vector2(200, 50), // Size
-                text, 
-                () => {
+                text,
+                () =>
+                {
                     unlockDialog.Open();
                     upgradeDialog.Open();
-                    this.selectedAbility = ability;
-                }, 
+                    selectedAbility = ability;
+                },
                 null, // OnHover
                 new Vector4(0.8f, 0.8f, 0.8f, 1), // Color
                 new Vector4(0.7f, 0.7f, 0.7f, 1), // HoverColor
@@ -138,7 +139,8 @@ namespace Projektarbeit.UI
                     Console.WriteLine("Ability is not locked");
                     button.Color = new Vector4(0.8f, 0.8f, 0.4f, 1);
                 }
-                else {
+                else
+                {
                     button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1);
                     if (ability != null)
                     {
@@ -169,7 +171,8 @@ namespace Projektarbeit.UI
                 {
                     button.Color = new Vector4(0.8f, 0.8f, 0.4f, 1);
                 }
-                else {
+                else
+                {
                     button.Color = new Vector4(0.8f, 0.4f, 0.4f, 1);
                 }
             }

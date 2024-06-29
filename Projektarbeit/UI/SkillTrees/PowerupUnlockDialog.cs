@@ -2,7 +2,7 @@ using Core.defaults;
 using System.Numerics;
 using ImGuiNET;
 
-namespace Core.UI
+namespace Projektarbeit.UI.SkillTrees
 {
     public class PowerupUnlockDialog
     {
@@ -31,7 +31,7 @@ namespace Core.UI
             }
 
             Vector2 Size = new Vector2(400, 200);
-            Vector2 Position = new Vector2((Game.Instance.window.Size.X / 2) - (Size.X / 2), (Game.Instance.window.Size.Y / 2) - (Size.Y / 2));
+            Vector2 Position = new Vector2(Core.Game.Instance.window.Size.X / 2 - Size.X / 2, Core.Game.Instance.window.Size.Y / 2 - Size.Y / 2);
             ImGui.SetNextWindowPos(Position);
             ImGui.SetNextWindowSize(Size);
             ImGui.Begin("PopupWindow", ImGuiWindowFlags.NoDecoration);
@@ -58,7 +58,7 @@ namespace Core.UI
 
             Vector2 unlockSize = ImGui.CalcTextSize("Unlock");
             ImGui.SetCursorPos(new Vector2(windowSize.X - unlockSize.X - 70, windowSize.Y - 60));
-            
+
             if (Core.Game.Instance.GameState.Currency < powerUp.UnlockCost)
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.5f);

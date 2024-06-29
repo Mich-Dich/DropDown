@@ -200,6 +200,40 @@
             this.transform.position = (pos.X, pos.Y);
         }
 
+        public bool IsInBounds()
+        {
+            //levelHeight is deprecated, find way to get level height (Instance.window ?)
+            float height = Game.Instance.get_active_map().levelHeight;
+            float width = Game.Instance.get_active_map().levelWidth;
+
+            //debug override
+            height = 1000;
+            width = 1800;
+
+            bool xInBounds = transform.position.X > -width / 2 && transform.position.X < width / 2;
+            bool yInBounds = transform.position.Y > -height / 2 && transform.position.Y < height / 2;
+
+            return xInBounds && yInBounds;
+        }
+        public void ApplyBounding()
+        {
+            if (IsInBounds()) return;
+
+            //hardcoded until better solution is found
+            float height = 1000;
+            float width = 1800;
+
+            Vector2 pos = transform.position;
+            Box2DX.Common.Vec2 dir = new Box2DX.Common.Vec2(0, 0);
+
+            if (pos.X > width / 2) dir.X = -(pos.X - width / 2);
+            if (pos.X < -width / 2) dir.X = -(pos.X + width / 2);
+            if (pos.Y > height / 2) dir.Y = -(pos.Y - height / 2);
+            if (pos.Y < -height / 2) dir.Y = -(pos.Y + height / 2);
+
+            collider.body.ApplyForce(dir * 5000, collider.body.GetPosition());
+        }
+
         // =============================================== internal ==============================================
         internal void Draw_Debug()
         {

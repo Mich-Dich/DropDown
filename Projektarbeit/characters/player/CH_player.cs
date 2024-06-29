@@ -1,5 +1,7 @@
 ﻿namespace Projektarbeit.characters.player
 {
+    using Box2DX.Common;
+    using Box2DX.Dynamics;
     using Core.physics;
     using Core.util;
     using Core.world;
@@ -131,6 +133,11 @@
         {
             return CalculateCooldownRemaining() / fireDelay;
         }
-
+            
+        public override void Update(float deltaTime)
+        {
+            base.Update(deltaTime);
+            ApplyBounding();
+        }
     }
 }
