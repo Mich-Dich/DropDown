@@ -8,37 +8,52 @@ namespace Core.render.shaders
     {
 
         // ============================================================================== public ==============================================================================
+        public enum ShaderSourceType
+        {
+            EmbeddedResource,
+            FilePath
+        }
 
         public int programmId { get; private set; }
 
-        public Shader(string vertShaderPath, string fragShaderPath, bool compile = true)
+        public Shader(string vertShaderPath, string fragShaderPath, bool compile = true, ShaderSourceType sourceType = ShaderSourceType.EmbeddedResource)
         {
-
-            this.shaderProgrammSource = Shader.Parse_Shader(vertShaderPath, fragShaderPath);
+            this.shaderProgrammSource = Shader.Parse_Shader(vertShaderPath, fragShaderPath, sourceType);
             if (compile)
                 this.Compile();
         }
 
         ~Shader() { GL.DeleteProgram(this.programmId); }
 
-        public static Shader_Programm_Source Parse_Shader(string vertex_shader_path, string fragment_shader_path)
+        public static Shader_Programm_Source Parse_Shader(string vertex_shader_path, string fragment_shader_path, ShaderSourceType sourceType)
         {
-            var assembly = Assembly.GetExecutingAssembly();
+            string vert_shader, frag_shader;
 
-            using Stream vertStream = assembly.GetManifestResourceStream(vertex_shader_path);
-            using Stream fragStream = assembly.GetManifestResourceStream(fragment_shader_path);
+            if (sourceType == ShaderSourceType.EmbeddedResource)
+            {
+                var assembly = Assembly.GetExecutingAssembly();
 
-            if (vertStream == null)
-                throw new FileNotFoundException(vertex_shader_path);
+                using Stream vertStream = assembly.GetManifestResourceStream(vertex_shader_path);
+                using Stream fragStream = assembly.GetManifestResourceStream(fragment_shader_path);
 
-            if (fragStream == null)
-                throw new FileNotFoundException(fragment_shader_path);
+                if (vertStream == null || fragStream == null)
+                    throw new FileNotFoundException($"Shader file not found. Vertex: {vertex_shader_path}, Fragment: {fragment_shader_path}");
 
-            using StreamReader vertReader = new(vertStream);
-            using StreamReader fragReader = new(fragStream);
+                using StreamReader vertReader = new(vertStream);
+                using StreamReader fragReader = new(fragStream);
 
-            string vert_shader = vertReader.ReadToEnd();
-            string frag_shader = fragReader.ReadToEnd();
+                vert_shader = vertReader.ReadToEnd();
+                frag_shader = fragReader.ReadToEnd();
+            }
+            else // ShaderSourceType.FilePath
+            {
+                if (!File.Exists(vertex_shader_path) || !File.Exists(fragment_shader_path))
+                    throw new FileNotFoundException($"Shader file not found. Vertex: {vertex_shader_path}, Fragment: {fragment_shader_path}");
+
+                vert_shader = File.ReadAllText(vertex_shader_path);
+                frag_shader = File.ReadAllText(fragment_shader_path);
+            }
+
             return new Shader_Programm_Source(vert_shader, frag_shader);
         }
 
@@ -116,6 +131,16 @@ namespace Core.render.shaders
             }
 
             GL.UseProgram(this.programmId);
+        }
+
+        public void SetUniform(string name, float value)
+        {
+            if (!this.uniforms.TryGetValue(name, out int location))
+            {
+                Console.WriteLine($"Uniform {name} not found.");
+                return;
+            }
+            GL.Uniform1(location, value);
         }
 
         public void SetUniform(string name, Vector3 value)

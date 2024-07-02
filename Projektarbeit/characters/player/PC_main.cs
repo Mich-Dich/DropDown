@@ -121,23 +121,8 @@
             {
                 if (!isTestingKeyPressed)
                 {
-                    Game.Instance.camera.transform.ApplyShake(CameraShake.LargeProjectileHit.Intensity);
-
-                    // Print all powerups
-                    foreach (var powerUp in Game.Instance.GameState.PowerUps)
-                    {
-                        var saveData = powerUp.ToSaveData();
-                        Console.WriteLine("PowerUp: " + saveData.Name + 
-                                        " Level: " + saveData.Level + 
-                                        " IsLocked: " + saveData.IsLocked + 
-                                        " IsEquipped: " + saveData.IsEquipped + 
-                                        " UnlockCost: " + saveData.UnlockCost + 
-                                        " BaseUpgradeCost: " + saveData.BaseUpgradeCost + 
-                                        " UpgradeMultiplier: " + saveData.UpgradeMultiplier + 
-                                        " SpeedBoost: " + saveData.SpeedBoost + 
-                                        " DurationBoost: " + saveData.DurationBoost + 
-                                        " Duration: " + saveData.Duration);
-                    }
+                    Game.Instance.camera.transform.ApplyShake(CameraShake.Earthquake);
+                    Console.WriteLine("Shake");
 
                     isTestingKeyPressed = true;
                 }

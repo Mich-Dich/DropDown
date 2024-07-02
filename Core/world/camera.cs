@@ -121,6 +121,28 @@ namespace Core.world
             return this.scale;
         }
 
+        public Vector2 GetFront()
+        {
+            return new Vector2(0, 1);
+        }
+
+        public Vector2 GetUp()
+        {
+            return new Vector2(1, 0);
+        }
+
+        public Matrix4 GetViewMatrix()
+        {
+            Vector2 cameraFront = GetFront();
+            Vector2 cameraUp = GetUp();
+            Vector3 cameraPosition3D = new Vector3(transform.position.X, transform.position.Y, 0);
+            Vector3 cameraFront3D = new Vector3(cameraFront.X, cameraFront.Y, 0);
+            Vector3 cameraUp3D = new Vector3(cameraUp.X, cameraUp.Y, 0);
+
+            Matrix4 viewMatrix = Matrix4.LookAt(cameraPosition3D, cameraPosition3D + cameraFront3D, cameraUp3D);
+            return viewMatrix;
+        }
+
         // ========================================== private ==========================================
         private void Calc_Scale()
         {

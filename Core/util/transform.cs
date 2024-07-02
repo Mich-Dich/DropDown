@@ -20,6 +20,10 @@ namespace Core.util
 
         public Transform() { this.position = default(Vector2); }
 
+        private float shakeTimer = 0f;
+        private ShakeProfile currentShakeProfile = null;
+
+
         public Transform(Transform transform)
         {
             this.position = transform.position;
@@ -97,33 +101,50 @@ namespace Core.util
             this.position += velocity;
         }
 
-        public void ApplyShake(float intensity)
+        public void ApplyShake(ShakeProfile profile)
         {
-            if (!isShaking) // If not already shaking, store the original position
+            Console.WriteLine($"Applying shake with intensity: {profile.Intensity}, decay: {profile.Decay}, frequency: {profile.Frequency}");
+            if (currentShakeProfile == null || shakeIntensity < profile.Intensity)
             {
-                originalPosition = this.position;
-                isShaking = true;
+                currentShakeProfile = profile;
+                shakeIntensity = profile.Intensity;
+                shakeDecay = profile.Decay;
+                if (!isShaking)
+                {
+                    originalPosition = this.position;
+                    isShaking = true;
+                    Console.WriteLine("Shaking started.");
+                }
+                shakeTimer = 0f;
             }
-            shakeIntensity = intensity * 18;
         }
 
         public void Update()
         {
-            if (shakeIntensity > 0)
+            if (isShaking)
             {
-                position += new Vector2((float)(random.NextDouble() * 2 - 1) * shakeIntensity,
-                                        (float)(random.NextDouble() * 2 - 1) * shakeIntensity);
-
-                shakeIntensity *= shakeDecay;
-
-                // Smoothly interpolate back to the original position as the shake intensity decreases
-                position = Vector2.Lerp(position, originalPosition, 1 - shakeIntensity / 10);
-
-                if (shakeIntensity < 0.01f)
+                shakeTimer += Game_Time.delta;
+                if (shakeTimer >= (1f / currentShakeProfile.Frequency))
                 {
-                    shakeIntensity = 0;
-                    position = originalPosition; // Ensure the position is exactly reset to the original at the end
-                    isShaking = false; // Reset shaking flag
+                    shakeTimer = 0f;
+                    float shakeMagnitude = 10f;
+                    Vector2 shakeAmount = new Vector2(
+                        (float)(random.NextDouble() * 2 - 1) * shakeIntensity * shakeMagnitude,
+                        (float)(random.NextDouble() * 2 - 1) * shakeIntensity * shakeMagnitude);
+                    Console.WriteLine($"Applying shake amount: {shakeAmount}");
+                    position += shakeAmount;
+
+                    shakeIntensity *= shakeDecay;
+                    position = Vector2.Lerp(position, originalPosition, Math.Clamp(1 - shakeIntensity, 0, 1));
+
+                    if (shakeIntensity < 0.01f)
+                    {
+                        shakeIntensity = 0;
+                        position = originalPosition;
+                        isShaking = false;
+                        currentShakeProfile = null;
+                        Console.WriteLine("Shaking stopped.");
+                    }
                 }
             }
         }

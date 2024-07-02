@@ -17,7 +17,8 @@
         private readonly List<I_Controller> all_AI_Controller = new();
         public List<Character> allCharacter { get; set; } = new List<Character>();
         public List<Game_Object> projectiles { get; set; } = new List<Game_Object>();
-        public List<PowerUp> allPowerUps { get; set; } = new List<PowerUp>();     
+        public List<PowerUp> allPowerUps { get; set; } = new List<PowerUp>();    
+        public ParticleEffectManager particleEffectManager = new ParticleEffectManager();
         public bool player_is_spawned { get; private set; } = false;
         public int scoreGoal { get; set; }
         public int previousScoreGoal { get; set; }
@@ -199,6 +200,11 @@
 
             DebugData.colidableObjectsDynamic++;
             return character;
+        }
+
+        public void AddParticleEffect(ParticleEffect effect)
+        {
+            particleEffectManager.AddEffect(effect);
         }
 
         public Game_Object add_game_object(Game_Object game_object, Vector2 position, Vector2 size)
@@ -584,6 +590,9 @@
             for (int x = 0; x < world.Count; x++)
                 if (!world[x].IsRemoved)
                     world[x].Draw();
+
+            // Draw Particle effects
+            particleEffectManager.Draw();
         }
 
         internal void Draw_Debug() {
@@ -666,6 +675,8 @@
 
             Game.Instance.camera.transform.Update(); // Update the camera Shake logic...
 
+            particleEffectManager.Update(deltaTime);
+
             if (use_garbage_collector) {
 
                 if (physicsWorld.GetBodyCount() > MaxPhysicsBodies) {
@@ -682,7 +693,6 @@
         private List<Game_Object> world { get; set; } = new List<Game_Object>();
         private readonly int velocityIterations = 6;
         private readonly int positionIterations = 1;
-
         // ------------------------------------------ tiles ------------------------------------------
         protected float minDistancForCollision = 1600;
         protected int cellSize = 200;

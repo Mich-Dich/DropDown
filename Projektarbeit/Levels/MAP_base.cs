@@ -7,6 +7,8 @@
     using OpenTK.Mathematics;
     using Projektarbeit.characters.enemy.controller;
     using Projektarbeit.characters.player.power_ups;
+    using Projektarbeit.particleFX;
+    using Core.render;
 
     internal class MAP_base : Map
     {
@@ -41,6 +43,9 @@
 
             InitializeEnemyControllers();
             InitializePowerUps();
+
+            var particleEffect = new SparkleEffect();
+            AddParticleEffect(particleEffect);
         }
 
         public override void update(float deltaTime)
