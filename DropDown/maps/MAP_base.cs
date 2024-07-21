@@ -88,7 +88,7 @@ namespace DropDown.maps {
                 // transition
                 Vector2 direction = (this.hole_location + hole_location_offset) - player.transform.position;
                 direction.NormalizeFast();
-                direction *= ((last_interaction_time + level_fall_duration) - Game_Time.total) * 4;
+                direction *= ((last_interaction_time + level_fall_duration) - Game_Time.total) * 20;
                 player.Add_Linear_Velocity( util.convert_Vector<Box2DX.Common.Vec2>(direction) );
 
                 if((last_interaction_time + level_fall_duration) - Game_Time.total > 0)
@@ -109,6 +109,7 @@ namespace DropDown.maps {
                     //buffer_zoom = Game.Instance.camera.zoom;
                     //buffer_zoom_offset = Game.Instance.camera.zoom_offset;
                     Game.Instance.playerController = ((Drop_Down)Game.Instance).default_player_controller;
+                    //Game.Instance.camera.Set_min_Max_Zoom(0.03f, 10f);
                 }
 
                 // transition END
@@ -116,6 +117,7 @@ namespace DropDown.maps {
 
                     player.transform.size = new Vector2(100);
                     Game.Instance.camera.zoom = ((Drop_Down)Game.Instance).buffer_zoom;
+                    //Game.Instance.camera.Set_min_Max_Zoom(0.65f, 0.85f);
                     //Game.Instance.camera.zoom_offset = buffer_zoom_offset;
 
                     map_Entry_Status = map_entry_status.inside;

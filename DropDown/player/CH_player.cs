@@ -44,9 +44,9 @@ namespace DropDown.player {
             rotation_offset = float.Pi / 2;
             movement_speed = 350.0f;
 
-            swing_sound_empty = new Sound("assets/sounds/swinging_whoosh.wav", 0.5f);
-            swing_sound_hit = new Sound("assets/sounds/swing_sword.wav", 0.5f);
-            death_sound = new Sound("assets/sounds/death_scream.wav", 1.0f);
+            //swing_sound_empty = new Sound("assets/sounds/swinging_whoosh.wav", 0.5f);
+            //swing_sound_hit = new Sound("assets/sounds/swing_sword.wav", 0.5f);
+            //death_sound = new Sound("assets/sounds/death_scream.wav", 1.0f);
             
             death_callback = () => {
 
@@ -54,7 +54,7 @@ namespace DropDown.player {
                     return;
 
                 used_death_callback = true;
-                death_sound.play();
+                //death_sound.play();
                 ((Drop_Down)Game.Instance).set_game_state(DropDown.Game_State.dead);
             };
 
@@ -89,10 +89,10 @@ namespace DropDown.player {
 
         public void play_swing_sound(bool hit) {
 
-            if(hit)
-                swing_sound_hit.play();
-            else
-                swing_sound_empty.play();
+            //if(hit)
+            //    swing_sound_hit.play();
+            //else
+            //    swing_sound_empty.play();
         }
 
         private void blood_stuff() {

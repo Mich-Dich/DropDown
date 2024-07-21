@@ -83,7 +83,7 @@ namespace DropDown {
         private CH_player CH_player;
         private Game_State game_state = Game_State.main_menu;
         private List<Sound> battle_music = new List<Sound>();
-        private random_sound_player random_Sound_Player;
+        //private random_sound_player random_Sound_Player;
         private Sound menu_music;
         public Player_Controller default_player_controller = new PC_empty();
 
@@ -104,11 +104,11 @@ namespace DropDown {
 #if DEBUG
 #if DISPLAY_DEBUG
             Show_Performance(true);
-            showDebugData(true);
+            //showDebugData(true);
 #endif
             this.camera.Set_min_Max_Zoom(0.03f, 10f);
-            this.playerController = new PC_hub(CH_player);
-            game_state = Game_State.hub_area;
+            //this.playerController = new PC_hub(CH_player);
+            //game_state = Game_State.hub_area;
 #else
             this.camera.Set_min_Max_Zoom(0.65f, 0.85f);
 #endif
@@ -125,22 +125,22 @@ namespace DropDown {
             });
 
             //battle_music.Add(new Sound("assets/sounds/battle-sword.wav", 0.9f));
-            battle_music.Add(new Sound("assets/sounds/music/action-stylish-rock-dedication.mp3", 0.9f));
-            battle_music.Add(new Sound("assets/sounds/music/four-shots_battle.mp3", 0.9f));
-            battle_music.Add(new Sound("assets/sounds/music/lets-go.mp3", 0.9f));
-            battle_music.Add(new Sound("assets/sounds/music/NoName_rock,action.mp3", 0.9f));
-            battle_music.Add(new Sound("assets/sounds/music/rockstar-(LiteSaturation)Rock,battle.mp3", 0.9f));
-            battle_music.Add(new Sound("assets/sounds/music/trap-auto-drift-sport(AlexAction)electro,action.mp3", 0.9f));
-            random_Sound_Player = new(battle_music);
+            //battle_music.Add(new Sound("assets/sounds/music/action-stylish-rock-dedication.mp3", 0.9f));
+            //battle_music.Add(new Sound("assets/sounds/music/four-shots_battle.mp3", 0.9f));
+            //battle_music.Add(new Sound("assets/sounds/music/lets-go.mp3", 0.9f));
+            //battle_music.Add(new Sound("assets/sounds/music/NoName_rock,action.mp3", 0.9f));
+            //battle_music.Add(new Sound("assets/sounds/music/rockstar-(LiteSaturation)Rock,battle.mp3", 0.9f));
+            //battle_music.Add(new Sound("assets/sounds/music/trap-auto-drift-sport(AlexAction)electro,action.mp3", 0.9f));
+            //random_Sound_Player = new(battle_music);
 
-            menu_music = new Sound("assets/sounds/Space_Taxi.wav", 0.9f);
-            menu_music.play();
+            //menu_music = new Sound("assets/sounds/Space_Taxi.wav", 0.9f);
+            //menu_music.play();
         }
 
         protected override void Shutdown() { 
         
-            menu_music.stop();
-            random_Sound_Player.stop();
+            //menu_music.stop();
+            //random_Sound_Player.stop();
         }
 
         protected override void Update(float deltaTime) { }
@@ -167,7 +167,7 @@ namespace DropDown {
                     ui_death.Render();
                     break;
                 case Game_State.hub_area:
-                    ui_hub.Render();
+                    //ui_hub.Render();
                     break;
             }
         }
@@ -177,7 +177,7 @@ namespace DropDown {
             switch(new_play_state) {
                 case Game_State.main_menu: {
                     
-                    random_Sound_Player.stop();
+                    //random_Sound_Player.stop();
                     default_player_controller = new PC_hub(CH_player);
                     this.playerController = default_player_controller;
                 } break;
@@ -186,9 +186,9 @@ namespace DropDown {
 
                     default_player_controller = new PC_Default(CH_player);
                     this.playerController = default_player_controller;
-                    menu_music.stop();
-                    if (!random_Sound_Player.is_playing())
-                            random_Sound_Player.play();
+                    //menu_music.stop();
+                    //if (!random_Sound_Player.is_playing())
+                    //        random_Sound_Player.play();
                     } break;
             
                 case Game_State.dead: {
@@ -197,8 +197,8 @@ namespace DropDown {
 
                 case Game_State.hub_area: {
 
-                    menu_music.play();
-                    random_Sound_Player.stop();
+                    //menu_music.play();
+                    //random_Sound_Player.stop();
 
                     CH_player.health = CH_player.health_max;
                     current_drop_level = 0;

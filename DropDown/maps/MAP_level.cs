@@ -216,6 +216,7 @@ namespace DropDown.maps {
 
             List<Character> newEnemies = new List<Character>();
             CH_base_NPC newEnemy = (CH_base_NPC)Activator.CreateInstance(enemy_type);
+            newEnemy.transform.rotation = (float)util.Degree_To_Radians( (double)random.Next(0,360) );
             newEnemies.Add(newEnemy);
 
             int iteration = 0;

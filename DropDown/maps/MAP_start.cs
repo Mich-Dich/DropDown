@@ -2,8 +2,10 @@
 namespace DropDown.maps {
 
     using Core;
+    using Core.physics;
     using Core.util;
     using Core.world;
+    using DropDown.spells;
     using OpenTK.Mathematics;
 
     internal class MAP_start : MAP_base {
@@ -23,7 +25,7 @@ namespace DropDown.maps {
 
             this.cellSize = DefaultCellSize;
             this.minDistancForCollision = this.cellSize * this.tileSize;
-            
+
             Generate_Backgound_Tile(100, 100);
             Add_Player(Game.Instance.player, new Vector2(40, -600));
 
@@ -31,17 +33,29 @@ namespace DropDown.maps {
             // Add dungeon entrance
             add_drop_hole(new Vector2());
 
-
             Add_Sprite(
                 new Sprite(
                     new Transform(new Vector2(210, -250), new Vector2(220, 160)),
                     Resource_Manager.Get_Texture("assets/textures/sign.png")));
 
-
             add_road(new Vector2(-120, -600), 10, road_direction.left);
             add_road(new Vector2(40, -760), 10, road_direction.up);
             add_road(new Vector2(40, -440), 6, road_direction.down);
 
+
+
+            //AOE_spell test = new AOE_spell(new Vector2(600,0) );
+            //Add_Game_Object(test);
+
+
+            //this.Add_Game_Object(new Game_Object(
+            //        new Transform(
+            //            new Vector2(0)
+            //        ))
+            //        .Add_Collider(new Collider(Collision_Shape.Circle, Collision_Type.bullet))
+            //        .Set_Mobility(Mobility.DYNAMIC)
+            //        .Set_Sprite(new Sprite(Resource_Manager.Get_Texture("assets/textures/sign.png")))
+            //    );
         }
 
         private void add_road(Vector2 start_position, int length, road_direction direction) {

@@ -148,7 +148,7 @@ namespace DropDown.player {
                     Vector2 proj_rot = util.vector_from_angle(character.transform.rotation);
                     Vector2 pooj_pos = character.transform.position + (proj_rot*110);
                     try {
-                        var projectile = (Projectile)Activator.CreateInstance(ProjectileType, pooj_pos, proj_rot);
+                        var projectile = (bolt)Activator.CreateInstance(ProjectileType, pooj_pos, proj_rot);
                         Game.Instance.get_active_map().Add_Game_Object(projectile);
                         time_stap = Game_Time.total;
                         Console.WriteLine($"setting time spamp {time_stap} cooldown: {projectile_data.cooldown.current}");
@@ -162,7 +162,7 @@ namespace DropDown.player {
         }
 
         private readonly float sprint_speed = 350.0f;
-        private Type ProjectileType { get; set; } = typeof(P_base);
+        private Type ProjectileType { get; set; } = typeof(bolt);
 
     }
 }

@@ -16,7 +16,7 @@ namespace DropDown.enemy {
         private void init_transform() {
             transform.size = new OpenTK.Mathematics.Vector2(160);
             movement_force = 80000000;
-        }
+        }   
 
         private void init_health() {
             damage = 40;
