@@ -40,24 +40,5 @@ namespace Projektarbeit.characters.enemy.character
             idleAnim = new animation_data("assets/animation/enemy/CrystalKnightIdle.png", 4, 1, true, true, 10, true);
             hitAnim = new animation_data("assets/animation/enemy/CrystalKnightHit.png", 1, 1, true, true, 2, false);
         }
-
-
-        /* private bool IsPlayerAlive()
-        {
-            return Game.Instance.player != null && !Game.Instance.player.IsDead;
-        }
-
-        private float GetDistanceToPlayer()
-        {
-            return (Game.Instance.player.transform.position - transform.position).Length;
-        }
-
-        private Vector2 GetRandomDirection()
-        {
-            float offset = (float)(random.NextDouble() - 0.5) * 2;
-            Vector2 direction = new Vector2(offset, 1);
-            direction.NormalizeFast();
-            return direction;
-        } */
     }
 }

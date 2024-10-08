@@ -2,11 +2,11 @@ using Core.util;
 using Core.world;
 using System.Timers;
 
-namespace Core.defaults {
-
+namespace Core.defaults
+{
     [Serializable]
-    public abstract class Ability {
-
+    public abstract class Ability
+    {
         public float Cooldown { get; set; }
         public string IconPath { get; set; }
         public AbilityEffect? Effect { get; set; }
@@ -24,19 +24,19 @@ namespace Core.defaults {
 
         public System.Timers.Timer timer;
 
-        public Ability() {
-
+        public Ability()
+        {
             Core.Game.Instance.GameStateChanged += OnGameStateChanged;
         }
 
-        public void AddEffectToCharacter(Character character) {
-
+        public void AddEffectToCharacter(Character character)
+        {
             this.Effect.IsRemoved = false;
             character.Add_Child(this.Effect);
         }
 
-        public void Unlock() {
-
+        public void Unlock()
+        {
             IsLocked = false;
             Level = 1;
             Game.Instance.GameState.Currency -= UnlockCost;
@@ -44,38 +44,46 @@ namespace Core.defaults {
             GameStateManager.SaveGameState(Game.Instance.GameState, "save.json");
         }
 
-        public virtual void Upgrade() {
-
-            if (Game.Instance.GameState.Currency >= UnlockCost) {
-
+        public virtual void Upgrade()
+        {
+            if (Game.Instance.GameState.Currency >= UnlockCost)
+            {
                 Level++;
                 Game.Instance.GameState.Currency -= UnlockCost;
                 UnlockCost = (int)(BaseUpgradeCost * Math.Pow(2, Level) * Math.Log10(Level + 2));
                 GameStateManager.SaveGameState(Game.Instance.GameState, "save.json");
-            } else {
+            }
+            else
+            {
                 // Display a message to the user that they don't have enough currency
             }
         }
 
-        public void ToggleEquip() {
-
+        public void ToggleEquip()
+        {
             // Find the ability in the game state
             var gameStateAbility = Game.Instance.GameState.Abilities.FirstOrDefault(a => a.Name == this.Name);
-            if (gameStateAbility != null) {
-
-                if (gameStateAbility.IsEquipped) {
-
+            if (gameStateAbility != null)
+            {
+                if (gameStateAbility.IsEquipped)
+                {
                     // Unequip the ability
                     gameStateAbility.IsEquipped = false;
                     if (Game.Instance.player.Ability == gameStateAbility)
+                    {
                         Game.Instance.player.Ability = null;
-
-                } else {
-
+                    }
+                }
+                else
+                {
                     // Unequip all other abilities
-                    foreach (var ability in Game.Instance.GameState.Abilities) 
+                    foreach (var ability in Game.Instance.GameState.Abilities)
+                    {
                         if (ability.IsEquipped)
+                        {
                             ability.IsEquipped = false;
+                        }
+                    }
 
                     // Equip this ability
                     gameStateAbility.IsEquipped = true;
@@ -86,8 +94,8 @@ namespace Core.defaults {
             }
         }
 
-        public void LoadFromSaveData(AbilitySaveData saveData) {
-
+        public void LoadFromSaveData(AbilitySaveData saveData)
+        {
             IsLocked = saveData.IsLocked;
             BaseUpgradeCost = saveData.BaseUpgradeCost;
             UpgradeMultiplier = saveData.UpgradeMultiplier;
@@ -99,10 +107,10 @@ namespace Core.defaults {
             Duration = saveData.Duration; 
         }
 
-        public AbilitySaveData ToSaveData() {
-
-            return new AbilitySaveData {
-
+        public AbilitySaveData ToSaveData()
+        {
+            return new AbilitySaveData
+            {
                 IsLocked = this.IsLocked,
                 BaseUpgradeCost = this.BaseUpgradeCost,
                 UpgradeMultiplier = this.UpgradeMultiplier,
@@ -116,43 +124,54 @@ namespace Core.defaults {
             };
         }
 
-        private void OnGameStateChanged(object sender, GameStateChangedEventArgs e) {
-
+        private void OnGameStateChanged(object sender, GameStateChangedEventArgs e)
+        {
             if (timer == null) return;
 
             if (e.NewState == Core.Play_State.InGameMenu)
+            {
                 timer.Stop();
-            
+            }
             else if (e.OldState == Core.Play_State.InGameMenu)
+            {
                 timer.Start();
-            
+            }
             else if (e.OldState == Core.Play_State.LevelUp)
+            {
                 timer.Start();
-            
+            }
             else if (e.NewState == Core.Play_State.LevelUp)
+            {
                 timer.Stop();
-            
+            }
             else if(e.NewState == Core.Play_State.PauseMenuSkillTree)
+            {
                 timer.Stop();
-            
+            }
             else if(e.OldState == Core.Play_State.PauseMenuSkillTree)
+            {
                 timer.Start();
-            
+            }
             else if(e.NewState == Core.Play_State.PauseAbilitySkillTree)
+            {
                 timer.Stop();
-            
+            }
             else if(e.OldState == Core.Play_State.PauseAbilitySkillTree)
+            {
                 timer.Start();
-            
+            }
             else if(e.NewState == Core.Play_State.PausePowerupSkillTree)
+            {
                 timer.Stop();
-         
+            }
             else if(e.OldState == Core.Play_State.PausePowerupSkillTree)
+            {
                 timer.Start();
+            }
         }
 
-        public void Dispose() {
-
+        public void Dispose()
+        {
             timer?.Dispose();
             Core.Game.Instance.GameStateChanged -= OnGameStateChanged;
         }

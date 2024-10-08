@@ -5,6 +5,7 @@ namespace Projektarbeit.projectiles
     using Core.render;
     using Core.world;
     using OpenTK.Mathematics;
+    using Core.util;
 
     public class ExplosivProjectile : Projectile, IReflectable, IProjectile
     {
@@ -40,6 +41,7 @@ namespace Projektarbeit.projectiles
 
                     if (distanceToPlayer <= aoeRadius)
                     {
+                        Game.Instance.camera.transform.ApplyShake(CameraShake.Explosion);
                         Core.Game.Instance.player.apply_damage(Damage);
                     }
                 });

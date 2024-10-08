@@ -91,6 +91,7 @@
             if (hit.hit_object is IProjectile testProjectile && !testProjectile.HasHit)
             {
                 apply_damage(testProjectile.Damage);
+                Game.Instance.camera.transform.ApplyShake(CameraShake.LargeProjectileHit);
                 testProjectile.HasHit = true;
             }
             else

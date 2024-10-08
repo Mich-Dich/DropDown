@@ -1,36 +1,34 @@
 ﻿namespace Projektarbeit.Levels
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Core.util;
     using Core.world;
     using Core.defaults;
     using OpenTK.Mathematics;
     using Projektarbeit.characters.enemy.controller;
     using Projektarbeit.characters.player.power_ups;
-    using Projektarbeit.particleFX;
     using Core.render;
 
     internal class MAP_base : Map
     {
         private readonly Camera camera;
-        private readonly Random random;
+        private readonly Random random = new Random();
         private float timeStamp;
         private float timeInterval;
         private Dictionary<int, Action<Vector2>> enemyControllers;
-        private Dictionary<int, Func<Vector2, PowerUp>> powerUps;   
+        private Dictionary<int, Func<Vector2, PowerUp>> powerUps;
         private const int MaxPowerUps = 5;
         private int powerUpCounter = 0;
         private const int PowerUpSpawnThreshold = 1;
         private bool bossFightTriggered = false;
-
         private int lastScore;
-
 
         public MAP_base()
         {
             use_garbage_collector = true;
             camera = Core.Game.Instance.camera;
-            random = new Random();
             scoreGoal = 400;
             previousScoreGoal = 0;
 
@@ -43,9 +41,6 @@
 
             InitializeEnemyControllers();
             InitializePowerUps();
-
-            var particleEffect = new SparkleEffect();
-            AddParticleEffect(particleEffect);
         }
 
         public override void update(float deltaTime)
@@ -118,10 +113,10 @@
             enemyControllers = new Dictionary<int, Action<Vector2>>
             {
                 { 0, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
-                { 1, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
-                { 2, spawnPosition => add_AI_Controller(new TankEnemyController(spawnPosition)) },
-                { 3, spawnPosition => add_AI_Controller(new ExplosivEnemyController(spawnPosition)) },
-                //{ 4, spawnPosition => add_AI_Controller(new SniperEnemyController(spawnPosition)) },
+                { 1, spawnPosition => add_AI_Controller(new TankEnemyController(spawnPosition)) },
+                { 2, spawnPosition => add_AI_Controller(new ExplosivEnemyController(spawnPosition)) },
+                { 3, spawnPosition => add_AI_Controller(new SniperEnemyController(spawnPosition)) },
+                // Additional enemy types can be added here
             };
         }
 
@@ -191,10 +186,30 @@
 
         private void SpawnEnemy()
         {
-            int enemyType = random.Next(0, enemyControllers.Count);
+            // Improved enemy spawning logic for better variety and scaling difficulty
+            int score = Core.Game.Instance.Score;
+            int enemyType = GetEnemyTypeBasedOnScore(score);
             Vector2 spawnPosition = new(random.Next(-250, 250), -600);
 
             enemyControllers[enemyType](spawnPosition);
+        }
+
+        private int GetEnemyTypeBasedOnScore(int score)
+        {
+            int enemyType;
+            if (score <= 100)
+            {
+                enemyType = random.Next(0, 2);
+            }
+            else if (score <= 200)
+            {
+                enemyType = random.Next(0, enemyControllers.Count);
+            }
+            else
+            {
+                enemyType = random.Next(1, enemyControllers.Count);
+            }
+            return enemyType;
         }
 
         private void SpawnPowerUps()

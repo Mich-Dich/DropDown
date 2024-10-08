@@ -121,7 +121,7 @@
             {
                 if (!isTestingKeyPressed)
                 {
-                    Game.Instance.camera.transform.ApplyShake(CameraShake.Earthquake);
+                    Game.Instance.camera.transform.ApplyShake(CameraShake.Explosion);
                     Console.WriteLine("Shake");
 
                     isTestingKeyPressed = true;

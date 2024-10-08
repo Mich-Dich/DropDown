@@ -29,7 +29,6 @@ namespace Core.UI
 
         public override void Render()
         {
-
             if (!IsActive)
                 return;
 
@@ -38,9 +37,9 @@ namespace Core.UI
             ImGui.Begin("Background", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground);
 
             if (textureId != IntPtr.Zero)
-                ImGui.Image(textureId, Size, new Vector2(0, 0), new Vector2(1, 1), color);                          // If textureId is set, render image background
+                ImGui.Image(textureId, Size, new Vector2(0, 1), new Vector2(1, 0), color);
             else
-                ImGui.GetBackgroundDrawList().AddRectFilled(Position, Position + Size, ImGui.GetColorU32(color));   // Otherwise, render color background
+                ImGui.GetBackgroundDrawList().AddRectFilled(Position, Position + Size, ImGui.GetColorU32(color));
 
             ImGui.End();
         }

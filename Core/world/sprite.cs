@@ -6,8 +6,10 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.Reflection;
 
-namespace Core.world {
-    public sealed class Sprite : I_animatable {
+namespace Core.world
+{
+    public sealed class Sprite : I_animatable
+    {
 
         private Index_Buffer indexBuffer;
         private Vertex_Buffer vertexBuffer;
@@ -16,32 +18,37 @@ namespace Core.world {
 
         // =============================================== constructors ===============================================
 
-        public Sprite(Shader shader) {
+        public Sprite(Shader shader)
+        {
 
             this.shader = shader;
             Init();
         }
 
-        public Sprite(Transform transform, Texture texture) {
+        public Sprite(Transform transform, Texture texture)
+        {
 
             this.transform = transform;
             this.texture = texture;
             Init();
         }
 
-        public Sprite(Texture texture) {
+        public Sprite(Texture texture)
+        {
 
             this.texture = texture;
             Init();
         }
 
-        public Sprite(Animation animation) {
+        public Sprite(Animation animation)
+        {
 
             this.animation = animation;
             Init();
         }
 
-        public Sprite(Vector2? position = null, Vector2? size = null, float rotation = 0.0f, Mobility mobility = Mobility.DYNAMIC) {
+        public Sprite(Vector2? position = null, Vector2? size = null, float rotation = 0.0f, Mobility mobility = Mobility.DYNAMIC)
+        {
 
             transform.position = position ?? new Vector2(0, 0);
             transform.size = size ?? new Vector2(100, 100);
@@ -69,41 +76,46 @@ namespace Core.world {
         };
 
         // =============================================== setters/getters ===============================================
-        public Sprite Add_Animation(Animation animation) {
+        public Sprite Add_Animation(Animation animation)
+        {
 
             this.animation = animation;
             return this;
         }
 
-        public Sprite set_animation(string path_to_directory, bool start_playing = false, bool is_pixel_art = false, int fps = 30, bool loop = false) {
+        public Sprite set_animation(string path_to_directory, bool start_playing = false, bool is_pixel_art = false, int fps = 30, bool loop = false)
+        {
 
             animation = new Animation(this, new SpriteBatch(path_to_directory, is_pixel_art), fps, loop);
-            if(start_playing)
+            if (start_playing)
                 animation.Play();
 
             return this;
         }
 
-        public Sprite set_animation(string path_to_texture_atlas, int num_of_rows, int num_of_columns, bool start_playing = false, bool is_pixel_art = false, int fps = 30, bool loop = false) {
+        public Sprite set_animation(string path_to_texture_atlas, int num_of_rows, int num_of_columns, bool start_playing = false, bool is_pixel_art = false, int fps = 30, bool loop = false)
+        {
 
             animation = new Animation(this, Resource_Manager.Get_Texture(path_to_texture_atlas, is_pixel_art), num_of_rows, num_of_columns, fps, loop);
-            if(start_playing)
+            if (start_playing)
                 animation.Play();
 
             return this;
         }
 
-        public void Set_Mobility(Mobility mobility) {
+        public void Set_Mobility(Mobility mobility)
+        {
 
             transform.mobility = mobility;
-            if(transform.mobility == Mobility.STATIC)
+            if (transform.mobility == Mobility.STATIC)
                 modelMatrix = Calc_Modle_Matrix();
         }
 
         // =============================================== functions ===============================================
 
         // ======================================== animation ========================================
-        public Sprite Select_Texture_Region(int numberOfColumns = 1, int numberOfRows = 1, int columnIndex = 0, int rowIndex = 0) {
+        public Sprite Select_Texture_Region(int numberOfColumns = 1, int numberOfRows = 1, int columnIndex = 0, int rowIndex = 0)
+        {
 
             float offset_y = 1.0f / ((float)numberOfRows * 50);
             float offset_x = 1.0f / ((float)numberOfColumns * 50);
@@ -130,7 +142,8 @@ namespace Core.world {
             return this;
         }
 
-        public Sprite Select_Texture_RegionNew(int numberOfColumns, int numberOfRows, int columnIndex, int rowIndex, int tileID, int textureWidth, int textureHeight) {
+        public Sprite Select_Texture_RegionNew(int numberOfColumns, int numberOfRows, int columnIndex, int rowIndex, int tileID, int textureWidth, int textureHeight)
+        {
 
             float offset_y = 1.0f / ((float)numberOfRows * 50);
             float offset_x = 1.0f / ((float)numberOfColumns * 50);
@@ -169,16 +182,17 @@ namespace Core.world {
         }
 
         // ================================================================= internal =================================================================
-        public void Draw(Matrix4? model = null) {
+        public void Draw(Matrix4? model = null)
+        {
 
-            if(shader == null || texture == null && animation == null)
+            if (shader == null || texture == null && animation == null)
                 throw new NotImplementedException("Neither a texture nor an animation is assigned to the sprite. The sprite cannot be rendered.");
 
             // -------------------------------------- select display mode --------------------------------------
-            if(Game.Instance.show_performance)
+            if (Game.Instance.show_performance)
                 DebugData.spriteDrawCallsNum++;
 
-            if(animation != null)
+            if (animation != null)
                 animation?.Update();
 
             texture?.Use(TextureUnit.Texture0);
@@ -191,15 +205,16 @@ namespace Core.world {
             indexBuffer.Bind();
 
             // -------------------------------------- modle matrix --------------------------------------
-            if(model != null)
+            if (model != null)
                 shader.Set_Matrix_4x4("model", model.Value);
 
             // else Use precalculated matrix
-            else if(transform.mobility == Mobility.STATIC)
+            else if (transform.mobility == Mobility.STATIC)
                 shader.Set_Matrix_4x4("model", modelMatrix);
 
             // recalculate matrix every frame
-            else if(transform.mobility == Mobility.DYNAMIC || needsUpdate) {
+            else if (transform.mobility == Mobility.DYNAMIC || needsUpdate)
+            {
                 shader.Set_Matrix_4x4("model", Calc_Modle_Matrix());
                 needsUpdate = false;
             }
@@ -230,29 +245,28 @@ namespace Core.world {
             1, 2, 3,
         };
 
-        public Sprite Init() {
+        public Sprite Init()
+        {
 
-            if(shader == null)
+            if (shader == null)
                 shader = Game.Instance.defaultSpriteShader;
-            
+
             indexBuffer = new Index_Buffer(indeices);
             vertexBuffer = new Vertex_Buffer(_verticies);
             vertexBuffer.Bind();
             vertexArray = new();
             vertexArray.Add_Buffer(vertexBuffer, Get_Buffer_Layout());
 
-            if(transform.mobility == Mobility.STATIC)
+            if (transform.mobility == Mobility.STATIC)
                 modelMatrix = Calc_Modle_Matrix();
 
-            if(texture == null) {
-
+            if (texture == null)
+            {
                 var assembly = Assembly.GetExecutingAssembly();
                 var resourceName = "Core.defaults.textures.default_grid.png";
-                using(Stream stream = assembly.GetManifestResourceStream(resourceName)) {
-                
-                    if(stream == null) 
-                        return this;
-
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    if (stream == null) return this;
                     texture = new Texture(stream);
                 }
             }
@@ -260,16 +274,18 @@ namespace Core.world {
             return this;
         }
 
-        private Buffer_Layout Get_Buffer_Layout() {
+        private Buffer_Layout Get_Buffer_Layout()
+        {
 
             Buffer_Layout layout = new Buffer_Layout()
-                .add<float>(2)      // vertex coordinates
+                .add<float>(2) // vertex coordinates
                 .add<float>(2);     // UV coordinates
 
             return layout;
         }
 
-        private Matrix4 Calc_Modle_Matrix() {
+        private Matrix4 Calc_Modle_Matrix()
+        {
 
             Matrix4 trans = Matrix4.CreateTranslation(transform.position.X, transform.position.Y, 0);
             Matrix4 sca = Matrix4.CreateScale(transform.size.X, transform.size.Y, 0);
