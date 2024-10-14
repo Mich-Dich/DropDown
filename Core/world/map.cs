@@ -10,6 +10,7 @@
     using Core.util;
     using OpenTK.Mathematics;
     using Core.defaults;
+    using Core.particle;
 
     public class Map {
 
@@ -18,6 +19,7 @@
         public List<Character> allCharacter { get; set; } = new List<Character>();
         public List<Game_Object> projectiles { get; set; } = new List<Game_Object>();
         public List<PowerUp> allPowerUps { get; set; } = new List<PowerUp>();    
+        public List<ParticleSystem> particleSystems = new List<ParticleSystem>();
         public bool player_is_spawned { get; private set; } = false;
         public int scoreGoal { get; set; }
         public int previousScoreGoal { get; set; }
@@ -398,6 +400,16 @@
             DebugData.colidableObjectsStatic++;
         }
 
+        public void AddParticleSystem(ParticleSystem particleSystem)
+        {
+            particleSystems.Add(particleSystem);
+        }
+
+        public void RemoveParticleSystem(ParticleSystem particleSystem)
+        {
+            particleSystems.Remove(particleSystem);
+        }
+
         public void Force_Clear_mapTiles()
         {
 
@@ -577,6 +589,12 @@
             for(int x = 0; x < backgound.Count; x++)
                 backgound[x].Draw();
 
+            // Draw particle systems
+            foreach (var particleSystem in particleSystems)
+            {
+                particleSystem.Render();
+            }
+
             foreach (var character in allCharacter)
                 if (!character.IsRemoved)
                     character.Draw();
@@ -660,6 +678,12 @@
                 allCharacter.Remove(character);
                 if (character.death_callback != null)
                     character.death_callback();
+            }
+
+            // Update particle systems
+            foreach (var particleSystem in particleSystems)
+            {
+                particleSystem.Update(deltaTime);
             }
 
             update(deltaTime);

@@ -10,6 +10,8 @@
     using Projektarbeit.characters.enemy.controller;
     using Projektarbeit.characters.player.power_ups;
     using Core.render;
+    using Core.particle;
+    using Core.render.shaders;
 
     internal class MAP_base : Map
     {
@@ -24,6 +26,10 @@
         private const int PowerUpSpawnThreshold = 1;
         private bool bossFightTriggered = false;
         private int lastScore;
+
+        private ParticleSystem particleSystem;
+        private float shockwaveInterval = 2.0f;
+        private float shockwaveTimer = 0.0f;
 
         public MAP_base()
         {
@@ -41,10 +47,19 @@
 
             InitializeEnemyControllers();
             InitializePowerUps();
+
+            // Initialize the particle system
+            Shader particleShader = Resource_Manager.Get_Shader("Core.defaults.shaders.particle.vert", "Core.defaults.shaders.particle.frag");
+            particleSystem = new ParticleSystem(particleShader, camera);
+
+            // Add the particle system to the map
+            AddParticleSystem(particleSystem);
         }
 
         public override void update(float deltaTime)
         {
+            base.update(deltaTime); // Ensure the base update logic is called
+
             if (timeStamp + timeInterval <= Game_Time.total)
             {
                 SpawnEnemies();
@@ -72,6 +87,20 @@
             }
 
             CheckScoreGoal();
+
+            // Update shockwave timer and create shockwave if interval has passed
+            shockwaveTimer += deltaTime;
+            if (shockwaveTimer >= shockwaveInterval)
+            {
+                CreateShockwaveEffect();
+                shockwaveTimer = 0.0f;
+            }
+        }
+
+        private void CreateShockwaveEffect()
+        {
+            Vector2 centerPosition = new Vector2(camera.transform.position.X, camera.transform.position.Y);
+            particleSystem.CreateShockwave(centerPosition, 1000, 6.0f, 0.3f, 0.1f);
         }
 
         private void CheckScoreGoal()
@@ -161,7 +190,6 @@
                 });
             }
         }
-
 
         private float GetRandomTimeInterval()
         {
