@@ -1,10 +1,11 @@
 using OpenTK.Mathematics;
+using Core.util;
 
 namespace Core.particle
 {
     public class Emitter
     {
-        public Vector2 Position;
+        public Transform Transform { get; set; }
         public Vector2 Velocity;
         public float EmissionRate;
         public bool Continuous;
@@ -14,9 +15,9 @@ namespace Core.particle
         public float MinRotation;
         public float MaxRotation;
 
-        public Emitter(Vector2 position, Vector2 velocity, float emissionRate, bool continuous, ColorGradient colorGradient, float minSize, float maxSize, float minRotation, float maxRotation)
+        public Emitter(Transform transform, Vector2 velocity, float emissionRate, bool continuous, ColorGradient colorGradient, float minSize, float maxSize, float minRotation, float maxRotation)
         {
-            Position = position;
+            Transform = transform;
             Velocity = velocity;
             EmissionRate = emissionRate;
             Continuous = continuous;

@@ -98,7 +98,7 @@ namespace Core.particle
                             float size = (float)(random.NextDouble() * (emitter.MaxSize - emitter.MinSize) + emitter.MinSize);
                             float rotation = (float)(random.NextDouble() * (emitter.MaxRotation - emitter.MinRotation) + emitter.MinRotation);
                             _particles.Add(new Particle(
-                                emitter.Position,
+                                emitter.Transform.position,
                                 emitter.Velocity,
                                 emitter.ColorGradient,
                                 size,
