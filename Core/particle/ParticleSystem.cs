@@ -206,13 +206,20 @@ namespace Core.particle
             colorGradient.AddColor(0.6f, new Vector4(0.3f, 0.3f, 1.0f, 1.0f)); // Medium blue
             colorGradient.AddColor(1.0f, new Vector4(0.1f, 0.1f, 0.8f, 1.0f)); // Dark blue
 
+            float aspectRatio = _camera.transform.size.X / _camera.transform.size.Y;
+
             for (int i = 0; i < particleCount; i++)
             {
                 float angle = (float)(i * 2 * Math.PI / particleCount);
                 float speedVariation = (float)(random.NextDouble() * 0.5 + 0.75); // Vary speed slightly
                 float lifetimeVariation = (float)(random.NextDouble() * 0.5 + 0.75); // Vary lifetime slightly
                 float sizeVariation = (float)(random.NextDouble() * 0.5 + 0.75); // Vary size slightly
-                Vector2 velocity = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * speed * speedVariation * scale;
+
+                // Adjust velocity based on aspect ratio
+                Vector2 velocity = new Vector2(
+                    (float)Math.Cos(angle) * speed * speedVariation * scale / aspectRatio,
+                    (float)Math.Sin(angle) * speed * speedVariation * scale
+                );
 
                 Vector4 colorVariation = new Vector4(
                     (float)(random.NextDouble() * 0.05 - 0.025),
