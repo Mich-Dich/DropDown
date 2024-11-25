@@ -10,6 +10,7 @@ namespace Core.Particles
     public class ParticleSystem
     {
         public const int MaxParticles = 100000;
+        private int _activeParticleCount = 0;
 
         private List<Particle> _particles = new List<Particle>();
         private List<Emitter> _emitters = new List<Emitter>();
@@ -176,18 +177,26 @@ namespace Core.Particles
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, _colorVBO);
             GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, particleCount * 4 * sizeof(byte), _particleColorData);
+
+             _activeParticleCount = particleCount;
         }
 
         public void Render()
         {
             GL.BindVertexArray(_vao);
+
+            // Set OpenGL state
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
+            GL.Disable(EnableCap.DepthTest);
+
             _shader.Use();
 
             // Set uniforms
-            _shader.Set_Matrix_4x4("u_Projection", Game.Instance.camera.Get_Projection_Matrix());
+            _shader.Set_Matrix_4x4("projection", Game.Instance.camera.Get_Projection_Matrix());
 
-            // Draw particles using instanced rendering
-            GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _particles.Count);
+            // Draw particles
+            GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _activeParticleCount);
 
             GL.BindVertexArray(0);
         }

@@ -68,13 +68,13 @@
             }
 
             if (Game_Time.total - shockwaveTimeStamp >= 1.0f)
-                {
-                    Vector2 position = Vector2.Zero; // Center of the map
-                    ShockwaveEffect.Create(this, position, particleCount: 2000, maxSpeed: 5.0f, lifetime: 0.4f, scale: 1.0f);
+            {
+                Vector2 position = Vector2.Zero;
+                ShockwaveEffect.Create(this, position, particleCount: 2000, maxSpeed: 5.0f, lifetime: 0.4f, scale: 1.0f);
 
-                    // Reset the timestamp
-                    shockwaveTimeStamp = Game_Time.total;
-                }
+                // Reset the timestamp
+                shockwaveTimeStamp = Game_Time.total;
+            }
 
             if (Core.Game.Instance.Score != lastScore)
             {

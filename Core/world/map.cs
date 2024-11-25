@@ -583,19 +583,20 @@
 
         // ================================================================= internal =================================================================
 
-        internal void Draw() {
-
+        internal void Draw()
+        {
             Vector2 camera_pos = Game.Instance.camera.transform.position;
             Vector2 camera_size = Game.Instance.camera.Get_View_Size_In_World_Coord() + new Vector2(cellSize * 2);
-            float tiel_size = tileSize * cellSize;
+            float tile_size = tileSize * cellSize;
 
-            foreach (var tile in mapTiles) {
+            // Draw tiles within the camera view
+            foreach (var tile in mapTiles)
+            {
+                float overlapX = camera_size.X / 2 + tile_size / 2 - Math.Abs(camera_pos.X - tile.Key.X);
+                float overlapY = camera_size.Y / 2 + tile_size / 2 - Math.Abs(camera_pos.Y - tile.Key.Y);
 
-                float overlapX = camera_size.X / 2 + tiel_size / 2 - Math.Abs(camera_pos.X - tile.Key.X);
-                float overlapY = camera_size.Y / 2 + tiel_size / 2 - Math.Abs(camera_pos.Y - tile.Key.Y);
-
-                if (overlapX > 0 && overlapY > 0) {
-
+                if (overlapX > 0 && overlapY > 0)
+                {
                     if (Game.Instance.show_performance)
                         DebugData.numOfTielsDisplayed++;
 
@@ -606,8 +607,8 @@
                 }
             }
 
-            // Draw the background first
-            for(int x = 0; x < backgound.Count; x++)
+            // Draw the background sprites
+            for (int x = 0; x < backgound.Count; x++)
                 backgound[x].Draw();
 
             // Draw particle systems
@@ -616,16 +617,24 @@
                 particleSystem.Render();
             }
 
+            // Draw the main particle system (if you have one)
+            this.particleSystem.Render();
+
+            // Rebind the default sprite shader
+            Game.Instance.defaultSpriteShader.Use();
+            Game.Instance.defaultSpriteShader.Set_Matrix_4x4("projection", Game.Instance.camera.Get_Projection_Matrix());
+
+            // Draw all characters
             foreach (var character in allCharacter)
                 if (!character.IsRemoved)
                     character.Draw();
 
+            // Draw other game objects
             for (int x = 0; x < world.Count; x++)
                 if (!world[x].IsRemoved)
                     world[x].Draw();
-
-            this.particleSystem.Render();
         }
+
 
         internal void Draw_Debug() {
 
