@@ -2,7 +2,7 @@ using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 
-namespace Core.particle
+namespace Core.Particles
 {
     public class ColorGradient
     {

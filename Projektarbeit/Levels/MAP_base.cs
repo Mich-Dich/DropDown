@@ -10,8 +10,7 @@
     using Projektarbeit.characters.enemy.controller;
     using Projektarbeit.characters.player.power_ups;
     using Core.render;
-    using Core.particle;
-    using Core.render.shaders;
+    using Core.Particles;
 
     internal class MAP_base : Map
     {
@@ -27,9 +26,7 @@
         private bool bossFightTriggered = false;
         private int lastScore;
 
-        private ParticleSystem particleSystem;
-        private float shockwaveInterval = 2.0f;
-        private float shockwaveTimer = 0.0f;
+        private float shockwaveTimeStamp = 0f;
 
         public MAP_base()
         {
@@ -47,13 +44,6 @@
 
             InitializeEnemyControllers();
             InitializePowerUps();
-
-            // Initialize the particle system
-            Shader particleShader = Resource_Manager.Get_Shader("Core.defaults.shaders.particle.vert", "Core.defaults.shaders.particle.frag");
-            particleSystem = new ParticleSystem(particleShader, camera);
-
-            // Add the particle system to the map
-            AddParticleSystem(particleSystem);
         }
 
         public override void update(float deltaTime)
@@ -77,6 +67,15 @@
                 timeInterval = GetRandomTimeInterval();
             }
 
+            if (Game_Time.total - shockwaveTimeStamp >= 1.0f)
+                {
+                    Vector2 position = Vector2.Zero; // Center of the map
+                    ShockwaveEffect.Create(this, position, particleCount: 2000, maxSpeed: 5.0f, lifetime: 0.4f, scale: 1.0f);
+
+                    // Reset the timestamp
+                    shockwaveTimeStamp = Game_Time.total;
+                }
+
             if (Core.Game.Instance.Score != lastScore)
             {
                 int scoreDifference = Core.Game.Instance.Score - lastScore;
@@ -87,20 +86,6 @@
             }
 
             CheckScoreGoal();
-
-            // Update shockwave timer and create shockwave if interval has passed
-            shockwaveTimer += deltaTime;
-            if (shockwaveTimer >= shockwaveInterval)
-            {
-                CreateShockwaveEffect();
-                shockwaveTimer = 0.0f;
-            }
-        }
-
-        private void CreateShockwaveEffect()
-        {
-            Vector2 centerPosition = new Vector2(camera.transform.position.X, camera.transform.position.Y);
-            particleSystem.CreateShockwave(centerPosition, 1000, 6.0f, 0.3f, 0.1f);
         }
 
         private void CheckScoreGoal()

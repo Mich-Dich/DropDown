@@ -76,6 +76,7 @@ namespace Core
     public abstract class Game {
 
         public Shader defaultSpriteShader;
+        public Shader particleShader;
         public bool showDebug = false;
         public bool show_performance = false;
         public ImguI_Controller imguiController;
@@ -145,8 +146,14 @@ namespace Core
 
                 // ----------------------------------- defaults -----------------------------------
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
+                GL.Disable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
                 this.defaultSpriteShader = new("Core.defaults.shaders.texture_vert.glsl", "Core.defaults.shaders.texture_frag.glsl", true);
                 this.defaultSpriteShader.Use();
+
+                this.particleShader = new ("Core.defaults.shaders.particles.vert", "Core.defaults.shaders.particles.frag", true);
+                this.particleShader.Use();
 
                 this.activeMap = new MAP_default();
                 this.camera = new Camera(Vector2.Zero, this.window.Size, 0.5f);

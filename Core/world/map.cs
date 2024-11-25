@@ -10,7 +10,7 @@
     using Core.util;
     using OpenTK.Mathematics;
     using Core.defaults;
-    using Core.particle;
+    using Core.Particles;
 
     public class Map {
 
@@ -45,6 +45,8 @@
             Vec2 gravity = new(0.0f, 0.001f);
             physicsWorld = new World(aabb, gravity, true);
             physicsWorld.SetContactListener(new CollisionListener());
+
+            this.particleSystem = new ParticleSystem(Game.Instance.particleShader);
         }
 
         public virtual void update(float deltaTime) { }
@@ -560,6 +562,25 @@
             DebugData.colidableObjectsDynamic = 0;
         }
 
+        // Particle System Testing
+
+        public void AddEmitter(Emitter emitter)
+        {
+            this.particleSystem.AddEmitter(emitter);
+        }
+
+        public void AddParticles(IEnumerable<Particle> particles)
+        {
+            this.particleSystem.AddParticles(particles);
+            Console.WriteLine($"Added {particles.Count()} particles");
+        }
+
+        public void AddForceField(IForceField forceField)
+        {
+            this.particleSystem.AddForceField(forceField);
+        }
+
+
         // ================================================================= internal =================================================================
 
         internal void Draw() {
@@ -602,6 +623,8 @@
             for (int x = 0; x < world.Count; x++)
                 if (!world[x].IsRemoved)
                     world[x].Draw();
+
+            this.particleSystem.Render();
         }
 
         internal void Draw_Debug() {
@@ -680,15 +703,12 @@
                     character.death_callback();
             }
 
-            // Update particle systems
-            foreach (var particleSystem in particleSystems)
-            {
-                particleSystem.Update(deltaTime);
-            }
-
             update(deltaTime);
 
             Game.Instance.camera.transform.Update(); // Update the camera Shake logic...
+
+            // Update the particle system
+            this.particleSystem.Update(deltaTime, Game.Instance.player.transform.position);
 
             if (use_garbage_collector) {
 
@@ -706,6 +726,7 @@
         private List<Game_Object> world { get; set; } = new List<Game_Object>();
         private readonly int velocityIterations = 6;
         private readonly int positionIterations = 1;
+        private ParticleSystem particleSystem;
         // ------------------------------------------ tiles ------------------------------------------
         protected float minDistancForCollision = 1600;
         protected int cellSize = 200;
