@@ -372,21 +372,22 @@ namespace Core
 
         private bool paused = false;
 
-        private void Internal_Render() {
-
+        private void Internal_Render()
+        {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             this.defaultSpriteShader.Use();
             this.defaultSpriteShader.Set_Matrix_4x4("projection", this.camera.Get_Projection_Matrix());
 
             this.activeMap.Draw();
-            if (this.showDebug) {
-
+            if (this.showDebug)
+            {
                 this.activeMap.Draw_Debug();
                 global_Debug_Drawer.draw();
             }
 
             this.Render(Game_Time.delta);
         }
+
 
         private void Update_Game_Time(float deltaTime) {
 

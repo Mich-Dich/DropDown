@@ -193,12 +193,20 @@ namespace Core.Particles
             _shader.Use();
 
             // Set uniforms
-            _shader.Set_Matrix_4x4("projection", Game.Instance.camera.Get_Projection_Matrix());
+            _shader.Set_Matrix_4x4("u_Projection", Game.Instance.camera.Get_Projection_Matrix());
+
+            // Check for OpenGL errors
+            ErrorCode error = GL.GetError();
+            if (error != ErrorCode.NoError)
+            {
+                Console.WriteLine($"OpenGL Error after setting uniform: {error}");
+            }
 
             // Draw particles
             GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _activeParticleCount);
 
             GL.BindVertexArray(0);
         }
+
     }
 }
