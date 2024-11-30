@@ -1,5 +1,4 @@
-﻿namespace Projektarbeit.Levels
-{
+﻿namespace Projektarbeit.Levels {
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -12,8 +11,7 @@
     using Core.render;
     using Core.Particles;
 
-    internal class MAP_base : Map
-    {
+    internal class MAP_base : Map {
         private readonly Camera camera;
         private readonly Random random = new Random();
         private float timeStamp;
@@ -28,8 +26,7 @@
 
         private float shockwaveTimeStamp = 0f;
 
-        public MAP_base()
-        {
+        public MAP_base() {
             use_garbage_collector = true;
             camera = Core.Game.Instance.camera;
             scoreGoal = 400;
@@ -46,20 +43,16 @@
             InitializePowerUps();
         }
 
-        public override void update(float deltaTime)
-        {
+        public override void update(float deltaTime) {
             base.update(deltaTime); // Ensure the base update logic is called
 
-            if (timeStamp + timeInterval <= Game_Time.total)
-            {
+            if(timeStamp + timeInterval <= Game_Time.total) {
                 SpawnEnemies();
-                if (powerUpCounter >= PowerUpSpawnThreshold)
-                {
+                if(powerUpCounter >= PowerUpSpawnThreshold) {
                     SpawnPowerUps();
                     powerUpCounter = 0;
                 }
-                else
-                {
+                else {
                     powerUpCounter++;
                 }
 
@@ -67,8 +60,7 @@
                 timeInterval = GetRandomTimeInterval();
             }
 
-            if (Game_Time.total - shockwaveTimeStamp >= 1.0f)
-            {
+            if(Game_Time.total - shockwaveTimeStamp >= 1.0f) {
                 Vector2 position = Vector2.Zero;
                 ShockwaveEffect.Create(this, position, particleCount: 2000, maxSpeed: 5.0f, lifetime: 0.4f, scale: 1.0f);
 
@@ -76,8 +68,7 @@
                 shockwaveTimeStamp = Game_Time.total;
             }
 
-            if (Core.Game.Instance.Score != lastScore)
-            {
+            if(Core.Game.Instance.Score != lastScore) {
                 int scoreDifference = Core.Game.Instance.Score - lastScore;
 
                 Game.Instance.GameState.AddXP(scoreDifference);
@@ -88,44 +79,34 @@
             CheckScoreGoal();
         }
 
-        private void CheckScoreGoal()
-        {
-            if (Core.Game.Instance.Score >= scoreGoal && !bossFightTriggered)
-            {
+        private void CheckScoreGoal() {
+            if(Core.Game.Instance.Score >= scoreGoal && !bossFightTriggered) {
+
                 TriggerBossFight();
                 bossFightTriggered = true;
+
             }
-            else if (Core.Game.Instance.Score < scoreGoal)
-            {
+            else if(Core.Game.Instance.Score < scoreGoal)
                 bossFightTriggered = false;
-            }
         }
 
-        private void TriggerBossFight()
-        {
+        private void TriggerBossFight() {
             Console.WriteLine("Boss fight triggered!");
             CalculateScoreGoal();
         }
 
-        public override void PlayerLevelUp()
-        {
-            Game.Instance.play_state = Core.Play_State.LevelUp;
-        }
+        public override void PlayerLevelUp() { Game.Instance.play_state = Core.Play_State.LevelUp; }
 
-        private void CalculateScoreGoal()
-        {
+        private void CalculateScoreGoal() {
             previousScoreGoal = scoreGoal;
             scoreGoal += 200;
-            if (scoreGoal - previousScoreGoal > 600)
-            {
+            if(scoreGoal - previousScoreGoal > 600)
                 scoreGoal = previousScoreGoal + 600;
-            }
         }
 
-        private void InitializeEnemyControllers()
-        {
-            enemyControllers = new Dictionary<int, Action<Vector2>>
-            {
+        private void InitializeEnemyControllers() {
+            enemyControllers = new Dictionary<int, Action<Vector2>> {
+
                 { 0, spawnPosition => add_AI_Controller(new SwarmEnemyController(spawnPosition)) },
                 { 1, spawnPosition => add_AI_Controller(new TankEnemyController(spawnPosition)) },
                 { 2, spawnPosition => add_AI_Controller(new ExplosivEnemyController(spawnPosition)) },
@@ -134,71 +115,57 @@
             };
         }
 
-        private void InitializePowerUps()
-        {
+        private void InitializePowerUps() {
+            
             powerUps = new Dictionary<int, Func<Vector2, PowerUp>>();
             var unlockedPowerUps = Game.Instance.GameState.PowerUps.Where(p => !p.IsLocked).ToList();
-
             Console.WriteLine($"Unlocked power-ups: {unlockedPowerUps.Count}");
+            for(int i = 0; i < unlockedPowerUps.Count; i++) {
 
-            for (int i = 0; i < unlockedPowerUps.Count; i++)
-            {
                 var powerUp = unlockedPowerUps[i];
-                powerUps.Add(i, powerUpPosition =>
-                {
+                powerUps.Add(i, powerUpPosition => {
                     PowerUp instance = null;
                     var saveData = Game.Instance.GameState.PowerUpsSaveData.FirstOrDefault(p => p.PowerUpType == powerUp.GetType().Name);
-                    if (saveData != null)
-                    {
-                        if (powerUp.GetType() == typeof(SpeedBoost))
-                        {
+                    if(saveData != null) {
+
+                        if(powerUp.GetType() == typeof(SpeedBoost))
                             instance = new SpeedBoost(powerUpPosition, saveData.SpeedBoost, saveData.Duration);
-                        }
-                        else if (powerUp.GetType() == typeof(FireRateBoost))
-                        {
+                        
+                        else if(powerUp.GetType() == typeof(FireRateBoost))
                             instance = new FireRateBoost(powerUpPosition, saveData.FireDelayDecrease, saveData.Duration);
-                        }
-                        else if (powerUp.GetType() == typeof(HealthIncrease))
-                        {
+
+                        else if(powerUp.GetType() == typeof(HealthIncrease)) {
                             // Assuming HealthIncrease does not take custom parameters in its constructor
                             // If it does, you should similarly fetch and pass those parameters
                             instance = new HealthIncrease(powerUpPosition);
                         }
                     }
 
-                    if (instance == null)
-                    {
+                    if(instance == null)
                         throw new InvalidOperationException($"Failed to create an instance of {powerUp.GetType().Name}");
-                    }
 
                     return instance;
                 });
             }
         }
 
-        private float GetRandomTimeInterval()
-        {
-            return random.Next(2, 4);
-        }
+        private float GetRandomTimeInterval() { return random.Next(2, 4); }
 
-        private void SpawnEnemies()
-        {
-            if (ShouldSpawnEnemies())
-            {
+        private void SpawnEnemies() {
+         
+            if(ShouldSpawnEnemies())
                 SpawnEnemy();
-            }
         }
 
-        private bool ShouldSpawnEnemies()
-        {
+        private bool ShouldSpawnEnemies() {
             int maxEnemies = 10 + (Core.Game.Instance.Score / 10);
             int currentEnemies = Core.Game.Instance.get_active_map().allCharacter.Count;
 
             return currentEnemies < maxEnemies;
         }
 
-        private void SpawnEnemy()
-        {
+        private void SpawnEnemy() {
+            
             // Improved enemy spawning logic for better variety and scaling difficulty
             int score = Core.Game.Instance.Score;
             int enemyType = GetEnemyTypeBasedOnScore(score);
@@ -207,75 +174,63 @@
             enemyControllers[enemyType](spawnPosition);
         }
 
-        private int GetEnemyTypeBasedOnScore(int score)
-        {
+        private int GetEnemyTypeBasedOnScore(int score) {
+
             int enemyType;
-            if (score <= 100)
-            {
+            if(score <= 100)
                 enemyType = random.Next(0, 2);
-            }
-            else if (score <= 200)
-            {
+            
+            else if(score <= 200)
                 enemyType = random.Next(0, enemyControllers.Count);
-            }
+            
             else
-            {
                 enemyType = random.Next(1, enemyControllers.Count);
-            }
+
             return enemyType;
         }
 
-        private void SpawnPowerUps()
-        {
-            if (!Game.Instance.GameState.PowerUps.Any(p => !p.IsLocked))
-            {
+        private void SpawnPowerUps() {
+            
+            if(!Game.Instance.GameState.PowerUps.Any(p => !p.IsLocked))
                 return;
-            }
 
             double spawnRate = Core.Game.Instance.player.health < 50 ? 0.2 : 0.1;
 
-            if (random.NextDouble() < spawnRate && allPowerUps.Count < MaxPowerUps)
-            {
+            if(random.NextDouble() < spawnRate && allPowerUps.Count < MaxPowerUps) {
                 Vector2 powerUpPosition = new(random.Next(-400, 400), random.Next(-400, 400));
 
-                if (ShouldSpawnHealthBoost())
-                {
+                if(ShouldSpawnHealthBoost()) {
                     var healthBoost = new HealthIncrease(powerUpPosition);
                     Add_Game_Object(healthBoost);
                     allPowerUps.Add(healthBoost);
                 }
-                else
-                {
+                else {
                     SpawnPowerUp(powerUpPosition);
                 }
             }
         }
 
-        private bool ShouldSpawnHealthBoost()
-        {
-            if (!Game.Instance.GameState.PowerUps.Any(p => p.GetType() == typeof(HealthIncrease) && !p.IsLocked))
-            {
+        private bool ShouldSpawnHealthBoost() {
+
+            if(!Game.Instance.GameState.PowerUps.Any(p => p.GetType() == typeof(HealthIncrease) && !p.IsLocked))
                 return false;
-            }
 
             double spawnRate = Core.Game.Instance.player.health < 50 ? 0.7 : 0.5;
             return random.NextDouble() < spawnRate;
         }
 
-        private void SpawnPowerUp(Vector2 powerUpPosition)
-        {
+        private void SpawnPowerUp(Vector2 powerUpPosition) {
+
             int powerUpType = random.Next(0, powerUps.Count);
-            if (powerUps.ContainsKey(powerUpType))
-            {
+            if(powerUps.ContainsKey(powerUpType)) {
+
                 var powerUp = powerUps[powerUpType](powerUpPosition);
                 powerUp.transform.position = powerUpPosition;
                 Add_Game_Object((Game_Object)powerUp);
                 allPowerUps.Add(powerUp);
-            }
-            else
-            {
+
+            } else
                 Console.WriteLine($"Error: PowerUp type {powerUpType} does not exist.");
-            }
         }
     }
 }
