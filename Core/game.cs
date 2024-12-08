@@ -1,9 +1,9 @@
 
-namespace Core
-{
+namespace Core {
 
     using Core.Controllers.player;
     using Core.defaults;
+    using Core.Particles;
     using Core.render;
     using Core.render.shaders;
     using Core.util;
@@ -36,8 +36,7 @@ namespace Core
         public Play_State OldState { get; }
         public Play_State NewState { get; }
 
-        public GameStateChangedEventArgs(Play_State oldState, Play_State newState)
-        {
+        public GameStateChangedEventArgs(Play_State oldState, Play_State newState) {
             OldState = oldState;
             NewState = newState;
         }
@@ -75,8 +74,8 @@ namespace Core
 
     public abstract class Game {
 
-        public Shader defaultSpriteShader;
-        public Shader particleShader;
+        public Shader default_sprite_shader;
+        public Shader particle_shader;
         public bool showDebug = false;
         public bool show_performance = false;
         public ImguI_Controller imguiController;
@@ -111,7 +110,7 @@ namespace Core
 
         public Game(string title, int initalWindowWidth, int initalWindowHeight) {
 
-            if (Instance != null)
+            if(Instance != null)
                 throw new Exception("You can only create one instance of Game!");
 
             Instance = this;
@@ -132,8 +131,8 @@ namespace Core
 
         // ============================================================================== public ==============================================================================
         public abstract void StartGame();
-        public virtual List<PowerUp> loadPowerups(List<PowerUpSaveData> PowerUpsSaveData) { return new List<PowerUp>();}
-        public virtual List<Ability> loadAbilities(List<AbilitySaveData> AbilitiesSaveData) { return new List<Ability>();}
+        public virtual List<PowerUp> loadPowerups(List<PowerUpSaveData> PowerUpsSaveData) { return new List<PowerUp>(); }
+        public virtual List<Ability> loadAbilities(List<AbilitySaveData> AbilitiesSaveData) { return new List<Ability>(); }
 
         public void Run() {
 
@@ -149,11 +148,11 @@ namespace Core
                 GL.Disable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.Blend);
                 GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
-                this.defaultSpriteShader = new("Core.defaults.shaders.texture_vert.glsl", "Core.defaults.shaders.texture_frag.glsl", true);
-                this.defaultSpriteShader.Use();
+                this.default_sprite_shader = new("Core.defaults.shaders.texture_vert.glsl", "Core.defaults.shaders.texture_frag.glsl", true);
+                this.default_sprite_shader.Use();
 
-                this.particleShader = new ("Core.defaults.shaders.particles.vert", "Core.defaults.shaders.particles.frag", true);
-                this.particleShader.Use();
+                this.particle_shader = new("Core.defaults.shaders.particles.vert", "Core.defaults.shaders.particles.frag", true);
+                this.particle_shader.Use();
 
                 this.activeMap = new MAP_default();
                 this.camera = new Camera(Vector2.Zero, this.window.Size, 0.5f);
@@ -164,16 +163,16 @@ namespace Core
                 this.Init();
 
                 // ----------------------------------- check for null values -----------------------------------
-                if (this.player == null)
+                if(this.player == null)
                     this.player = new CH_default_player();
 
-                if (this.playerController == null)
+                if(this.playerController == null)
                     this.playerController = new PC_Default(player);
 
 
                 // ----------------------------------- finish setup -----------------------------------
                 this.playerController.character = this.player;
-                if (!this.activeMap.player_is_spawned)
+                if(!this.activeMap.player_is_spawned)
                     this.activeMap.Add_Character(this.player);
                 this.window.IsVisible = true;
             };
@@ -191,21 +190,21 @@ namespace Core
             // internal game update_internal
             this.window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
-                if (show_performance)
+                if(show_performance)
                     stopwatch.Restart();
 
                 this.Update_Game_Time((float)eventArgs.Time);
 
-                if (paused)
+                if(paused)
                     this.Update(Game_Time.delta);
-                
+
                 // proccess handeling
                 this.playerController.Update_Internal(Game_Time.delta, this.inputEvent);
                 this.inputEvent.Clear();
 
                 this.activeMap.update_internal(Game_Time.delta);
 
-                if (show_performance) {
+                if(show_performance) {
 
                     stopwatch.Stop();
                     DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
@@ -214,14 +213,14 @@ namespace Core
 
             this.window.RenderFrame += (FrameEventArgs eventArgs) => {
 
-                if (show_performance)
+                if(show_performance)
                     stopwatch.Restart();
 
                 this.window.SwapBuffers();
                 this.Internal_Render();
                 this.Imgui_Render(Game_Time.delta);
 
-                if (show_performance) {
+                if(show_performance) {
 
                     stopwatch.Stop();
                     DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
@@ -249,7 +248,7 @@ namespace Core
 
             this.window.FocusedChanged += (e) => {
 
-                if (!e.IsFocused) {
+                if(!e.IsFocused) {
 
                     this.updateFrequencyBuffer = this.window.UpdateFrequency;
                     this.window.UpdateFrequency = 30.0f;
@@ -260,7 +259,7 @@ namespace Core
 
             this.window.Move += (e) => {
 
-                if (show_performance)
+                if(show_performance)
                     stopwatch.Restart();
 
                 this.Update_Game_Time((float)this.window.TimeSinceLastUpdate());
@@ -271,7 +270,7 @@ namespace Core
                 this.Update(Game_Time.delta);
                 this.inputEvent.Clear();
 
-                if (show_performance) {
+                if(show_performance) {
 
                     stopwatch.Stop();
                     DebugData.workTimeUpdate = stopwatch.Elapsed.TotalMilliseconds;
@@ -282,7 +281,7 @@ namespace Core
                 this.Internal_Render();
                 this.Imgui_Render(Game_Time.delta);
 
-                if (show_performance) {
+                if(show_performance) {
 
                     stopwatch.Stop();
                     DebugData.workTimeRender = stopwatch.Elapsed.TotalMilliseconds;
@@ -298,20 +297,20 @@ namespace Core
             // make two events for X/Y of mouse wheel movement
             this.window.MouseWheel += (MouseWheelEventArgs args) => {
 
-                if (args.OffsetX != 0)
+                if(args.OffsetX != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.MouseWheelX, (KeyModifiers)0, (int)args.Offset.X, KeyState.Repeat));
 
-                if (args.OffsetY != 0)
+                if(args.OffsetY != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.MouseWheelY, (KeyModifiers)0, (int)args.Offset.Y, KeyState.Repeat));
             };
 
             // make two events for X/Y of mouse movement
             this.window.MouseMove += (MouseMoveEventArgs args) => {
 
-                if (args.DeltaX != 0)
+                if(args.DeltaX != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.CursorPositionX, (KeyModifiers)0, (int)args.X, KeyState.Repeat));
 
-                if (args.DeltaY != 0)
+                if(args.DeltaY != 0)
                     this.inputEvent.Add(new InputEvent(Key_Code.CursorPositionY, (KeyModifiers)0, (int)args.Y, KeyState.Repeat));
             };
 
@@ -321,14 +320,14 @@ namespace Core
 
         public void draw_debug_line(Vector2 start, Vector2 end, float duration_in_sec = 2.0f, DebugColor debugColor = DebugColor.Red) {
 
-            if (showDebug && global_Debug_Drawer != null)
+            if(showDebug && global_Debug_Drawer != null)
                 global_Debug_Drawer.lines.Add(new debug_line(start, end, Game_Time.total, duration_in_sec, debugColor));
         }
 
         public void showDebugData(bool enable) {
 
             this.showDebug = enable;
-            if (showDebug && global_Debug_Drawer == null)
+            if(showDebug && global_Debug_Drawer == null)
                 global_Debug_Drawer = new global_debug_drawer();
 
 #if DEBUG
@@ -342,7 +341,7 @@ namespace Core
         public void exit_game() { this.window.Close(); }
 
         public void pause(bool is_pause) { paused = is_pause; }
-        
+
         public bool is_paused() { return paused; }
 
         public void Show_Performance(bool enable) { show_performance = enable; }
@@ -372,18 +371,23 @@ namespace Core
 
         private bool paused = false;
 
-        private void Internal_Render()
-        {
+        private void Internal_Render() {
+            
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            this.defaultSpriteShader.Use();
-            this.defaultSpriteShader.Set_Matrix_4x4("projection", this.camera.Get_Projection_Matrix());
 
+            this.default_sprite_shader.Use();
+            this.default_sprite_shader.Set_Matrix_4x4("projection", this.camera.Get_Projection_Matrix());
             this.activeMap.Draw();
-            if (this.showDebug)
-            {
+
+            if(this.showDebug) {
+
                 this.activeMap.Draw_Debug();
                 global_Debug_Drawer.draw();
             }
+
+            this.particle_shader.Use();
+            this.particle_shader.Set_Matrix_4x4("projection", this.camera.Get_Projection_Matrix());
+            this.activeMap.draw_particles();
 
             this.Render(Game_Time.delta);
         }
@@ -400,7 +404,7 @@ namespace Core
 
             this.imguiController.Update(this.window, (float)Game_Time.delta);
 
-            if (this.show_performance)
+            if(this.show_performance)
                 this.debugDataViualizer.Draw();
 
             this.activeMap.Draw_Imgui();

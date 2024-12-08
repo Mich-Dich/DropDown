@@ -249,7 +249,7 @@ namespace Core.world
         {
 
             if (shader == null)
-                shader = Game.Instance.defaultSpriteShader;
+                shader = Game.Instance.default_sprite_shader;
 
             indexBuffer = new Index_Buffer(indeices);
             vertexBuffer = new Vertex_Buffer(_verticies);

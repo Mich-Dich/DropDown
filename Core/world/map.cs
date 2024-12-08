@@ -43,7 +43,7 @@
             physicsWorld = new World(aabb, gravity, true);
             physicsWorld.SetContactListener(new CollisionListener());
 
-            this.particleSystem = new ParticleSystem(Game.Instance.particleShader);
+            this.particleSystem = new ParticleSystem(Game.Instance.particle_shader);
         }
 
         public virtual void update(float deltaTime) { }
@@ -382,13 +382,9 @@
             DebugData.colidableObjectsStatic++;
         }
 
-        public void AddParticleSystem(ParticleSystem particleSystem) {
-            particleSystems.Add(particleSystem);
-        }
+        public void add_particle_system(ParticleSystem particleSystem) { particleSystems.Add(particleSystem); }
 
-        public void RemoveParticleSystem(ParticleSystem particleSystem) {
-            particleSystems.Remove(particleSystem);
-        }
+        public void remove_particle_system(ParticleSystem particleSystem) { particleSystems.Remove(particleSystem); }
 
         public void Force_Clear_mapTiles() {
 
@@ -570,16 +566,9 @@
             for(int x = 0; x < backgound.Count; x++)
                 backgound[x].Draw();
 
-            // Draw particle systems
-            foreach(var particleSystem in particleSystems)
-                particleSystem.Render();
-
-            // Draw the main particle system (if you have one)
-            this.particleSystem.Render();
-
             // Rebind the default sprite shader
-            Game.Instance.defaultSpriteShader.Use();
-            Game.Instance.defaultSpriteShader.Set_Matrix_4x4("projection", Game.Instance.camera.Get_Projection_Matrix());
+            Game.Instance.default_sprite_shader.Use();
+            Game.Instance.default_sprite_shader.Set_Matrix_4x4("projection", Game.Instance.camera.Get_Projection_Matrix());
 
             // Draw all characters
             foreach(var character in allCharacter)
@@ -592,6 +581,15 @@
                     world[x].Draw();
         }
 
+        internal void draw_particles() {
+
+            // Draw particle systems
+            foreach(var particleSystem in particleSystems)
+                particleSystem.Render();
+
+            // Draw the main particle system (if you have one)
+            this.particleSystem.Render();
+        }
 
         internal void Draw_Debug() {
 
@@ -692,7 +690,7 @@
         private List<Game_Object> world { get; set; } = new List<Game_Object>();
         private readonly int velocityIterations = 6;
         private readonly int positionIterations = 1;
-        private ParticleSystem particleSystem;
+        protected ParticleSystem particleSystem;
         // ------------------------------------------ tiles ------------------------------------------
         protected float minDistancForCollision = 1600;
         protected int cellSize = 200;

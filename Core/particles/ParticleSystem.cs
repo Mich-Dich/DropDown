@@ -5,10 +5,9 @@ using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 
-namespace Core.Particles
-{
-    public class ParticleSystem
-    {
+namespace Core.Particles {
+    public class ParticleSystem {
+
         public const int MaxParticles = 100000;
         private int _activeParticleCount = 0;
 
@@ -26,14 +25,13 @@ namespace Core.Particles
 
         private int _vao;
 
-        public ParticleSystem(Shader shader)
-        {
+        public ParticleSystem(Shader shader) {
+
             _shader = shader;
             InitializeBuffers();
         }
 
-        private void InitializeBuffers()
-        {
+        private void InitializeBuffers() {
             float[] quadVertices = {
                 -0.5f, -0.5f, 0.0f, // Bottom-left
                  0.5f, -0.5f, 0.0f, // Bottom-right
@@ -92,60 +90,44 @@ namespace Core.Particles
             GL.BindVertexArray(0);
         }
 
-        public void AddEmitter(Emitter emitter)
-        {
-            _emitters.Add(emitter);
-        }
+        public void AddEmitter(Emitter emitter) { _emitters.Add(emitter); }
 
-        public void AddForceField(IForceField forceField)
-        {
-            _forceFields.Add(forceField);
-        }
+        public void AddForceField(IForceField forceField) { _forceFields.Add(forceField); }
 
-        public void AddParticles(IEnumerable<Particle> particles)
-        {
-            _particles.AddRange(particles);
-        }
+        public void AddParticles(IEnumerable<Particle> particles) { _particles.AddRange(particles); }
 
-        public void Update(float deltaTime, Vector2 playerPosition)
-        {
+
+        public void Update(float deltaTime, Vector2 playerPosition) {
+
             // Emit new particles
-            for (int i = _emitters.Count - 1; i >= 0; i--)
-            {
+            for(int i = _emitters.Count - 1; i >= 0; i--) {
                 var emitter = _emitters[i];
                 emitter.Emit(_particles, deltaTime);
 
-                if (!emitter.IsActive)
-                {
+                if(!emitter.IsActive) {
                     _emitters.RemoveAt(i);
                 }
             }
 
             // Update existing particles
             int particleCount = 0;
-            for (int i = _particles.Count - 1; i >= 0; i--)
-            {
+            for(int i = _particles.Count - 1; i >= 0; i--) {
                 Particle particle = _particles[i];
 
                 // Apply forces
-                foreach (var forceField in _forceFields)
-                {
+                foreach(var forceField in _forceFields) {
                     forceField.ApplyForce(particle, deltaTime);
                 }
 
-                if (particle is XPParticle xpParticle)
-                {
+                if(particle is XPParticle xpParticle) {
                     xpParticle.Update(playerPosition, deltaTime);
                 }
-                else
-                {
+                else {
                     particle.Update(deltaTime);
                 }
 
-                if (particle.IsAlive)
-                {
-                    if (particleCount >= MaxParticles)
-                    {
+                if(particle.IsAlive) {
+                    if(particleCount >= MaxParticles) {
                         // Avoid exceeding buffer size
                         break;
                     }
@@ -165,8 +147,7 @@ namespace Core.Particles
 
                     particleCount++;
                 }
-                else
-                {
+                else {
                     _particles.RemoveAt(i);
                 }
             }
@@ -178,11 +159,10 @@ namespace Core.Particles
             GL.BindBuffer(BufferTarget.ArrayBuffer, _colorVBO);
             GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, particleCount * 4 * sizeof(byte), _particleColorData);
 
-             _activeParticleCount = particleCount;
+            _activeParticleCount = particleCount;
         }
 
-        public void Render()
-        {
+        public void Render() {
             GL.BindVertexArray(_vao);
 
             // Set OpenGL state
@@ -190,21 +170,13 @@ namespace Core.Particles
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
             GL.Disable(EnableCap.DepthTest);
 
-            _shader.Use();
-
-            // Set uniforms
-            _shader.Set_Matrix_4x4("u_Projection", Game.Instance.camera.Get_Projection_Matrix());
-
             // Check for OpenGL errors
             ErrorCode error = GL.GetError();
-            if (error != ErrorCode.NoError)
-            {
+            if(error != ErrorCode.NoError)
                 Console.WriteLine($"OpenGL Error after setting uniform: {error}");
-            }
 
             // Draw particles
             GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _activeParticleCount);
-
             GL.BindVertexArray(0);
         }
 

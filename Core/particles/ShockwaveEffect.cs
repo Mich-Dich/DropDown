@@ -1,14 +1,9 @@
-using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
 using Core.world;
+using OpenTK.Mathematics;
 
-namespace Core.Particles
-{
-    public static class ShockwaveEffect
-    {
-        public static void Create(Map map, Vector2 position, int particleCount, float maxSpeed, float lifetime, float scale)
-        {
+namespace Core.Particles {
+    public static class ShockwaveEffect {
+        public static void Create(Map map, Vector2 position, int particleCount, float maxSpeed, float lifetime, float scale) {
 
             Console.WriteLine($"Creating shockwave at position: {position}, particle count: {particleCount}");
 
@@ -26,8 +21,7 @@ namespace Core.Particles
 
             float maxRadius = 0.5f * adjustedScale;
 
-            for (int i = 0; i < particleCount; i++)
-            {
+            for(int i = 0; i < particleCount; i++) {
                 float radiusRandom = (float)Math.Pow(random.NextDouble(), 0.5);
                 float startRadius = maxRadius * radiusRandom;
 
