@@ -1,9 +1,9 @@
 ﻿
 namespace DropDown.maps {
     using Core;
-    using Core.Particles;
     using Core.util;
     using Core.world;
+    using DropDown.utility;
     using OpenTK.Mathematics;
 
     internal class MAP_start : MAP_base {
@@ -18,20 +18,6 @@ namespace DropDown.maps {
             left = 2, 
             right = 3,
         }
-
-
-        private Func<Vector2> VelocityFunction;
-        private Func<float> SizeFunction;
-        private Func<float> RotationFunction;
-        private ColorGradient ColorGradient;
-        public bool IsActive { get; private set; } = true;
-        private Func<bool> IsAffectedByForcesFunction;
-
-        // At the class level, define these constants
-        private const float PARTICLE_BASE_SPEED = 5.0f;
-        private const float PARTICLE_SIZE_START = 20.0f;
-        private const float PARTICLE_SIZE_END = 5.0f;
-        private const float ROTATION_SPEED = 45.0f; // degrees per second
 
         public MAP_start()
             : base(0) {
@@ -55,26 +41,7 @@ namespace DropDown.maps {
             add_road(new Vector2(40, -760), 10, road_direction.up);
             add_road(new Vector2(40, -440), 6, road_direction.down);
 
-            ColorGradient = new ColorGradient();
-            ColorGradient.AddColor(0.0f, new Vector4(0.0f, 0.8f, 1.0f, 1.0f)); // Bright cyan
-            ColorGradient.AddColor(0.3f, new Vector4(0.0f, 0.6f, 1.0f, 0.7f)); // Medium blue
-            ColorGradient.AddColor(0.6f, new Vector4(0.0f, 0.4f, 1.0f, 0.4f)); // Darker blue
-            ColorGradient.AddColor(1.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.0f)); // Dark blue, fade out
-
-            // Define the functions
-            VelocityFunction = () => {
-                float angle = Random.Shared.NextSingle() * MathHelper.TwoPi;
-                return new Vector2(
-                    MathF.Cos(angle) * PARTICLE_BASE_SPEED,
-                    MathF.Sin(angle) * PARTICLE_BASE_SPEED
-                );
-            };
-
-            SizeFunction = () => { return MathHelper.Lerp(PARTICLE_SIZE_START, PARTICLE_SIZE_END, Random.Shared.NextSingle()); };
-
-            RotationFunction = () => { return ROTATION_SPEED * (Random.Shared.NextSingle() * 2 - 1); };                                 // Random rotation between -45 and 45 degrees
-
-            IsAffectedByForcesFunction = () => true;                                                                                    // Particles affected by forces like gravity
+            this.particleSystem.AddEmitter(new XP_emitter(new Vector2(150, -350), 150, false));
 
             //AOE_spell test = new AOE_spell(new Vector2(600,0) );
             //Add_Game_Object(test);
@@ -90,7 +57,7 @@ namespace DropDown.maps {
             //    );
         }
 
-    private void add_road(Vector2 start_position, int length, road_direction direction) {
+        private void add_road(Vector2 start_position, int length, road_direction direction) {
 
             for(int x = 0; x < length; x++) {
 
@@ -177,24 +144,16 @@ namespace DropDown.maps {
         public override void update(float deltaTime) {
             base.update(deltaTime);
 
-
-
-            if(Game_Time.total - shockwaveTimeStamp >= 1.0f) {
-
-                Vector2 position = Vector2.Zero;
-
-                Console.WriteLine($"Trying to add emitter");
-                this.particleSystem.AddEmitter(new Emitter(
-                    new Vector2(), 50, true, 50, VelocityFunction, SizeFunction, RotationFunction, ColorGradient, IsAffectedByForcesFunction
-                    ));
-
-                // Reset the timestamp
-                shockwaveTimeStamp = Game_Time.total;
-            }
-
+            //if(Game_Time.total - shockwaveTimeStamp >= 1.0f) {
+            //    this.particleSystem.AddEmitter(new XP_emitter(
+            //        new Vector2(150, -350), // position
+            //        5,                      // emission rate
+            //        true                    // continuous
+            //    ));
+            //    shockwaveTimeStamp = Game_Time.total;
+            //}
 
         }
-
 
     }
 }

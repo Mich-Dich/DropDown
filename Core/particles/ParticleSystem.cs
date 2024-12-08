@@ -115,22 +115,19 @@ namespace Core.Particles {
                 Particle particle = _particles[i];
 
                 // Apply forces
-                foreach(var forceField in _forceFields) {
+                foreach(var forceField in _forceFields)
                     forceField.ApplyForce(particle, deltaTime);
-                }
 
-                if(particle is XPParticle xpParticle) {
+                if(particle is XPParticle xpParticle)
                     xpParticle.Update(playerPosition, deltaTime);
-                }
-                else {
+                
+                else
                     particle.Update(deltaTime);
-                }
 
                 if(particle.IsAlive) {
-                    if(particleCount >= MaxParticles) {
-                        // Avoid exceeding buffer size
+
+                    if(particleCount >= MaxParticles)          // Avoid exceeding buffer size
                         break;
-                    }
 
                     // Prepare data for rendering
                     Vector4 currentColor = particle.GetCurrentColor();
@@ -147,9 +144,8 @@ namespace Core.Particles {
 
                     particleCount++;
                 }
-                else {
+                else
                     _particles.RemoveAt(i);
-                }
             }
 
             // Update instance data buffers

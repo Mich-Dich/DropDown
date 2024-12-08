@@ -2,10 +2,8 @@ using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 
-namespace Core.Particles
-{
-    public class Emitter
-    {
+namespace Core.Particles {
+    public class Emitter {
         public Vector2 Position;
         public float EmissionRate;
         public bool Continuous;
@@ -14,12 +12,12 @@ namespace Core.Particles
         public Func<float> SizeFunction;
         public Func<float> RotationFunction;
         public ColorGradient ColorGradient;
-        public bool IsActive { get; private set; } = true;
+        public bool IsActive { get; protected set; } = true;
         public Func<bool> IsAffectedByForcesFunction;
 
-        private float _emissionAccumulator = 0f;
-        private int _particlesEmitted = 0;
-        private int _maxParticles;
+        protected float _emissionAccumulator = 0f;
+        protected int _particlesEmitted = 0;
+        protected int _maxParticles;
 
         public Emitter(
             Vector2 position,
@@ -31,8 +29,7 @@ namespace Core.Particles
             Func<float> rotationFunction,
             ColorGradient colorGradient,
             Func<bool> isAffectedByForcesFunction = null,
-            int maxParticles = int.MaxValue)
-        {
+            int maxParticles = int.MaxValue) {
             Position = position;
             EmissionRate = emissionRate;
             Continuous = continuous;
@@ -45,18 +42,16 @@ namespace Core.Particles
             _maxParticles = maxParticles;
         }
 
-        public void Emit(List<Particle> particles, float deltaTime)
-        {
-            if (!IsActive) return;
+        virtual public void Emit(List<Particle> particles, float deltaTime) {
+
+            if(!IsActive) return;
 
             _emissionAccumulator += EmissionRate * deltaTime;
             int numNewParticles = (int)_emissionAccumulator;
             _emissionAccumulator -= numNewParticles;
 
-            for (int i = 0; i < numNewParticles; i++)
-            {
-                if (particles.Count < ParticleSystem.MaxParticles && _particlesEmitted < _maxParticles)
-                {
+            for(int i = 0; i < numNewParticles; i++) {
+                if(particles.Count < ParticleSystem.MaxParticles && _particlesEmitted < _maxParticles) {
                     var particle = new Particle(
                         Position,
                         VelocityFunction(),
@@ -70,14 +65,12 @@ namespace Core.Particles
                     particles.Add(particle);
                     _particlesEmitted++;
 
-                    if (!Continuous && _particlesEmitted >= _maxParticles)
-                    {
+                    if(!Continuous && _particlesEmitted >= _maxParticles) {
                         IsActive = false;
                         break;
                     }
                 }
-                else
-                {
+                else {
                     IsActive = false;
                     break;
                 }
