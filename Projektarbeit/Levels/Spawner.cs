@@ -9,9 +9,9 @@ namespace Projektarbeit.Levels
     {
         public bool Active { get; set; }
 
-        public float SpawnRate { get; set; }
+        public float SpawnRate { get; }
 
-        public float Delay { get; set; }
+        public float StartDelay { get; private set;}
 
         public int MaxSpawn { get; set; }
 
@@ -35,6 +35,7 @@ namespace Projektarbeit.Levels
             }
         }
 
+        private readonly float startTime;
         private Type enemyControllerType;
         private int spawned = 0;
 
@@ -42,10 +43,10 @@ namespace Projektarbeit.Levels
             : base(position, new Vector2(10, 10), 0, Mobility.STATIC)
         {
             startTime = Game_Time.total;
-            Console.WriteLine("Start time:" + startTime);
+            Console.WriteLine("Spawner start time:" + startTime);
             ControllerType = controllerType;
-            SpawnRate = rate;
-            Delay = delay;
+            SpawnRate = rate; //Rate of spawn in seconds
+            StartDelay = delay; //Delay before first spawn
             MaxSpawn = maxSpawn;
             Active = active;
         }
@@ -57,15 +58,15 @@ namespace Projektarbeit.Levels
                 return;
             }
 
-            if (spawned >= MaxSpawn)
+            if (StartDelay > 0)
             {
-                Active = false;
+                StartDelay -= delta;
                 return;
             }
 
-            if (Delay > 0)
+            if (spawned >= MaxSpawn)
             {
-                Delay -= delta;
+                Active = false;
                 return;
             }
 
@@ -77,6 +78,5 @@ namespace Projektarbeit.Levels
             }
         }
 
-        private readonly float startTime;
     }
 }
