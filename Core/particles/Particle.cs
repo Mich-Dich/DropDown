@@ -1,8 +1,9 @@
 using OpenTK.Mathematics;
 
-namespace Core.Particles {
-    public class Particle {
-
+namespace Core.Particles
+{
+    public class Particle
+    {
         public Vector2 Position;
         public Vector2 Velocity;
         public float Size;
@@ -13,8 +14,8 @@ namespace Core.Particles {
         public bool IsAffectedByForces;
         public Func<float, float> SizeOverLifeFunction;
 
-        public Particle(Vector2 position, Vector2 velocity, float size, float rotation, float lifeTime, ColorGradient colorGradient, bool isAffectedByForces = true, Func<float, float> sizeOverLifeFunction = null) {
-           
+        public Particle(Vector2 position, Vector2 velocity, float size, float rotation, float lifeTime, ColorGradient colorGradient, bool isAffectedByForces = true, Func<float, float> sizeOverLifeFunction = null)
+        {
             Position = position;
             Velocity = velocity;
             Size = size;
@@ -26,22 +27,22 @@ namespace Core.Particles {
             SizeOverLifeFunction = sizeOverLifeFunction ?? (t => 1.0f);
         }
 
-        public void Update(float deltaTime) {
-
+        public void Update(float deltaTime)
+        {
             Age += deltaTime;
             Position += Velocity * deltaTime;
         }
 
         public bool IsAlive => Age < LifeTime;
 
-        public Vector4 GetCurrentColor() {
-           
+        public Vector4 GetCurrentColor()
+        {
             float t = Age / LifeTime;
             return ColorGradient.GetColor(t);
         }
 
-        public float GetCurrentSize() {
-        
+        public float GetCurrentSize()
+        {
             float t = Age / LifeTime;
             return Size * SizeOverLifeFunction(t);
         }

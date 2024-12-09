@@ -1,9 +1,13 @@
 using OpenTK.Mathematics;
+using System;
+using System.Collections.Generic;
 
-namespace Core.Particles {
-    public static class XPParticleEffect {
-
-        public static void Create(ParticleSystem particleSystem, int amount, Vector2 position) {
+namespace Core.Particles
+{
+    public static class XPParticleEffect
+    {
+        public static void Create(ParticleSystem particleSystem, int amount, Vector2 position)
+        {
             Random random = new Random();
             List<Particle> particles = new List<Particle>();
 
@@ -17,7 +21,8 @@ namespace Core.Particles {
             float maxAttractForce = 10.0f;
             float maxSpeed = 1.0f;
 
-            for(int i = 0; i < amount; i++) {
+            for (int i = 0; i < amount; i++)
+            {
                 // Random position offset
                 float offsetX = (float)(random.NextDouble() * 0.05f - 0.025f);
                 float offsetY = (float)(random.NextDouble() * 0.05f - 0.025f);

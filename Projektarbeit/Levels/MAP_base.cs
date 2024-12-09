@@ -34,12 +34,6 @@
         private ColorGradient ColorGradient;
         private Func<bool> IsAffectedByForcesFunction;
 
-        // Particle constants: Increase speed for a more "shockwave" effect
-        private const float PARTICLE_BASE_SPEED = 40.0f;
-        private const float PARTICLE_SIZE_START = 5.0f;
-        private const float PARTICLE_SIZE_END = 1.0f;
-        private const float ROTATION_SPEED = 45.0f; // degrees per second
-
         public MAP_base() {
             use_garbage_collector = true;
             camera = Core.Game.Instance.camera;
@@ -55,35 +49,43 @@
             InitializeEnemyControllers();
             InitializePowerUps();
 
-            // Setup Particle Functions and ColorGradient
-            ColorGradient = new ColorGradient();
-            ColorGradient.AddColor(0.0f, new Vector4(0.0f, 0.8f, 1.0f, 1.0f)); // Bright cyan
-            ColorGradient.AddColor(0.3f, new Vector4(0.0f, 0.6f, 1.0f, 0.7f)); // Medium blue
-            ColorGradient.AddColor(0.6f, new Vector4(0.0f, 0.4f, 1.0f, 0.4f)); // Darker blue
-            ColorGradient.AddColor(1.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.0f)); // Dark blue, fade out
+            float scale = 10.0f;
+            float maxSpeed = 50.0f; 
+            float particleLifetime = 0.4f;
 
-            // Velocity: Radial outward direction with slight random variation
+            // Original gradient
+            ColorGradient = new ColorGradient();
+            ColorGradient.AddColor(0.0f, new Vector4(0.0f, 0.8f, 1.0f, 1.0f));
+            ColorGradient.AddColor(0.3f, new Vector4(0.0f, 0.6f, 1.0f, 0.7f));
+            ColorGradient.AddColor(0.6f, new Vector4(0.0f, 0.4f, 1.0f, 0.4f));
+            ColorGradient.AddColor(1.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.0f));
+
+            // Bubble size function
+            Func<float, float> sizeOverLifeFunction = t => MathF.Pow(MathF.Sin(MathF.PI * t), 0.5f);
+
             VelocityFunction = () => {
                 float angle = Random.Shared.NextSingle() * MathHelper.TwoPi;
-                float speedFactor = 0.8f + 0.4f * Random.Shared.NextSingle(); // vary speed slightly
-                return new Vector2(
-                    MathF.Cos(angle) * PARTICLE_BASE_SPEED * speedFactor,
-                    MathF.Sin(angle) * PARTICLE_BASE_SPEED * speedFactor
-                );
+                Vector2 direction = new Vector2(MathF.Cos(angle), MathF.Sin(angle));
+
+                float speedVariation = (Random.Shared.NextSingle() * 0.5f) + 0.75f;
+                float particleSpeed = maxSpeed * speedVariation;
+                float adjustedScale = scale * 0.3f;
+                return direction * particleSpeed * adjustedScale;
             };
 
-            SizeFunction = () => MathHelper.Lerp(PARTICLE_SIZE_START, PARTICLE_SIZE_END, Random.Shared.NextSingle());
+            SizeFunction = () => 8.0f;
 
-            RotationFunction = () => ROTATION_SPEED * (Random.Shared.NextSingle() * 2 - 1);
+            RotationFunction = () => 0f;
 
-            // No forces, so they just fly outward
+            // No forces
             IsAffectedByForcesFunction = () => false;
+
+            shockwaveTimeStamp = Game_Time.total - 5.0f;
         }
 
         public override void update(float deltaTime) {
-            base.update(deltaTime); // Ensure the base update logic is called
+            base.update(deltaTime);
 
-            // Spawn logic for enemies and power-ups
             if (timeStamp + timeInterval <= Game_Time.total) {
                 SpawnEnemies();
                 if (powerUpCounter >= PowerUpSpawnThreshold) {
@@ -92,7 +94,6 @@
                 } else {
                     powerUpCounter++;
                 }
-
                 timeStamp = Game_Time.total;
                 timeInterval = GetRandomTimeInterval();
             }
@@ -105,23 +106,26 @@
 
             CheckScoreGoal();
 
-            // Every second, create a shockwave
-            if (Game_Time.total - shockwaveTimeStamp >= 1.0f) {
+            if (Game_Time.total - shockwaveTimeStamp >= 5.0f) {
                 Console.WriteLine("Creating a shockwave burst!");
 
-                // Emit a burst of particles all at once (non-continuous)
+                float particleLifetime = 0.4f;
+                Func<float, float> sizeOverLifeFunction = t => MathF.Pow(MathF.Sin(MathF.PI * t), 0.5f);
+
                 this.particleSystem.AddEmitter(new Emitter(
-                    position: new Vector2(0,0),
-                    emissionRate: 600,        // emit 200 particles almost instantly
-                    continuous: false,        // one-time burst
-                    particleLifetime: 3.0f,   // particles live for 3 seconds
+                    position: new Vector2(0, 0),
+                    emissionRate: 1000000,
+                    continuous: false,
+                    particleLifetime: particleLifetime,
                     VelocityFunction,
                     SizeFunction,
                     RotationFunction,
                     ColorGradient,
                     IsAffectedByForcesFunction,
-                    maxParticles: 2000
-                ));
+                    maxParticles: 2000,
+                    sizeOverLifeFunction: sizeOverLifeFunction
+                ){
+                });
 
                 shockwaveTimeStamp = Game_Time.total;
             }

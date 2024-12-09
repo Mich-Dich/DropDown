@@ -147,12 +147,15 @@ namespace Core {
                 GL.ClearColor(new Color4(.2f, .2f, .2f, 1f));
                 GL.Disable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.Blend);
-                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
+                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One); // Additive blending set here
                 this.default_sprite_shader = new("Core.defaults.shaders.texture_vert.glsl", "Core.defaults.shaders.texture_frag.glsl", true);
                 this.default_sprite_shader.Use();
 
                 this.particle_shader = new("Core.defaults.shaders.particles.vert", "Core.defaults.shaders.particles.frag", true);
                 this.particle_shader.Use();
+                this.particle_shader.SetUniform("time", (float)Game_Time.total);
+
 
                 this.activeMap = new MAP_default();
                 this.camera = new Camera(Vector2.Zero, this.window.Size, 0.5f);
@@ -386,6 +389,7 @@ namespace Core {
             }
 
             this.particle_shader.Use();
+            this.particle_shader.SetUniform("time", (float)Game_Time.total);
             this.particle_shader.Set_Matrix_4x4("projection", this.camera.Get_Projection_Matrix());
             this.activeMap.draw_particles();
 
