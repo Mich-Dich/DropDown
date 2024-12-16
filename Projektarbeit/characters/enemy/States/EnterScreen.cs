@@ -15,7 +15,7 @@ namespace Projektarbeit.characters.enemy.States
             Type nextState = typeof(EnterScreen);
             foreach (Character character in aiController.characters)
             {
-                if (character is SwarmEnemy npc)
+                if (character is CH_base_NPC npc)
                 {
                     npc.Move();
                     if (npc.IsPlayerInRange())

@@ -9,8 +9,7 @@ namespace Projektarbeit.characters.enemy.character
 
     public class TankEnemy : SwarmEnemy
     {
-        private const float StopDistance = 200f;
-        private const float PursueSpeed = 30;
+        
         private readonly Random random = new();
 
         public TankEnemy()
@@ -31,14 +30,17 @@ namespace Projektarbeit.characters.enemy.character
             autoDetectionRange = 100;
             attackRange = 50;
 
+            StopDistance = 200f;
+            PursueSpeed = 30;
+
             lastShootTime = 0f;
             shootInterval = 0.4f;
             fireDelay = 2f;
 
-            attackAnim = new animation_data("assets/animation/enemy/CrystalKnightAttack.png", 5, 1, true, true, 5, false);
-            walkAnim = new animation_data("assets/animation/enemy/CrystalKnightIdle.png", 4, 1, true, true, 10, true);
-            idleAnim = new animation_data("assets/animation/enemy/CrystalKnightIdle.png", 4, 1, true, true, 10, true);
-            hitAnim = new animation_data("assets/animation/enemy/CrystalKnightHit.png", 1, 1, true, true, 2, false);
+            attackAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, true, 10, true);
+            walkAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, true, 10, true);
+            idleAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, true, 10, true);
+            hitAnim = new animation_data("assets/animation/enemy/enemy-hit.png", 5, 1, true, true, 10, true);
         }
     }
 }

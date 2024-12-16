@@ -9,8 +9,6 @@ namespace Projektarbeit.characters.enemy.character
 
     public class ExplosivEnemy : SwarmEnemy
     {
-        private const float StopDistance = 400f;
-        private const float PursueSpeed = 60;
         private const float HealthThreshold = 0.2f;
         private const float SeparationDistance = 80f;
         private const float SeparationSpeed = 15f;
@@ -41,6 +39,9 @@ namespace Projektarbeit.characters.enemy.character
             movement_speed_max = 20;
             rotation_offset = MathF.PI / 2;
             fireDelay = 10f;
+
+            StopDistance = 400f;
+            PursueSpeed = 60;
         }
 
         private void InitializeAnimations()

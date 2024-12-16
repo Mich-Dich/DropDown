@@ -10,8 +10,6 @@ namespace Projektarbeit.characters.enemy.character
 
     public class SniperEnemy : SwarmEnemy
     {
-        private const float StopDistance = 450f;
-        private const float PursueSpeed = 60;
         private const float PursueThreshold = 350f;
         private const float IdealDistanceFromPlayer = 450f;
         private const float DistanceTolerance = 100f;
@@ -63,6 +61,9 @@ namespace Projektarbeit.characters.enemy.character
             autoDetectionRange = 100;
             attackRange = 50;
             DetectionRange = 8000f;
+
+            StopDistance = 450f;
+            PursueSpeed = 60;
 
             lastShootTime = 0f;
             shootInterval = 0.4f;
