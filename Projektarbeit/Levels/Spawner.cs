@@ -39,7 +39,7 @@ namespace Projektarbeit.Levels
         private Type enemyControllerType;
         private int spawned = 0;
 
-        public Spawner(Vector2 position, Type controllerType, int maxSpawn, bool active = false, float rate = 5, float delay = 0)
+        public Spawner(Vector2 position, Type controllerType, int maxSpawn, float rate = 5, float delay = 0, bool active = false)
             : base(position, new Vector2(10, 10), 0, Mobility.STATIC)
         {
             startTime = Game_Time.total;

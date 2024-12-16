@@ -10,6 +10,7 @@
     using Projektarbeit.characters.player.power_ups;
     using Core.render;
     using Core.Particles;
+    using Projektarbeit.characters.enemy.character;
 
     internal class MAP_base : Map {
         private readonly Camera camera;
@@ -46,7 +47,8 @@
             Set_Background_Image("assets/textures/background/background.png", 1.18f);
             Add_Player(Core.Game.Instance.player);
 
-            InitializeEnemyControllers();
+            //InitializeEnemyControllers();
+            //all_game_objects.Add(new Spawner(new Vector2(0, -500), typeof(BossController), 1, true));
             InitializePowerUps();
 
             float scale = 10.0f;
@@ -87,7 +89,7 @@
             base.update(deltaTime);
 
             if (timeStamp + timeInterval <= Game_Time.total) {
-                SpawnEnemies();
+                //SpawnEnemies();
                 if (powerUpCounter >= PowerUpSpawnThreshold) {
                     SpawnPowerUps();
                     powerUpCounter = 0;

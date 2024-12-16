@@ -38,6 +38,7 @@ namespace Projektarbeit
             mainHUD.clearStatusEffects();
             get_active_map().allPowerUps.Clear();
             player.ActivePowerUps.Clear();
+            Wave.LoadWaves();
         }
 
         public override List<PowerUp> loadPowerups(List<PowerUpSaveData> PowerUpsSaveData)

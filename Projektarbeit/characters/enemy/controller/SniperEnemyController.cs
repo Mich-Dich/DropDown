@@ -12,8 +12,8 @@ namespace Projektarbeit.characters.enemy.controller
     public class SniperEnemyController : AI_Controller
     {
         private const float ClusterRadius = 200f;
-        private const int MinEnemyCount = 8;
-        private const int MaxEnemyCount = 12;
+        private const int MinEnemyCount = 3;
+        private const int MaxEnemyCount = 7;
 
         public SniperEnemyController(Vector2 origin)
             : base(new List<Character>())
