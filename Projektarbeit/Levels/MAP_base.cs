@@ -110,16 +110,17 @@
             CheckScoreGoal();
 
             if (Game_Time.total - shockwaveTimeStamp >= 5.0f) {
-                Console.WriteLine("Creating a shockwave burst!");
-
-                // Example call:
-                Projektarbeit.particles.ShockwaveEffect.Trigger(
-                    this.particleSystem, 
-                    new Vector2(0, 0),   // center position
-                    scale: 10.0f,        // or any custom values
-                    maxSpeed: 50.0f,
-                    particleLifetime: 0.4f,
-                    maxParticles: 2000
+                Console.WriteLine("Spawning XP particles!");
+                
+                XPParticleEffect.Create(
+                    this.particleSystem,
+                    amount: 10,
+                    position: new Vector2(0, 0),
+                    attractDistance: 200.0f,
+                    collectDistance: 50.0f,
+                    maxAttractForce: 450.0f,
+                    maxSpeed: 400.0f,
+                    damping: 0.95f
                 );
 
                 shockwaveTimeStamp = Game_Time.total;

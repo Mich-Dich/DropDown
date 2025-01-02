@@ -119,12 +119,10 @@ namespace Core.Particles {
                     forceField.ApplyForce(particle, deltaTime);
                 }
 
-                if(particle is XPParticle xpParticle) {
-                    xpParticle.Update(playerPosition, deltaTime);
-                }
-                else {
-                    particle.Update(deltaTime);
-                }
+    
+                
+                particle.Update(playerPosition, deltaTime);
+                
 
                 if(particle.IsAlive) {
                     if(particleCount >= MaxParticles) {

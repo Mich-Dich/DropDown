@@ -27,7 +27,7 @@ namespace Core.Particles
             SizeOverLifeFunction = sizeOverLifeFunction ?? (t => 1.0f);
         }
 
-        public void Update(float deltaTime)
+        public virtual void Update(Vector2 playerPosition, float deltaTime)
         {
             Age += deltaTime;
             Position += Velocity * deltaTime;
