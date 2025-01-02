@@ -1,14 +1,15 @@
+using System;
+using System.Collections.Generic;
+using Core;
+using Core.Controllers.ai;
+using Core.world;
+using OpenTK.Mathematics;
+using Projektarbeit.characters.enemy.character;
+using Projektarbeit.characters.enemy.States;
+using Projektarbeit.particles; // <-- For ShockwaveEffect
+
 namespace Projektarbeit.characters.enemy.controller
 {
-    using System;
-    using System.Collections.Generic;
-    using Core;
-    using Core.Controllers.ai;
-    using Core.world;
-    using OpenTK.Mathematics;
-    using Projektarbeit.characters.enemy.character;
-    using Projektarbeit.characters.enemy.States;
-
     public class TankEnemyController : AI_Controller
     {
         private const float ClusterRadius = 200f;
@@ -44,6 +45,7 @@ namespace Projektarbeit.characters.enemy.controller
             Vector2 position = GenerateRandomPosition(origin);
             Game.Instance.get_active_map().Add_Character(enemy, position, 0, true);
 
+            // death_callback is invoked when the enemy's health hits 0
             enemy.death_callback = () =>
             {
                 if (!enemy.IsDead)
@@ -59,18 +61,32 @@ namespace Projektarbeit.characters.enemy.controller
         {
             float angle = (float)random.NextDouble() * MathHelper.TwoPi;
             float radius = (float)random.NextDouble() * ClusterRadius;
-            return origin + (new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * radius);
+            return origin + (new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * radius);
         }
 
         private void MarkEnemyAsDead(TankEnemy enemy)
         {
+            // Mark the enemy as dead and remove from the map
             enemy.IsDead = true;
             enemy.health = 0;
             enemy.auto_heal_amout = 0;
+
             Game.Instance.get_active_map().Remove_Game_Object(enemy);
             Game.Instance.get_active_map().allCharacter.Remove(enemy);
             characters.Remove(enemy);
+
+            // Increase score
             Game.Instance.Score++;
+
+            // Trigger particle effect when enemy dies
+            ShockwaveEffect.Trigger(
+                Game.Instance.get_active_map().particleSystem,   
+                enemy.transform.position,                        
+                scale: 10.0f,                                    
+                maxSpeed: 50.0f,                                 
+                particleLifetime: 0.4f,                         
+                maxParticles: 2000                               
+            );
         }
     }
 }

@@ -690,7 +690,7 @@
         private List<Game_Object> world { get; set; } = new List<Game_Object>();
         private readonly int velocityIterations = 6;
         private readonly int positionIterations = 1;
-        protected ParticleSystem particleSystem;
+        public ParticleSystem particleSystem;
         // ------------------------------------------ tiles ------------------------------------------
         protected float minDistancForCollision = 1600;
         protected int cellSize = 200;
