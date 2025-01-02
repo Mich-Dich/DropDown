@@ -11,6 +11,7 @@
     using Core.render;
     using Core.Particles;
     using Projektarbeit.characters.enemy.character;
+    using Projektarbeit.particles;
 
     internal class MAP_base : Map {
         private readonly Camera camera;
@@ -111,23 +112,15 @@
             if (Game_Time.total - shockwaveTimeStamp >= 5.0f) {
                 Console.WriteLine("Creating a shockwave burst!");
 
-                float particleLifetime = 0.4f;
-                Func<float, float> sizeOverLifeFunction = t => MathF.Pow(MathF.Sin(MathF.PI * t), 0.5f);
-
-                this.particleSystem.AddEmitter(new Emitter(
-                    position: new Vector2(0, 0),
-                    emissionRate: 1000000,
-                    continuous: false,
-                    particleLifetime: particleLifetime,
-                    VelocityFunction,
-                    SizeFunction,
-                    RotationFunction,
-                    ColorGradient,
-                    IsAffectedByForcesFunction,
-                    maxParticles: 2000,
-                    sizeOverLifeFunction: sizeOverLifeFunction
-                ){
-                });
+                // Example call:
+                Projektarbeit.particles.ShockwaveEffect.Trigger(
+                    this.particleSystem, 
+                    new Vector2(0, 0),   // center position
+                    scale: 10.0f,        // or any custom values
+                    maxSpeed: 50.0f,
+                    particleLifetime: 0.4f,
+                    maxParticles: 2000
+                );
 
                 shockwaveTimeStamp = Game_Time.total;
             }
