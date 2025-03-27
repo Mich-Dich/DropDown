@@ -1,4 +1,5 @@
 namespace Core.UI {
+    using Core.render;
     using ImGuiNET;
     public class Button : UIElement {
         public string Label { get; set; }
@@ -60,4 +61,105 @@ namespace Core.UI {
             ImGui.End();
         }
     }
+
+    //public class image_button : UIElement {
+    //
+    //    public string Label { get; set; }
+    //    public Action OnClick { get; set; }
+    //    public Action OnHover { get; set; }
+    //    public Texture DefaultTexture { get; set; }
+    //    public Texture HoverTexture { get; set; }
+    //    public Texture ActiveTexture { get; set; }
+    //    public System.Numerics.Vector4 DefaultTint { get; set; } = System.Numerics.Vector4.One;
+    //    public System.Numerics.Vector4 HoverTint { get; set; } = System.Numerics.Vector4.One;
+    //    public System.Numerics.Vector4 ActiveTint { get; set; } = System.Numerics.Vector4.One;
+    //    public System.Numerics.Vector4 TextColor { get; set; } = System.Numerics.Vector4.One;
+    //    public System.Numerics.Vector4 TextHoverColor { get; set; } = System.Numerics.Vector4.One;
+    //    public System.Numerics.Vector4 TextActiveColor { get; set; } = System.Numerics.Vector4.One;
+    //    public float FrameRounding { get; set; }
+    //    public System.Numerics.Vector2 UV0 { get; set; } = System.Numerics.Vector2.Zero;
+    //    public System.Numerics.Vector2 UV1 { get; set; } = System.Numerics.Vector2.One;
+
+    //    // Current state tracking
+    //    private bool wasHovered;
+    //    private bool wasActive;
+
+    //    public image_button(System.Numerics.Vector2 position, System.Numerics.Vector2 size, Texture defaultTexture,
+    //                     string label = "", Action onClick = null, Action onHover = null)
+    //        : base(position, size) {
+
+    //        DefaultTexture = defaultTexture;
+    //        Label = label;
+    //        OnClick = onClick;
+    //        OnHover = onHover;
+    //    }
+
+    //    public override void Render() {
+
+    //        if (!IsActive || DefaultTexture.Handle == IntPtr.Zero) return;
+
+    //        ImGui.PushID(Label);
+    //        ImGui.SetNextWindowPos(Position);
+    //        ImGui.SetNextWindowSize(Size);
+    //        ImGui.Begin("##ImageButtonWindow",
+    //            ImGuiWindowFlags.NoBackground |
+    //            ImGuiWindowFlags.NoDecoration |
+    //            ImGuiWindowFlags.NoInputs);
+
+    //        // Determine current state
+    //        var currentTexture = DefaultTexture;
+    //        var currentTint = DefaultTint;
+    //        var currentTextColor = TextColor;
+
+    //        if (wasActive) {
+
+    //            currentTexture = ActiveTexture ?? DefaultTexture;
+    //            currentTint = ActiveTint;
+    //            currentTextColor = TextActiveColor;
+            
+    //        } else if (wasHovered) {
+
+    //            currentTexture = HoverTexture ?? DefaultTexture;
+    //            currentTint = HoverTint;
+    //            currentTextColor = TextHoverColor;
+    //        }
+
+    //        // Render image button
+    //        ImGui.SetCursorPos(System.Numerics.Vector2.Zero);
+    //        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, FrameRounding);
+    //        var pressed = ImGui.ImageButton(
+    //            currentTexture.Handle,
+    //            Size,
+    //            UV0,
+    //            UV1,
+    //            0,
+    //            System.Numerics.Vector4.Zero,
+    //            currentTint
+    //        );
+
+    //        // Update state for next frame
+    //        wasHovered = ImGui.IsItemHovered();
+    //        wasActive = ImGui.IsItemActive();
+
+    //        // Handle interactions
+    //        if (pressed)
+    //            OnClick?.Invoke();
+            
+    //        else if (wasHovered)
+    //            OnHover?.Invoke();
+
+    //        // Render text label
+    //        if (!string.IsNullOrEmpty(Label)) {
+
+    //            var textSize = ImGui.CalcTextSize(Label);
+    //            var textPos = (Size - textSize) * 0.5f;
+    //            ImGui.SetCursorPos(textPos);
+    //            ImGui.TextColored(currentTextColor, Label);
+    //        }
+
+    //        ImGui.PopStyleVar();
+    //        ImGui.End();
+    //        ImGui.PopID();
+    //    }
+    //}
 }

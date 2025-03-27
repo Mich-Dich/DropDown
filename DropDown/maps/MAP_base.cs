@@ -13,6 +13,8 @@ namespace DropDown {
     using System;
     using System.Diagnostics;
 
+
+
     internal class Drop_Hole : Game_Object {
 
         public Action enter { get; set; }
@@ -24,9 +26,11 @@ namespace DropDown {
                 Game.Instance.set_active_map(new MAP_base());
 
         }
-
     }
+
     public class MAP_base : Map {
+    
+        private Type[] enemy_types = new Type[] { typeof(CH_small_bug), typeof(CH_spider) };
 
         private Texture[] blood_textures = new Texture[4];
         private Random random;
@@ -37,6 +41,9 @@ namespace DropDown {
         private double collisionGenerationDuration = 0;
 
         public MAP_base(int seed = -1)   {
+
+            ((Drop_Down)Game.Instance).current_level++;
+            int map_level = ((Drop_Down)Game.Instance).current_level;
 
             ((Drop_Down)Game.Instance).set_play_state(Play_State.Playing);
 
@@ -54,14 +61,18 @@ namespace DropDown {
             this.minDistancForCollision = (float)(this.cellSize * this.tileSize);
 
             cellular_automata = new Cellular_Automata();
+
+            if (map_level % 5 == 0)                                     // every 5 levels is a boss room
+                    cellular_automata.iterations = new int[]{ 4, 4, 6, 5, 4 };
+
             cellular_automata.Generate_Bit_Map();
 
             Generate_Actual_Map();
 
-            // spawn enemys
-            for(int x = 0; x < 80; x++)
+            // always spawn 100 enemys      always two types    ratio depends on map level
+            for(int x = 0; x < ((map_level % 5) * 20); x++)
                 spaw_enemy(typeof(CH_small_bug));
-            for(int x = 0; x < 10; x++)
+            for(int x = 0; x < (((5 - map_level) % 5) * 20); x++)
                 spaw_enemy(typeof(CH_spider));
 
             int iteration = 0;
@@ -89,6 +100,12 @@ namespace DropDown {
             Add_Player(Game.Instance.player, player_pos);
         }
 
+
+        private void populate_enemys() {
+
+
+
+        }
 
 
         public void add_blood_splater(Vector2 position) {

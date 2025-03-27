@@ -47,11 +47,9 @@ namespace DropDown {
                     Resource_Manager.Get_Texture("assets/textures/sign.png")));
 
 
-
             add_road(new Vector2(-120, -600), 10, road_direction.left);
             add_road(new Vector2(40, -760), 10, road_direction.up);
             add_road(new Vector2(40, -440), 6, road_direction.down);
-
         }
 
         private void add_road(Vector2 start_position, int length, road_direction direction) {

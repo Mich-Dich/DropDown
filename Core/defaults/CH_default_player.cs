@@ -15,30 +15,24 @@ namespace Core.defaults {
         // Initializes a new instance of the <see cref="CH_default_player"/> class.
         public CH_default_player() {
 
-            init_transform();
-            load_and_set_sprite();
-            this.movement_speed = DefaultMovementSpeed;
-        }
-
-        // Initializes the transform properties.
-        private void init_transform() {
-
+            // init transform
             this.transform.size = new Vector2(DefaultSize);
             this.transform.rotation = DefaultRotation;
-        }
 
-        // Loads the texture and sets the sprite for the character.
-        private void load_and_set_sprite() {
-
+            // load and set sprite
             var assembly = Assembly.GetExecutingAssembly();
-            using(Stream stream = assembly.GetManifestResourceStream(DefaultResourceName)) {
-                
-                if(stream == null) 
+            using (Stream stream = assembly.GetManifestResourceStream(DefaultResourceName))
+            {
+
+                if (stream == null)
                     return;
 
                 var texture = new Texture(stream);
                 this.Set_Sprite(new Core.world.Sprite(texture));
             }
+
+            // init movement
+            this.movement_speed = DefaultMovementSpeed;
         }
     }
 }

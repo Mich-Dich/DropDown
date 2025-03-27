@@ -10,6 +10,7 @@ namespace DropDown.utility {
 
     internal class Cellular_Automata {
 
+        public int[] iterations { get; set; } = new int[] { 4, 4, 4, 4, 4 };
         public ulong[] bit_map = new ulong[64];
         public List<Vector2> empty_tile_location = new List<Vector2>();
 
@@ -22,7 +23,6 @@ namespace DropDown.utility {
         private Random random;
         private int cellSize = 150;
         private float initalDensity = 0.37f;
-        private int[] iterations = new int[] {4,4,4,4,4};
 
         public Cellular_Automata(int seed = -1) {
 
@@ -149,6 +149,9 @@ namespace DropDown.utility {
                 // apply cellular atomita
                 for(int x = 0; x < iterations.Length; x++)
                     Iterate_Over_Bit_Map(iterations[x]);
+
+                // Apply region connection
+                ConnectRegions();
 
                 // check if hole can be placed
                 int found_places = 0;
@@ -300,6 +303,149 @@ namespace DropDown.utility {
                     count++;
             }
             return count;
+        }
+
+
+        private List<List<Vector2i>> FindRegions(bool targetBit)
+        {
+            List<List<Vector2i>> regions = new List<List<Vector2i>>();
+            bool[,] visited = new bool[64, 64];
+
+            for (int y = 0; y < 64; y++)
+            {
+                for (int x = 0; x < 64; x++)
+                {
+                    if (!visited[y, x] && IsBitSet(x, y) == targetBit)
+                    {
+                        List<Vector2i> region = new List<Vector2i>();
+                        FloodFill(x, y, visited, targetBit, region);
+                        regions.Add(region);
+                    }
+                }
+            }
+            return regions;
+        }
+
+        private void FloodFill(int startX, int startY, bool[,] visited, bool targetBit, List<Vector2i> region)
+        {
+            Queue<Vector2i> queue = new Queue<Vector2i>();
+            queue.Enqueue(new Vector2i(startX, startY));
+            visited[startY, startX] = true;
+
+            while (queue.Count > 0)
+            {
+                Vector2i cell = queue.Dequeue();
+                region.Add(cell);
+
+                foreach (var neighbor in GetNeighbors(cell.X, cell.Y))
+                {
+                    if (neighbor.X >= 0 && neighbor.X < 64 && neighbor.Y >= 0 && neighbor.Y < 64 &&
+                        !visited[neighbor.Y, neighbor.X] && IsBitSet(neighbor.X, neighbor.Y) == targetBit)
+                    {
+                        visited[neighbor.Y, neighbor.X] = true;
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<Vector2i> GetNeighbors(int x, int y)
+        {
+            yield return new Vector2i(x + 1, y);
+            yield return new Vector2i(x - 1, y);
+            yield return new Vector2i(x, y + 1);
+            yield return new Vector2i(x, y - 1);
+        }
+
+        private void ConnectRegions()
+        {
+            List<List<Vector2i>> emptyRegions = FindRegions(false);
+
+            if (emptyRegions.Count <= 1) return;
+
+            // Connect all regions to the first one
+            List<Vector2i> mainRegion = emptyRegions[0];
+            for (int i = 1; i < emptyRegions.Count; i++)
+            {
+                Vector2i closestA = FindClosestPoint(mainRegion, emptyRegions[i]);
+                Vector2i closestB = FindClosestPoint(emptyRegions[i], mainRegion);
+                CreatePath(closestA, closestB);
+            }
+        }
+
+        private Vector2i FindClosestPoint(List<Vector2i> regionA, List<Vector2i> regionB)
+        {
+            Vector2i closestA = regionA[0];
+            Vector2i closestB = regionB[0];
+            float minDist = float.MaxValue;
+
+            foreach (var a in regionA)
+            {
+                foreach (var b in regionB)
+                {
+                    float dist = (a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y);
+                    if (dist < minDist)
+                    {
+                        minDist = dist;
+                        closestA = a;
+                        closestB = b;
+                    }
+                }
+            }
+            return closestA;
+        }
+
+        private void CreatePath(Vector2i start, Vector2i end)
+        {
+            int x0 = start.X;
+            int y0 = start.Y;
+            int x1 = end.X;
+            int y1 = end.Y;
+
+            int dx = Math.Abs(x1 - x0);
+            int dy = Math.Abs(y1 - y0);
+            int sx = x0 < x1 ? 1 : -1;
+            int sy = y0 < y1 ? 1 : -1;
+            int err = dx - dy;
+
+            while (true)
+            {
+                // Widen the path to ensure connectivity
+                for (int i = -1; i <= 1; i++)
+                {
+                    for (int j = -1; j <= 1; j++)
+                    {
+                        SetBit(x0 + i, y0 + j, false);
+                    }
+                }
+
+                if (x0 == x1 && y0 == y1) break;
+                int e2 = 2 * err;
+                if (e2 > -dy)
+                {
+                    err -= dy;
+                    x0 += sx;
+                }
+                if (e2 < dx)
+                {
+                    err += dx;
+                    y0 += sy;
+                }
+            }
+        }
+
+        private bool IsBitSet(int x, int y)
+        {
+            return (bit_map[y] & (1UL << x)) == 0 ? false : true;
+        }
+
+        private void SetBit(int x, int y, bool value)
+        {
+            if (x < 0 || x >= 64 || y < 0 || y >= 64) return;
+            if (value)
+                bit_map[y] |= (1UL << x);
+            else
+                bit_map[y] &= ~(1UL << x);
         }
 
 

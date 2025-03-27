@@ -287,7 +287,7 @@ namespace Core
                 global_Debug_Drawer.lines.Add(new debug_line(start, end, Game_Time.total, duration_in_sec, debugColor));
         }
 
-        public void showDebugData(bool enable) {
+        public void show_debug_data(bool enable) {
 
             this.showDebug = enable;
             if(showDebug && global_Debug_Drawer == null)
@@ -301,7 +301,7 @@ namespace Core
 #endif
         }
 
-        public void Show_Performance(bool enable) { show_performance = enable; }
+        public void set_show_performance(bool enable) { show_performance = enable; }
 
         public Vector2 Get_Mouse_Relative_Pos() { return this.window.MousePosition - (this.window.Size / 2) + this.cursorPosOffset; }
 

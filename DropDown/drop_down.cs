@@ -8,24 +8,17 @@ namespace DropDown {
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
 
-    internal enum Play_State {
-        
-        main_menu = 0,
-        Playing = 1,
-        dead = 2,
-        hub_area = 3,
-    }
-
     internal class Drop_Down : Core.Game {
 
         public Drop_Down(string title, int initalWindowWidth, int initalWindowHeight)
             : base(title, initalWindowWidth, initalWindowHeight) { }
 
         public UI_HUD HUD { get; set; }
+        public int current_level { get; set; } = -1;
+
         private UI_main_menu main_menu;
 
         private CH_player CH_player;
-        private Play_State play_state = Play_State.main_menu;
 
         // ========================================================= functions =========================================================
         protected override void Init() {
@@ -39,8 +32,8 @@ namespace DropDown {
             Set_Update_Frequency(144.0f);
             this.camera.Set_min_Max_Zoom(0.7f, 1.4f);
 #if DEBUG
-            Show_Performance(true);
-            showDebugData(true);
+            set_show_performance(true);
+            show_debug_data(true);
             this.camera.Set_min_Max_Zoom(0.03f, 1.4f);
 #endif
             this.camera.Set_Zoom(0.04f);
@@ -74,10 +67,6 @@ namespace DropDown {
                 case Play_State.dead:
             
                 break;
-                case Play_State.hub_area:
-            
-                break;
-
             }
         }
 

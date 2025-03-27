@@ -15,6 +15,7 @@ namespace DropDown.player {
         public Action look { get; set; }
         public Action sprint { get; set; }
         public Action interact { get; set; }
+        public Action pause { get; set; }
 
         public PC_Default(Character character)
             : base (character, null) {
@@ -77,6 +78,17 @@ namespace DropDown.player {
             AddInputAction(interact);
 
 
+            pause = new Action(
+                "shoot",
+                (uint)Action_ModefierFlags.auto_reset,
+                false,
+                ActionType.BOOL,
+                0f,
+                new List<KeyBindingDetail> {
+                                new(Key_Code.Escape, ResetFlags.reset_on_key_down, TriggerFlags.key_down),
+                });
+            AddInputAction(pause);
+
             Game.Instance.camera.Add_Zoom_Offset(0.2f);
             Game.Instance.camera.zoom_offset = 0.2f;
         }
@@ -87,21 +99,17 @@ namespace DropDown.player {
             if((bool)sprint.GetValue()) 
                 total_speed += sprint_speed;
 
-            // simple movement
-            if(move.X != 0 || move.Y != 0) {
+            if(move.X != 0 || move.Y != 0) {                                                        // simple movement
 
                 Vector2 direction = Vector2.NormalizeFast((Vector2)move.GetValue());
                 character.Add_Linear_Velocity(new Vec2(direction.X, direction.Y) * total_speed * deltaTime);
             }
 
-            // camera follows player
-            Game.Instance.camera.transform.position = character.transform.position;    // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
+            Game.Instance.camera.transform.position = character.transform.position;                 // camera follows player            // TODO: move to game.cs as => player.add_child(camera, attach_mode.lag, 0.2f);
             
-            // look at mouse
-            character.rotate_to_vector(Game.Instance.Get_Mouse_Relative_Pos());
+            character.rotate_to_vector(Game.Instance.Get_Mouse_Relative_Pos());                     // look at mouse
             
-            // set zoom
-            Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);
+            Game.Instance.camera.Add_Zoom_Offset((float)look.GetValue() / 50);                      // set zoom
 
             if ((bool)interact.GetValue()) {
 
@@ -116,6 +124,9 @@ namespace DropDown.player {
 
             }
 
+            if ((bool)pause.GetValue() && Game.Instance.play_state == Play_State.Playing)
+                ((Drop_Down)Game.Instance).HUD.display_pause_menu = !((Drop_Down)Game.Instance).HUD.display_pause_menu;
+            
         }
 
         private readonly float sprint_speed = 350.0f;

@@ -11,6 +11,7 @@ namespace DropDown.UI {
     public class UI_HUD : Menu {
 
         public System.Numerics.Vector2 screen_size_buffer;
+        public bool display_pause_menu = false;
 
         private Texture image_blood_overlay;
         private Texture image_hud_box;
@@ -75,45 +76,99 @@ namespace DropDown.UI {
             ImGui.PopStyleColor();
 
 
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, col_black);
-            ImGui.SetNextWindowBgAlpha(1f);
-            ImGui.SetNextWindowPos(new System.Numerics.Vector2((Game.Instance.window.Size.X / 2), Game.Instance.window.Size.Y - 38), ImGuiCond.Always, new System.Numerics.Vector2(0.5f, 1));
-            ImGui.Begin("HUD_bottom_middle", window_flags);
-            {
+            // Fullscreen background
+            if (display_pause_menu) {
 
-                const int selected = 0;
+                //Console.WriteLine($"displaying pause menu");
+                ImGui.SetNextWindowPos(System.Numerics.Vector2.Zero);
+                ImGui.SetNextWindowSize(io.DisplaySize);
 
-                System.Numerics.Vector2 cursor_pos = ImGui.GetCursorPos();
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(0, 0));
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0);
+                ImGui.PushStyleColor(ImGuiCol.WindowBg, ImGui.GetColorU32(new System.Numerics.Vector4(0f, 0f, 0f, 0.7f)));
 
-                for(int x = 0; x < 10; x++) {
+                ImGui.Begin("PauseMenuBackground",
+                    ImGuiWindowFlags.NoDecoration |
+                    ImGuiWindowFlags.NoMove |
+                    ImGuiWindowFlags.NoSavedSettings |
+                    ImGuiWindowFlags.NoBringToFrontOnFocus);
 
-                    cursor_pos = ImGui.GetCursorPos();
-                    ImGui.Image((x == selected) ? image_hud_box_selected.Handle : image_hud_box.Handle, icon_box_size);
+                // Main menu content
+                System.Numerics.Vector2 center = io.DisplaySize * 0.5f;
+                ImGui.SetCursorPos(new System.Numerics.Vector2(center.X - 100, center.Y - 150));
 
-                    if(x == 0) {
-                        ImGui.SetCursorPos(cursor_pos);
-                        Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
-                        ImGui.Image(Resource_Manager.Get_Texture("assets/textures/weapon.png").Handle, icon_box_size - (icon_offset * 2));
+                ImGui.BeginChild("PauseMenuContent", new System.Numerics.Vector2(200, 300));
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0.2f, 0.2f, 0.2f, 1f));
+                    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new System.Numerics.Vector4(0.3f, 0.3f, 0.3f, 1f));
+
+                    ImGui.SetCursorPosX(20);
+                    if (ImGui.Button("Resume", new System.Numerics.Vector2(160, 40)))
+                        display_pause_menu = false;
+
+                    ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 20);
+                    ImGui.SetCursorPosX(20);
+                    if (ImGui.Button("Settings", new System.Numerics.Vector2(160, 40))) {
+
+                        // TODO: Open settings menu
                     }
 
-                    if(x == 1) {
-                        ImGui.SetCursorPos(cursor_pos);
-                        Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
-                        ImGui.Image(Resource_Manager.Get_Texture("assets/textures/bow.png").Handle, icon_box_size - (icon_offset * 2));
+                    ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 20);
+                    ImGui.SetCursorPosX(20);
+                    if (ImGui.Button("Quit to Menu", new System.Numerics.Vector2(160, 40)))
+                    {
+                        //Game.Instance.QuitToMainMenu(); // TODO: create
                     }
 
-                    if(x == 4) {
-                        ImGui.SetCursorPos(cursor_pos);
-                        Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
-                        ImGui.Image(Resource_Manager.Get_Texture("assets/textures/torch.png").Handle, icon_box_size - (icon_offset * 2));
-                    }
-
-                    ImGui.SetCursorPos(cursor_pos);
-                    Imgui_Util.Shift_Cursor_Pos(icon_box_size.X + 10, 0);
+                    ImGui.PopStyleColor(2);
                 }
+                ImGui.EndChild();
+
+                ImGui.End();
+                ImGui.PopStyleColor();
+                ImGui.PopStyleVar(2);
             }
-            ImGui.End();
-            ImGui.PopStyleColor();
+
+
+            //ImGui.PushStyleColor(ImGuiCol.WindowBg, col_black);
+            //ImGui.SetNextWindowBgAlpha(1f);
+            //ImGui.SetNextWindowPos(new System.Numerics.Vector2((Game.Instance.window.Size.X / 2), Game.Instance.window.Size.Y - 38), ImGuiCond.Always, new System.Numerics.Vector2(0.5f, 1));
+            //ImGui.Begin("HUD_bottom_middle", window_flags);
+            //{
+
+            //    const int selected = 0;
+
+            //    System.Numerics.Vector2 cursor_pos = ImGui.GetCursorPos();
+
+            //    for(int x = 0; x < 10; x++) {
+
+            //        cursor_pos = ImGui.GetCursorPos();
+            //        ImGui.Image((x == selected) ? image_hud_box_selected.Handle : image_hud_box.Handle, icon_box_size);
+
+            //        if(x == 0) {
+            //            ImGui.SetCursorPos(cursor_pos);
+            //            Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
+            //            ImGui.Image(Resource_Manager.Get_Texture("assets/textures/weapon.png").Handle, icon_box_size - (icon_offset * 2));
+            //        }
+
+            //        if(x == 1) {
+            //            ImGui.SetCursorPos(cursor_pos);
+            //            Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
+            //            ImGui.Image(Resource_Manager.Get_Texture("assets/textures/bow.png").Handle, icon_box_size - (icon_offset * 2));
+            //        }
+
+            //        if(x == 4) {
+            //            ImGui.SetCursorPos(cursor_pos);
+            //            Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
+            //            ImGui.Image(Resource_Manager.Get_Texture("assets/textures/torch.png").Handle, icon_box_size - (icon_offset * 2));
+            //        }
+
+            //        ImGui.SetCursorPos(cursor_pos);
+            //        Imgui_Util.Shift_Cursor_Pos(icon_box_size.X + 10, 0);
+            //    }
+            //}
+            //ImGui.End();
+            //ImGui.PopStyleColor();
 
         }
 

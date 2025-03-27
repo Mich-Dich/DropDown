@@ -29,8 +29,8 @@ namespace Hell {
             mainHUD = new MainHUD();
             gameOver = new GameOver();
 #if DEBUG
-            Show_Performance(true);
-            showDebugData(true);
+            set_show_performance(true);
+            show_debug_data(true);
             this.camera.Set_min_Max_Zoom(0.03f, 1.4f);
 #endif
         }
