@@ -15,10 +15,10 @@ namespace DropDown {
 
         public UI_HUD HUD { get; set; }
         public int current_level { get; set; } = -1;
-
         private UI_main_menu main_menu;
-
         private CH_player CH_player;
+        private float deathTimer = 0f;
+        private bool timerActive = false;
 
         // ========================================================= functions =========================================================
         protected override void Init() {
@@ -44,7 +44,30 @@ namespace DropDown {
 
         protected override void Shutdown() { }
 
-        protected override void Update(float deltaTime) { }
+        protected override void Update(float deltaTime) {
+
+            switch(play_state) {
+
+                case Play_State.dead:
+                    if (!timerActive) {
+                        Console.WriteLine("DEATH -> starting timer");
+                        deathTimer = 0f;
+                        timerActive = true;
+                        break;
+                    }
+                        
+                    deathTimer += deltaTime;
+                    if (deathTimer >= 1f) {                                     // After 3 seconds, switch to main menu
+                        Console.WriteLine("DEATH -> finished timer");
+                        set_play_state(Play_State.main_menu);
+                        this.activeMap = new MAP_start();               // TODO: causes ERROR
+                        timerActive = false;
+                    }
+                    break;
+                    break; // TODO: implement timer for 3sec and then set map to main_menu
+                default: break;
+            }
+        }
 
         protected override void Window_Resize() {
 
@@ -69,7 +92,6 @@ namespace DropDown {
                 break;
             }
         }
-
 
         public void set_play_state(Play_State new_play_state) { play_state = new_play_state; }
 

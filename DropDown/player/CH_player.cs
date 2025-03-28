@@ -31,6 +31,11 @@ namespace DropDown.player {
 
             rotation_offset = float.Pi / 2;
             movement_speed = 350.0f;
+
+            death_callback = () => {
+
+                Game.Instance.play_state = Play_State.dead;
+            };
         }
 
         public override void Update(Single deltaTime) {
@@ -47,8 +52,12 @@ namespace DropDown.player {
 
         public override void apply_damage(float damage) {
 
-            if(health <= 0)
+            if(health <= 0) {
+
+                auto_heal_amout = 0;
                 death_callback?.Invoke();
+                return;
+            }
 
             float loc_damage = damage;
             if((health / health_max) <= health_lower_limit_area)
