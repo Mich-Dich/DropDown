@@ -366,3 +366,6 @@ FodyWeavers.xsd
 
 #ignore Rider Jetbrains
 .idea
+
+# imgui
+imgui.ini
