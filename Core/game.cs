@@ -65,13 +65,15 @@ namespace Core
         public Character player { get; set; }
         public int Score { get; set; } = 0;
         public Play_State play_state = Play_State.main_menu;
+
+        public bool isGamePaused = false;
         private global_debug_drawer global_Debug_Drawer { get; set; }
 
         protected string title { get; set; }
         protected int initalWindowWidth { get; set; }
         protected int initalWindowHeight { get; set; }
         public Player_Controller playerController { get; set; }
-        protected Map activeMap { get; set; }
+        public Map activeMap { get; set; }
 
         public Map get_active_map() { return activeMap; }
         public void set_active_map(Map new_map) { activeMap = new_map; }
@@ -158,6 +160,11 @@ namespace Core
 
             // internal game update_internal
             this.window.UpdateFrame += (FrameEventArgs eventArgs) => {
+
+                if (isGamePaused)
+                {
+                    return;
+                }
 
                 if(show_performance)
                     stopwatch.Restart();
@@ -281,6 +288,11 @@ namespace Core
             this.window.Run();
         }
 
+        public void Set_Game_Paused(bool paused)
+        {
+            isGamePaused = paused;
+        }
+
         public void draw_debug_line(Vector2 start, Vector2 end, float duration_in_sec = 2.0f, DebugColor debugColor = DebugColor.Red) {
 
             if(showDebug && global_Debug_Drawer != null)
@@ -314,7 +326,7 @@ namespace Core
         protected abstract void Render_Imgui(float deltaTime);
         protected virtual void Window_Resize() { this.camera.Set_Zoom(((float)this.window.Size.X / 3500.0f) + this.camera.zoom_offset); }
 
-        protected void Set_Update_Frequency(double frequency) {
+        public void Set_Update_Frequency(double frequency) {
 
             this.window.VSync = VSyncMode.Off;
             this.window.UpdateFrequency = frequency;

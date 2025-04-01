@@ -47,8 +47,8 @@ namespace DropDown.UI {
 
             ImGui.SetNextWindowBgAlpha(0f);
 
-            float centerX = (io.DisplaySize.X - logoSize.X) * 0.5f;
-            ImGui.SetNextWindowPos(new Vector2(centerX, 10), ImGuiCond.Always);
+            float rightX = io.DisplaySize.X - logoSize.X - 10; 
+            ImGui.SetNextWindowPos(new Vector2(rightX, 10), ImGuiCond.Always);
 
             ImGui.Begin("HUD", window_flags);
             ImGui.SetCursorPos(new Vector2(0, 0)); 

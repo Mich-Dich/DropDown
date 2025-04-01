@@ -79,6 +79,8 @@ namespace DropDown.UI {
             // Fullscreen background
             if (display_pause_menu) {
 
+                ((Game)Game.Instance).Set_Game_Paused(true);
+
                 //Console.WriteLine($"displaying pause menu");
                 ImGui.SetNextWindowPos(System.Numerics.Vector2.Zero);
                 ImGui.SetNextWindowSize(io.DisplaySize);
@@ -117,7 +119,11 @@ namespace DropDown.UI {
                     ImGui.SetCursorPosX(20);
                     if (ImGui.Button("Quit to Menu", new System.Numerics.Vector2(160, 40)))
                     {
-                        //Game.Instance.QuitToMainMenu(); // TODO: create
+                        
+                        ((Drop_Down)Game.Instance).set_play_state(Play_State.main_menu);
+                        Game.Instance.set_active_map(new MAP_start());
+                        display_pause_menu = false;
+                        ((Game)Game.Instance).Set_Game_Paused(false);
                     }
 
                     ImGui.PopStyleColor(2);
@@ -127,6 +133,9 @@ namespace DropDown.UI {
                 ImGui.End();
                 ImGui.PopStyleColor();
                 ImGui.PopStyleVar(2);
+            } else
+            {
+                ((Game)Game.Instance).Set_Game_Paused(false);
             }
 
 
