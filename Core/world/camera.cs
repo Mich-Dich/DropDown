@@ -30,6 +30,8 @@ namespace Core.world {
             this.Calc_Scale();
         }
 
+        public Vector2 get_zoom_min_max() { return new Vector2(minZoom, maxZoom); }
+
         public void Add_Zoom(float zoom) {
 
             this.zoom += zoom;

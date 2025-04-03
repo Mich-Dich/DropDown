@@ -13,8 +13,6 @@ namespace DropDown {
     using System;
     using System.Diagnostics;
 
-
-
     internal class Drop_Hole : Game_Object {
 
         public Action enter { get; set; }
@@ -22,8 +20,8 @@ namespace DropDown {
         public override void Hit(hitData hit) {
             base.Hit(hit);
 
-            if(hit.hit_object == Game.Instance.player)
-                Game.Instance.set_active_map(new MAP_base());
+            if (hit.hit_object == Game.Instance.player)
+                ((Drop_Down)Game.Instance).player_entered_hole(this.transform.position + (50, 50));
 
         }
     }
@@ -39,6 +37,10 @@ namespace DropDown {
         private readonly Texture textureBuffer = Resource_Manager.Get_Texture("assets/textures/terrain.png");
         private double mapGenerationDuration = 0;
         private double collisionGenerationDuration = 0;
+
+        private float scaleAnimationTimer = 0f;
+        private bool isScalingPlayer = true;
+        //private Vector2 originalPlayerSize;
 
         public MAP_base(int seed = -1)   {
 
@@ -100,19 +102,38 @@ namespace DropDown {
             Add_Player(Game.Instance.player, player_pos);
         }
 
-
-        private void populate_enemys() {
-
-
-
-        }
-
+        private void populate_enemys() { }
 
         public void add_blood_splater(Vector2 position) {
             
             this.Add_Sprite(new Sprite(new Transform { position = position, rotation = (2*float.Pi) * random.NextSingle() }, blood_textures[random.Next(blood_textures.Length - 1)]));
         }
 
+        public override void update(float deltaTime) {
+            base.update(deltaTime);
+
+            //// Check if we need to start the scaling animation
+            //if (!isScalingPlayer && ((Drop_Down)Game.Instance).is_entering_hole) {
+
+            //    isScalingPlayer = true;
+            //    scaleAnimationTimer = 0f;
+            //    originalPlayerSize = Game.Instance.player.transform.size;
+            //}
+
+            if (isScalingPlayer) {
+
+                scaleAnimationTimer += deltaTime;
+                float t = MathHelper.Clamp(scaleAnimationTimer / 1f, 0f, 1f);
+                float currentScale = MathHelper.Lerp(500f, 100f, t);
+                Game.Instance.player.sprite.transform.size = new Vector2(currentScale);
+
+                if (scaleAnimationTimer >= 1f) {
+
+                    isScalingPlayer = false;
+                    ((Drop_Down)Game.Instance).is_entering_hole = false;
+                }
+            }
+        }
 
         public override void Draw_Imgui() {
             base.Draw_Imgui();
@@ -288,8 +309,6 @@ namespace DropDown {
 
             Add_Character(newEnemy, cellular_automata.find_random_free_positon(), random.NextSingle() * (float.Pi * 2));
         }
-
-
 
     }
 }

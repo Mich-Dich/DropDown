@@ -95,6 +95,12 @@ namespace DropDown.player {
 
         protected override void Update(float deltaTime) {
 
+            if (((Drop_Down)Game.Instance).is_entering_hole) {                                          // disable all controll when entering hole
+
+                Game.Instance.camera.transform.position = character.transform.position;
+                return;
+            }
+
             float total_speed = character.movement_speed;
             if((bool)sprint.GetValue()) 
                 total_speed += sprint_speed;

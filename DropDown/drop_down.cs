@@ -20,6 +20,12 @@ namespace DropDown {
         private float deathTimer = 0f;
         private bool timerActive = false;
 
+        private Vector2 hole_center;
+        private float hole_entry_timer = 0f;
+        public bool is_entering_hole = false;
+        private float initial_zoom_offset = 0;
+        private Vector2 camera_min_max;
+
         // ========================================================= functions =========================================================
         protected override void Init() {
 
@@ -63,9 +69,30 @@ namespace DropDown {
                         this.activeMap = new MAP_start();               // TODO: causes ERROR
                         timerActive = false;
                     }
-                    break;
                     break; // TODO: implement timer for 3sec and then set map to main_menu
-                default: break;
+
+                default:
+
+                    if (is_entering_hole) {
+
+                        hole_entry_timer += deltaTime;
+                        float t = MathHelper.Clamp(hole_entry_timer / 1f, 0f, 1f);
+                        CH_player.transform.position = Vector2.Lerp(CH_player.transform.position, hole_center, t);       // move player to hole center
+                        CH_player.sprite.transform.size = Vector2.Lerp(new Vector2(100), Vector2.One, t);                       // scale player when enter the hole
+
+                        float newZoom = MathHelper.Lerp(initial_zoom_offset, 2f, t);
+                        camera.Set_Zoom(newZoom);
+
+                        if (hole_entry_timer >= 1f) {
+
+                            is_entering_hole = false;
+                            camera.zoom = initial_zoom_offset;
+                            camera.Set_min_Max_Zoom(camera_min_max.X, camera_min_max.Y);
+                            CH_player.transform.size = new Vector2(100);
+                            set_active_map(new MAP_base());
+                        }
+                    }
+                break;
             }
         }
 
@@ -97,6 +124,20 @@ namespace DropDown {
 
         public override void StartGame() {
             throw new NotImplementedException();
+        }
+
+        public void player_entered_hole(Vector2 holePosition) {
+
+            Console.WriteLine("player_entered_hole");
+
+            is_entering_hole = true;
+            hole_center = holePosition;
+            hole_entry_timer = 0f;
+            initial_zoom_offset = camera.zoom;
+            Console.WriteLine($"camera.zoom {camera.zoom}");
+
+            camera_min_max = this.camera.get_zoom_min_max();
+            camera.Set_min_Max_Zoom(0.5f, 30);
         }
     }
 }
