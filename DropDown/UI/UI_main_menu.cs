@@ -51,7 +51,7 @@ namespace DropDown.UI {
             Vector2 imagePos = new Vector2(0, 0);
 
             // Bild laden (einmalig, z. B. oben in der Klasse cachen!)
-            var backgroundImage = new Image(imagePos, imageSize, "assets/textures/Logo/GreenBackground1.png");
+            var backgroundImage = new Image(imagePos, imageSize, "assets/textures/Logo/GreenBackground4.png");
             this.AddElement(backgroundImage);
 
             // Fenster vorbereiten

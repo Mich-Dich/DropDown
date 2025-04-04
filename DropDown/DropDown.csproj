@@ -1218,6 +1218,12 @@
 	  <None Update="assets\textures\Logo\GreenBackground2.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	  <None Update="assets\textures\Logo\GreenBackground3.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="assets\textures\Logo\GreenBackground4.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	<None Update="assets\textures\weapon.png">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
