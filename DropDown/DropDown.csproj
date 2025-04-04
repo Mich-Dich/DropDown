@@ -1212,6 +1212,12 @@
 	<None Update="assets\textures\Logo\Drop_Down_Logo_Darkened.png">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
+	  <None Update="assets\textures\Logo\GreenBackground1.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="assets\textures\Logo\GreenBackground2.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	<None Update="assets\textures\weapon.png">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
