@@ -14,7 +14,7 @@ namespace DropDown {
             : base(title, initalWindowWidth, initalWindowHeight) { }
 
         public UI_HUD HUD { get; set; }
-        public int current_level { get; set; } = -1;
+        public int current_level { get; set; } = 0;
         private UI_main_menu main_menu;
         private CH_player CH_player;
         private float deathTimer = 0f;
@@ -57,6 +57,7 @@ namespace DropDown {
                 case Play_State.dead:
                     if (!timerActive) {
                         Console.WriteLine("DEATH -> starting timer");
+                        is_entering_hole = true;                                // miss use to prevent movement in death
                         deathTimer = 0f;
                         timerActive = true;
                         break;
@@ -66,10 +67,11 @@ namespace DropDown {
                     if (deathTimer >= 1f) {                                     // After 3 seconds, switch to main menu
                         Console.WriteLine("DEATH -> finished timer");
                         set_play_state(Play_State.main_menu);
-                        this.activeMap = new MAP_start();               // TODO: causes ERROR
+                        current_level = 0;
+                        Game.Instance.StartGame();
                         timerActive = false;
                     }
-                    break; // TODO: implement timer for 3sec and then set map to main_menu
+                    break;
 
                 default:
 
@@ -123,7 +125,13 @@ namespace DropDown {
         public void set_play_state(Play_State new_play_state) { play_state = new_play_state; }
 
         public override void StartGame() {
-            throw new NotImplementedException();
+            this.set_active_map(new MAP_start());
+            is_entering_hole = false;
+            this.play_state = Play_State.Playing;
+            this.player.health = 100;
+            this.player.IsDead = false;
+            this.player.IsRemoved = false;
+            this.Score = 0;
         }
 
         public void player_entered_hole(Vector2 holePosition) {

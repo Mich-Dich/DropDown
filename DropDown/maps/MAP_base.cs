@@ -72,9 +72,9 @@ namespace DropDown {
             Generate_Actual_Map();
 
             // always spawn 100 enemys      always two types    ratio depends on map level
-            for(int x = 0; x < ((map_level % 5) * 20); x++)
+            for(int x = 0; x < 100 - (((map_level-1) % 5) * 25); x++)
                 spaw_enemy(typeof(CH_small_bug));
-            for(int x = 0; x < (((5 - map_level) % 5) * 20); x++)
+            for(int x = 0; x < (((map_level-1) % 5) * 25); x++)
                 spaw_enemy(typeof(CH_spider));
 
             int iteration = 0;

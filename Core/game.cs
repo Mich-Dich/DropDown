@@ -162,9 +162,7 @@ namespace Core
             this.window.UpdateFrame += (FrameEventArgs eventArgs) => {
 
                 if (isGamePaused)
-                {
                     return;
-                }
 
                 if(show_performance)
                     stopwatch.Restart();
@@ -288,10 +286,7 @@ namespace Core
             this.window.Run();
         }
 
-        public void Set_Game_Paused(bool paused)
-        {
-            isGamePaused = paused;
-        }
+        public void Set_Game_Paused(bool paused) { isGamePaused = paused; }
 
         public void draw_debug_line(Vector2 start, Vector2 end, float duration_in_sec = 2.0f, DebugColor debugColor = DebugColor.Red) {
 
@@ -332,10 +327,7 @@ namespace Core
             this.window.UpdateFrequency = frequency;
         }
 
-        protected void ResetInputEvent_List() {
-
-            this.inputEvent.Clear();
-        }
+        protected void ResetInputEvent_List() { this.inputEvent.Clear(); }
 
         // ============================================================================== private ==============================================================================
         private void Internal_Render() {

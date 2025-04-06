@@ -117,9 +117,9 @@ namespace DropDown.UI {
 
                     ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 20);
                     ImGui.SetCursorPosX(20);
-                    if (ImGui.Button("Quit to Menu", new System.Numerics.Vector2(160, 40)))
-                    {
+                    if (ImGui.Button("Quit to Menu", new System.Numerics.Vector2(160, 40))) {
                         
+                        ((Drop_Down)Game.Instance).current_level = 0;
                         ((Drop_Down)Game.Instance).set_play_state(Play_State.main_menu);
                         Game.Instance.set_active_map(new MAP_start());
                         display_pause_menu = false;
@@ -134,9 +134,7 @@ namespace DropDown.UI {
                 ImGui.PopStyleColor();
                 ImGui.PopStyleVar(2);
             } else
-            {
                 ((Game)Game.Instance).Set_Game_Paused(false);
-            }
 
 
             //ImGui.PushStyleColor(ImGuiCol.WindowBg, col_black);
