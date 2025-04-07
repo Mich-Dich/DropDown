@@ -1,37 +1,34 @@
-﻿
-namespace DropDown.UI {
-
+﻿namespace DropDown.UI
+{
     using Core.UI;
     using ImGuiNET;
     using System.Drawing;
     using System.Numerics;
 
-    public class UI_main_menu : Menu {
-
+    public class UI_main_menu : Menu
+    {
         private Vector2 logoSize = new Vector2(250, 200);
         private bool Credentials_Popup = false;
 
-        public UI_main_menu() {
+        private Image backgroundImage;
+        private Image logo;
 
-          
+        public UI_main_menu()
+        {
+            // Hintergrund und Logo nur **einmalig** laden
+            Vector2 backgroundSize = new Vector2(1920 * 0.8f, 1080); // Startwerte (werden in Render ggf. aktualisiert)
+            backgroundImage = new Image(Vector2.Zero, backgroundSize, "assets/textures/Logo/GreenBackground4.png");
+            logo = new Image(Vector2.Zero, logoSize, "assets/textures/Logo/Drop_Down_Logo_Darkened.png");
 
+            AddElement(backgroundImage);
+            AddElement(logo);
 
-            //AddElement(new Background(new Vector4(0.2f, 0.7f, 0.2f, 1)));
-
-            custom_UI_logic_bevor_elements = () => {
-
-
-            };
-
-            custom_UI_logic_after_elements = () => { 
-            
-
-            };
-        
+            custom_UI_logic_bevor_elements = () => { };
+            custom_UI_logic_after_elements = () => { };
         }
 
-        public override void Render() {
-
+        public override void Render()
+        {
             ImGuiIOPtr io = ImGui.GetIO();
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
                 | ImGuiWindowFlags.NoDocking
@@ -42,42 +39,32 @@ namespace DropDown.UI {
                 | ImGuiWindowFlags.NoMove
                 | ImGuiWindowFlags.NoBackground;
 
-            //---------------GreenBackground-left-Box---------------------------------------------------------------
-
-            float halfWidth = io.DisplaySize.X * 0.8f;
-            float fullHeight = io.DisplaySize.Y;
-
-            Vector2 imageSize = new Vector2(halfWidth, fullHeight);
+            //---------------GreenBackground (immer zuerst zeichnen)---------------------------------------
+            Vector2 imageSize = new Vector2(io.DisplaySize.X * 0.8f, io.DisplaySize.Y);
             Vector2 imagePos = new Vector2(0, 0);
+            backgroundImage.Size = imageSize;
 
-            // Bild laden (einmalig, z. B. oben in der Klasse cachen!)
-            var backgroundImage = new Image(imagePos, imageSize, "assets/textures/Logo/GreenBackground4.png");
-            this.AddElement(backgroundImage);
-
-            // Fenster vorbereiten
             ImGui.SetNextWindowPos(imagePos, ImGuiCond.Always);
             ImGui.SetNextWindowSize(imageSize);
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
             ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, Vector2.Zero);
             ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
-            ImGui.Begin("LeftBackgroundImage", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove |
-                         ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs);
+
+            ImGui.Begin("LeftBackgroundImage", ImGuiWindowFlags.NoDecoration
+                | ImGuiWindowFlags.NoMove
+                | ImGuiWindowFlags.NoBackground
+                | ImGuiWindowFlags.NoInputs
+                | ImGuiWindowFlags.NoBringToFrontOnFocus); // wichtig!
             ImGui.Image((IntPtr)backgroundImage.TextureId, imageSize, new Vector2(0, 1), new Vector2(1, 0));
             ImGui.End();
             ImGui.PopStyleVar(3);
 
             //-------Logo-----------------------------------------------------------------------------------------
-
-            var logo = new Image(new Vector2(0, 0), logoSize, "assets/textures/Logo/Drop_Down_Logo_Darkened.png");
-            this.AddElement(logo);
-
             ImGui.SetNextWindowBgAlpha(0f);
-
-
             ImGui.SetNextWindowPos(new Vector2(50, 10), ImGuiCond.Always);
 
             ImGui.Begin("HUD", window_flags);
-            ImGui.SetCursorPos(new Vector2(0, 0));
+            ImGui.SetCursorPos(Vector2.Zero);
             ImGui.Image((IntPtr)logo.TextureId, logoSize, new Vector2(0, 1), new Vector2(1, 0));
             ImGui.End();
 
@@ -99,12 +86,14 @@ namespace DropDown.UI {
             {
                 Credentials_Popup = true;
             }
+
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + padding);
 
             if (ImGui.Button("Settings", new Vector2(buttonWidth, buttonHeight)))
             {
                 // TODO: Open settings menu
             }
+
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + padding);
 
             if (ImGui.Button("Quit", new Vector2(buttonWidth, buttonHeight)))
@@ -115,6 +104,7 @@ namespace DropDown.UI {
             ImGui.PopStyleColor(2);
             ImGui.End();
 
+            //---------Credentials Popup-------------------------------------------------------------------------
             if (Credentials_Popup)
             {
                 ImGui.OpenPopup("Credentials");
@@ -131,9 +121,6 @@ namespace DropDown.UI {
 
                 ImGui.EndPopup();
             }
-
         }
-
-
     }
 }
