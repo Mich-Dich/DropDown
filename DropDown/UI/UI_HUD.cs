@@ -14,8 +14,6 @@ namespace DropDown.UI {
         public bool display_pause_menu = false;
 
         private Texture image_blood_overlay;
-        private Texture image_hud_box;
-        private Texture image_hud_box_selected;
         private CH_player player;
         private uint col_red = 0;
         private uint col_blue = 0;
@@ -28,9 +26,6 @@ namespace DropDown.UI {
             
             // HUD
             image_blood_overlay = Resource_Manager.Get_Texture("assets/textures/BloodOverlay.png");
-            image_hud_box = Resource_Manager.Get_Texture("assets/textures/box.png");
-            image_hud_box_selected = Resource_Manager.Get_Texture("assets/textures/box_selected.png");
-
             col_red = ImGui.GetColorU32(new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1));
             col_blue = ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.2f, 0.8f, 1));
             col_black = ImGui.GetColorU32(new System.Numerics.Vector4(0.1f, 0.1f, 0.1f, 1f));
@@ -136,53 +131,12 @@ namespace DropDown.UI {
             } else
                 ((Game)Game.Instance).Set_Game_Paused(false);
 
-
-            //ImGui.PushStyleColor(ImGuiCol.WindowBg, col_black);
-            //ImGui.SetNextWindowBgAlpha(1f);
-            //ImGui.SetNextWindowPos(new System.Numerics.Vector2((Game.Instance.window.Size.X / 2), Game.Instance.window.Size.Y - 38), ImGuiCond.Always, new System.Numerics.Vector2(0.5f, 1));
-            //ImGui.Begin("HUD_bottom_middle", window_flags);
-            //{
-
-            //    const int selected = 0;
-
-            //    System.Numerics.Vector2 cursor_pos = ImGui.GetCursorPos();
-
-            //    for(int x = 0; x < 10; x++) {
-
-            //        cursor_pos = ImGui.GetCursorPos();
-            //        ImGui.Image((x == selected) ? image_hud_box_selected.Handle : image_hud_box.Handle, icon_box_size);
-
-            //        if(x == 0) {
-            //            ImGui.SetCursorPos(cursor_pos);
-            //            Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
-            //            ImGui.Image(Resource_Manager.Get_Texture("assets/textures/weapon.png").Handle, icon_box_size - (icon_offset * 2));
-            //        }
-
-            //        if(x == 1) {
-            //            ImGui.SetCursorPos(cursor_pos);
-            //            Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
-            //            ImGui.Image(Resource_Manager.Get_Texture("assets/textures/bow.png").Handle, icon_box_size - (icon_offset * 2));
-            //        }
-
-            //        if(x == 4) {
-            //            ImGui.SetCursorPos(cursor_pos);
-            //            Imgui_Util.Shift_Cursor_Pos(icon_offset.X, icon_offset.Y);
-            //            ImGui.Image(Resource_Manager.Get_Texture("assets/textures/torch.png").Handle, icon_box_size - (icon_offset * 2));
-            //        }
-
-            //        ImGui.SetCursorPos(cursor_pos);
-            //        Imgui_Util.Shift_Cursor_Pos(icon_box_size.X + 10, 0);
-            //    }
-            //}
-            //ImGui.End();
-            //ImGui.PopStyleColor();
-
         }
 
-
-        // blood overlay
         private float _boold_overlay_decreace_amout = 1.5f;
         private float _boold_overlay_intencity = 0.0f;
+
+        public void remove_blood_overlay() { _boold_overlay_intencity = 0.0f; }
 
         public void flash_blood_overlay() { _boold_overlay_intencity += 0.3f; }
 

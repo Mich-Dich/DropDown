@@ -41,13 +41,13 @@ namespace DropDown.player {
         public override void Update(Single deltaTime) {
             base.Update(deltaTime);
 
-            if((health / health_max) <= health_visual_display_limit
-                && ((last_blood_stain + 2 * (health / health_max)) <= Game_Time.total)) {
+            if((health / health_max) <= health_visual_display_limit &&
+                ((last_blood_stain + 2 * (health / health_max)) <= Game_Time.total)) {
+                    
                 ((Drop_Down)Game.Instance).HUD.flash_blood_overlay();
                 if (Game.Instance.get_active_map() is MAP_base map)
-                {
                     map.add_blood_splater(transform.position);
-                }
+
                 last_blood_stain = Game_Time.total;
             }
         }

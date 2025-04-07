@@ -14,6 +14,7 @@ namespace DropDown {
             : base(title, initalWindowWidth, initalWindowHeight) { }
 
         public UI_HUD HUD { get; set; }
+        public UI_death ui_death { get; set; }
         public int current_level { get; set; } = 0;
         private UI_main_menu main_menu;
         private CH_player CH_player;
@@ -46,6 +47,7 @@ namespace DropDown {
 
             main_menu = new UI_main_menu();
             HUD = new UI_HUD();
+            ui_death = new UI_death();
         }
 
         protected override void Shutdown() { }
@@ -64,7 +66,7 @@ namespace DropDown {
                     }
                         
                     deathTimer += deltaTime;
-                    if (deathTimer >= 1f) {                                     // After 3 seconds, switch to main menu
+                    if (deathTimer >= 2f) {                                     // After 3 seconds, switch to main menu
                         Console.WriteLine("DEATH -> finished timer");
                         set_play_state(Play_State.main_menu);
                         current_level = 0;
@@ -112,13 +114,15 @@ namespace DropDown {
 
                 case Play_State.main_menu:
                     main_menu.Render();
-                break;
+                    break;
                 case Play_State.Playing:
                     HUD.Render();
-                break;
+                    break;
                 case Play_State.dead:
-            
-                break;
+                    ui_death.Render();
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -126,6 +130,7 @@ namespace DropDown {
 
         public override void StartGame() {
             this.set_active_map(new MAP_start());
+            HUD.remove_blood_overlay();
             is_entering_hole = false;
             this.play_state = Play_State.Playing;
             this.player.health = 100;
