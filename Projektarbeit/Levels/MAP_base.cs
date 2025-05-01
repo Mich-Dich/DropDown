@@ -109,22 +109,6 @@
 
             CheckScoreGoal();
 
-            if (Game_Time.total - shockwaveTimeStamp >= 5.0f) {
-                Console.WriteLine("Spawning XP particles!");
-                
-                XPParticleEffect.Create(
-                    this.particleSystem,
-                    amount: 10,
-                    position: new Vector2(0, 0),
-                    attractDistance: 200.0f,
-                    collectDistance: 50.0f,
-                    maxAttractForce: 450.0f,
-                    maxSpeed: 400.0f,
-                    damping: 0.95f
-                );
-
-                shockwaveTimeStamp = Game_Time.total;
-            }
         }
 
         private void CheckScoreGoal() {
