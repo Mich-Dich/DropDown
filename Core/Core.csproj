@@ -12,9 +12,9 @@
     <PackageReference Include="ImGui.NET" Version="1.90.1.1" />
     <PackageReference Include="NetCoreAudio" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="OpenTK" Version="4.8.2" />
-    <PackageReference Include="OpenTK.Mathematics" Version="4.8.2" />
-    <PackageReference Include="StbImageSharp" Version="2.27.13" />
+    <PackageReference Include="OpenTK" Version="4.9.4" />
+    <PackageReference Include="OpenTK.Mathematics" Version="4.9.4" />
+    <PackageReference Include="StbImageSharp" Version="2.30.15" />
     <PackageReference Include="xunit" Version="2.8.1" />
   </ItemGroup>
 

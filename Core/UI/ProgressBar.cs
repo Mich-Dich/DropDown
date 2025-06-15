@@ -12,6 +12,11 @@ namespace Core.UI
         public float MinValue { get; set; }
         public Func<float> MaxValue { get; set; }
         public bool ShowPercentageText { get; set; }
+        public Vector4 BorderColor { get; set; } = new Vector4(0,0,0,0.5f);
+        public float BorderThickness { get; set; } = 2.0f;
+        public string Label { get; set; } = string.Empty;
+        public bool UseGradient { get; set; } = true;
+        public Vector4 GradientColor { get; set; } = new Vector4(0.4f, 1.0f, 0.4f, 1.0f);
         private static int counter = 0;
         private readonly string windowName;
 
@@ -54,21 +59,45 @@ namespace Core.UI
             float clampedValue = Math.Clamp(value, MinValue, MaxValue());
             float fraction = (clampedValue - MinValue) / (MaxValue() - MinValue);
 
-            if (ShowPercentageText)
-            {
-                ImGui.PushStyleColor(ImGuiCol.PlotHistogram, FillColor);
-                ImGui.PushStyleColor(ImGuiCol.FrameBg, BackgroundColor);
-                ImGui.ProgressBar(fraction, Size, $"{fraction * 100}%");
-                ImGui.PopStyleColor();
-                ImGui.PopStyleColor();
-            }
-            else
-            {
-                uint color = ImGui.GetColorU32(FillColor);
-                uint backgroundColor = ImGui.GetColorU32(BackgroundColor);
+            var draw_list = ImGui.GetWindowDrawList();
+            var win_pos = ImGui.GetWindowPos();
+            var bar_pos = win_pos;
+            var bar_size = Size;
+            float radius = bar_size.Y / 2.0f;
 
-                float progressBarWidth = Size.X * (MaxValue() / 100f);
-                Imgui_Util.Progress_Bar_Stylised(ValueProvider(), new System.Numerics.Vector2(progressBarWidth, Size.Y), color, backgroundColor, 0.32f, 0.28f, 0.6f);
+            // Draw background with rounded corners
+            draw_list.AddRectFilled(bar_pos, bar_pos + bar_size, ImGui.GetColorU32(BackgroundColor), radius);
+            // Draw border
+            if (BorderThickness > 0)
+                draw_list.AddRect(bar_pos, bar_pos + bar_size, ImGui.GetColorU32(BorderColor), radius, 0, BorderThickness);
+
+            // Draw fill (with optional gradient)
+            var fill_size = new Vector2(bar_size.X * fraction, bar_size.Y);
+            if (fraction > 0)
+            {
+                if (UseGradient)
+                {
+                    // Blend FillColor and GradientColor based on fraction for a simple horizontal gradient effect
+                    var blendedColor = new Vector4(
+                        FillColor.X * (1 - fraction) + GradientColor.X * fraction,
+                        FillColor.Y * (1 - fraction) + GradientColor.Y * fraction,
+                        FillColor.Z * (1 - fraction) + GradientColor.Z * fraction,
+                        FillColor.W * (1 - fraction) + GradientColor.W * fraction
+                    );
+                    draw_list.AddRectFilled(bar_pos, bar_pos + fill_size, ImGui.GetColorU32(blendedColor), radius);
+                }
+                else
+                {
+                    draw_list.AddRectFilled(bar_pos, bar_pos + fill_size, ImGui.GetColorU32(FillColor), radius);
+                }
+            }
+
+            // Draw label (centered)
+            if (!string.IsNullOrEmpty(Label))
+            {
+                var text_size = ImGui.CalcTextSize(Label);
+                var text_pos = bar_pos + new Vector2((bar_size.X - text_size.X) / 2, (bar_size.Y - text_size.Y) / 2);
+                draw_list.AddText(text_pos, ImGui.GetColorU32(new Vector4(1,1,1,1)), Label);
             }
 
             ImGui.End();

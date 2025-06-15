@@ -18,6 +18,12 @@ namespace Projektarbeit.UI
         private float cooldownProgress;
         private ProgressBar scoreGoalBar;
         private Texture powerUpTexture;
+        private Background topPanel;
+        private Background leftPanel;
+        private Background bottomPanel;
+        private Background xpPanel;
+        private Background healthPanel;
+        private Background abilitiesPanel;
 
         public MainHUD()
         {
@@ -32,6 +38,7 @@ namespace Projektarbeit.UI
             UpdateAbilityIcons();
             UpdatePowerUpIcons();
             RemoveUnusedIcons();
+            UpdateHealthBarLabel();
         }
 
         public void clearStatusEffects()
@@ -42,41 +49,87 @@ namespace Projektarbeit.UI
         private void InitializeUIElements()
         {
             Vector2 windowSize = new Vector2(Core.Game.Instance.window.Size.X, Core.Game.Instance.window.Size.Y);
-            Vector2 boxSize = new Vector2(100, 200);
-            Vector2 padding = new Vector2(10, 10);
+            Vector2 barPadding = new Vector2(12, 8);
 
-            float xPosition = (windowSize.X - boxSize.X) / 2;
-            float yPosition = windowSize.Y - boxSize.Y - padding.Y;
-
-            Align align = Align.Center;
-
-            verticalBox = new VerticalBox(new Vector2(xPosition, yPosition), boxSize, padding, align);
-            statusEffectsBox = new HorizontalBox(new Vector2(0, 0), new Vector2(100, 30), new Vector2(10, 10), Align.Center);
-            healthBar = CreateProgressBar(() => Core.Game.Instance.player.HealthRatio, Core.Game.Instance.player.health_max, new Vector4(0.9f, 0.2f, 0.2f, 1));
-            cooldownBar = CreateProgressBar(() => cooldownProgress, 100, new Vector4(0.2f, 0.2f, 0.9f, 1));
-
-            verticalBox.AddElement(statusEffectsBox);
-            verticalBox.AddElement(healthBar);
-            verticalBox.AddElement(cooldownBar);
-
-            AddElement(verticalBox);
-
-            Vector2 scoreGoalBarSize = new Vector2(800, 20);
-            Vector2 scoreGoalBarPosition = new Vector2((windowSize.X - boxSize.X - (scoreGoalBarSize.X / 2) ) / 2, padding.Y);
-            scoreGoalBar = CreateProgressBar(() => Core.Game.Instance.get_active_map().ScoreRatio, Core.Game.Instance.get_active_map().scoreGoal, new Vector4(0.2f, 0.9f, 0.2f, 1), scoreGoalBarPosition, scoreGoalBarSize);
-
+            // XP Panel (top center)
+            Vector2 xpPanelSize = new Vector2(windowSize.X * 0.45f, 48);
+            Vector2 xpPanelPos = new Vector2((windowSize.X - xpPanelSize.X) / 2, 18);
+            xpPanel = new Background(new Vector4(0.08f, 0.18f, 0.08f, 0.7f)) { Position = xpPanelPos, Size = xpPanelSize };
+            AddElement(xpPanel);
+            Vector2 xpBarSize = new Vector2(xpPanelSize.X - 2 * barPadding.X, 28);
+            Vector2 xpBarPos = xpPanelPos + new Vector2(barPadding.X, 10);
+            scoreGoalBar = new ProgressBar(
+                xpBarPos, xpBarSize,
+                new Vector4(0.2f, 0.8f, 0.4f, 1), new Vector4(0.18f, 0.18f, 0.18f, 1),
+                () => Math.Clamp(Core.Game.Instance.get_active_map().ScoreRatio, 0, 1),
+                0, 1, false
+            )
+            {
+                BorderColor = new Vector4(0.1f, 0.3f, 0.1f, 1),
+                BorderThickness = 2.0f,
+                UseGradient = true,
+                GradientColor = new Vector4(0.4f, 1.0f, 0.7f, 1),
+                Label = $"XP: {Core.Game.Instance.Score} / {Core.Game.Instance.get_active_map().scoreGoal}"
+            };
             AddElement(scoreGoalBar);
+
+            // Health/Cooldown Panel (top left)
+            Vector2 healthPanelSize = new Vector2(280, 80);
+            Vector2 healthPanelPos = new Vector2(18, 18);
+            healthPanel = new Background(new Vector4(0.18f, 0.08f, 0.08f, 0.7f)) { Position = healthPanelPos, Size = healthPanelSize };
+            AddElement(healthPanel);
+            Vector2 healthBarSize = new Vector2(healthPanelSize.X - 2 * barPadding.X, 28);
+            Vector2 healthBarPos = healthPanelPos + new Vector2(barPadding.X, 10);
+            healthBar = new ProgressBar(
+                healthBarPos, healthBarSize,
+                new Vector4(0.9f, 0.2f, 0.2f, 1), new Vector4(0.18f, 0.18f, 0.18f, 1),
+                () => Core.Game.Instance.player.HealthRatio,
+                0, 1, false
+            )
+            {
+                BorderColor = new Vector4(0.3f, 0.1f, 0.1f, 1),
+                BorderThickness = 2.0f,
+                UseGradient = true,
+                GradientColor = new Vector4(1.0f, 0.5f, 0.5f, 1),
+                Label = "Health: 100 / 100" // Initial label, will be updated in UpdateHealthBarLabel
+            };
+            AddElement(healthBar);
+            Vector2 cooldownBarSize = new Vector2(healthPanelSize.X - 2 * barPadding.X, 18);
+            Vector2 cooldownBarPos = healthBarPos + new Vector2(0, healthBarSize.Y + 8);
+            cooldownBar = new ProgressBar(
+                cooldownBarPos, cooldownBarSize,
+                new Vector4(0.2f, 0.2f, 0.9f, 1), new Vector4(0.18f, 0.18f, 0.18f, 1),
+                () => CalculateCooldownRatio(),
+                0, 1, false
+            )
+            {
+                BorderColor = new Vector4(0.1f, 0.1f, 0.3f, 1),
+                BorderThickness = 2.0f,
+                UseGradient = true,
+                GradientColor = new Vector4(0.5f, 0.5f, 1.0f, 1),
+                Label = "Cooldown"
+            };
+            AddElement(cooldownBar);
+
+            // Abilities/Powerups Panel (bottom center)
+            Vector2 abilitiesPanelSize = new Vector2(windowSize.X * 0.35f, 64);
+            Vector2 abilitiesPanelPos = new Vector2((windowSize.X - abilitiesPanelSize.X) / 2, windowSize.Y - 90);
+            abilitiesPanel = new Background(new Vector4(0.08f, 0.08f, 0.18f, 0.7f)) { Position = abilitiesPanelPos, Size = abilitiesPanelSize };
+            AddElement(abilitiesPanel);
+            statusEffectsBox = new HorizontalBox(abilitiesPanelPos + new Vector2(16, 12), abilitiesPanelSize - new Vector2(32, 24), new Vector2(16, 0), Align.Center);
+            AddElement(statusEffectsBox);
         }
 
-        private ProgressBar CreateProgressBar(Func<float> progressFunc, float max, Vector4 color, Vector2 position, Vector2 size)
+        private float CalculateCooldownRatio()
         {
-            Vector4 backgroundColor = new Vector4(0.2f, 0.2f, 0.2f, 1);
-            return new ProgressBar(position, size, color, backgroundColor, progressFunc, 0, max, false);
-        }
-
-        private ProgressBar CreateProgressBar(Func<float> progressFunc, float max, Vector4 color)
-        {
-            return new ProgressBar(new Vector2(0, 0), new Vector2(250, 15), color, new Vector4(0, 0, 0, 0), progressFunc, 0, max, false);
+            var player = Core.Game.Instance.player;
+            if (player.Ability != null && player.Ability.Cooldown > 0)
+            {
+                float elapsed = (float)(Game_Time.total - player.abilityLastUsedTime);
+                float ratio = Math.Clamp(elapsed / player.Ability.Cooldown, 0, 1);
+                return 1 - ratio; // 1 = ready, 0 = just used
+            }
+            return 1;
         }
 
         private void UpdateCooldownProgress()
@@ -104,69 +157,81 @@ namespace Projektarbeit.UI
 
         private void UpdateAbilityIcons()
         {
-            if(Game.Instance.player.Ability != null)
+            var player = Core.Game.Instance.player;
+            var equippedAbility = Core.Game.Instance.GameState.Abilities.FirstOrDefault(a => a.IsEquipped);
+
+            if (equippedAbility != null && equippedAbility.IconPath != null)
             {
-                var player = Core.Game.Instance.player;
-                if (player.Ability.IconPath != null)
+                var abilityTexture = Resource_Manager.Get_Texture(equippedAbility.IconPath);
+                if (abilityTexture != null)
                 {
-                    var abilityTexture = Resource_Manager.Get_Texture(player.Ability.IconPath);
-                    if (abilityTexture != null)
+                    // Check if the icon already exists
+                    var existingIcon = statusEffectsBox.GetElementByTextureId(abilityTexture.Handle);
+                    if (existingIcon == null)
                     {
-                        UpdateStatusEffectImage(player.Ability.IsActive, abilityTexture, player.Ability.IconPath);
+                        // Add new icon with appropriate tint based on active state
+                        var icon = new Image(statusEffectsBox.Position, new Vector2(48, 48), equippedAbility.IconPath)
+                        {
+                            TintColor = equippedAbility.IsActive ? new Vector4(1, 1, 1, 1) : new Vector4(0.5f, 0.5f, 0.5f, 0.7f)
+                        };
+                        statusEffectsBox.AddElement(icon);
+                        abilityIcons.Add(equippedAbility.IconPath);
                     }
-                }            
+                    else if (existingIcon is Image icon)
+                    {
+                        // Update tint color based on active state
+                        icon.TintColor = equippedAbility.IsActive ? new Vector4(1, 1, 1, 1) : new Vector4(0.5f, 0.5f, 0.5f, 0.7f);
+                    }
+                }
             }
         }
 
         private void UpdatePowerUpIcons()
         {
-            foreach (var powerUp in Core.Game.Instance.player.ActivePowerUps)
+            var player = Core.Game.Instance.player;
+            foreach (var powerUp in player.ActivePowerUps)
             {
                 if (powerUp.IconPath != null)
                 {
-                    this.powerUpTexture = Resource_Manager.Get_Texture(powerUp.IconPath);
-                    if (this.powerUpTexture != null)
+                    var powerUpTexture = Resource_Manager.Get_Texture(powerUp.IconPath);
+                    if (powerUpTexture != null)
                     {
-                        var statusEffectImage = this.statusEffectsBox.GetElementByTextureId(this.powerUpTexture.Handle);
-                        if (statusEffectImage == null)
+                        var existingIcon = statusEffectsBox.GetElementByTextureId(powerUpTexture.Handle);
+                        if (existingIcon == null)
                         {
-                            statusEffectImage = new Image(this.statusEffectsBox.Position, new Vector2(30, 30), powerUp.IconPath);
-                            this.statusEffectsBox.AddElement(statusEffectImage);
+                            var icon = new Image(statusEffectsBox.Position, new Vector2(40, 40), powerUp.IconPath)
+                            {
+                                TintColor = new Vector4(1, 1, 1, 0.85f)
+                            };
+                            statusEffectsBox.AddElement(icon);
                         }
                     }
                 }
             }
         }
 
-        private void UpdateStatusEffectImage(bool condition, Texture texture, string path)
-        {
-            var statusEffectImage = statusEffectsBox.GetElementByTextureId(texture.Handle);
-            if (condition)
-            {
-                if (statusEffectImage == null)
-                {
-                    statusEffectImage = new Image(statusEffectsBox.Position, new Vector2(30, 30), path);
-                    statusEffectsBox.AddElement(statusEffectImage);
-                    abilityIcons.Add(path);
-                }
-            }
-            else if (statusEffectImage != null)
-            {
-                statusEffectsBox.RemoveElement(statusEffectImage);
-                abilityIcons.Remove(path);
-            }
-        }
-
         private void RemoveUnusedIcons()
         {
             var elementsToRemove = statusEffectsBox.elements
-                .Where(child => child is Image image && !Core.Game.Instance.player.ActivePowerUps.Any(p => p.IconPath == image.TexturePath) && !abilityIcons.Contains(image.TexturePath))
+                .Where(child => child is Image image && 
+                    !Core.Game.Instance.player.ActivePowerUps.Any(p => p.IconPath == image.TexturePath) && 
+                    !abilityIcons.Contains(image.TexturePath))
                 .ToList();
 
             foreach (var element in elementsToRemove)
             {
                 statusEffectsBox.RemoveElement(element);
+                if (element is Image image)
+                {
+                    abilityIcons.Remove(image.TexturePath);
+                }
             }
+        }
+
+        private void UpdateHealthBarLabel()
+        {
+            var player = Core.Game.Instance.player;
+            healthBar.Label = $"Health: {(int)player.health} / {(int)player.health_max}";
         }
     }
 }
