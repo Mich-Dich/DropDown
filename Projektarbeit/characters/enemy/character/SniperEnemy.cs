@@ -32,7 +32,7 @@ namespace Projektarbeit.characters.enemy.character
 
             Vector2 direction = GetDirectionToTarget();
             ApplyForceInDirection(direction, PursueSpeed);
-            rotate_to_vector_smooth(direction);
+            //rotate_to_vector_smooth(direction);
 
             ApplySeparation();
         }
@@ -49,7 +49,7 @@ namespace Projektarbeit.characters.enemy.character
 
         private void InitializeCharacter()
         {
-            transform.size = new Vector2(40);
+            transform.size = new Vector2(60);
             movement_speed = 10;
             movement_speed_max = 20;
             rotation_offset = float.Pi / 2;
@@ -69,10 +69,10 @@ namespace Projektarbeit.characters.enemy.character
             shootInterval = 0.4f;
             fireDelay = 10f;
 
-            attackAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
-            walkAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
-            idleAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, false, 10, true);
-            hitAnim = new animation_data("assets/animation/enemy/enemy-hit.png", 5, 1, true, false, 10, true);
+            attackAnim = new animation_data("assets/animation/enemy/sniper.png", 5, 1, true, false, 10, true);
+            walkAnim = new animation_data("assets/animation/enemy/sniper.png", 5, 1, true, false, 10, true);
+            idleAnim = new animation_data("assets/animation/enemy/sniper.png", 5, 1, true, false, 10, true);
+            hitAnim = new animation_data("assets/animation/enemy/sniper-hit.png", 5, 1, true, false, 10, true);
         }
 
         private bool ShouldPursuePlayer()

@@ -37,10 +37,10 @@ namespace Projektarbeit.characters.enemy.character
             shootInterval = 0.4f;
             fireDelay = 2f;
 
-            attackAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, true, 10, true);
-            walkAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, true, 10, true);
-            idleAnim = new animation_data("assets/animation/enemy/enemy.png", 5, 1, true, true, 10, true);
-            hitAnim = new animation_data("assets/animation/enemy/enemy-hit.png", 5, 1, true, true, 10, true);
+            attackAnim = new animation_data("assets/animation/enemy/tank.png", 5, 1, true, true, 10, true);
+            walkAnim = new animation_data("assets/animation/enemy/tank.png", 5, 1, true, true, 10, true);
+            idleAnim = new animation_data("assets/animation/enemy/tank.png", 5, 1, true, true, 10, true);
+            hitAnim = new animation_data("assets/animation/enemy/tank-hit.png", 5, 1, true, true, 10, true);
         }
     }
 }
