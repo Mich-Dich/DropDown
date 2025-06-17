@@ -28,6 +28,9 @@
         public float autoDetectionRange;
         public float attackRange;
 
+        // XP value for this enemy
+        public int XPValue = 10;
+
         public float DetectionRange { get; set; } = 400f;
 
         public AI_Controller Controller { get; set; }

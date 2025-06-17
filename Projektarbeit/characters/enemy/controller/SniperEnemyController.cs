@@ -8,6 +8,7 @@ namespace Projektarbeit.characters.enemy.controller
     using OpenTK.Mathematics;
     using Projektarbeit.characters.enemy.character;
     using Projektarbeit.characters.enemy.States;
+    using Projektarbeit.particles;
 
     public class SniperEnemyController : AI_Controller
     {
@@ -46,6 +47,19 @@ namespace Projektarbeit.characters.enemy.controller
 
             enemy.death_callback = () =>
             {
+                // XP drop (medium orbs for snipers)
+                XPParticleEffect.CreateByType(
+                    Game.Instance.get_active_map().particleSystem,
+                    amount: 2,
+                    position: enemy.transform.position,
+                    orbType: XPOrbType.Medium,
+                    attractDistance: 200.0f,
+                    collectDistance: 50.0f,
+                    maxAttractForce: 450.0f,
+                    maxSpeed: 400.0f,
+                    damping: 0.95f
+                );
+
                 if (!enemy.IsDead)
                 {
                     MarkEnemyAsDead(enemy);

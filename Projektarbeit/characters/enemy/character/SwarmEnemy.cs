@@ -16,6 +16,7 @@ namespace Projektarbeit.characters.enemy.character
         public SwarmEnemy()
             : base()
         {
+            XPValue = 10;
             transform.size = new Vector2(40);
             movement_speed = 10;
             movement_speed_max = 20;

@@ -65,6 +65,9 @@ namespace Core.world
         public Animation? animation { get; set; }
         public float animationTimer { get; set; } = 0;
 
+        // ------------------------------ tint color ------------------------------
+        public Vector4 TintColor { get; set; } = Vector4.One; // Default to white (no tint)
+
         // ------------------------------ private ------------------------------
         private bool needsUpdate { get; set; } = true;
         private float[] _verticies { get; set; } = {
@@ -109,6 +112,11 @@ namespace Core.world
             transform.mobility = mobility;
             if (transform.mobility == Mobility.STATIC)
                 modelMatrix = Calc_Modle_Matrix();
+        }
+
+        public void Set_Tint_Color(Vector4 tintColor)
+        {
+            TintColor = tintColor;
         }
 
         // =============================================== functions ===============================================
@@ -203,6 +211,9 @@ namespace Core.world
             shader.Use();
             vertexArray.Bind();
             indexBuffer.Bind();
+
+            // Set tint color uniform
+            shader.Set_Uniform("u_tint", TintColor);
 
             // -------------------------------------- modle matrix --------------------------------------
             if (model != null)

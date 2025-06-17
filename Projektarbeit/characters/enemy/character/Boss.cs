@@ -9,6 +9,7 @@ namespace Projektarbeit.characters.enemy.character
         public Boss(AI_Controller controller)
             : base()
         {
+            XPValue = 100;
             Controller = controller;
             transform.size = new Vector2(500);
             health_max = 500;

@@ -16,6 +16,12 @@
         private const float DefaultCooldownBarHeight = 4;
         private readonly uint defaultCooldownColTransparent;
 
+        // Hit flash variables
+        private bool isFlashing = false;
+        private float flashStartTime = 0f;
+        private const float FlashDuration = 0.2f; // Duration of the red flash in seconds
+        private const float FlashIntensity = 0.7f; // How red the flash should be (0.0 = no red, 1.0 = full red)
+
         public float CooldownBarWidth { get; set; } = DefaultCooldownBarWidth;
 
         public float CooldownBarHeight { get; set; } = DefaultCooldownBarHeight;
@@ -100,6 +106,14 @@
             }
         }
 
+        public override void apply_damage(float damage)
+        {
+            base.apply_damage(damage);
+            
+            // Trigger hit flash whenever damage is taken
+            TriggerHitFlash();
+        }
+
         private void InitializePlayer()
         {
             IsDead = false;
@@ -139,6 +153,40 @@
         {
             base.Update(deltaTime);
             ApplyBounding();
+            UpdateHitFlash();
+        }
+
+        private void TriggerHitFlash()
+        {
+            isFlashing = true;
+            flashStartTime = Game_Time.total;
+        }
+
+        private void UpdateHitFlash()
+        {
+            if (!isFlashing) return;
+
+            float elapsedTime = Game_Time.total - flashStartTime;
+            if (elapsedTime >= FlashDuration)
+            {
+                // Flash finished, reset to normal
+                isFlashing = false;
+                if (sprite != null)
+                {
+                    sprite.Set_Tint_Color(new Vector4(1.0f, 1.0f, 1.0f, 1.0f)); // Reset to white
+                }
+                return;
+            }
+
+            // Calculate flash intensity (fade out over time)
+            float flashProgress = elapsedTime / FlashDuration;
+            float currentIntensity = FlashIntensity * (1.0f - flashProgress);
+            
+            // Set red tint (increase red channel, keep others at 1.0)
+            if (sprite != null)
+            {
+                sprite.Set_Tint_Color(new Vector4(1.0f + currentIntensity, 1.0f - currentIntensity * 0.3f, 1.0f - currentIntensity * 0.3f, 1.0f));
+            }
         }
     }
 }

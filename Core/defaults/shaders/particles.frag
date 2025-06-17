@@ -8,59 +8,75 @@ uniform float time; // Use this to animate or affect the noise
 
 // A simple pseudo-random function based on vTexCoord
 float pseudoRandom(vec2 co) {
-    // Use time to vary noise over time (optional)
     co += time * 0.1; 
     return fract(sin(dot(co, vec2(12.9898,78.233))) * 43758.5453);
+}
+
+// Star-shaped sparkle function
+float star(vec2 uv, float points, float sharpness, float size) {
+    float angle = atan(uv.y - 0.5, uv.x - 0.5);
+    float radius = length(uv - vec2(0.5));
+    float star = pow(abs(cos(points * angle)), sharpness);
+    return smoothstep(size, size - 0.04, radius) * star;
 }
 
 void main()
 {
     float dist = length(vTexCoord - vec2(0.5));
-    
-    // Extend total radius beyond 0.5 for a halo
-    float maxRadius = 0.6;
-    
-    if (dist > maxRadius) {
-        discard;
+    float maxRadius = 0.7;
+    float coreRadius = 0.19;
+    float glowRadius = 0.38;
+    float rimRadius = 0.52;
+    float rimSoftness = 0.16;
+
+    // Core color pulse: deep blue <-> deep purple
+    float pulse = 0.5 + 0.5 * sin(time * 2.7 + vTexCoord.x * 8.0);
+    vec3 blue = vec3(0.13, 0.32, 0.85);
+    vec3 purple = vec3(0.38, 0.13, 0.55);
+    vec3 corePulseColor = mix(blue, purple, pulse);
+
+    // Core: dark, saturated, pulsing
+    float core = smoothstep(coreRadius, coreRadius - 0.07, dist);
+    vec3 coreColor = mix(corePulseColor, vec3(0.25, 0.25, 0.35), 0.18);
+
+    // Glow: thick, saturated, colored, pulsing (out of phase)
+    float glowPulse = 0.5 + 0.5 * sin(time * 2.0 + vTexCoord.y * 7.0 + 2.0);
+    vec3 glowColor = mix(blue, purple, 1.0 - glowPulse);
+    float glow = smoothstep(glowRadius, coreRadius, dist);
+    glowColor = mix(glowColor, vec3(0.18, 0.18, 0.25), 0.08);
+
+    // Rim: very dark, colored (deep blue/purple)
+    float rim = smoothstep(rimRadius, rimRadius - rimSoftness, dist);
+    vec3 rimColor = mix(vec3(0.01, 0.01, 0.08), vec3(0.08, 0.01, 0.13), 0.5);
+
+    // Outer fade
+    float alpha = 1.0;
+    if (dist > rimRadius) {
+        float fade = 1.0 - smoothstep(rimRadius, maxRadius, dist);
+        alpha *= fade;
     }
+    if (dist > maxRadius) discard;
 
-    // Generate some noise for breakup
-    float noiseVal = pseudoRandom(vTexCoord * 10.0);
-    // Add subtle distortion to dist based on noise
-    dist += (noiseVal - 0.5) * 0.03;
+    // Twinkle: much larger, brighter, more frequent
+    float sparkle = star(vTexCoord, 6.0, 10.0, 0.22 + 0.08 * sin(time * 2.0 + vTexCoord.y * 10.0));
+    float sparkleChance = step(0.85, pseudoRandom(vTexCoord * 30.0 + time * 2.0));
+    float sparkleIntensity = sparkle * sparkleChance * (0.8 + 0.2 * pulse);
+    vec3 sparkleColor = mix(vec3(0.7, 0.7, 1.0), purple, 0.3);
 
-    // Define base colors for gradient
-    vec3 centerColor = vec3(0.0, 1.0, 1.0); // Cyan center
-    vec3 edgeColor   = vec3(1.0, 0.0, 1.0); // Magenta edge
+    // Combine layers
+    vec3 color = vec3(0.0);
+    color += core * coreColor * 1.1;
+    color += glow * glowColor * 1.0;
+    color = mix(color, rimColor, rim);
+    color += sparkleColor * sparkleIntensity;
 
-    float normalizedDist = dist / 0.5; 
-    normalizedDist = clamp(normalizedDist, 0.0, 1.0);
+    // Modulate by particle color (for XP, this is usually blue/purple)
+    color *= vColor.rgb;
+    alpha *= vColor.a;
 
-    // Smooth transition for color
-    float colorMix = smoothstep(0.0, 1.0, normalizedDist);
-    vec3 baseColor = mix(centerColor, edgeColor, colorMix);
+    // Lower minimum visibility clamp for better contrast
+    float minVis = 0.08;
+    color = max(color, vec3(minVis));
 
-    // Incorporate the per-particle color
-    baseColor *= vColor.rgb;
-
-    // Alpha calculation
-    float alpha;
-    if (dist <= 0.5) {
-        alpha = 1.0 - normalizedDist * 0.8;
-    } else {
-        // Halo zone fade-out
-        float haloDist = (dist - 0.5) / (maxRadius - 0.5);
-        alpha = exp(-haloDist * 5.0);
-    }
-
-    // Add slight alpha variation from noise for more breakup
-    alpha *= (0.9 + noiseVal * 0.2);
-
-    // Subtle rim highlight near the edge of the inner circle
-    if (dist > 0.45 && dist < 0.5) {
-        float rimStrength = 1.0 - smoothstep(0.45, 0.5, dist);
-        baseColor += vec3(0.5, 0.5, 0.5) * rimStrength * 0.3;
-    }
-
-    FragColor = vec4(baseColor, alpha);
+    FragColor = vec4(color, alpha);
 }

@@ -39,6 +39,9 @@ namespace Projektarbeit.UI
             UpdatePowerUpIcons();
             RemoveUnusedIcons();
             UpdateHealthBarLabel();
+
+            // Update XP bar label every frame
+            scoreGoalBar.Label = $"XP: {Core.Game.Instance.Score} / {Core.Game.Instance.get_active_map().scoreGoal}";
         }
 
         public void clearStatusEffects()
@@ -49,15 +52,22 @@ namespace Projektarbeit.UI
         private void InitializeUIElements()
         {
             Vector2 windowSize = new Vector2(Core.Game.Instance.window.Size.X, Core.Game.Instance.window.Size.Y);
-            Vector2 barPadding = new Vector2(12, 8);
+            float hudPanelWidth = windowSize.X * 0.38f;
+            float hudPanelHeight = 90f;
+            float padding = 14f;
+            float iconSize = 56f;
+            float barWidth = hudPanelWidth - iconSize - 3 * padding;
+            float healthBarHeight = 28f;
+            float cooldownBarHeight = 18f;
+            float barSpacing = 8f;
 
             // XP Panel (top center)
             Vector2 xpPanelSize = new Vector2(windowSize.X * 0.45f, 48);
             Vector2 xpPanelPos = new Vector2((windowSize.X - xpPanelSize.X) / 2, 18);
             xpPanel = new Background(new Vector4(0.08f, 0.18f, 0.08f, 0.7f)) { Position = xpPanelPos, Size = xpPanelSize };
             AddElement(xpPanel);
-            Vector2 xpBarSize = new Vector2(xpPanelSize.X - 2 * barPadding.X, 28);
-            Vector2 xpBarPos = xpPanelPos + new Vector2(barPadding.X, 10);
+            Vector2 xpBarSize = new Vector2(xpPanelSize.X - 2 * padding, 28);
+            Vector2 xpBarPos = xpPanelPos + new Vector2(padding, 10);
             scoreGoalBar = new ProgressBar(
                 xpBarPos, xpBarSize,
                 new Vector4(0.2f, 0.8f, 0.4f, 1), new Vector4(0.18f, 0.18f, 0.18f, 1),
@@ -73,31 +83,52 @@ namespace Projektarbeit.UI
             };
             AddElement(scoreGoalBar);
 
-            // Health/Cooldown Panel (top left)
-            Vector2 healthPanelSize = new Vector2(280, 80);
-            Vector2 healthPanelPos = new Vector2(18, 18);
-            healthPanel = new Background(new Vector4(0.18f, 0.08f, 0.08f, 0.7f)) { Position = healthPanelPos, Size = healthPanelSize };
-            AddElement(healthPanel);
-            Vector2 healthBarSize = new Vector2(healthPanelSize.X - 2 * barPadding.X, 28);
-            Vector2 healthBarPos = healthPanelPos + new Vector2(barPadding.X, 10);
+            // Unified HUD Panel (bottom center)
+            Vector2 hudPanelPos = new Vector2((windowSize.X - hudPanelWidth) / 2, windowSize.Y - hudPanelHeight - 32);
+            bottomPanel = new Background(new Vector4(0.08f, 0.08f, 0.18f, 0.82f))
+            {
+                Position = hudPanelPos,
+                Size = new Vector2(hudPanelWidth, hudPanelHeight)
+            };
+            AddElement(bottomPanel);
+
+            // Ability icon (left in panel)
+            Vector2 iconPos = hudPanelPos + new Vector2(padding, (hudPanelHeight - iconSize) / 2);
+            var equippedAbility = Core.Game.Instance.GameState.Abilities.FirstOrDefault(a => a.IsEquipped);
+            if (equippedAbility != null && equippedAbility.IconPath != null)
+            {
+                var abilityTexture = Resource_Manager.Get_Texture(equippedAbility.IconPath);
+                if (abilityTexture != null)
+                {
+                    var icon = new Image(iconPos, new Vector2(iconSize, iconSize), equippedAbility.IconPath)
+                    {
+                        TintColor = equippedAbility.IsActive ? new Vector4(1, 1, 1, 1) : new Vector4(0.5f, 0.5f, 0.5f, 0.7f)
+                    };
+                    AddElement(icon);
+                }
+            }
+
+            // Health bar (stacked above cooldown bar, right of icon)
+            Vector2 healthBarPos = hudPanelPos + new Vector2(iconSize + 2 * padding, padding);
             healthBar = new ProgressBar(
-                healthBarPos, healthBarSize,
+                healthBarPos, new Vector2(barWidth, healthBarHeight),
                 new Vector4(0.9f, 0.2f, 0.2f, 1), new Vector4(0.18f, 0.18f, 0.18f, 1),
                 () => Core.Game.Instance.player.HealthRatio,
                 0, 1, false
             )
             {
                 BorderColor = new Vector4(0.3f, 0.1f, 0.1f, 1),
-                BorderThickness = 2.0f,
+                BorderThickness = 3.0f,
                 UseGradient = true,
                 GradientColor = new Vector4(1.0f, 0.5f, 0.5f, 1),
-                Label = "Health: 100 / 100" // Initial label, will be updated in UpdateHealthBarLabel
+                Label = "Health: 100 / 100"
             };
             AddElement(healthBar);
-            Vector2 cooldownBarSize = new Vector2(healthPanelSize.X - 2 * barPadding.X, 18);
-            Vector2 cooldownBarPos = healthBarPos + new Vector2(0, healthBarSize.Y + 8);
+
+            // Cooldown bar (below health bar, right of icon)
+            Vector2 cooldownBarPos = healthBarPos + new Vector2(0, healthBarHeight + barSpacing);
             cooldownBar = new ProgressBar(
-                cooldownBarPos, cooldownBarSize,
+                cooldownBarPos, new Vector2(barWidth, cooldownBarHeight),
                 new Vector4(0.2f, 0.2f, 0.9f, 1), new Vector4(0.18f, 0.18f, 0.18f, 1),
                 () => CalculateCooldownRatio(),
                 0, 1, false
@@ -111,13 +142,11 @@ namespace Projektarbeit.UI
             };
             AddElement(cooldownBar);
 
-            // Abilities/Powerups Panel (bottom center)
-            Vector2 abilitiesPanelSize = new Vector2(windowSize.X * 0.35f, 64);
-            Vector2 abilitiesPanelPos = new Vector2((windowSize.X - abilitiesPanelSize.X) / 2, windowSize.Y - 90);
-            abilitiesPanel = new Background(new Vector4(0.08f, 0.08f, 0.18f, 0.7f)) { Position = abilitiesPanelPos, Size = abilitiesPanelSize };
-            AddElement(abilitiesPanel);
-            statusEffectsBox = new HorizontalBox(abilitiesPanelPos + new Vector2(16, 12), abilitiesPanelSize - new Vector2(32, 24), new Vector2(16, 0), Align.Center);
-            AddElement(statusEffectsBox);
+            // Ensure statusEffectsBox is always initialized to avoid null reference
+            if (statusEffectsBox == null)
+            {
+                statusEffectsBox = new HorizontalBox(new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 0), Align.Center);
+            }
         }
 
         private float CalculateCooldownRatio()

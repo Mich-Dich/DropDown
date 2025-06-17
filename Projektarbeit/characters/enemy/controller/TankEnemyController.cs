@@ -7,6 +7,7 @@ using OpenTK.Mathematics;
 using Projektarbeit.characters.enemy.character;
 using Projektarbeit.characters.enemy.States;
 using Projektarbeit.particles; // <-- For ShockwaveEffect
+using Core.util;
 
 namespace Projektarbeit.characters.enemy.controller
 {
@@ -48,6 +49,27 @@ namespace Projektarbeit.characters.enemy.controller
             // death_callback is invoked when the enemy's health hits 0
             enemy.death_callback = () =>
             {
+                // XP drop (large orbs for tanks)
+                XPParticleEffect.CreateByType(
+                    Game.Instance.get_active_map().particleSystem,
+                    amount: 2,
+                    position: enemy.transform.position,
+                    orbType: XPOrbType.Large,
+                    attractDistance: 200.0f,
+                    collectDistance: 50.0f,
+                    maxAttractForce: 450.0f,
+                    maxSpeed: 400.0f,
+                    damping: 0.95f
+                );
+
+                // Camera shake if player is close to explosion
+                float shakeDistance = 300f;
+                var playerPos = Game.Instance.player.transform.position;
+                if ((playerPos - enemy.transform.position).Length < shakeDistance)
+                {
+                    Game.Instance.camera.transform.ApplyShake(CameraShake.Explosion);
+                }
+
                 if (!enemy.IsDead)
                 {
                     MarkEnemyAsDead(enemy);

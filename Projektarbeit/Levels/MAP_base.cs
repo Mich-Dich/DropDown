@@ -39,7 +39,7 @@
         public MAP_base() {
             use_garbage_collector = true;
             camera = Core.Game.Instance.camera;
-            scoreGoal = 400;
+            scoreGoal = 150;
             previousScoreGoal = 0;
 
             timeStamp = Game_Time.total;
@@ -180,7 +180,7 @@
         }
 
         private bool ShouldSpawnEnemies() {
-            int maxEnemies = 10 + (Core.Game.Instance.Score / 10);
+            int maxEnemies = 14 + (Core.Game.Instance.Score / 8);
             int currentEnemies = Core.Game.Instance.get_active_map().allCharacter.Count;
             return currentEnemies < maxEnemies;
         }
@@ -193,12 +193,12 @@
         }
 
         private int GetEnemyTypeBasedOnScore(int score) {
-            if (score <= 100)
+            if (score <= 50)
                 return random.Next(0, 2);
-            else if (score <= 200)
-                return random.Next(0, enemyControllers.Count);
+            else if (score <= 100)
+                return random.Next(0, 3);
             else
-                return random.Next(1, enemyControllers.Count);
+                return random.Next(0, enemyControllers.Count);
         }
 
         private void SpawnPowerUps() {

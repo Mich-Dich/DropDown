@@ -40,10 +40,10 @@ namespace Projektarbeit.characters.enemy.controller
                 enemy.death_callback = () =>
                 {
                     Console.WriteLine("Spawning XP particles!");
-                    XPParticleEffect.Create(
+                    XPParticleEffect.CreateByXP(
                         Game.Instance.get_active_map().particleSystem,
-                        amount: 10,
-                        position: enemy.transform.position,
+                        enemy.XPValue,
+                        enemy.transform.position,
                         attractDistance: 200.0f,
                         collectDistance: 50.0f,
                         maxAttractForce: 450.0f,
