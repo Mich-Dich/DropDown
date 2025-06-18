@@ -26,7 +26,8 @@ namespace Projektarbeit.characters.enemy.controller
         private List<Character> CreateEnemies(Vector2 origin)
         {
             var enemies = new List<Character>();
-            int enemyCount = random.Next(1, 6);
+            // Spawn only 1 enemy - the wave system controls the number through spawners
+            int enemyCount = 1;
 
             for (int i = 0; i < enemyCount; i++)
             {
@@ -99,6 +100,10 @@ namespace Projektarbeit.characters.enemy.controller
 
             // Increase score
             Game.Instance.Score++;
+            
+            // Update wave progress
+            var currentWave = Projektarbeit.Levels.Wave.GetCurrentWave();
+            currentWave?.EnemyDefeated();
 
             // Trigger particle effect when enemy dies
             ShockwaveEffect.Trigger(

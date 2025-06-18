@@ -51,22 +51,22 @@ namespace Projektarbeit.particles
         }
 
         public override void Update(Vector2 playerPosition, float deltaTime)
-        {
-            Vector2 toPlayer = Game.Instance.player.transform.position - Position;
-            float distance = toPlayer.Length;
+{
+    Vector2 toPlayer = Game.Instance.player.transform.position - Position;
+    float distance = toPlayer.Length;
 
-            switch (State)
+    switch (State)
+    {
+        case XPParticleState.Waiting:
+            if (distance <= AttractDistance)
             {
-                case XPParticleState.Waiting:
-                    if (distance <= AttractDistance)
-                    {
-                        State = XPParticleState.Attracted;
-                    }
-                    break;
+                State = XPParticleState.Attracted;
+            }
+            break;
 
-                case XPParticleState.Attracted:
-                    if (distance > CollectDistance)
-                    {
+        case XPParticleState.Attracted:
+            if (distance > CollectDistance)
+            {
                         // Get player velocity for prediction
                         Vector2 playerVelocity = util.convert_Vector<Vector2>(Game.Instance.player.Get_Velocity());
                         
@@ -75,7 +75,7 @@ namespace Projektarbeit.particles
                         Vector2 toPredictedPlayer = predictedPlayerPos - Position;
                         
                         // Use a blend of current and predicted direction for smarter attraction
-                        Vector2 direction = distance > 0 ? toPlayer / distance : Vector2.Zero;
+                Vector2 direction = distance > 0 ? toPlayer / distance : Vector2.Zero;
                         Vector2 predictedDirection = toPredictedPlayer.Length > 0 ? toPredictedPlayer / toPredictedPlayer.Length : Vector2.Zero;
                         
                         // Blend directions based on distance (more prediction when further away)
@@ -124,21 +124,21 @@ namespace Projektarbeit.particles
                         float currentMaxSpeed = distance < AttractDistance * 0.2f ? MaxSpeed * 1.5f : MaxSpeed;
                         if (Velocity.Length > currentMaxSpeed)
                             Velocity = Velocity.Normalized() * currentMaxSpeed;
-                    }
-                    else
-                    {
-                        // Inside CollectDistance => collect immediately
-                        State = XPParticleState.Collected;
-                    }
-                    break;
-
-                case XPParticleState.Collected:
-                    Age = LifeTime; // forcibly kill
-                    break;
             }
+            else
+            {
+                        // Inside CollectDistance => collect immediately
+                State = XPParticleState.Collected;
+            }
+            break;
 
-            // Now call the base's logic to handle Age, Position, etc.
-            base.Update(playerPosition, deltaTime);
-        }
+        case XPParticleState.Collected:
+            Age = LifeTime; // forcibly kill
+            break;
+    }
+
+    // Now call the base's logic to handle Age, Position, etc.
+    base.Update(playerPosition, deltaTime);
+}
     }
 }

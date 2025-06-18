@@ -7,6 +7,7 @@ namespace Projektarbeit.UI
     using Core.render;
     using Core.UI;
     using Core.util;
+    using Projektarbeit.Levels;
 
     public class MainHUD : Menu
     {
@@ -24,6 +25,8 @@ namespace Projektarbeit.UI
         private Background xpPanel;
         private Background healthPanel;
         private Background abilitiesPanel;
+        private ProgressBar waveProgressBar;
+        private Background wavePanel;
 
         public MainHUD()
         {
@@ -40,8 +43,29 @@ namespace Projektarbeit.UI
             RemoveUnusedIcons();
             UpdateHealthBarLabel();
 
-            // Update XP bar label every frame
-            scoreGoalBar.Label = $"XP: {Core.Game.Instance.Score} / {Core.Game.Instance.get_active_map().scoreGoal}";
+            // Update wave bar label and progress every frame
+            int waveNum = Wave.currentWave + 1;
+            var currentWave = Wave.GetCurrentWave();
+            float currentProgress = currentWave?.WaveProgress ?? 0f;
+            
+            // Create a more informative label
+            string waveLabel = $"Wave {waveNum}";
+            if (currentWave != null)
+            {
+                waveLabel += $" - {currentWave.EnemiesDefeated}/{currentWave.TotalEnemiesInWave} enemies";
+            }
+            
+            waveProgressBar.Label = waveLabel;
+            waveProgressBar.ValueProvider = () => currentWave?.WaveProgress ?? 0f;
+            
+            // Debug output for progress bar (only show occasionally to avoid spam)
+            if (Game_Time.total % 2.0f < 0.016f) // Show roughly once per 2 seconds
+            {
+                if (currentWave != null)
+                {
+                    Console.WriteLine($"[UI] Wave {waveNum} Progress: {currentWave.EnemiesDefeated}/{currentWave.TotalEnemiesInWave} = {currentProgress * 100:F1}%");
+                }
+            }
         }
 
         public void clearStatusEffects()
@@ -61,17 +85,17 @@ namespace Projektarbeit.UI
             float cooldownBarHeight = 18f;
             float barSpacing = 8f;
 
-            // XP Panel (top center)
-            Vector2 xpPanelSize = new Vector2(windowSize.X * 0.45f, 48);
-            Vector2 xpPanelPos = new Vector2((windowSize.X - xpPanelSize.X) / 2, 18);
-            xpPanel = new Background(new Vector4(0.08f, 0.18f, 0.08f, 0.7f)) { Position = xpPanelPos, Size = xpPanelSize };
-            AddElement(xpPanel);
-            Vector2 xpBarSize = new Vector2(xpPanelSize.X - 2 * padding, 28);
-            Vector2 xpBarPos = xpPanelPos + new Vector2(padding, 10);
-            scoreGoalBar = new ProgressBar(
-                xpBarPos, xpBarSize,
+            // Wave Panel (top center)
+            Vector2 wavePanelSize = new Vector2(windowSize.X * 0.45f, 48);
+            Vector2 wavePanelPos = new Vector2((windowSize.X - wavePanelSize.X) / 2, 18);
+            wavePanel = new Background(new Vector4(0.08f, 0.18f, 0.08f, 0.7f)) { Position = wavePanelPos, Size = wavePanelSize };
+            AddElement(wavePanel);
+            Vector2 waveBarSize = new Vector2(wavePanelSize.X - 2 * padding, 28);
+            Vector2 waveBarPos = wavePanelPos + new Vector2(padding, 10);
+            waveProgressBar = new ProgressBar(
+                waveBarPos, waveBarSize,
                 new Vector4(0.2f, 0.8f, 0.4f, 1), new Vector4(0.18f, 0.18f, 0.18f, 1),
-                () => Math.Clamp(Core.Game.Instance.get_active_map().ScoreRatio, 0, 1),
+                () => 0f, // Will be updated in Render()
                 0, 1, false
             )
             {
@@ -79,9 +103,9 @@ namespace Projektarbeit.UI
                 BorderThickness = 2.0f,
                 UseGradient = true,
                 GradientColor = new Vector4(0.4f, 1.0f, 0.7f, 1),
-                Label = $"XP: {Core.Game.Instance.Score} / {Core.Game.Instance.get_active_map().scoreGoal}"
+                Label = "Wave 1"
             };
-            AddElement(scoreGoalBar);
+            AddElement(waveProgressBar);
 
             // Unified HUD Panel (bottom center)
             Vector2 hudPanelPos = new Vector2((windowSize.X - hudPanelWidth) / 2, windowSize.Y - hudPanelHeight - 32);

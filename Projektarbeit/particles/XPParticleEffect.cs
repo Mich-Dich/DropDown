@@ -58,7 +58,7 @@ namespace Projektarbeit.particles
                     break;
             }
 
-            float scatterRadius = 8.0f;
+            float scatterRadius = 8.0f;  
 
             for (int i = 0; i < amount; i++)
             {

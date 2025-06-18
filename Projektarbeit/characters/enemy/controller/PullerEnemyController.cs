@@ -24,12 +24,12 @@ namespace Projektarbeit.characters.enemy.controller
         private List<Character> CreateEnemies(Vector2 origin)
         {
             var enemies = new List<Character>();
-            int enemyCount = random.Next(1, 6);
+            // Spawn only 1 enemy - the wave system controls the number through spawners
+            int enemyCount = 1;
 
             for (int i = 0; i < enemyCount; i++)
             {
-                var enemy = CreateEnemy(origin);
-                enemies.Add(enemy);
+                enemies.Add(CreateEnemy(origin));
             }
 
             return enemies;
@@ -68,6 +68,11 @@ namespace Projektarbeit.characters.enemy.controller
             Game.Instance.get_active_map().allCharacter.Remove(enemy);
             characters.Remove(enemy);
             Game.Instance.Score++;
+            
+            // Update wave progress
+            var currentWave = Projektarbeit.Levels.Wave.GetCurrentWave();
+            currentWave?.EnemyDefeated();
+            
             Console.WriteLine("PullerEnemyController: MarkEnemyAsDead");
             Console.WriteLine("Score: " + Game.Instance.Score);
         }
