@@ -165,7 +165,7 @@ namespace Core.Particles {
 
             // Set OpenGL state
             GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Disable(EnableCap.DepthTest);
 
             // Check for OpenGL errors
