@@ -1,4 +1,3 @@
-
 using Box2DX.Common;
 using Core.controllers;
 using Core.Controllers.ai;
@@ -170,10 +169,15 @@ namespace Core.world
         public void add_power_up(PowerUp power_up)
         {
             if (all_power_ups.Contains(power_up))
+            {
+                Console.WriteLine($"[Character] PowerUp {power_up.GetType().Name} already exists in all_power_ups");
                 return;
+            }
 
+            Console.WriteLine($"[Character] Adding powerup {power_up.GetType().Name} to player");
             all_power_ups.Add(power_up);
             power_up.activation(this);
+            Console.WriteLine($"[Character] PowerUp {power_up.GetType().Name} activation called");
         }
 
         public void force_remove_power_up(PowerUp power_up)
@@ -274,23 +278,6 @@ namespace Core.world
 
             if (health < health_max)
                 health += (auto_heal_amout * deltaTime);
-
-            if (all_power_ups.Count >= 0)
-            {
-                List<PowerUp> power_ups_to_remove = new();
-
-                foreach (var powerup in all_power_ups)
-                {
-                    if (Game_Time.total >= powerup.ActivationTime + powerup.Duration)
-                    {
-                        powerup.deactivation(this);
-                        power_ups_to_remove.Add(powerup);
-                    }
-                }
-
-                foreach (var powerup in power_ups_to_remove)
-                    all_power_ups.Remove(powerup);
-            }
 
             UpdateHealthRatio();
         }

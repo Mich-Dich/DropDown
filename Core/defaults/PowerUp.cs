@@ -1,4 +1,3 @@
-
 using Box2DX.Collision;
 using Box2DX.Dynamics;
 using Core.physics;
@@ -46,11 +45,29 @@ namespace Core.defaults
 
         public override void Update(float deltaTime)
         {
-            if (live_time > 0f)
+            base.Update(deltaTime);
+            
+            // Only check duration for powerups that have a duration > 0
+            if (Duration > 0f && IsActivated)
             {
                 if (Game_Time.total >= ActivationTime + Duration)
                 {
-                    destruction();
+                    // Call deactivation before destruction
+                    if (deactivation != null)
+                    {
+                        deactivation(Game.Instance.player);
+                    }
+                    
+                    if (destruction != null)
+                    {
+                        destruction();
+                    }
+                    
+                    // Remove from player's active powerups
+                    Game.Instance.player.ActivePowerUps.Remove(this);
+                    Game.Instance.player.all_power_ups.Remove(this);
+                    
+                    // Remove from map
                     Game.Instance.get_active_map().Remove_Game_Object(this);
                 }
             }
@@ -60,13 +77,15 @@ namespace Core.defaults
         {
             if (hit.hit_object == Game.Instance.player)
             {
+                Console.WriteLine($"[PowerUp] {GetType().Name} collected by player");
+                
                 if (!IsActivated)
                 {
                     Game.Instance.player.add_power_up(this);
                     IsActivated = true;
+                    ActivationTime = Game_Time.total;
+                    Console.WriteLine($"[PowerUp] {GetType().Name} activated at time {ActivationTime}");
                 }
-
-                ActivationTime = Game_Time.total;
 
                 Game.Instance.get_active_map().Remove_Game_Object(this);
             }

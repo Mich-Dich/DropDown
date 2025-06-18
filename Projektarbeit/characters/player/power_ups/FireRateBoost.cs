@@ -14,9 +14,10 @@ namespace Projektarbeit.characters.player.power_ups
         public FireRateBoost(Vector2 position, float fireDelayDecrease, float duration)
             : base(position, new Vector2(30, 30), new Sprite(new Texture("assets/textures/power-ups/firerate_increaser.png")))
         {
-            IconPath = "assets/textures/abilities/fireboost.png";
+            IconPath = "assets/textures/power-ups/firerate_increaser.png";
             activation = ActivatePowerUp;
             deactivation = DeactivatePowerUp;
+            destruction = () => { };
 
             Name = "FireRateBoost";
             Description = "Decreases the fire delay.";
@@ -47,7 +48,9 @@ namespace Projektarbeit.characters.player.power_ups
             if (Core.Game.Instance.playerController is PC_main pcMain)
             {
                 originalFireDelay = pcMain.character.fireDelay;
+                float oldFireDelay = pcMain.character.fireDelay;
                 pcMain.character.fireDelay -= FireDelayDecrease;
+                Console.WriteLine($"FireRateBoost: {oldFireDelay} -> {pcMain.character.fireDelay} (-{FireDelayDecrease}) for {Duration} seconds");
             }
         }
 
@@ -57,7 +60,9 @@ namespace Projektarbeit.characters.player.power_ups
 
             if (Core.Game.Instance.playerController is PC_main pcMain)
             {
+                float oldFireDelay = pcMain.character.fireDelay;
                 pcMain.character.fireDelay = originalFireDelay;
+                Console.WriteLine($"FireRateBoost deactivated: {oldFireDelay} -> {pcMain.character.fireDelay} (restored)");
             }
         }
 

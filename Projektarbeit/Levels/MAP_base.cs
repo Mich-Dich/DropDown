@@ -26,6 +26,16 @@
         private bool bossFightTriggered = false;
         private int lastScore;
 
+        // Improved powerup spawning system
+        private float lastHealthPowerupSpawnTime = 0f;
+        private float lastSpeedPowerupSpawnTime = 0f;
+        private float lastFireRatePowerupSpawnTime = 0f;
+        private const float HealthPowerupCooldown = 15f; // 15 seconds between health powerups
+        private const float SpeedPowerupCooldown = 20f;  // 20 seconds between speed powerups
+        private const float FireRatePowerupCooldown = 25f; // 25 seconds between fire rate powerups
+        private int consecutiveHealthPowerups = 0;
+        private const int MaxConsecutiveHealthPowerups = 2;
+
         // Timestamp for triggering shockwaves
         private float shockwaveTimeStamp = 0f;
 
@@ -108,7 +118,6 @@
             }
 
             CheckScoreGoal();
-
         }
 
         private void CheckScoreGoal() {
@@ -146,13 +155,19 @@
 
         private void InitializePowerUps() {
             powerUps = new Dictionary<int, Func<Vector2, PowerUp>>();
+            
+            // TEMPORARY: Ensure powerups are unlocked for testing
+            EnsurePowerUpsUnlocked();
+            
             var unlockedPowerUps = Game.Instance.GameState.PowerUps.Where(p => !p.IsLocked).ToList();
             Console.WriteLine($"Unlocked power-ups: {unlockedPowerUps.Count}");
+            
             for (int i = 0; i < unlockedPowerUps.Count; i++) {
                 var powerUp = unlockedPowerUps[i];
                 powerUps.Add(i, powerUpPosition => {
                     PowerUp instance = null;
                     var saveData = Game.Instance.GameState.PowerUpsSaveData.FirstOrDefault(p => p.PowerUpType == powerUp.GetType().Name);
+                    
                     if (saveData != null) {
                         if (powerUp.GetType() == typeof(SpeedBoost))
                             instance = new SpeedBoost(powerUpPosition, saveData.SpeedBoost, saveData.Duration);
@@ -162,11 +177,62 @@
                             instance = new HealthIncrease(powerUpPosition);
                     }
 
+                    if (instance == null) {
+                        // Fallback to default values if no save data
+                        if (powerUp.GetType() == typeof(SpeedBoost))
+                            instance = new SpeedBoost(powerUpPosition, 300f, 3f);
+                        else if (powerUp.GetType() == typeof(FireRateBoost))
+                            instance = new FireRateBoost(powerUpPosition, 0.1f, 4f);
+                        else if (powerUp.GetType() == typeof(HealthIncrease))
+                            instance = new HealthIncrease(powerUpPosition);
+                    }
+
                     if (instance == null)
                         throw new InvalidOperationException($"Failed to create an instance of {powerUp.GetType().Name}");
 
                     return instance;
                 });
+            }
+        }
+
+        private void EnsurePowerUpsUnlocked() {
+            // Ensure all powerup types exist and are unlocked for testing
+            var existingPowerUps = Game.Instance.GameState.PowerUps;
+            
+            // Check for SpeedBoost
+            if (!existingPowerUps.Any(p => p.GetType() == typeof(SpeedBoost))) {
+                var speedBoost = new SpeedBoost(new Vector2(999, 999), 300f, 3f);
+                speedBoost.IsLocked = false;
+                speedBoost.Level = 1;
+                Game.Instance.GameState.PowerUps.Add(speedBoost);
+                Console.WriteLine("[PowerUp] Added and unlocked SpeedBoost for testing");
+            }
+            
+            // Check for FireRateBoost
+            if (!existingPowerUps.Any(p => p.GetType() == typeof(FireRateBoost))) {
+                var fireRateBoost = new FireRateBoost(new Vector2(999, 999), 0.1f, 4f);
+                fireRateBoost.IsLocked = false;
+                fireRateBoost.Level = 1;
+                Game.Instance.GameState.PowerUps.Add(fireRateBoost);
+                Console.WriteLine("[PowerUp] Added and unlocked FireRateBoost for testing");
+            }
+            
+            // Check for HealthIncrease
+            if (!existingPowerUps.Any(p => p.GetType() == typeof(HealthIncrease))) {
+                var healthIncrease = new HealthIncrease(new Vector2(999, 999));
+                healthIncrease.IsLocked = false;
+                healthIncrease.Level = 1;
+                Game.Instance.GameState.PowerUps.Add(healthIncrease);
+                Console.WriteLine("[PowerUp] Added and unlocked HealthIncrease for testing");
+            }
+            
+            // Unlock any locked powerups for testing
+            foreach (var powerUp in Game.Instance.GameState.PowerUps) {
+                if (powerUp.IsLocked) {
+                    powerUp.IsLocked = false;
+                    powerUp.Level = 1;
+                    Console.WriteLine($"[PowerUp] Unlocked {powerUp.GetType().Name} for testing");
+                }
             }
         }
 
@@ -203,40 +269,223 @@
 
         private void SpawnPowerUps() {
             if (!Game.Instance.GameState.PowerUps.Any(p => !p.IsLocked))
+            {
+                Console.WriteLine("[PowerUp] No unlocked powerups available");
                 return;
+            }
 
-            double spawnRate = Core.Game.Instance.player.health < 50 ? 0.2 : 0.1;
+            // Don't spawn if we already have too many powerups
+            if (allPowerUps.Count >= MaxPowerUps)
+            {
+                Console.WriteLine($"[PowerUp] Max powerups reached ({allPowerUps.Count}/{MaxPowerUps})");
+                return;
+            }
 
-            if (random.NextDouble() < spawnRate && allPowerUps.Count < MaxPowerUps) {
-                Vector2 powerUpPosition = new(random.Next(-400, 400), random.Next(-400, 400));
-
-                if (ShouldSpawnHealthBoost()) {
-                    var healthBoost = new HealthIncrease(powerUpPosition);
-                    Add_Game_Object(healthBoost);
-                    allPowerUps.Add(healthBoost);
+            // Calculate base spawn rate based on difficulty
+            float baseSpawnRate = CalculateBaseSpawnRate();
+            
+            Console.WriteLine($"[PowerUp] Spawn check - Rate: {baseSpawnRate:F3}, Current: {allPowerUps.Count}/{MaxPowerUps}");
+            
+            if (random.NextDouble() < baseSpawnRate) {
+                Vector2 powerUpPosition = GetPowerUpSpawnPosition();
+                PowerUp powerUpToSpawn = DeterminePowerUpToSpawn();
+                
+                if (powerUpToSpawn != null) {
+                    powerUpToSpawn.transform.position = powerUpPosition;
+                    Add_Game_Object((Game_Object)powerUpToSpawn);
+                    allPowerUps.Add(powerUpToSpawn);
+                    Console.WriteLine($"[PowerUp] Spawned {powerUpToSpawn.GetType().Name} at {powerUpPosition}");
                 } else {
-                    SpawnPowerUp(powerUpPosition);
+                    Console.WriteLine("[PowerUp] Failed to determine powerup to spawn");
                 }
+            } else {
+                Console.WriteLine("[PowerUp] Spawn check failed (random roll)");
             }
         }
 
-        private bool ShouldSpawnHealthBoost() {
-            if (!Game.Instance.GameState.PowerUps.Any(p => p.GetType() == typeof(HealthIncrease) && !p.IsLocked))
-                return false;
-
-            double spawnRate = Core.Game.Instance.player.health < 50 ? 0.7 : 0.5;
-            return random.NextDouble() < spawnRate;
+        private float CalculateBaseSpawnRate() {
+            float playerHealth = Core.Game.Instance.player.health;
+            float playerHealthRatio = playerHealth / Core.Game.Instance.player.health_max;
+            int currentWave = Wave.currentWave;
+            
+            // Base spawn rate increases with difficulty and decreases with player health
+            float baseRate = 0.05f; // 5% base chance
+            
+            // Increase spawn rate when player is low on health
+            if (playerHealthRatio < 0.3f) {
+                baseRate += 0.15f; // +15% when health < 30%
+            } else if (playerHealthRatio < 0.5f) {
+                baseRate += 0.10f; // +10% when health < 50%
+            } else if (playerHealthRatio < 0.7f) {
+                baseRate += 0.05f; // +5% when health < 70%
+            }
+            
+            // Increase spawn rate with wave difficulty (but cap it)
+            float waveBonus = Math.Min(currentWave * 0.01f, 0.10f); // Max 10% bonus from waves
+            baseRate += waveBonus;
+            
+            // Cap the maximum spawn rate
+            return Math.Min(baseRate, 0.25f); // Max 25% spawn rate
         }
 
-        private void SpawnPowerUp(Vector2 powerUpPosition) {
-            int powerUpType = random.Next(0, powerUps.Count);
-            if (powerUps.ContainsKey(powerUpType)) {
-                var powerUp = powerUps[powerUpType](powerUpPosition);
-                powerUp.transform.position = powerUpPosition;
-                Add_Game_Object((Game_Object)powerUp);
-                allPowerUps.Add(powerUp);
-            } else
-                Console.WriteLine($"Error: PowerUp type {powerUpType} does not exist.");
+        private Vector2 GetPowerUpSpawnPosition() {
+            // Spawn powerups in a safe area away from edges
+            float x = random.Next(-300, 300);
+            float y = random.Next(-300, 300);
+            return new Vector2(x, y);
+        }
+
+        private PowerUp DeterminePowerUpToSpawn() {
+            var player = Core.Game.Instance.player;
+            float currentTime = Game_Time.total;
+            
+            Console.WriteLine($"[PowerUp] Determining powerup to spawn - Health: {player.health}/{player.health_max} ({player.health/player.health_max:F2})");
+            
+            // Check if we should spawn health powerup
+            if (ShouldSpawnHealthPowerup(currentTime)) {
+                var healthPowerup = new HealthIncrease(Vector2.Zero);
+                lastHealthPowerupSpawnTime = currentTime;
+                consecutiveHealthPowerups++;
+                Console.WriteLine($"[PowerUp] Selected HealthIncrease (consecutive: {consecutiveHealthPowerups})");
+                return healthPowerup;
+            }
+            
+            // Check if we should spawn speed powerup
+            if (ShouldSpawnSpeedPowerup(currentTime)) {
+                var speedPowerup = CreateSpeedPowerup();
+                lastSpeedPowerupSpawnTime = currentTime;
+                consecutiveHealthPowerups = 0; // Reset health powerup counter
+                Console.WriteLine("[PowerUp] Selected SpeedBoost");
+                return speedPowerup;
+            }
+            
+            // Check if we should spawn fire rate powerup
+            if (ShouldSpawnFireRatePowerup(currentTime)) {
+                var fireRatePowerup = CreateFireRatePowerup();
+                lastFireRatePowerupSpawnTime = currentTime;
+                consecutiveHealthPowerups = 0; // Reset health powerup counter
+                Console.WriteLine("[PowerUp] Selected FireRateBoost");
+                return fireRatePowerup;
+            }
+            
+            // If no specific powerup should spawn, randomly choose one (excluding health if we've spawned too many)
+            var randomPowerup = GetRandomPowerup();
+            if (randomPowerup != null) {
+                Console.WriteLine($"[PowerUp] Selected random powerup: {randomPowerup.GetType().Name}");
+            } else {
+                Console.WriteLine("[PowerUp] No powerup selected");
+            }
+            return randomPowerup;
+        }
+
+        private bool ShouldSpawnHealthPowerup(float currentTime) {
+            // Check if health powerup is unlocked
+            if (!Game.Instance.GameState.PowerUps.Any(p => p.GetType() == typeof(HealthIncrease) && !p.IsLocked))
+            {
+                Console.WriteLine("[PowerUp] HealthIncrease not unlocked");
+                return false;
+            }
+            
+            // Check cooldown
+            if (currentTime - lastHealthPowerupSpawnTime < HealthPowerupCooldown)
+            {
+                float remainingCooldown = HealthPowerupCooldown - (currentTime - lastHealthPowerupSpawnTime);
+                Console.WriteLine($"[PowerUp] HealthIncrease on cooldown: {remainingCooldown:F1}s remaining");
+                return false;
+            }
+            
+            // Check consecutive spawn limit
+            if (consecutiveHealthPowerups >= MaxConsecutiveHealthPowerups)
+            {
+                Console.WriteLine($"[PowerUp] HealthIncrease consecutive limit reached: {consecutiveHealthPowerups}/{MaxConsecutiveHealthPowerups}");
+                return false;
+            }
+            
+            var player = Core.Game.Instance.player;
+            float healthRatio = player.health / player.health_max;
+            
+            // Higher chance when health is low
+            float spawnChance = 0.0f;
+            if (healthRatio < 0.2f) spawnChance = 0.8f;      // 80% chance when health < 20%
+            else if (healthRatio < 0.4f) spawnChance = 0.6f; // 60% chance when health < 40%
+            else if (healthRatio < 0.6f) spawnChance = 0.4f; // 40% chance when health < 60%
+            else if (healthRatio < 0.8f) spawnChance = 0.2f; // 20% chance when health < 80%
+            else spawnChance = 0.05f;                        // 5% chance when health >= 80%
+            
+            bool shouldSpawn = random.NextDouble() < spawnChance;
+            Console.WriteLine($"[PowerUp] HealthIncrease check - Health: {healthRatio:F2}, Chance: {spawnChance:F2}, Result: {shouldSpawn}");
+            return shouldSpawn;
+        }
+
+        private bool ShouldSpawnSpeedPowerup(float currentTime) {
+            // Check if speed powerup is unlocked
+            if (!Game.Instance.GameState.PowerUps.Any(p => p.GetType() == typeof(SpeedBoost) && !p.IsLocked))
+                return false;
+            
+            // Check cooldown
+            if (currentTime - lastSpeedPowerupSpawnTime < SpeedPowerupCooldown)
+                return false;
+            
+            // Random chance based on difficulty
+            float spawnChance = 0.3f; // 30% base chance
+            return random.NextDouble() < spawnChance;
+        }
+
+        private bool ShouldSpawnFireRatePowerup(float currentTime) {
+            // Check if fire rate powerup is unlocked
+            if (!Game.Instance.GameState.PowerUps.Any(p => p.GetType() == typeof(FireRateBoost) && !p.IsLocked))
+                return false;
+            
+            // Check cooldown
+            if (currentTime - lastFireRatePowerupSpawnTime < FireRatePowerupCooldown)
+                return false;
+            
+            // Random chance based on difficulty
+            float spawnChance = 0.25f; // 25% base chance
+            return random.NextDouble() < spawnChance;
+        }
+
+        private PowerUp CreateSpeedPowerup() {
+            var saveData = Game.Instance.GameState.PowerUpsSaveData.FirstOrDefault(p => p.PowerUpType == "SpeedBoost");
+            if (saveData != null) {
+                return new SpeedBoost(Vector2.Zero, saveData.SpeedBoost, saveData.Duration);
+            }
+            return new SpeedBoost(Vector2.Zero, 300f, 3f);
+        }
+
+        private PowerUp CreateFireRatePowerup() {
+            var saveData = Game.Instance.GameState.PowerUpsSaveData.FirstOrDefault(p => p.PowerUpType == "FireRateBoost");
+            if (saveData != null) {
+                return new FireRateBoost(Vector2.Zero, saveData.FireDelayDecrease, saveData.Duration);
+            }
+            return new FireRateBoost(Vector2.Zero, 0.1f, 4f);
+        }
+
+        private PowerUp GetRandomPowerup() {
+            var unlockedPowerUps = Game.Instance.GameState.PowerUps.Where(p => !p.IsLocked).ToList();
+            if (unlockedPowerUps.Count == 0) return null;
+            
+            // Exclude health powerup if we've spawned too many recently
+            var availablePowerUps = unlockedPowerUps;
+            if (consecutiveHealthPowerups >= MaxConsecutiveHealthPowerups) {
+                availablePowerUps = unlockedPowerUps.Where(p => p.GetType() != typeof(HealthIncrease)).ToList();
+            }
+            
+            if (availablePowerUps.Count == 0) return null;
+            
+            var selectedPowerUp = availablePowerUps[random.Next(availablePowerUps.Count)];
+            
+            // Create the powerup based on type
+            if (selectedPowerUp.GetType() == typeof(SpeedBoost)) {
+                return CreateSpeedPowerup();
+            } else if (selectedPowerUp.GetType() == typeof(FireRateBoost)) {
+                return CreateFireRatePowerup();
+            } else if (selectedPowerUp.GetType() == typeof(HealthIncrease)) {
+                consecutiveHealthPowerups++;
+                return new HealthIncrease(Vector2.Zero);
+            }
+            
+            return null;
         }
     }
 }
