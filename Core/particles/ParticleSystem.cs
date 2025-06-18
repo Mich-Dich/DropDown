@@ -160,22 +160,40 @@ namespace Core.Particles {
             _activeParticleCount = particleCount;
         }
 
-        public void Render() {
+        public void Render()
+        {
+            // Don't render if there's nothing to draw
+            if (_activeParticleCount == 0) return;
+
+            // Ensure our specific particle shader is active before setting uniforms
+            _shader.Use();
             GL.BindVertexArray(_vao);
 
-            // Set OpenGL state
+            // Set shared OpenGL state
             GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Disable(EnableCap.DepthTest);
 
-            // Check for OpenGL errors
-            ErrorCode error = GL.GetError();
-            if(error != ErrorCode.NoError)
-                Console.WriteLine($"OpenGL Error after setting uniform: {error}");
+            // ===== PASS 1: DETAIL & CORE (Standard Blending) =====
+            // This pass draws the main body of the particle with high contrast.
+            _shader.SetUniform("renderPass", 0);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            // Draw particles
+            // Draw the particles for the first time
             GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _activeParticleCount);
+
+            // ===== PASS 2: GLOW & SPARKLES (Additive Blending) =====
+            // This pass adds a soft, emissive glow and bright sparkles on top.
+            _shader.SetUniform("renderPass", 1);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One); // Additive blending for the glow
+
+            // Draw the exact same particles a second time with different shader logic
+            GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _activeParticleCount);
+
+            // Unbind the VAO to be tidy
             GL.BindVertexArray(0);
+
+            // It's good practice to reset the blend func if other parts of your renderer expect a default
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         }
 
     }

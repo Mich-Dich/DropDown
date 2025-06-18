@@ -133,6 +133,16 @@ namespace Core.render.shaders
             GL.Uniform1(location, value);
         }
 
+        public void SetUniform(string name, int value)
+        {
+            if (!uniforms.TryGetValue(name, out int location))
+            {
+                Console.WriteLine($"Uniform {name} not found.");
+                return;
+            }
+            GL.Uniform1(location, value);
+        }
+
         public void SetUniform(string name, Vector3 value)
         {
             int location = GL.GetUniformLocation(programmId, name);
