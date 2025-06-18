@@ -1,92 +1,100 @@
 using Core.defaults;
 using System.Numerics;
-using ImGuiNET;
+using Core.UI;
 using Projektarbeit.characters.player.abilities;
 using Core.util;
+using System.Collections.Generic;
 
 namespace Projektarbeit.UI.SkillTrees
 {
     public class PowerupUpgradeDialog
     {
         public bool IsOpen { get; private set; }
+        private List<UIElement> dialogElements = new List<UIElement>();
+        private PowerUp currentPowerUp;
+        private bool needsUpdate = true;
 
-        public PowerupUpgradeDialog()
-        {
-            IsOpen = false;
-        }
-
-        public void Open()
-        {
-            IsOpen = true;
-        }
-
-        public void Close()
-        {
-            IsOpen = false;
-        }
+        public PowerupUpgradeDialog() { IsOpen = false; }
+        public void Open() { IsOpen = true; }
+        public void Close() { IsOpen = false; }
 
         public void Render(PowerUp powerUp)
         {
-            if (!IsOpen)
+            if (!IsOpen || powerUp == null) return;
+            currentPowerUp = powerUp;
+            if (needsUpdate)
             {
-                return;
+                UpdateDialogContent();
+                needsUpdate = false;
             }
+            foreach (var el in dialogElements) el.Render();
+        }
 
-            Vector2 Size = new Vector2(400, 200);
-            Vector2 Position = new Vector2(Core.Game.Instance.window.Size.X / 2 - Size.X / 2, Core.Game.Instance.window.Size.Y / 2 - Size.Y / 2);
-            ImGui.SetNextWindowPos(Position);
-            ImGui.SetNextWindowSize(Size);
-            ImGui.Begin("PopupWindow", ImGuiWindowFlags.NoDecoration);
-
-            Vector2 windowSize = ImGui.GetWindowSize();
-            Vector2 nameSize = ImGui.CalcTextSize(powerUp.Name);
-            Vector2 descSize = ImGui.CalcTextSize(powerUp.Description);
-
-            ImGui.SetCursorPos(new Vector2((windowSize.X - nameSize.X) * 0.5f, 20));
-            ImGui.Text(powerUp.Name);
-
-            ImGui.SetCursorPos(new Vector2((windowSize.X - descSize.X) * 0.5f, nameSize.Y + 40));
-            ImGui.Text(powerUp.Description);
-
-            Vector2 levelSize = ImGui.CalcTextSize($"Level: {powerUp.Level}");
-            ImGui.SetCursorPos(new Vector2((windowSize.X - levelSize.X) * 0.5f, nameSize.Y + descSize.Y + 60));
-            ImGui.Text($"Level: {powerUp.Level}");
-
-            Vector2 upgradeCostSize = ImGui.CalcTextSize($"Upgrade Cost: {powerUp.UnlockCost}");
-            ImGui.SetCursorPos(new Vector2((windowSize.X - upgradeCostSize.X) * 0.5f, nameSize.Y + descSize.Y + levelSize.Y + 80));
-            ImGui.Text($"Upgrade Cost: {powerUp.UnlockCost}");
-
-            ImGui.SetCursorPos(new Vector2(10, windowSize.Y - 60));
-            if (ImGui.Button("<--", new Vector2(100, 50)))
+        private void UpdateDialogContent()
+        {
+            dialogElements.Clear();
+            Vector2 windowSize = new Vector2(Core.Game.Instance.window.Size.X, Core.Game.Instance.window.Size.Y);
+            float dialogWidth = 500f;
+            float dialogHeight = 400f;
+            Vector2 dialogPos = new Vector2((windowSize.X - dialogWidth) / 2, (windowSize.Y - dialogHeight) / 2);
+            dialogElements.Add(new Background(new Vector4(0, 0, 0, 0.7f)));
+            dialogElements.Add(new Card(dialogPos, new Vector2(dialogWidth, dialogHeight), "Upgrade PowerUp")
             {
-                Close();
-            }
-
-            Vector2 upgradeSize = ImGui.CalcTextSize("Upgrade");
-            ImGui.SetCursorPos(new Vector2(290, windowSize.Y - 60));
-
-            if (Core.Game.Instance.GameState.Currency < powerUp.UnlockCost)
+                BackgroundColor = new Vector4(0.1f, 0.1f, 0.2f, 0.98f),
+                GradientColor = new Vector4(0.15f, 0.1f, 0.25f, 0.98f),
+                BorderColor = new Vector4(0.4f, 0.3f, 0.6f, 1.0f),
+                BorderRadius = 20.0f,
+                ShadowOffset = 8.0f,
+                UseGradient = true
+            });
+            dialogElements.Add(new Text(dialogPos + new Vector2(dialogWidth / 2, 30), currentPowerUp.Name.ToUpper(), new Vector4(1.0f, 0.7f, 0.3f, 1.0f), 2.5f, TextAlign.Center)
             {
-                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.5f);
-            }
-
-            if (ImGui.Button("Upgrade", new Vector2(100, 50)))
+                UseShadow = true, ShadowOffset = new Vector2(2, 2), ShadowColor = new Vector4(0, 0, 0, 0.7f), UseGradient = true, GradientColor = new Vector4(1.0f, 0.9f, 0.5f, 1.0f), IsBold = true, LetterSpacing = 2.0f
+            });
+            dialogElements.Add(new Text(dialogPos + new Vector2(dialogWidth / 2, 80), currentPowerUp.Description, new Vector4(0.9f, 0.9f, 0.95f, 1.0f), 1.1f, TextAlign.Center)
             {
-                powerUp.Upgrade();
-                int index = Core.Game.Instance.GameState.PowerUps.IndexOf(powerUp);
+                UseShadow = true, ShadowOffset = new Vector2(1, 1), ShadowColor = new Vector4(0, 0, 0, 0.5f)
+            });
+            dialogElements.Add(new Text(dialogPos + new Vector2(dialogWidth / 2, 130), $"Level: {currentPowerUp.Level}", new Vector4(0.8f, 1.0f, 0.8f, 1.0f), 1.3f, TextAlign.Center)
+            {
+                UseShadow = true, ShadowOffset = new Vector2(1, 1), ShadowColor = new Vector4(0, 0, 0, 0.5f), IsBold = true
+            });
+            dialogElements.Add(new Text(dialogPos + new Vector2(dialogWidth / 2, 170), $"Upgrade Cost: {currentPowerUp.UnlockCost}", new Vector4(0.8f, 0.8f, 1.0f, 1.0f), 1.3f, TextAlign.Center)
+            {
+                UseShadow = true, ShadowOffset = new Vector2(1, 1), ShadowColor = new Vector4(0, 0, 0, 0.5f), IsBold = true
+            });
+            float buttonY = dialogPos.Y + dialogHeight - 70f;
+            float buttonWidth = 110f;
+            float buttonHeight = 45f;
+            dialogElements.Add(new Button(new Vector2(dialogPos.X + 20f, buttonY), new Vector2(buttonWidth, buttonHeight), "CANCEL", () => Close(), () => { },
+                new Vector4(0.4f, 0.2f, 0.6f, 1.0f), new Vector4(0.5f, 0.3f, 0.7f, 1.0f), new Vector4(0.3f, 0.1f, 0.5f, 1.0f),
+                new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), false)
+            {
+                BorderRadius = 10.0f, UseGradient = true, UseShadow = true, ShadowOffset = 3.0f, AnimationSpeed = 0.2f
+            });
+            dialogElements.Add(new Button(new Vector2(dialogPos.X + dialogWidth - buttonWidth - 20f, buttonY), new Vector2(buttonWidth, buttonHeight), "UPGRADE", () => UpgradePowerUp(), () => { },
+                Core.Game.Instance.GameState.Currency >= currentPowerUp.UnlockCost ? new Vector4(0.2f, 0.8f, 0.3f, 1.0f) : new Vector4(0.5f, 0.5f, 0.5f, 1.0f),
+                Core.Game.Instance.GameState.Currency >= currentPowerUp.UnlockCost ? new Vector4(0.3f, 0.9f, 0.4f, 1.0f) : new Vector4(0.5f, 0.5f, 0.5f, 1.0f),
+                Core.Game.Instance.GameState.Currency >= currentPowerUp.UnlockCost ? new Vector4(0.1f, 0.7f, 0.2f, 1.0f) : new Vector4(0.5f, 0.5f, 0.5f, 1.0f),
+                new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), false)
+            {
+                BorderRadius = 10.0f, UseGradient = true, UseShadow = true, ShadowOffset = 3.0f, AnimationSpeed = 0.2f
+            });
+        }
+
+        private void UpgradePowerUp()
+        {
+            if (currentPowerUp != null && Core.Game.Instance.GameState.Currency >= currentPowerUp.UnlockCost)
+            {
+                currentPowerUp.Upgrade();
+                int index = Core.Game.Instance.GameState.PowerUps.IndexOf(currentPowerUp);
                 if (index != -1)
                 {
-                    Core.Game.Instance.GameState.PowerUps[index] = powerUp;
+                    Core.Game.Instance.GameState.PowerUps[index] = currentPowerUp;
                     GameStateManager.SaveGameState(Core.Game.Instance.GameState, "save.json");
                 }
+                needsUpdate = true;
             }
-
-            if (Core.Game.Instance.GameState.Currency < powerUp.UnlockCost)
-            {
-                ImGui.PopStyleVar();
-            }
-
-            ImGui.End();
         }
     }
 }

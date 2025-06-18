@@ -1,4 +1,3 @@
-
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -56,8 +55,12 @@ namespace Core.util
             ImGui.SetCurrentContext(context);
             var io = ImGui.GetIO();
 
-            float m_font_size = 15.5f;
-            float m_big_font_size = 20.0f;
+            // Use larger base font sizes to prevent pixelation when scaled
+            float m_font_size = 24.0f;  // Increased from 15.5f
+            float m_big_font_size = 32.0f;  // Increased from 20.0f
+            float m_giant_font_size = 48.0f;  // Increased from 30f
+            float m_small_font_size = 18.0f;  // New smaller size for UI elements
+            
             Imgui_Fonts.fonts.Add("default", io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf", m_font_size));
             Imgui_Fonts.fonts.Add("bold", io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", m_font_size));
             Imgui_Fonts.fonts.Add("italic", io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Italic.ttf", m_font_size));
@@ -66,9 +69,13 @@ namespace Core.util
             Imgui_Fonts.fonts.Add("bold_big", io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", m_big_font_size));
             Imgui_Fonts.fonts.Add("italic_big", io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Italic.ttf", m_big_font_size));
 
-            Imgui_Fonts.fonts.Add("giant", io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", 30));
+            Imgui_Fonts.fonts.Add("giant", io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", m_giant_font_size));
+            Imgui_Fonts.fonts.Add("small", io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Regular.ttf", m_small_font_size));
+            Imgui_Fonts.fonts.Add("small_bold", io.Fonts.AddFontFromFileTTF("assets/fonts/Open_Sans/static/OpenSans-Bold.ttf", m_small_font_size));
 
-            // io.FontDefault = Imgui_Fonts.fonts["default"];
+            // Note: FontDefault is read-only, so we can't set it here
+            // The default font will be used automatically
+
             io.BackendFlags |= ImGuiBackendFlags.PlatformHasViewports;
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
 

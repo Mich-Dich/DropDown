@@ -40,7 +40,7 @@ namespace Projektarbeit.UI
                 buttonSize,
                 "  ", // Button text
                 () => Game.Instance.StartGame(),
-                null,
+                () => { },
                 new Vector4(0.2f, 0.7f, 0.2f, 0), // Visible color
                 new Vector4(0.0f, 0.8f, 0.1f, 0), // Visible hover color
                 new Vector4(0.1f, 0.5f, 0.1f, 0), // Visible click color
@@ -61,7 +61,7 @@ namespace Projektarbeit.UI
                     Game.Instance.play_state = Play_State.main_menu;
                     Game.Instance.set_active_map(new MAP_main_menu());
                 },
-                null,
+                () => { },
                 new Vector4(0.2f, 0.7f, 0.2f, 0), // Visible color
                 new Vector4(0.0f, 0.8f, 0.1f, 0), // Visible hover color
                 new Vector4(0.1f, 0.5f, 0.1f, 0), // Visible click color

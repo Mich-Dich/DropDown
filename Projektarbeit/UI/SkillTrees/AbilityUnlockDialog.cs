@@ -1,83 +1,90 @@
 using Core.defaults;
 using System.Numerics;
-using ImGuiNET;
+using Core.UI;
+using System.Collections.Generic;
 
 namespace Projektarbeit.UI.SkillTrees
 {
     public class AbilityUnlockDialog
     {
         public bool IsOpen { get; private set; }
+        private List<UIElement> dialogElements = new List<UIElement>();
+        private Ability currentAbility;
+        private bool needsUpdate = true;
 
-        public AbilityUnlockDialog()
-        {
-            IsOpen = false;
-        }
+        public AbilityUnlockDialog() { IsOpen = false; }
 
-        public void Open()
-        {
-            IsOpen = true;
-        }
-
-        public void Close()
-        {
-            IsOpen = false;
-        }
+        public void Open() { IsOpen = true; }
+        public void Close() { IsOpen = false; }
 
         public void Render(Ability ability)
         {
-            if (!IsOpen)
+            if (!IsOpen || ability == null) return;
+            currentAbility = ability;
+            if (needsUpdate)
             {
-                return;
+                UpdateDialogContent();
+                needsUpdate = false;
             }
+            foreach (var el in dialogElements) el.Render();
+        }
 
-            Vector2 Size = new Vector2(400, 200);
-            Vector2 Position = new Vector2(Core.Game.Instance.window.Size.X / 2 - Size.X / 2, Core.Game.Instance.window.Size.Y / 2 - Size.Y / 2);
-            ImGui.SetNextWindowPos(Position);
-            ImGui.SetNextWindowSize(Size);
-            ImGui.Begin("PopupWindow", ImGuiWindowFlags.NoDecoration);
-
-            Vector2 windowSize = ImGui.GetWindowSize();
-            Vector2 nameSize = ImGui.CalcTextSize(ability.Name);
-            Vector2 descSize = ImGui.CalcTextSize(ability.Description);
-
-            ImGui.SetCursorPos(new Vector2((windowSize.X - nameSize.X) * 0.5f, 20));
-            ImGui.Text(ability.Name);
-
-            ImGui.SetCursorPos(new Vector2((windowSize.X - descSize.X) * 0.5f, nameSize.Y + 40));
-            ImGui.Text(ability.Description);
-
-            Vector2 unlockCostSize = ImGui.CalcTextSize($"Unlock Cost: {ability.UnlockCost}");
-            ImGui.SetCursorPos(new Vector2((windowSize.X - unlockCostSize.X) * 0.5f, nameSize.Y + descSize.Y + 60));
-            ImGui.Text($"Unlock Cost: {ability.UnlockCost}");
-
-            ImGui.SetCursorPos(new Vector2(10, windowSize.Y - 60));
-            if (ImGui.Button("<--", new Vector2(100, 50)))
+        private void UpdateDialogContent()
+        {
+            dialogElements.Clear();
+            Vector2 windowSize = new Vector2(Core.Game.Instance.window.Size.X, Core.Game.Instance.window.Size.Y);
+            float dialogWidth = 500f;
+            float dialogHeight = 350f;
+            Vector2 dialogPos = new Vector2((windowSize.X - dialogWidth) / 2, (windowSize.Y - dialogHeight) / 2);
+            dialogElements.Add(new Background(new Vector4(0, 0, 0, 0.7f)));
+            dialogElements.Add(new Card(dialogPos, new Vector2(dialogWidth, dialogHeight), "Unlock Ability")
             {
+                BackgroundColor = new Vector4(0.1f, 0.1f, 0.2f, 0.98f),
+                GradientColor = new Vector4(0.15f, 0.1f, 0.25f, 0.98f),
+                BorderColor = new Vector4(0.4f, 0.3f, 0.6f, 1.0f),
+                BorderRadius = 20.0f,
+                ShadowOffset = 8.0f,
+                UseGradient = true
+            });
+            dialogElements.Add(new Text(dialogPos + new Vector2(dialogWidth / 2, 40), currentAbility.Name.ToUpper(), new Vector4(1.0f, 0.7f, 0.3f, 1.0f), 2.5f, TextAlign.Center)
+            {
+                UseShadow = true, ShadowOffset = new Vector2(2, 2), ShadowColor = new Vector4(0, 0, 0, 0.7f), UseGradient = true, GradientColor = new Vector4(1.0f, 0.9f, 0.5f, 1.0f), IsBold = true, LetterSpacing = 2.0f
+            });
+            dialogElements.Add(new Text(dialogPos + new Vector2(dialogWidth / 2, 100), currentAbility.Description, new Vector4(0.9f, 0.9f, 0.95f, 1.0f), 1.2f, TextAlign.Center)
+            {
+                UseShadow = true, ShadowOffset = new Vector2(1, 1), ShadowColor = new Vector4(0, 0, 0, 0.5f)
+            });
+            dialogElements.Add(new Text(dialogPos + new Vector2(dialogWidth / 2, 160), $"Unlock Cost: {currentAbility.UnlockCost}", new Vector4(0.8f, 0.8f, 1.0f, 1.0f), 1.4f, TextAlign.Center)
+            {
+                UseShadow = true, ShadowOffset = new Vector2(1, 1), ShadowColor = new Vector4(0, 0, 0, 0.5f), IsBold = true
+            });
+            float buttonY = dialogPos.Y + dialogHeight - 80f;
+            float buttonWidth = 120f;
+            float buttonHeight = 50f;
+            dialogElements.Add(new Button(new Vector2(dialogPos.X + 30f, buttonY), new Vector2(buttonWidth, buttonHeight), "CANCEL", () => Close(), () => { },
+                new Vector4(0.4f, 0.2f, 0.6f, 1.0f), new Vector4(0.5f, 0.3f, 0.7f, 1.0f), new Vector4(0.3f, 0.1f, 0.5f, 1.0f),
+                new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), false)
+            {
+                BorderRadius = 12.0f, UseGradient = true, UseShadow = true, ShadowOffset = 3.0f, AnimationSpeed = 0.2f
+            });
+            dialogElements.Add(new Button(new Vector2(dialogPos.X + dialogWidth - buttonWidth - 30f, buttonY), new Vector2(buttonWidth, buttonHeight), "UNLOCK", () => UnlockAbility(), () => { },
+                Core.Game.Instance.GameState.Currency >= currentAbility.UnlockCost ? new Vector4(0.2f, 0.8f, 0.3f, 1.0f) : new Vector4(0.5f, 0.5f, 0.5f, 1.0f),
+                Core.Game.Instance.GameState.Currency >= currentAbility.UnlockCost ? new Vector4(0.3f, 0.9f, 0.4f, 1.0f) : new Vector4(0.5f, 0.5f, 0.5f, 1.0f),
+                Core.Game.Instance.GameState.Currency >= currentAbility.UnlockCost ? new Vector4(0.1f, 0.7f, 0.2f, 1.0f) : new Vector4(0.5f, 0.5f, 0.5f, 1.0f),
+                new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(1.0f, 1.0f, 1.0f, 1.0f), false)
+            {
+                BorderRadius = 12.0f, UseGradient = true, UseShadow = true, ShadowOffset = 3.0f, AnimationSpeed = 0.2f
+            });
+        }
+
+        private void UnlockAbility()
+        {
+            if (currentAbility != null && Core.Game.Instance.GameState.Currency >= currentAbility.UnlockCost)
+            {
+                currentAbility.Unlock();
+                needsUpdate = true;
                 Close();
             }
-
-            Vector2 unlockSize = ImGui.CalcTextSize("Unlock");
-            ImGui.SetCursorPos(new Vector2(windowSize.X - unlockSize.X - 70, windowSize.Y - 60));
-
-            if (Core.Game.Instance.GameState.Currency < ability.UnlockCost)
-            {
-                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.5f);
-            }
-
-            if (ImGui.Button("Unlock", new Vector2(100, 50)))
-            {
-                if (Core.Game.Instance.GameState.Currency >= ability.UnlockCost)
-                {
-                    ability.Unlock();
-                }
-            }
-
-            if (Core.Game.Instance.GameState.Currency < ability.UnlockCost)
-            {
-                ImGui.PopStyleVar();
-            }
-
-            ImGui.End();
         }
     }
 }

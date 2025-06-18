@@ -1,4 +1,3 @@
-
 using ImGuiNET;
 
 namespace Core.UI
@@ -18,19 +17,21 @@ namespace Core.UI
         {
             ImGuiIOPtr io = ImGui.GetIO();
 
+            // Use a single full-screen window for the entire menu to prevent input capture issues
             ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration
                 | ImGuiWindowFlags.NoDocking
-                | ImGuiWindowFlags.AlwaysAutoResize
                 | ImGuiWindowFlags.NoSavedSettings
                 | ImGuiWindowFlags.NoFocusOnAppearing
                 | ImGuiWindowFlags.NoNav
                 | ImGuiWindowFlags.NoMove
-                | ImGuiWindowFlags.NoBackground;
+                | ImGuiWindowFlags.NoBackground
+                | ImGuiWindowFlags.NoInputs; // This prevents the window from capturing input
 
             ImGui.SetNextWindowBgAlpha(0f);
-            ImGui.SetNextWindowPos(new System.Numerics.Vector2(10, io.DisplaySize.Y - 10), ImGuiCond.Always, new System.Numerics.Vector2(0, 1));
+            ImGui.SetNextWindowPos(System.Numerics.Vector2.Zero, ImGuiCond.Always);
+            ImGui.SetNextWindowSize(io.DisplaySize, ImGuiCond.Always);
 
-            ImGui.Begin("HUD", window_flags);
+            ImGui.Begin("MenuContainer", window_flags);
 
             custom_UI_logic_bevor_elements?.Invoke();
 
