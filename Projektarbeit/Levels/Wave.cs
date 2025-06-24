@@ -166,8 +166,8 @@ namespace Projektarbeit.Levels
 
         private static WaveType DetermineWaveType(int waveNumber)
         {
-            if (waveNumber <= 10) return WaveType.Tutorial;
-            if (waveNumber % 10 == 0) return WaveType.Boss;
+            if (waveNumber <= 7) return WaveType.Tutorial; // Tutorial up to wave 7
+            if (waveNumber == 8 || (waveNumber > 8 && (waveNumber - 8) % 10 == 0)) return WaveType.Boss; // Boss at wave 8, then every 10th wave after (18, 28, 38, etc.)
             if (waveNumber % 25 == 0) return WaveType.Challenge;
             if (waveNumber >= 51) return WaveType.BulletHell;
             return WaveType.Standard;
@@ -186,112 +186,110 @@ namespace Projektarbeit.Levels
 
         private static void GenerateTutorialWave(List<Spawner> spawners, int waveNumber)
         {
-            // Tutorial waves: Introduce mechanics gradually with more action
+            // Tutorial waves: Fast-paced action from the start with better spawning
             switch (waveNumber)
             {
-                case 1: // 15 enemies - More action from the start
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 4, 4, 6, 0, 2);
+                case 1: // 24 enemies - Much more action from the start
+                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 4, 3, 0, 1);
                     break;
-                case 2: // 22 enemies - Add tanks with more swarm
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 4, 4, 6, 0, 2);
-                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 6, 12, 8, 0);
+                case 2: // 28 enemies - Add fewer tanks with faster spawning
+                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 4, 3, 0, 1);
+                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 4, 8, 2, 1);
                     break;
-                case 3: // 30 enemies - Add snipers with more variety
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 4, 5, 6, 0, 2);
-                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 4, 12, 8, 0);
-                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 1, 6, 10, 10, 0);
+                case 3: // 36 enemies - Add snipers with balanced tanks
+                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 5, 3, 0, 1);
+                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, 3, 8, 2, 1);
+                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 3, 3, 4, 4, 1);
                     break;
-                case 4: // 38 enemies - More variety and intensity
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 4, 6, 6, 0, 2);
-                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 5, 12, 8, 0);
-                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 1, 4, 10, 10, 0);
+                case 4: // 45 enemies - More balanced variety
+                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 6, 3, 0, 1);
+                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, 3, 8, 2, 1);
+                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 3, 4, 4, 4, 1);
                     break;
-                case 5: // 45 enemies - Add explosive enemies with more action
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 4, 7, 6, 0, 2);
-                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 5, 12, 8, 0);
-                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 1, 5, 10, 10, 0);
+                case 5: // 54 enemies - Add explosive enemies with fast action
+                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 7, 3, 0, 1);
+                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, 3, 8, 2, 1);
+                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 3, 4, 4, 4, 1);
+                    AddSpawnerGroup(spawners, typeof(ExplosivEnemyController), 2, 3, 6, 6, 1);
                     break;
-                case 6: // 52 enemies - More explosive action
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 4, 8, 6, 0, 2);
-                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 6, 12, 8, 0);
-                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 1, 5, 10, 10, 0);
+                case 6: // 63 enemies - Explosive action intensifies
+                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 8, 3, 0, 1);
+                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, 4, 6, 2, 1);
+                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 3, 5, 4, 4, 1);
+                    AddSpawnerGroup(spawners, typeof(ExplosivEnemyController), 2, 3, 6, 6, 1);
                     break;
-                case 7: // 60 enemies - Intense action
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 4, 9, 6, 0, 2);
-                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 6, 12, 8, 0);
-                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 1, 6, 10, 10, 0);
+                case 7: // 72 enemies - Intense multi-enemy action
+                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 9, 3, 0, 0.5f);
+                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, 4, 6, 2, 0.5f);
+                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 3, 6, 4, 4, 0.5f);
+                    AddSpawnerGroup(spawners, typeof(ExplosivEnemyController), 2, 3, 5, 6, 0.5f);
                     break;
-                case 8: // 68 enemies - Bullet hell begins
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 4, 10, 6, 0, 2);
-                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 7, 12, 8, 0);
-                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 1, 6, 10, 10, 0);
+                case 8: // 81 enemies - Bullet hell intensity with reasonable tanks
+                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 10, 2.5f, 0, 0.5f);
+                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, 5, 6, 2, 0.5f);
+                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 4, 6, 3.5f, 4, 0.5f);
+                    AddSpawnerGroup(spawners, typeof(ExplosivEnemyController), 2, 4, 5, 6, 0.5f);
                     break;
-                case 9: // 75 enemies - Maximum intensity
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 4, 11, 6, 0, 2);
-                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 7, 12, 8, 0);
-                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 1, 7, 10, 10, 0);
+                case 9: // 90 enemies - Maximum tutorial intensity with balanced tanks
+                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 11, 2.5f, 0, 0.5f);
+                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, 5, 6, 2, 0.5f);
+                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 4, 7, 3.5f, 4, 0.5f);
+                    AddSpawnerGroup(spawners, typeof(ExplosivEnemyController), 3, 4, 4.5f, 6, 0.5f);
                     break;
-                case 10: // Boss wave with support
+                case 10: // Boss wave - ONLY BOSS (no support)
                     AddSpawnerGroup(spawners, typeof(BossController), 1, 1, 20, 0, 0);
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 2, 4, 6, 3, 2);
-                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 2, 3, 10, 8, 2);
-                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, 3, 12, 15, 2);
                     break;
             }
         }
 
         private static void GenerateStandardWave(List<Spawner> spawners, int waveNumber, float difficultyMultiplier)
         {
-            // Standard waves: Balanced scaling with variety - more aggressive scaling
-            int baseEnemies = 20 + (waveNumber * 3); // Increased base enemies and scaling
-            int swarmCount = Math.Min(3 + (waveNumber / 4), 8); // More spawners faster
-            int tankCount = Math.Min(2 + (waveNumber / 6), 6);  // More tanks faster
-            int sniperCount = Math.Min(1 + (waveNumber / 8), 5); // More snipers faster
-            int explosiveCount = Math.Min(1 + (waveNumber / 10), 4);
+            // Standard waves: Fast-paced action with better enemy distribution
+            int baseEnemies = 30 + (waveNumber * 4); // More enemies per wave
+            int swarmCount = Math.Min(4 + (waveNumber / 3), 8); // More spawners faster
+            int tankCount = Math.Min(1 + (waveNumber / 6), 3);  // Fewer tanks (was 3+ up to 6)
+            int sniperCount = Math.Min(2 + (waveNumber / 5), 6); // More snipers faster
+            int explosiveCount = Math.Min(2 + (waveNumber / 6), 5);
 
-            // Distribute enemies based on wave characteristics - more aggressive distribution
-            int swarmEnemies = (int)(baseEnemies * 0.5f * difficultyMultiplier);
-            int tankEnemies = (int)(baseEnemies * 0.25f * difficultyMultiplier);
-            int sniperEnemies = (int)(baseEnemies * 0.15f * difficultyMultiplier);
+            // Better enemy distribution with fewer tanks
+            int swarmEnemies = (int)(baseEnemies * 0.5f * difficultyMultiplier); // More swarm
+            int tankEnemies = (int)(baseEnemies * 0.15f * difficultyMultiplier); // Fewer tanks (was 0.25f)
+            int sniperEnemies = (int)(baseEnemies * 0.25f * difficultyMultiplier); // More snipers (was 0.2f)
             int explosiveEnemies = (int)(baseEnemies * 0.1f * difficultyMultiplier);
 
-            // Add swarm enemies - faster spawning
+            // Much faster spawning rates for engaging gameplay
             AddSpawnerGroup(spawners, typeof(SwarmEnemyController), swarmCount, 
-                swarmEnemies / swarmCount, Math.Max(3, 7 - (waveNumber / 8)), 0, 1.5f);
+                Math.Max(1, swarmEnemies / swarmCount), Math.Max(2, 4 - (waveNumber / 10)), 0, 0.5f);
 
-            // Add tank enemies - faster spawning
-            AddSpawnerGroup(spawners, typeof(TankEnemyController), tankCount, 
-                tankEnemies / tankCount, Math.Max(6, 14 - (waveNumber / 12)), 5, 2f);
+            // Fewer tanks spawn at reasonable rates
+            if (tankCount > 0 && tankEnemies > 0)
+            {
+                AddSpawnerGroup(spawners, typeof(TankEnemyController), tankCount, 
+                    Math.Max(1, tankEnemies / tankCount), Math.Max(4, 8 - (waveNumber / 8)), 2, 1f);
+            }
 
-            // Add sniper enemies - faster spawning
+            // More snipers for variety
             AddSpawnerGroup(spawners, typeof(SniperEnemyController), sniperCount, 
-                sniperEnemies / sniperCount, Math.Max(5, 11 - (waveNumber / 15)), 10, 3f);
+                Math.Max(1, sniperEnemies / sniperCount), Math.Max(3, 5 - (waveNumber / 10)), 4, 0.5f);
 
-            // Add explosive enemies (every 2nd wave) - faster spawning
-            if (waveNumber % 2 == 0)
+            // Explosive enemies spawn consistently after tutorial
+            if (waveNumber >= 5)
             {
                 AddSpawnerGroup(spawners, typeof(ExplosivEnemyController), explosiveCount, 
-                    explosiveEnemies / explosiveCount, Math.Max(6, 11 - (waveNumber / 20)), 15, 4f);
+                    Math.Max(1, explosiveEnemies / explosiveCount), Math.Max(4, 6 - (waveNumber / 15)), 6, 1f);
             }
         }
 
         private static void GenerateBossWave(List<Spawner> spawners, int waveNumber, float difficultyMultiplier)
         {
-            // Boss waves: Boss with support enemies
-            int bossLevel = waveNumber / 10;
+            // Boss waves: ONLY the boss spawns (no other enemies during boss fight)
+            int bossLevel = waveNumber == 8 ? 1 : ((waveNumber - 8) / 10) + 1; // First boss at wave 8 = level 1, then increment every 10 waves
             
-            // Add boss
-            AddSpawnerGroup(spawners, typeof(BossController), 1, 1, 20, 0, 0);
+            Console.WriteLine($"[Wave] Generating Boss Wave {waveNumber} - Boss Level {bossLevel}");
+            Console.WriteLine("[Wave] Boss fight initiated! No other enemies will spawn until boss is defeated.");
             
-            // Add support enemies based on boss level
-            int supportEnemies = 10 + (bossLevel * 5);
-            int swarmSupport = (int)(supportEnemies * 0.4f * difficultyMultiplier);
-            int sniperSupport = (int)(supportEnemies * 0.3f * difficultyMultiplier);
-            int tankSupport = (int)(supportEnemies * 0.3f * difficultyMultiplier);
-
-            AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 2, swarmSupport / 2, 6, 3, 2);
-            AddSpawnerGroup(spawners, typeof(SniperEnemyController), 2, sniperSupport / 2, 10, 8, 2);
-            AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, tankSupport / 2, 12, 15, 2);
+            // Add only the boss - no support enemies during boss fight for focused gameplay
+            AddSpawnerGroup(spawners, typeof(BossController), 1, 1, 30, 0, 0);
         }
 
         private static void GenerateChallengeWave(List<Spawner> spawners, int waveNumber, float difficultyMultiplier)

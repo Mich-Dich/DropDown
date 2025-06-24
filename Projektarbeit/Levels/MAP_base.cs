@@ -30,11 +30,11 @@
         private float lastHealthPowerupSpawnTime = 0f;
         private float lastSpeedPowerupSpawnTime = 0f;
         private float lastFireRatePowerupSpawnTime = 0f;
-        private const float HealthPowerupCooldown = 15f; // 15 seconds between health powerups
-        private const float SpeedPowerupCooldown = 20f;  // 20 seconds between speed powerups
-        private const float FireRatePowerupCooldown = 25f; // 25 seconds between fire rate powerups
+        private const float HealthPowerupCooldown = 8f;  // 8 seconds between health powerups (was 15f)
+        private const float SpeedPowerupCooldown = 12f;  // 12 seconds between speed powerups (was 20f)
+        private const float FireRatePowerupCooldown = 15f; // 15 seconds between fire rate powerups (was 25f)
         private int consecutiveHealthPowerups = 0;
-        private const int MaxConsecutiveHealthPowerups = 2;
+        private const int MaxConsecutiveHealthPowerups = 3; // Increased from 2 to 3
 
         // Timestamp for triggering shockwaves
         private float shockwaveTimeStamp = 0f;
@@ -394,23 +394,23 @@
                 return false;
             }
             
-            // Check consecutive spawn limit
-            if (consecutiveHealthPowerups >= MaxConsecutiveHealthPowerups)
+            // More lenient consecutive spawn limit
+            if (consecutiveHealthPowerups >= 3) // Increased from 2 to 3
             {
-                Console.WriteLine($"[PowerUp] HealthIncrease consecutive limit reached: {consecutiveHealthPowerups}/{MaxConsecutiveHealthPowerups}");
+                Console.WriteLine($"[PowerUp] HealthIncrease consecutive limit reached: {consecutiveHealthPowerups}/3");
                 return false;
             }
             
             var player = Core.Game.Instance.player;
             float healthRatio = player.health / player.health_max;
             
-            // Higher chance when health is low
+            // Much more generous health power-up spawning
             float spawnChance = 0.0f;
-            if (healthRatio < 0.2f) spawnChance = 0.8f;      // 80% chance when health < 20%
-            else if (healthRatio < 0.4f) spawnChance = 0.6f; // 60% chance when health < 40%
-            else if (healthRatio < 0.6f) spawnChance = 0.4f; // 40% chance when health < 60%
-            else if (healthRatio < 0.8f) spawnChance = 0.2f; // 20% chance when health < 80%
-            else spawnChance = 0.05f;                        // 5% chance when health >= 80%
+            if (healthRatio < 0.2f) spawnChance = 0.95f;      // 95% chance when health < 20%
+            else if (healthRatio < 0.4f) spawnChance = 0.8f;  // 80% chance when health < 40%
+            else if (healthRatio < 0.6f) spawnChance = 0.6f;  // 60% chance when health < 60%
+            else if (healthRatio < 0.8f) spawnChance = 0.35f; // 35% chance when health < 80%
+            else spawnChance = 0.15f;                         // 15% chance when health >= 80%
             
             bool shouldSpawn = random.NextDouble() < spawnChance;
             Console.WriteLine($"[PowerUp] HealthIncrease check - Health: {healthRatio:F2}, Chance: {spawnChance:F2}, Result: {shouldSpawn}");
@@ -426,8 +426,8 @@
             if (currentTime - lastSpeedPowerupSpawnTime < SpeedPowerupCooldown)
                 return false;
             
-            // Random chance based on difficulty
-            float spawnChance = 0.3f; // 30% base chance
+            // Higher chance for better gameplay
+            float spawnChance = 0.45f; // 45% chance (was 30%)
             return random.NextDouble() < spawnChance;
         }
 
@@ -440,8 +440,8 @@
             if (currentTime - lastFireRatePowerupSpawnTime < FireRatePowerupCooldown)
                 return false;
             
-            // Random chance based on difficulty
-            float spawnChance = 0.25f; // 25% base chance
+            // Higher chance for better gameplay
+            float spawnChance = 0.4f; // 40% chance (was 25%)
             return random.NextDouble() < spawnChance;
         }
 

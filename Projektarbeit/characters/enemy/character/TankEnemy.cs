@@ -35,7 +35,7 @@ namespace Projektarbeit.characters.enemy.character
 
             lastShootTime = 0f;
             shootInterval = 0.4f;
-            fireDelay = 2f;
+            fireDelay = 0.8f; // Much faster firing (was 2f)
 
             attackAnim = new animation_data("assets/animation/enemy/tank.png", 5, 1, true, true, 10, true);
             walkAnim = new animation_data("assets/animation/enemy/tank.png", 5, 1, true, true, 10, true);

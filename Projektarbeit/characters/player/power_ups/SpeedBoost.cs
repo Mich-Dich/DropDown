@@ -30,13 +30,15 @@ namespace Projektarbeit.characters.player.power_ups
             this.customSpeedIncrease = speedIncrease;
             this.customDuration = duration;
             Duration = duration; // Set the base class duration
+            
+            Console.WriteLine($"SpeedBoost created with speed increase: {customSpeedIncrease}, duration: {customDuration}s");
         }
 
         public override void Upgrade()
         {
             base.Upgrade();
 
-            customSpeedIncrease += 100;
+            customSpeedIncrease += 120; // Increased from 100 to 120 for more impact per level
             customDuration = Level % 2 != 0 ? customDuration + 1 : customDuration;
             Duration = customDuration; // Update the base class duration
 
@@ -48,26 +50,40 @@ namespace Projektarbeit.characters.player.power_ups
 
         private void ActivatePowerUp(Character target)
         {
-            Core.Game.Instance.player.ActivePowerUps.Add(this);
+            target.ActivePowerUps.Add(this);
             Console.WriteLine("SpeedBoost activated");
 
             if (target is CH_player player)
             {
                 float oldSpeed = player.movement_speed;
                 player.movement_speed += customSpeedIncrease;
-                Console.WriteLine($"SpeedBoost: {oldSpeed} -> {player.movement_speed} (+{customSpeedIncrease}) for {customDuration} seconds Level {Level}");
+                Console.WriteLine($"SpeedBoost: Speed {oldSpeed} -> {player.movement_speed} (+{customSpeedIncrease}) for {customDuration}s, Level {Level}");
+            }
+            else
+            {
+                // Try casting to base Character class as fallback
+                float oldSpeed = target.movement_speed;
+                target.movement_speed += customSpeedIncrease;
+                Console.WriteLine($"SpeedBoost: Speed {oldSpeed} -> {target.movement_speed} (+{customSpeedIncrease}) for {customDuration}s (Character fallback)");
             }
         }
 
         private void DeactivatePowerUp(Character target)
         {
-            Core.Game.Instance.player.ActivePowerUps.Remove(this);
+            target.ActivePowerUps.Remove(this);
 
             if (target is CH_player player)
             {
                 float oldSpeed = player.movement_speed;
                 player.movement_speed -= customSpeedIncrease;
-                Console.WriteLine($"SpeedBoost deactivated: {oldSpeed} -> {player.movement_speed} (-{customSpeedIncrease})");
+                Console.WriteLine($"SpeedBoost: Speed restored {oldSpeed} -> {player.movement_speed} (-{customSpeedIncrease})");
+            }
+            else
+            {
+                // Try casting to base Character class as fallback
+                float oldSpeed = target.movement_speed;
+                target.movement_speed -= customSpeedIncrease;
+                Console.WriteLine($"SpeedBoost: Speed restored {oldSpeed} -> {target.movement_speed} (-{customSpeedIncrease}) (Character fallback)");
             }
         }
     }

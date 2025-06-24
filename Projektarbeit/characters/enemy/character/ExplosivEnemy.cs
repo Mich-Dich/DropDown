@@ -38,7 +38,7 @@ namespace Projektarbeit.characters.enemy.character
             movement_speed = 10;
             movement_speed_max = 20;
             rotation_offset = MathF.PI / 2;
-            fireDelay = 10f;
+            fireDelay = 4f; // Much faster firing (was 10f)
 
             StopDistance = 400f;
             PursueSpeed = 60;
