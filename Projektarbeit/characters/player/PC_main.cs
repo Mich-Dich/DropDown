@@ -86,7 +86,13 @@
 
             Game.Instance.camera.Add_Zoom_Offset(0.2f);
             Game.Instance.camera.zoom_offset = 0.2f;
+            
+            // Load all game sound effects
+            soundManager.LoadSound("laserShot", "assets/sounds/game-fx-lasershot-01.wav");
+            soundManager.LoadSound("damageHit", "assets/sounds/game-fx-retro-damage-single-01.wav");
+            soundManager.LoadSound("metalImpact", "assets/sounds/impact-metal-metal-on-metal-hit-hard-15.wav");
             soundManager.LoadSound("testSound", "assets/sounds/sample1.WAV");
+            soundManager.LoadSound("whooshFlame", "assets/sounds/whoosh-flame01short.wav");
         }
 
         protected override void Update(float deltaTime)
@@ -162,12 +168,16 @@
                             var projectile = (Projectile)Activator.CreateInstance(ProjectileType, playerLocation, projectileDirection);
                             Game.Instance.get_active_map().Add_Game_Object(projectile);
                         }
+                        // Play whoosh sound for omni fire ability
+                        _ = soundManager.PlaySound("whooshFlame", 0.7f);
                     }
                     else
                     {
                         Vector2 playerDirection = new(0, -1);
                         var projectile = (Projectile)Activator.CreateInstance(ProjectileType, playerLocation, playerDirection);
                         Game.Instance.get_active_map().Add_Game_Object(projectile);
+                        // Play laser shot sound for regular firing
+                        _ = soundManager.PlaySound("laserShot", 0.5f);
                     }
 
                     character.lastFireTime = Game_Time.total;

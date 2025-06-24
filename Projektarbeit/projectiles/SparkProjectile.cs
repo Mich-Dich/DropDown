@@ -3,6 +3,7 @@ namespace Projektarbeit.projectiles
     using Core.defaults;
     using Core.physics;
     using Core.render;
+    using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
 
@@ -11,6 +12,7 @@ namespace Projektarbeit.projectiles
         private readonly Texture texture;
         private readonly Vector2 size;
         private readonly animation_data sparkAnimation;
+        private readonly SoundManager soundManager = new SoundManager();
 
         public bool FiredByPlayer { get; set; } = false;
 
@@ -21,6 +23,9 @@ namespace Projektarbeit.projectiles
         {
             texture = new Texture("assets/animation/bolt/spark-sheet.png");
             size = new Vector2(64, 32);
+            
+            // Load impact sound
+            soundManager.LoadSound("metalImpact", "assets/sounds/impact-metal-metal-on-metal-hit-hard-15.wav");
             
             // Configure animation for spark-sheet.png (5 frames of 64x32 each)
             // 320x32 image = 1 row, 5 columns
@@ -69,6 +74,15 @@ namespace Projektarbeit.projectiles
             // Since the spark sprite is horizontally oriented, we need to flip it 180 degrees
             float angleRadians = (float)Math.Atan2(direction.Y, direction.X);
             sprite.transform.rotation = angleRadians + (float)Math.PI; // Add π to flip 180 degrees
+        }
+
+        public override void Hit(hitData hit)
+        {
+            // Play impact sound when hitting something
+            _ = soundManager.PlaySound("metalImpact", 0.4f);
+            
+            // Call base hit behavior if needed
+            base.Hit(hit);
         }
     }
 }
