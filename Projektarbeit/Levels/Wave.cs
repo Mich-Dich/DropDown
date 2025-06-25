@@ -25,6 +25,7 @@ namespace Projektarbeit.Levels
         public int TotalEnemiesInWave { get; private set; }
         public int EnemiesDefeated { get; set; } = 0;
         public float WaveProgress => TotalEnemiesInWave > 0 ? (float)EnemiesDefeated / TotalEnemiesInWave : 0f;
+        private float stuckTimer = 0f;
 
         private int CalculateTotalEnemies()
         {
@@ -59,6 +60,15 @@ namespace Projektarbeit.Levels
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
+            
+            // Safety check - if spawners list is null or empty, mark as finished
+            if (spawners == null || spawners.Count == 0)
+            {
+                Console.WriteLine("[Wave] WARNING: No spawners in wave, marking as finished");
+                Finished = true;
+                return;
+            }
+            
             if (Finished)
             {
                 // Only start next wave when all enemies are defeated
@@ -70,31 +80,83 @@ namespace Projektarbeit.Levels
                 return;
             }
 
+            // Update all spawners
             foreach (Spawner spawner in spawners)
             {
-                spawner.Update(deltaTime);
+                if (spawner != null)
+                {
+                    spawner.Update(deltaTime);
+                }
             }
 
             if (Started && !Finished)
             {
+                // Check if any spawners are still active or in delay
+                int activeSpawners = spawners.Count(s => s != null && s.Active);
+                int delayedSpawners = spawners.Count(s => s != null && s.StartDelay > 0);
+                
                 // Mark wave as finished when all spawners are done spawning
-                if (spawners.TrueForAll(spawner => spawner.Active == false))
+                if (spawners.TrueForAll(spawner => spawner != null && spawner.Active == false))
                 {
                     Finished = true;
                     Console.WriteLine($"[Wave] All spawners finished spawning. Waiting for {TotalEnemiesInWave - EnemiesDefeated} enemies to be defeated");
+                    
+                    // Add debug info about current state
+                    Console.WriteLine($"[Wave] Debug - Active: {activeSpawners}, Delayed: {delayedSpawners}, Progress: {EnemiesDefeated}/{TotalEnemiesInWave}");
+                    
+                    // Safety check - if no enemies to defeat, immediately start next wave
+                    if (TotalEnemiesInWave <= 0)
+                    {
+                        Console.WriteLine("[Wave] WARNING: No enemies in wave, immediately starting next wave");
+                        NextWave();
+                    }
+                }
+                else
+                {
+                    // Log active spawner status every few seconds when progress stalls
+                    if (EnemiesDefeated > 0 && WaveProgress >= 0.8f) // At 80% or higher
+                    {
+                        Console.WriteLine($"[Wave] 80%+ DEBUG - Active: {activeSpawners}, Delayed: {delayedSpawners}, Progress: {EnemiesDefeated}/{TotalEnemiesInWave}");
+                        for (int i = 0; i < spawners.Count; i++)
+                        {
+                            var spawner = spawners[i];
+                            Console.WriteLine($"[Wave] Spawner {i}: Type={spawner.ControllerType.Name}, Active={spawner.Active}, Delay={spawner.StartDelay:F1}");
+                        }
+                    }
                 }
             }
+            
+            
         }
 
         public static void NextWave()
         {
+            // Safety check
+            if (waves == null || currentWave >= waves.Count)
+            {
+                Console.WriteLine("[Wave] ERROR: NextWave called but waves list is invalid!");
+                return;
+            }
+
             waves[currentWave].RemoveWave();
 
             // Generate the next wave procedurally
-            int nextWaveNumber = currentWave + 2; // +2 because currentWave is 0-based and we want the next wave number
+            currentWave++; // Increment first
+            int nextWaveNumber = currentWave + 1; // currentWave is 0-based, display is 1-based
+            
+            Console.WriteLine($"[Wave] Transitioning to wave {nextWaveNumber} (currentWave index: {currentWave})");
+            
             GenerateProceduralWave(nextWaveNumber);
-            currentWave++;
-            waves[currentWave].InitializeWave();
+            
+            // Safety check before initializing
+            if (currentWave < waves.Count)
+            {
+                waves[currentWave].InitializeWave();
+            }
+            else
+            {
+                Console.WriteLine("[Wave] ERROR: Generated wave index out of bounds!");
+            }
         }
 
         public static void LoadWaves()
@@ -166,8 +228,8 @@ namespace Projektarbeit.Levels
 
         private static WaveType DetermineWaveType(int waveNumber)
         {
-            if (waveNumber <= 7) return WaveType.Tutorial; // Tutorial up to wave 7
-            if (waveNumber == 8 || (waveNumber > 8 && (waveNumber - 8) % 10 == 0)) return WaveType.Boss; // Boss at wave 8, then every 10th wave after (18, 28, 38, etc.)
+            if (waveNumber <= 4) return WaveType.Tutorial; // Tutorial up to wave 4
+            if (waveNumber % 5 == 0) return WaveType.Boss; // Boss every 5th wave (5, 10, 15, 20, etc.)
             if (waveNumber % 25 == 0) return WaveType.Challenge;
             if (waveNumber >= 51) return WaveType.BulletHell;
             return WaveType.Standard;
@@ -196,10 +258,10 @@ namespace Projektarbeit.Levels
                     AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 4, 3, 0, 1);
                     AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 4, 8, 2, 1);
                     break;
-                case 3: // 36 enemies - Add snipers with balanced tanks
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 5, 3, 0, 1);
-                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, 3, 8, 2, 1);
-                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 3, 3, 4, 4, 1);
+                case 3: // 30 enemies - Add snipers with more variety (matching old version)
+                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 4, 5, 6, 0, 2);
+                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 4, 12, 8, 0);
+                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 1, 6, 10, 10, 0);
                     break;
                 case 4: // 45 enemies - More balanced variety
                     AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 6, 3, 0, 1);
@@ -289,7 +351,8 @@ namespace Projektarbeit.Levels
             Console.WriteLine("[Wave] Boss fight initiated! No other enemies will spawn until boss is defeated.");
             
             // Add only the boss - no support enemies during boss fight for focused gameplay
-            AddSpawnerGroup(spawners, typeof(BossController), 1, 1, 30, 0, 0);
+            // Fixed: Boss spawns immediately instead of waiting 30 seconds
+            AddSpawnerGroup(spawners, typeof(BossController), 1, 1, 1, 0, 0);
         }
 
         private static void GenerateChallengeWave(List<Spawner> spawners, int waveNumber, float difficultyMultiplier)
@@ -340,17 +403,20 @@ namespace Projektarbeit.Levels
         private static void AddSpawnerGroup(List<Spawner> spawners, Type enemyType, int spawnerCount, 
             int enemiesPerSpawner, float spawnRate, float baseDelay, float delayIncrement)
         {
+            Console.WriteLine($"[Wave] Adding {spawnerCount} spawners of {enemyType.Name}, {enemiesPerSpawner} enemies each = {spawnerCount * enemiesPerSpawner} total enemies");
             for (int i = 0; i < spawnerCount; i++)
             {
                 float xPos = (i % 2 == 0 ? 1 : -1) * (600 - (i * 100));
-                spawners.Add(new Spawner(
+                var spawner = new Spawner(
                     new Vector2(xPos, -600),
                     enemyType,
                     enemiesPerSpawner,
                     spawnRate,
                     baseDelay + (i * delayIncrement),
                     false // Start inactive, will be activated by InitializeWave()
-                ));
+                );
+                spawners.Add(spawner);
+                Console.WriteLine($"[Wave] Created spawner {i + 1}/{spawnerCount} - MaxSpawn: {spawner.MaxSpawn}, Delay: {baseDelay + (i * delayIncrement)}");
             }
         }
 
@@ -366,20 +432,26 @@ namespace Projektarbeit.Levels
         public void EnemyDefeated()
         {
             EnemiesDefeated++;
-            // Remove performance-killing console logging - this was called every enemy death!
-            #if DEBUG
-            // Only log milestone progress in debug mode
-            if (EnemiesDefeated % 5 == 0 || EnemiesDefeated == TotalEnemiesInWave)
-            {
-                float progress = WaveProgress * 100f;
-                Console.WriteLine($"[Wave] Enemy defeated: {EnemiesDefeated}/{TotalEnemiesInWave} ({progress:F1}%)");
-            }
-            #endif
+            
+            // Always log progress to help debug spawning issues
+            float progress = WaveProgress * 100f;
+            Console.WriteLine($"[Wave] Enemy defeated: {EnemiesDefeated}/{TotalEnemiesInWave} ({progress:F1}%) - Finished: {Finished}");
             
             // Check if wave is complete
             if (EnemiesDefeated >= TotalEnemiesInWave && Finished)
             {
-                Console.WriteLine($"[Wave] Wave complete! All {TotalEnemiesInWave} enemies defeated.");
+                Console.WriteLine($"[Wave] Wave complete! All {TotalEnemiesInWave} enemies defeated - triggering next wave");
+                // Force next wave transition if not already triggered
+                if (Game.Instance != null)
+                {
+                    NextWave();
+                }
+            }
+            else if (EnemiesDefeated >= TotalEnemiesInWave && !Finished)
+            {
+                Console.WriteLine($"[Wave] All enemies defeated but wave not marked as finished - checking spawners");
+                // Force finish the wave if all enemies are defeated
+                Finished = true;
             }
         }
     }

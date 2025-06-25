@@ -14,6 +14,7 @@
     {
         private bool isEscapeKeyPressed = false;
         private bool isTestingKeyPressed = false;
+        private bool isSkipWaveKeyPressed = false;
         
         // Use Resource_Manager for cached sounds instead of SoundManager
         private static readonly Sound laserShotSound = Resource_Manager.Get_Sound("assets/sounds/game-fx-lasershot-01.wav");
@@ -53,6 +54,11 @@
             new (Key_Code.F, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
         };
 
+        private static readonly List<KeyBindingDetail> skipWaveBindings = new()
+        {
+            new (Key_Code.H, ResetFlags.reset_on_key_up, TriggerFlags.key_down),
+        };
+
         public Action move { get; } = new Action("move", (uint)Action_ModefierFlags.auto_reset, false, ActionType.VEC_2D, 0f, MoveBindings);
 
         public Action look { get; } = new Action("look", (uint)Action_ModefierFlags.none, false, ActionType.VEC_1D, 0f, LookBindings);
@@ -62,6 +68,7 @@
         public Action useAbility { get; } = new Action("useAbility", (uint)Action_ModefierFlags.auto_reset, false, ActionType.BOOL, 0f, UseAbilityBindings);
         public Action inGameMenu { get; } = new Action("inGameMenu", (uint)Action_ModefierFlags.auto_reset, false, ActionType.BOOL, 0f, InGameMenuBindings);
         public Action testing { get; } = new Action("testing", (uint)Action_ModefierFlags.auto_reset, false, ActionType.BOOL, 0f, testBindings);
+        public Action skipWave { get; } = new Action("skipWave", (uint)Action_ModefierFlags.auto_reset, false, ActionType.BOOL, 0f, skipWaveBindings);
 
         public Type ProjectileType { get; set; } = typeof(Reflect);
 
@@ -87,6 +94,7 @@
             AddInputAction(useAbility);
             AddInputAction(inGameMenu);
             AddInputAction(testing);
+            AddInputAction(skipWave);
 
             Game.Instance.camera.Add_Zoom_Offset(0.2f);
             Game.Instance.camera.zoom_offset = 0.2f;
@@ -135,6 +143,26 @@
             else
             {
                 isTestingKeyPressed = false;
+            }
+
+            if((bool)skipWave.GetValue())
+            {
+                if (!isSkipWaveKeyPressed)
+                {
+                    Console.WriteLine("[DEBUG] H key pressed - Skipping wave!");
+                    var currentWave = Projektarbeit.Levels.Wave.GetCurrentWave();
+                    if (currentWave != null)
+                    {
+                        currentWave.EnemiesDefeated = currentWave.TotalEnemiesInWave;
+                        Console.WriteLine($"[DEBUG] Wave force completed: {currentWave.EnemiesDefeated}/{currentWave.TotalEnemiesInWave}");
+                        Projektarbeit.Levels.Wave.NextWave();
+                    }
+                    isSkipWaveKeyPressed = true;
+                }
+            }
+            else
+            {
+                isSkipWaveKeyPressed = false;
             }
 
             if(Game.Instance.play_state == Play_State.LevelUp) { return; }

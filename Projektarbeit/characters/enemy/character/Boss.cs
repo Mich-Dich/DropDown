@@ -284,23 +284,15 @@ namespace Projektarbeit.characters.enemy.character
 
         private void MultiDirectionalAttack()
         {
-            // Fire projectiles in 8 directions with visual variety
-            for (int i = 0; i < 8; i++)
+            // Fire projectiles in 4 directions instead of 8 to reduce lag
+            for (int i = 0; i < 4; i++)
             {
-                float angle = (i * MathF.PI * 2) / 8;
+                float angle = (i * MathF.PI * 2) / 4;
                 Vector2 direction = new Vector2(MathF.Cos(angle), MathF.Sin(angle));
                 
-                // Mix of projectile types for visual variety
-                if (i % 2 == 0)
-                {
-                    var projectile = new SparkProjectile(transform.position, direction);
-                    Game.Instance.get_active_map().Add_Game_Object(projectile);
-                }
-                else
-                {
-                    var projectile = new SniperProjectile(transform.position, direction);
-                    Game.Instance.get_active_map().Add_Game_Object(projectile);
-                }
+                // Use simpler projectile for better performance
+                var projectile = new SniperProjectile(transform.position, direction);
+                Game.Instance.get_active_map().Add_Game_Object(projectile);
             }
             
             // Trigger camera shake for impact
@@ -309,12 +301,12 @@ namespace Projektarbeit.characters.enemy.character
 
         private void ExplosiveBombardment()
         {
-            // Fire multiple explosive projectiles in a spread
+            // Fire 3 explosive projectiles in a spread
             Vector2 baseDirection = GetDirectionToPlayer();
             
-            for (int i = -2; i <= 2; i++)
+            for (int i = -1; i <= 1; i++)
             {
-                float angleOffset = i * 0.3f; // 30-degree spread
+                float angleOffset = i * 0.4f; // Spread the projectiles
                 Vector2 direction = RotateVector(baseDirection, angleOffset);
                 
                 var projectile = new ExplosivProjectile(transform.position, direction);
@@ -326,22 +318,17 @@ namespace Projektarbeit.characters.enemy.character
 
         private void RapidFireBarrage()
         {
-            // Fire a burst of projectiles rapidly
-            Task.Run(async () =>
+            // Fire 3 projectiles immediately for rapid attack
+            for (int i = 0; i < 3; i++)
             {
-                for (int i = 0; i < 10; i++)
-                {
-                    Vector2 direction = GetDirectionToPlayer();
-                    // Add some spread to make it dodgeable
-                    float spread = (float)(random.NextDouble() - 0.5) * 0.5f;
-                    direction = RotateVector(direction, spread);
-                    
-                    var projectile = new EnemyTestProjectile(transform.position, direction);
-                    Game.Instance.get_active_map().Add_Game_Object(projectile);
-                    
-                    await Task.Delay(150); // 150ms between shots
-                }
-            });
+                Vector2 direction = GetDirectionToPlayer();
+                // Add some spread to make it dodgeable
+                float spread = (float)(random.NextDouble() - 0.5) * 0.3f;
+                direction = RotateVector(direction, spread);
+                
+                var projectile = new SniperProjectile(transform.position, direction);
+                Game.Instance.get_active_map().Add_Game_Object(projectile);
+            }
         }
 
         private void FireMortar()
@@ -370,7 +357,7 @@ namespace Projektarbeit.characters.enemy.character
             for (int i = -1; i <= 1; i++)
             {
                 Vector2 direction = RotateVector(baseDirection, i * 0.2f);
-                var projectile = new EnemyTestProjectile(transform.position, direction);
+                var projectile = new SniperProjectile(transform.position, direction);
                 Game.Instance.get_active_map().Add_Game_Object(projectile);
             }
         }

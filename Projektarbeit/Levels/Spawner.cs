@@ -38,6 +38,7 @@ namespace Projektarbeit.Levels
         private readonly float startTime;
         private Type enemyControllerType;
         private int spawned = 0;
+        private float lastSpawnTime = 0;
 
         public Spawner(Vector2 position, Type controllerType, int maxSpawn, float rate = 5, float delay = 0, bool active = false)
             : base(position, new Vector2(10, 10), 0, Mobility.STATIC)
@@ -66,15 +67,38 @@ namespace Projektarbeit.Levels
 
             if (spawned >= MaxSpawn)
             {
+                if (Active) // Only log once when becoming inactive
+                {
+                    Console.WriteLine($"[Spawner] {ControllerType.Name} spawner finished: {spawned}/{MaxSpawn} enemies spawned");
+                }
                 Active = false;
                 return;
             }
 
-            if (Game_Time.total > startTime + (spawned * SpawnRate))
+            // More reliable spawning logic using delta time accumulation
+            if (lastSpawnTime == 0) // First spawn after delay
+            {
+                lastSpawnTime = Game_Time.total;
+            }
+            
+            if (Game_Time.total >= lastSpawnTime + SpawnRate)
             {
                 spawned++;
-                AI_Controller controller = (AI_Controller)Activator.CreateInstance(ControllerType, transform.position);
-                Core.Game.Instance.get_active_map().add_AI_Controller(controller);
+                lastSpawnTime = Game_Time.total;
+                Console.WriteLine($"[Spawner] {ControllerType.Name} spawning enemy {spawned}/{MaxSpawn} at time {Game_Time.total:F1}");
+                try
+                {
+                    AI_Controller controller = (AI_Controller)Activator.CreateInstance(ControllerType, transform.position);
+                    Core.Game.Instance.get_active_map().add_AI_Controller(controller);
+                    Console.WriteLine($"[Spawner] SUCCESS: {ControllerType.Name} enemy {spawned} created and added to map");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Spawner] ERROR spawning {ControllerType.Name}: {ex.Message}");
+                    // Decrement spawn count if enemy creation failed
+                    spawned--;
+                    Console.WriteLine($"[Spawner] Decremented spawn count due to error: {spawned}/{MaxSpawn}");
+                }
             }
         }
 

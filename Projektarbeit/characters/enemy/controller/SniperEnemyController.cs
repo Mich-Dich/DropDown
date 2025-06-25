@@ -27,7 +27,8 @@ namespace Projektarbeit.characters.enemy.controller
         {
             var enemies = new List<Character>();
             var random = new Random();
-            int enemyCount = random.Next(MinEnemyCount, MaxEnemyCount);
+            // Spawn only 1 enemy - the wave system controls the number through spawners
+            int enemyCount = 1;
 
             for (int i = 0; i < enemyCount; i++)
             {
