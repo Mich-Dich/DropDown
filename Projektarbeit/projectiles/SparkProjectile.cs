@@ -20,18 +20,26 @@ namespace Projektarbeit.projectiles
         public SparkProjectile(Vector2 position, Vector2 direction)
             : base(position, direction, new Vector2(64, 32), 900f, 15f, Collision_Shape.Square) // Increased speed from 600f to 900f
         {
-            size = new Vector2(64, 32);
-            
-            // Configure animation for spark-sheet.png (5 frames of 64x32 each)
-            // 320x32 image = 1 row, 5 columns
-            sparkAnimation = new animation_data("assets/animation/bolt/spark-sheet.png", 1, 5, true, true, 12, true);
+            try
+            {
+                size = new Vector2(64, 32);
+                
+                // Configure animation for spark-sheet.png (5 frames of 64x32 each)
+                // 320x32 image = 1 row, 5 columns
+                sparkAnimation = new animation_data("assets/animation/bolt/spark-sheet.png", 1, 5, true, true, 12, true);
 
-            // Use Resource_Manager to cache textures instead of creating new ones
-            Sprite sprite = new(Resource_Manager.Get_Texture("assets/animation/bolt/spark-sheet.png"));
-            Set_Sprite(sprite);
-            transform.size = size;
-            set_animation(sparkAnimation);
-            SetSpriteRotation(direction);
+                // Use Resource_Manager to cache textures instead of creating new ones
+                Sprite sprite = new(Resource_Manager.Get_Texture("assets/animation/bolt/spark-sheet.png"));
+                Set_Sprite(sprite);
+                transform.size = size;
+                set_animation(sparkAnimation);
+                SetSpriteRotation(direction);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to initialize SparkProjectile: {ex.Message}");
+                throw;
+            }
         }
 
         public void set_animation(animation_data animationData)

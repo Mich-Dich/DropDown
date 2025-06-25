@@ -4,6 +4,7 @@ namespace Projektarbeit.Levels
     using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
+    using Projektarbeit.characters.enemy.controller;
 
     public class Spawner : Game_Object
     {
@@ -11,7 +12,7 @@ namespace Projektarbeit.Levels
 
         public float SpawnRate { get; }
 
-        public float StartDelay { get; private set;}
+        public float StartDelay { get; set; }
 
         public int MaxSpawn { get; set; }
 
@@ -37,7 +38,7 @@ namespace Projektarbeit.Levels
 
         private readonly float startTime;
         private Type enemyControllerType;
-        private int spawned = 0;
+        protected int spawned = 0;
         private float lastSpawnTime = 0;
 
         public Spawner(Vector2 position, Type controllerType, int maxSpawn, float rate = 5, float delay = 0, bool active = false)
@@ -83,24 +84,77 @@ namespace Projektarbeit.Levels
             
             if (Game_Time.total >= lastSpawnTime + SpawnRate)
             {
-                spawned++;
                 lastSpawnTime = Game_Time.total;
-                Console.WriteLine($"[Spawner] {ControllerType.Name} spawning enemy {spawned}/{MaxSpawn} at time {Game_Time.total:F1}");
+                Console.WriteLine($"[Spawner] {ControllerType.Name} spawning enemy {spawned + 1}/{MaxSpawn} at time {Game_Time.total:F1}");
+                
+                // Add extra debugging for boss spawners
+                if (ControllerType == typeof(BossController))
+                {
+                    Console.WriteLine($"[Spawner] BOSS SPAWN DEBUG: Spawner at {transform.position}, MaxSpawn={MaxSpawn}, Spawned={spawned}");
+                }
+                
                 try
                 {
                     AI_Controller controller = (AI_Controller)Activator.CreateInstance(ControllerType, transform.position);
                     Core.Game.Instance.get_active_map().add_AI_Controller(controller);
-                    Console.WriteLine($"[Spawner] SUCCESS: {ControllerType.Name} enemy {spawned} created and added to map");
+                    Console.WriteLine($"[Spawner] SUCCESS: {ControllerType.Name} enemy {spawned + 1} created and added to map");
+                    
+                    // Add extra debugging for boss controllers
+                    if (ControllerType == typeof(BossController))
+                    {
+                        Console.WriteLine($"[Spawner] BOSS CONTROLLER CREATED: {controller.GetType().Name} at {transform.position}");
+                    }
+                    spawned++; // Only increment once after successful spawn
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[Spawner] ERROR spawning {ControllerType.Name}: {ex.Message}");
-                    // Decrement spawn count if enemy creation failed
-                    spawned--;
-                    Console.WriteLine($"[Spawner] Decremented spawn count due to error: {spawned}/{MaxSpawn}");
+                    Console.WriteLine($"[Spawner] ERROR spawning {ControllerType.Name}: {ex}");
+                    // Do NOT decrement spawned on error, to avoid infinite retries
                 }
             }
         }
+    }
 
+    public class BossSpawner : Spawner
+    {
+        private bool hasSpawned = false;
+
+        public BossSpawner(Vector2 position, Type controllerType, int maxSpawn, float rate = 0, float delay = 0, bool active = false)
+            : base(position, controllerType, maxSpawn, rate, delay, active)
+        {
+        }
+
+        public override void Update(float delta)
+        {
+            if (!Active || hasSpawned)
+            {
+                return;
+            }
+
+            if (StartDelay > 0)
+            {
+                StartDelay -= delta;
+                return;
+            }
+
+            // Spawn the boss immediately and mark as spawned
+            Console.WriteLine($"[BossSpawner] Spawning boss at {transform.position}");
+            try
+            {
+                AI_Controller controller = (AI_Controller)Activator.CreateInstance(ControllerType, transform.position);
+                Core.Game.Instance.get_active_map().add_AI_Controller(controller);
+                Console.WriteLine($"[BossSpawner] SUCCESS: Boss created and added to map");
+                spawned++;
+                hasSpawned = true;
+                Active = false; // Immediately deactivate after spawning
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[BossSpawner] ERROR spawning boss: {ex}");
+                // Don't retry on error, just deactivate
+                hasSpawned = true;
+                Active = false;
+            }
+        }
     }
 }

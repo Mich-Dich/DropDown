@@ -21,37 +21,46 @@ namespace Projektarbeit.projectiles
         public ExplosivProjectile(Vector2 position, Vector2 direction)
             : base(position, direction, new Vector2(32, 32), 300f, 5f, Collision_Shape.Circle)
         {
-            texture = new Texture("assets/textures/projectiles/bomb-1.png");
-            explodeAnimation = new animation_data("assets/animation/explosion/explosion-6.png", 1, 8, true, true, 16, false);
-            blinkAnimation = new animation_data("assets/animation/projectiles/bomb.png", 1, 6, true, true, 2, false);
-            aoeRadius = 130f;
-
-            Sprite sprite = new Sprite(texture);
-            Set_Sprite(sprite);
-            set_animation(blinkAnimation);
-            this.sprite.animation.add_animation_notification(6, () =>
+            try
             {
-                transform.size = new Vector2(aoeRadius);
-                set_animation(explodeAnimation);
-                this.sprite.animation.add_animation_notification(5, () =>
-                {
-                    Vector2 playerPosition = Core.Game.Instance.player.transform.position;
-                    Vector2 projectilePosition = transform.position;
-                    float distanceToPlayer = (playerPosition - projectilePosition).Length;
+                // Use Resource_Manager for better error handling
+                texture = Resource_Manager.Get_Texture("assets/textures/projectiles/bomb-1.png");
+                explodeAnimation = new animation_data("assets/animation/explosion/explosion-6.png", 1, 8, true, true, 16, false);
+                blinkAnimation = new animation_data("assets/animation/projectiles/bomb.png", 1, 6, true, true, 2, false);
+                aoeRadius = 130f;
 
-                    if (distanceToPlayer <= aoeRadius)
-                    {
-                        Game.Instance.camera.transform.ApplyShake(CameraShake.Explosion);
-                        Core.Game.Instance.player.apply_damage(Damage);
-                    }
-                });
-                this.sprite.animation.add_animation_notification(7, () =>
+                Sprite sprite = new Sprite(texture);
+                Set_Sprite(sprite);
+                set_animation(blinkAnimation);
+                this.sprite.animation.add_animation_notification(6, () =>
                 {
-                    Core.Game.Instance.get_active_map().Remove_Game_Object(this);
+                    transform.size = new Vector2(aoeRadius);
+                    set_animation(explodeAnimation);
+                    this.sprite.animation.add_animation_notification(5, () =>
+                    {
+                        Vector2 playerPosition = Core.Game.Instance.player.transform.position;
+                        Vector2 projectilePosition = transform.position;
+                        float distanceToPlayer = (playerPosition - projectilePosition).Length;
+
+                        if (distanceToPlayer <= aoeRadius)
+                        {
+                            Game.Instance.camera.transform.ApplyShake(CameraShake.Explosion);
+                            Core.Game.Instance.player.apply_damage(Damage);
+                        }
+                    });
+                    this.sprite.animation.add_animation_notification(7, () =>
+                    {
+                        Core.Game.Instance.get_active_map().Remove_Game_Object(this);
+                    });
                 });
-            });
-            SetSpriteRotation(direction);
-            Speed = 18f;
+                SetSpriteRotation(direction);
+                Speed = 18f;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to initialize ExplosivProjectile: {ex.Message}");
+                throw;
+            }
         }
 
         public override void Update(float deltaTime)

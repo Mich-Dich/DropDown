@@ -77,6 +77,17 @@ namespace Projektarbeit.Levels
                     Console.WriteLine($"[Wave] All enemies defeated ({EnemiesDefeated}/{TotalEnemiesInWave}), starting next wave");
                     NextWave();
                 }
+                else
+                {
+                    // Safety timeout - if wave has been finished for too long but enemies aren't defeated, force completion
+                    stuckTimer += deltaTime;
+                    if (stuckTimer > 30f) // 30 second timeout
+                    {
+                        Console.WriteLine($"[Wave] WARNING: Wave stuck for {stuckTimer:F1}s at {EnemiesDefeated}/{TotalEnemiesInWave} - forcing completion");
+                        EnemiesDefeated = TotalEnemiesInWave;
+                        NextWave();
+                    }
+                }
                 return;
             }
 
@@ -99,6 +110,7 @@ namespace Projektarbeit.Levels
                 if (spawners.TrueForAll(spawner => spawner != null && spawner.Active == false))
                 {
                     Finished = true;
+                    stuckTimer = 0f; // Reset stuck timer when wave is marked as finished
                     Console.WriteLine($"[Wave] All spawners finished spawning. Waiting for {TotalEnemiesInWave - EnemiesDefeated} enemies to be defeated");
                     
                     // Add debug info about current state
@@ -125,8 +137,6 @@ namespace Projektarbeit.Levels
                     }
                 }
             }
-            
-            
         }
 
         public static void NextWave()
@@ -249,6 +259,7 @@ namespace Projektarbeit.Levels
         private static void GenerateTutorialWave(List<Spawner> spawners, int waveNumber)
         {
             // Tutorial waves: Fast-paced action from the start with better spawning
+            // Note: Wave 5 and 10 are now handled by GenerateBossWave
             switch (waveNumber)
             {
                 case 1: // 24 enemies - Much more action from the start
@@ -267,12 +278,6 @@ namespace Projektarbeit.Levels
                     AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 6, 3, 0, 1);
                     AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, 3, 8, 2, 1);
                     AddSpawnerGroup(spawners, typeof(SniperEnemyController), 3, 4, 4, 4, 1);
-                    break;
-                case 5: // 54 enemies - Add explosive enemies with fast action
-                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 7, 3, 0, 1);
-                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 2, 3, 8, 2, 1);
-                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 3, 4, 4, 4, 1);
-                    AddSpawnerGroup(spawners, typeof(ExplosivEnemyController), 2, 3, 6, 6, 1);
                     break;
                 case 6: // 63 enemies - Explosive action intensifies
                     AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 6, 8, 3, 0, 1);
@@ -298,8 +303,12 @@ namespace Projektarbeit.Levels
                     AddSpawnerGroup(spawners, typeof(SniperEnemyController), 4, 7, 3.5f, 4, 0.5f);
                     AddSpawnerGroup(spawners, typeof(ExplosivEnemyController), 3, 4, 4.5f, 6, 0.5f);
                     break;
-                case 10: // Boss wave - ONLY BOSS (no support)
-                    AddSpawnerGroup(spawners, typeof(BossController), 1, 1, 20, 0, 0);
+                default:
+                    // For any other tutorial wave numbers, generate a standard tutorial wave
+                    Console.WriteLine($"[Wave] WARNING: Tutorial wave {waveNumber} not defined, generating default tutorial wave");
+                    AddSpawnerGroup(spawners, typeof(SwarmEnemyController), 4, 5, 4, 0, 1);
+                    AddSpawnerGroup(spawners, typeof(TankEnemyController), 1, 3, 6, 2, 1);
+                    AddSpawnerGroup(spawners, typeof(SniperEnemyController), 2, 4, 5, 4, 1);
                     break;
             }
         }
@@ -345,14 +354,22 @@ namespace Projektarbeit.Levels
         private static void GenerateBossWave(List<Spawner> spawners, int waveNumber, float difficultyMultiplier)
         {
             // Boss waves: ONLY the boss spawns (no other enemies during boss fight)
-            int bossLevel = waveNumber == 8 ? 1 : ((waveNumber - 8) / 10) + 1; // First boss at wave 8 = level 1, then increment every 10 waves
+            int bossLevel = ((waveNumber - 5) / 5) + 1; // First boss at wave 5 = level 1, wave 10 = level 2, etc.
             
             Console.WriteLine($"[Wave] Generating Boss Wave {waveNumber} - Boss Level {bossLevel}");
             Console.WriteLine("[Wave] Boss fight initiated! No other enemies will spawn until boss is defeated.");
             
-            // Add only the boss - no support enemies during boss fight for focused gameplay
-            // Fixed: Boss spawns immediately instead of waiting 30 seconds
-            AddSpawnerGroup(spawners, typeof(BossController), 1, 1, 1, 0, 0);
+            // Use BossSpawner to ensure only one boss is spawned
+            var bossSpawner = new BossSpawner(
+                new Vector2(0, -600), // Center position
+                typeof(BossController),
+                1, // Only one boss
+                0, // Immediate spawn
+                0, // No delay
+                false // Start inactive, will be activated by InitializeWave()
+            );
+            spawners.Add(bossSpawner);
+            Console.WriteLine("[Wave] Created BossSpawner - will spawn exactly one boss");
         }
 
         private static void GenerateChallengeWave(List<Spawner> spawners, int waveNumber, float difficultyMultiplier)
@@ -437,22 +454,8 @@ namespace Projektarbeit.Levels
             float progress = WaveProgress * 100f;
             Console.WriteLine($"[Wave] Enemy defeated: {EnemiesDefeated}/{TotalEnemiesInWave} ({progress:F1}%) - Finished: {Finished}");
             
-            // Check if wave is complete
-            if (EnemiesDefeated >= TotalEnemiesInWave && Finished)
-            {
-                Console.WriteLine($"[Wave] Wave complete! All {TotalEnemiesInWave} enemies defeated - triggering next wave");
-                // Force next wave transition if not already triggered
-                if (Game.Instance != null)
-                {
-                    NextWave();
-                }
-            }
-            else if (EnemiesDefeated >= TotalEnemiesInWave && !Finished)
-            {
-                Console.WriteLine($"[Wave] All enemies defeated but wave not marked as finished - checking spawners");
-                // Force finish the wave if all enemies are defeated
-                Finished = true;
-            }
+            // Note: NextWave() is called from the Update() method when all enemies are defeated
+            // This prevents duplicate calls that could cause multiple wave transitions
         }
     }
 }

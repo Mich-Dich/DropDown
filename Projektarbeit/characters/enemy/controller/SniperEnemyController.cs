@@ -86,6 +86,10 @@ namespace Projektarbeit.characters.enemy.controller
             Game.Instance.get_active_map().allCharacter.Remove(enemy);
             characters.Remove(enemy);
             Game.Instance.Score++;
+            
+            // Update wave progress
+            var currentWave = Projektarbeit.Levels.Wave.GetCurrentWave();
+            currentWave?.EnemyDefeated();
         }
     }
 }

@@ -3,8 +3,10 @@ namespace Projektarbeit.projectiles
     using Core.defaults;
     using Core.physics;
     using Core.render;
+    using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
+    using System;
 
     public class SniperProjectile : Projectile, IReflectable, IProjectile
     {
@@ -18,13 +20,23 @@ namespace Projektarbeit.projectiles
         public SniperProjectile(Vector2 position, Vector2 direction)
             : base(position, direction, new Vector2(32, 80), 800f, 20f, Collision_Shape.Square)
         {
-            texture = new Texture("assets/textures/projectiles/beam/beam.png");
-            size = new Vector2(32, 80);
+            try
+            {
+                // Use Resource_Manager for better error handling
+                texture = Resource_Manager.Get_Texture("assets/textures/projectiles/beam/beam.png");
+                size = new Vector2(32, 80);
 
-            Sprite sprite = new(texture);
-            Set_Sprite(sprite);
-            transform.size = size;
-            SetSpriteRotation(direction);
+                Sprite sprite = new(texture);
+                Set_Sprite(sprite);
+                transform.size = size;
+                SetSpriteRotation(direction);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to initialize SniperProjectile: {ex.Message}");
+                // Use a fallback texture or handle the error gracefully
+                throw;
+            }
         }
 
         public void set_animation(animation_data animationData)

@@ -3,8 +3,10 @@ namespace Projektarbeit.projectiles
     using Core.defaults;
     using Core.physics;
     using Core.render;
+    using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
+    using System;
 
     public class MortarProjectile : Projectile, IReflectable, IProjectile
     {
@@ -23,17 +25,26 @@ namespace Projektarbeit.projectiles
         public MortarProjectile(Vector2 position, Vector2 direction)
             : base(position, direction, new Vector2(32, 22), 350f, 5f, Collision_Shape.Square)
         {
-            texture = new Texture("assets/textures/projectiles/bomb-1.png");
-            size = new Vector2(32, 22);
+            try
+            {
+                // Use Resource_Manager for better error handling
+                texture = Resource_Manager.Get_Texture("assets/textures/projectiles/bomb-1.png");
+                size = new Vector2(32, 22);
 
-            Sprite sprite = new(texture);
-            Set_Sprite(sprite);
-            transform.size = size;
-            SetSpriteRotation(direction);
+                Sprite sprite = new(texture);
+                Set_Sprite(sprite);
+                transform.size = size;
+                SetSpriteRotation(direction);
 
-            this.Direction = direction;
+                this.Direction = direction;
 
-            this.LandingPosition = CalculateLandingPosition(direction);
+                this.LandingPosition = CalculateLandingPosition(direction);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to initialize MortarProjectile: {ex.Message}");
+                throw;
+            }
         }
 
         public override void Update(float deltaTime)

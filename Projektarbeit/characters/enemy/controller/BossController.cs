@@ -13,11 +13,24 @@ namespace Projektarbeit.characters.enemy.controller
         // Cache sounds for boss events
         private static readonly Sound bossSpawnSound = Resource_Manager.Get_Sound("assets/sounds/sample1.WAV");
         private static readonly Sound bossDeathSound = Resource_Manager.Get_Sound("assets/sounds/sample1.WAV");
+        
+        public Vector2 Origin { get; private set; }
+        
         public BossController(Vector2 origin)
             : base(new List<Character>())
         {
+            Origin = origin;
+            characters = CreateEnemies(origin);
+            get_state_machine().Set_Statup_State(typeof(Pursue));
+        }
+        
+        private List<Character> CreateEnemies(Vector2 origin)
+        {
+            var enemies = new List<Character>();
+            
+            // Create only one boss - the wave system controls the number through spawners
             CH_base_NPC boss = new Boss(this);
-            characters.Add(boss);
+            enemies.Add(boss);
             Game.Instance.get_active_map().Add_Character(boss, origin, 0, true);
             
             // Play boss spawn sound for dramatic entrance
@@ -26,8 +39,15 @@ namespace Projektarbeit.characters.enemy.controller
             // Add death callback for wave progress tracking and dramatic death effects
             boss.death_callback = () =>
             {
+                // Mark boss as dead immediately to prevent further updates
+                boss.IsDead = true;
+                boss.health = 0;
+                boss.auto_heal_amout = 0;
+                
                 // Play boss death sound
                 _ = bossDeathSound.Play();
+                
+                // Trigger death effects
                 BossDeathEffects(boss.transform.position);
                 
                 // XP drop (super orbs for bosses - more rewarding)
@@ -43,13 +63,19 @@ namespace Projektarbeit.characters.enemy.controller
                     damping: 0.95f
                 );
                 
+                // Properly remove boss from all game object lists
+                Game.Instance.get_active_map().Remove_Game_Object(boss);
+                Game.Instance.get_active_map().allCharacter.Remove(boss);
+                characters.Remove(boss);
+                
+                // Update wave progress
                 var currentWave = Projektarbeit.Levels.Wave.GetCurrentWave();
                 currentWave?.EnemyDefeated();
                 
                 Console.WriteLine("BOSS DEFEATED! Wave complete!");
             };
             
-            get_state_machine().Set_Statup_State(typeof(Pursue));
+            return enemies;
         }
         
         private void BossDeathEffects(Vector2 bossPosition)
