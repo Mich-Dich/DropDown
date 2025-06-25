@@ -9,10 +9,9 @@ namespace Projektarbeit.projectiles
 
     public class SparkProjectile : Projectile, IReflectable, IProjectile
     {
-        private readonly Texture texture;
         private readonly Vector2 size;
         private readonly animation_data sparkAnimation;
-        private readonly SoundManager soundManager = new SoundManager();
+        private static readonly Sound impactSound = Resource_Manager.Get_Sound("assets/sounds/impact-metal-metal-on-metal-hit-hard-15.wav"); // Cache sound
 
         public bool FiredByPlayer { get; set; } = false;
 
@@ -21,17 +20,14 @@ namespace Projektarbeit.projectiles
         public SparkProjectile(Vector2 position, Vector2 direction)
             : base(position, direction, new Vector2(64, 32), 900f, 15f, Collision_Shape.Square) // Increased speed from 600f to 900f
         {
-            texture = new Texture("assets/animation/bolt/spark-sheet.png");
             size = new Vector2(64, 32);
-            
-            // Load impact sound
-            soundManager.LoadSound("metalImpact", "assets/sounds/impact-metal-metal-on-metal-hit-hard-15.wav");
             
             // Configure animation for spark-sheet.png (5 frames of 64x32 each)
             // 320x32 image = 1 row, 5 columns
             sparkAnimation = new animation_data("assets/animation/bolt/spark-sheet.png", 1, 5, true, true, 12, true);
 
-            Sprite sprite = new(texture);
+            // Use Resource_Manager to cache textures instead of creating new ones
+            Sprite sprite = new(Resource_Manager.Get_Texture("assets/animation/bolt/spark-sheet.png"));
             Set_Sprite(sprite);
             transform.size = size;
             set_animation(sparkAnimation);
@@ -42,7 +38,8 @@ namespace Projektarbeit.projectiles
         {
             if (sprite != null)
             {
-                Texture textureAtlas = new(animationData.path_to_texture_atlas);
+                // Use Resource_Manager to get cached texture instead of creating new one
+                Texture textureAtlas = Resource_Manager.Get_Texture(animationData.path_to_texture_atlas);
                 sprite.animation = new Animation(
                     sprite,
                     textureAtlas,
@@ -78,8 +75,8 @@ namespace Projektarbeit.projectiles
 
         public override void Hit(hitData hit)
         {
-            // Play impact sound when hitting something
-            _ = soundManager.PlaySound("metalImpact", 0.4f);
+            // Play impact sound when hitting something using cached sound
+            _ = impactSound.Play();
             
             // Call base hit behavior if needed
             base.Hit(hit);

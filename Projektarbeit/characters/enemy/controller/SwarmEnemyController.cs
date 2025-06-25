@@ -40,7 +40,7 @@ namespace Projektarbeit.characters.enemy.controller
 
                 enemy.death_callback = () =>
                 {
-                    Console.WriteLine("Spawning XP particles!");
+                    // Remove performance-killing XP particle spawn logging
                     XPParticleEffect.CreateByXP(
                         Game.Instance.get_active_map().particleSystem,
                         enemy.XPValue,

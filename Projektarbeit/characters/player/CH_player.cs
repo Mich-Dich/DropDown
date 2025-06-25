@@ -15,7 +15,9 @@
         private const float DefaultCooldownBarWidth = 40;
         private const float DefaultCooldownBarHeight = 4;
         private readonly uint defaultCooldownColTransparent;
-        private SoundManager soundManager = new SoundManager();
+        
+        // Use Resource_Manager for cached sounds
+        private static readonly Sound damageSound = Resource_Manager.Get_Sound("assets/sounds/game-fx-retro-damage-single-01.wav");
 
         // Hit flash variables
         private bool isFlashing = false;
@@ -34,9 +36,7 @@
             defaultCooldownColTransparent = ImGui.GetColorU32(new System.Numerics.Vector4(0, 0, 0, 0));
             cooldownColTransparent = defaultCooldownColTransparent;
             
-            // Load damage sound
-            soundManager.LoadSound("damageHit", "assets/sounds/game-fx-retro-damage-single-01.wav");
-            
+            // Sounds are now cached using Resource_Manager
             InitializePlayer();
         }
 
@@ -118,8 +118,8 @@
             // Trigger hit flash whenever damage is taken
             TriggerHitFlash();
             
-            // Play damage sound
-            _ = soundManager.PlaySound("damageHit", 0.6f);
+            // Play damage sound using cached sound
+            _ = damageSound.Play();
         }
 
         private void InitializePlayer()

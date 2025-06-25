@@ -15,6 +15,9 @@ namespace Projektarbeit.characters.enemy.controller
     {
         private const float ClusterRadius = 200f;
         private readonly Random random = new();
+        
+        // Cache sound for tank enemy death
+        private static readonly Sound tankDeathSound = Resource_Manager.Get_Sound("assets/sounds/sample1.WAV");
 
         public TankEnemyController(Vector2 origin)
             : base(new List<Character>())
@@ -50,6 +53,9 @@ namespace Projektarbeit.characters.enemy.controller
             // death_callback is invoked when the enemy's health hits 0
             enemy.death_callback = () =>
             {
+                // Play tank death sound
+                _ = tankDeathSound.Play();
+                
                 // XP drop (large orbs for tanks)
                 XPParticleEffect.CreateByType(
                     Game.Instance.get_active_map().particleSystem,

@@ -141,6 +141,9 @@ namespace Projektarbeit
             }
 
             GameState.RemoveDuplicatePowerUps();
+            
+            // Performance optimization: Update periodic save system
+            GameState.UpdatePeriodicSave();
         }
 
         protected override void Render(float deltaTime) { }

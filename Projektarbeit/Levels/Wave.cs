@@ -366,8 +366,15 @@ namespace Projektarbeit.Levels
         public void EnemyDefeated()
         {
             EnemiesDefeated++;
-            float progress = WaveProgress * 100f;
-            Console.WriteLine($"[Wave] Enemy defeated: {EnemiesDefeated}/{TotalEnemiesInWave} ({progress:F1}%)");
+            // Remove performance-killing console logging - this was called every enemy death!
+            #if DEBUG
+            // Only log milestone progress in debug mode
+            if (EnemiesDefeated % 5 == 0 || EnemiesDefeated == TotalEnemiesInWave)
+            {
+                float progress = WaveProgress * 100f;
+                Console.WriteLine($"[Wave] Enemy defeated: {EnemiesDefeated}/{TotalEnemiesInWave} ({progress:F1}%)");
+            }
+            #endif
             
             // Check if wave is complete
             if (EnemiesDefeated >= TotalEnemiesInWave && Finished)

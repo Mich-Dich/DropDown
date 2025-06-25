@@ -15,6 +15,14 @@ namespace Core.util
         public List<PowerUp> PowerUps { get; set; } = new List<PowerUp>();
         public List<PowerUpSaveData> PowerUpsSaveData { get; set; } = new List<PowerUpSaveData>();
         public List<AbilitySaveData> AbilitiesSaveData { get; set; } = new List<AbilitySaveData>();
+        
+        // Performance optimization: Batched save system
+        [JsonIgnore]
+        private float lastSaveTime = 0f;
+        [JsonIgnore]
+        private const float SaveCooldown = 5.0f; // Save every 5 seconds max
+        [JsonIgnore]
+        private bool needsSave = false;
 
         public int XPForNextLevel()
         {
@@ -24,16 +32,28 @@ namespace Core.util
         public void AddXP(int amount)
         {
             AccountXP += amount;
+            bool leveledUp = false;
             while (AccountXP >= XPForNextLevel())
             {
                 AccountXP -= XPForNextLevel();
                 AccountLevel++;
                 Currency += CalculateCurrencyIncrease(AccountLevel);
+                leveledUp = true;
 
                 // Call PlayerLevelUp when the player levels up
                 Game.Instance.get_active_map().PlayerLevelUp();
             }
-            GameStateManager.SaveGameState(this, "save.json");
+            
+            // Mark that we need to save, but don't save immediately for performance
+            needsSave = true;
+            
+            // Only save immediately on level up (important milestone)
+            if (leveledUp)
+            {
+                GameStateManager.SaveGameState(this, "save.json");
+                lastSaveTime = Game_Time.total;
+                needsSave = false;
+            }
         }
 
         public void IncreaseLevel()
@@ -44,7 +64,10 @@ namespace Core.util
 
             Game.Instance.get_active_map().PlayerLevelUp();
 
+            // Save immediately on manual level increase (important milestone)
             GameStateManager.SaveGameState(this, "save.json");
+            lastSaveTime = Game_Time.total;
+            needsSave = false;
         }
 
         public float GetXPProgress()
@@ -78,6 +101,32 @@ namespace Core.util
             {
                 var highestLevelPowerUp = group.OrderByDescending(p => p.Level).First();
                 PowerUps.Add(highestLevelPowerUp);
+            }
+        }
+        
+        // Performance optimization: Periodic save system
+        public void UpdatePeriodicSave()
+        {
+            if (needsSave && (Game_Time.total - lastSaveTime) >= SaveCooldown)
+            {
+                GameStateManager.SaveGameState(this, "save.json");
+                lastSaveTime = Game_Time.total;
+                needsSave = false;
+                // Remove console spam - only log periodic saves in debug mode
+                #if DEBUG
+                Console.WriteLine($"[GameState] Periodic save at {Game_Time.total:F1}s");
+                #endif
+            }
+        }
+        
+        // Force save (for important events like game exit)
+        public void ForceSave()
+        {
+            if (needsSave)
+            {
+                GameStateManager.SaveGameState(this, "save.json");
+                lastSaveTime = Game_Time.total;
+                needsSave = false;
             }
         }
     }
@@ -131,15 +180,8 @@ namespace Core.util
             };
             string json = JsonConvert.SerializeObject(gameState, Formatting.Indented, settings);
 
-            if (!File.Exists(filePath))
-            {
-                File.WriteAllText(filePath, json);
-            }
-            else
-            {
-                Console.WriteLine($"File {filePath} already exists. Overwriting...");
-                File.WriteAllText(filePath, json);
-            }
+            // Remove performance-killing console logging - just write the file
+            File.WriteAllText(filePath, json);
         }
 
         public static GameState? LoadGameState(string fileName)

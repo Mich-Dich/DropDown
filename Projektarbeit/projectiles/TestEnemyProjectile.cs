@@ -3,12 +3,14 @@ namespace Projektarbeit.projectiles
     using Core.defaults;
     using Core.physics;
     using Core.render;
+    using Core.util;
     using Core.world;
     using OpenTK.Mathematics;
 
     public class EnemyTestProjectile : Projectile, IReflectable, IProjectile
     {
-        private readonly Texture texture;
+        // Use cached textures instead of creating new ones
+        private static readonly Texture cachedTexture = Resource_Manager.Get_Texture("assets/textures/projectiles/beam/beam.png");
         private readonly Vector2 size;
         private readonly animation_data projectileAnimationData;
 
@@ -19,11 +21,10 @@ namespace Projektarbeit.projectiles
         public EnemyTestProjectile(Vector2 position, Vector2 direction)
             : base(position, direction, new Vector2(32, 22), 350f, 5f, Collision_Shape.Square)
         {
-            texture = new Texture("assets/textures/projectiles/beam/beam.png");
             size = new Vector2(32, 22);
             projectileAnimationData = new animation_data("assets/animation/bolt/bolt.png", 1, 4, true, false, 8, true);
 
-            Sprite sprite = new(texture);
+            Sprite sprite = new(cachedTexture);
             Set_Sprite(sprite);
             transform.size = size;
             set_animation(projectileAnimationData);
@@ -34,7 +35,8 @@ namespace Projektarbeit.projectiles
         {
             if (sprite != null)
             {
-                Texture textureAtlas = new(animationData.path_to_texture_atlas);
+                // Use cached texture instead of creating new one
+                Texture textureAtlas = Resource_Manager.Get_Texture(animationData.path_to_texture_atlas);
                 sprite.animation = new Animation(
                     sprite,
                     textureAtlas,
@@ -53,7 +55,8 @@ namespace Projektarbeit.projectiles
             {
                 Reflected = true;
                 Box2DX.Common.Vec2 negativeVelocity = new Box2DX.Common.Vec2(-collider.velocity.X, -collider.velocity.Y);
-                Box2DX.Common.Vec2 force = negativeVelocity * 100000000f;
+                // Use reasonable force value instead of 100000000f which destabilizes Box2D physics
+                Box2DX.Common.Vec2 force = negativeVelocity * 50000f;
                 Box2DX.Common.Vec2 centerOfMass = collider.body.GetWorldCenter();
 
                 collider.body.ApplyForce(force, centerOfMass);

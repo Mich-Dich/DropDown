@@ -20,7 +20,7 @@ namespace Core.defaults {
 
         public Projectile(Vector2 position, Vector2 direction, Vector2 size, float speed = 10f, float damage = 1f, Collision_Shape shape = Collision_Shape.Square) : base(position, size) {
 
-            Console.WriteLine($"Creating projectile => body count: {Game.Instance.get_active_map().physicsWorld.GetBodyCount()}");
+            // Remove console logging for performance
             if(Game.Instance == null || Game.Instance.get_active_map() == null || Game.Instance.get_active_map().physicsWorld == null)
                 throw new Exception("Game instance, active map, or physics world is not initialized");
 
@@ -55,20 +55,17 @@ namespace Core.defaults {
 
             rotate_to_vector(direction);
             CreationTime = DateTime.Now;
-            Console.WriteLine($"               => body count: {Game.Instance.get_active_map().physicsWorld.GetBodyCount()}");
+            // Remove console logging for performance
         }
 
         public override void Update(float deltaTime) {
 
             if ((DateTime.Now - CreationTime).TotalSeconds > Lifetime || should_destroy) {
 
-                // destroy projectile and body
-                Console.WriteLine($"Destrox projectile => body count: {Game.Instance.get_active_map().physicsWorld.GetBodyCount()}");
+                // destroy projectile and body (removed console logging for performance)
                 if(Game.Instance != null && Game.Instance.get_active_map() != null) {
 
                     if(collider != null && collider.body != null) {
-
-                        Console.WriteLine($"destroying some more stuff");
 
                         collider.body.SetUserData(null);
                         Game.Instance.get_active_map().physicsWorld.DestroyBody(collider.body);
@@ -77,8 +74,6 @@ namespace Core.defaults {
 
                     Game.Instance.get_active_map().Remove_Game_Object(this);
                 }
-
-                Console.WriteLine($"body count: {Game.Instance.get_active_map().physicsWorld.GetBodyCount()}");
             }
 
         }

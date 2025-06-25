@@ -14,7 +14,11 @@
     {
         private bool isEscapeKeyPressed = false;
         private bool isTestingKeyPressed = false;
-        private SoundManager soundManager = new SoundManager();
+        
+        // Use Resource_Manager for cached sounds instead of SoundManager
+        private static readonly Sound laserShotSound = Resource_Manager.Get_Sound("assets/sounds/game-fx-lasershot-01.wav");
+        private static readonly Sound whooshFlameSound = Resource_Manager.Get_Sound("assets/sounds/whoosh-flame01short.wav");
+        private static readonly Sound testSound = Resource_Manager.Get_Sound("assets/sounds/sample1.WAV");
 
         private static readonly List<KeyBindingDetail> MoveBindings = new()
         {
@@ -87,12 +91,7 @@
             Game.Instance.camera.Add_Zoom_Offset(0.2f);
             Game.Instance.camera.zoom_offset = 0.2f;
             
-            // Load all game sound effects
-            soundManager.LoadSound("laserShot", "assets/sounds/game-fx-lasershot-01.wav");
-            soundManager.LoadSound("damageHit", "assets/sounds/game-fx-retro-damage-single-01.wav");
-            soundManager.LoadSound("metalImpact", "assets/sounds/impact-metal-metal-on-metal-hit-hard-15.wav");
-            soundManager.LoadSound("testSound", "assets/sounds/sample1.WAV");
-            soundManager.LoadSound("whooshFlame", "assets/sounds/whoosh-flame01short.wav");
+            // Sounds are now cached using Resource_Manager (no need to load here)
         }
 
         protected override void Update(float deltaTime)
@@ -128,7 +127,7 @@
                 if (!isTestingKeyPressed)
                 {
                     Game.Instance.camera.transform.ApplyShake(CameraShake.Explosion);
-                    Console.WriteLine("Shake");
+                    // Remove console logging for performance
 
                     isTestingKeyPressed = true;
                 }
@@ -169,7 +168,7 @@
                             Game.Instance.get_active_map().Add_Game_Object(projectile);
                         }
                         // Play whoosh sound for omni fire ability
-                        _ = soundManager.PlaySound("whooshFlame", 0.7f);
+                        _ = whooshFlameSound.Play();
                     }
                     else
                     {
@@ -177,7 +176,7 @@
                         var projectile = (Projectile)Activator.CreateInstance(ProjectileType, playerLocation, playerDirection);
                         Game.Instance.get_active_map().Add_Game_Object(projectile);
                         // Play laser shot sound for regular firing
-                        _ = soundManager.PlaySound("laserShot", 0.5f);
+                        _ = laserShotSound.Play();
                     }
 
                     character.lastFireTime = Game_Time.total;

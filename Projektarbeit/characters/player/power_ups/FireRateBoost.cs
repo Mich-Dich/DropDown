@@ -12,6 +12,9 @@ namespace Projektarbeit.characters.player.power_ups
         private float originalFireDelay;
         private float originalAbilityCooldown;
         private float abilityCooldownReduction;
+        
+        // Cache sound for power-up collection
+        private static readonly Sound powerUpSound = Resource_Manager.Get_Sound("assets/sounds/whoosh-flame01short.wav");
 
         public FireRateBoost(Vector2 position, float fireDelayDecrease, float duration)
             : base(position, new Vector2(30, 30), new Sprite(new Texture("assets/textures/power-ups/firerate_increaser.png")))
@@ -47,6 +50,10 @@ namespace Projektarbeit.characters.player.power_ups
         private void ActivatePowerUp(Character target)
         {
             target.ActivePowerUps.Add(this);
+            
+            // Play power-up collection sound
+            _ = powerUpSound.Play();
+            
             LogActivationDetails();
 
             if (target != null)

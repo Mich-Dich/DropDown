@@ -67,7 +67,7 @@ namespace Projektarbeit.characters.enemy.character
 
             lastShootTime = 0f;
             shootInterval = 0.4f;
-            fireDelay = 2.5f; // Much faster firing (was 10f)
+            fireDelay = 10f;
 
             attackAnim = new animation_data("assets/animation/enemy/sniper.png", 5, 1, true, false, 10, true);
             walkAnim = new animation_data("assets/animation/enemy/sniper.png", 5, 1, true, false, 10, true);
@@ -118,7 +118,7 @@ namespace Projektarbeit.characters.enemy.character
             Vector2 enemyLocation = transform.position;
             Vector2 playerPosition = Game.Instance.player.transform.position;
             Vector2 direction = (playerPosition - enemyLocation).Normalized();
-            Game.Instance.get_active_map().Add_Game_Object(new SparkProjectile(enemyLocation, direction));
+            Game.Instance.get_active_map().Add_Game_Object(new SniperProjectile(enemyLocation, direction));
             lastFireTime = Game_Time.total;
         }
     }

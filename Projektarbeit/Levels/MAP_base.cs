@@ -16,6 +16,9 @@
     internal class MAP_base : Map {
         private readonly Camera camera;
         private readonly Random random = new Random();
+        
+        // Cache sound for level up
+        private static readonly Sound levelUpSound = Resource_Manager.Get_Sound("assets/sounds/sample1.WAV");
         private float timeStamp;
         private float timeInterval;
         private Dictionary<int, Action<Vector2>> enemyControllers;
@@ -134,6 +137,9 @@
         }
 
         public override void PlayerLevelUp() {
+            // Play level up sound
+            _ = levelUpSound.Play();
+            
             Game.Instance.play_state = Core.Play_State.LevelUp;
         }
 

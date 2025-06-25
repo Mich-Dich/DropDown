@@ -58,14 +58,17 @@ namespace Projektarbeit.UI
             waveProgressBar.Label = waveLabel;
             waveProgressBar.ValueProvider = () => currentWave?.WaveProgress ?? 0f;
             
-            // Debug output for progress bar (only show occasionally to avoid spam)
-            if (Game_Time.total % 2.0f < 0.016f) // Show roughly once per 2 seconds
+            // Remove performance-killing console logging
+            #if DEBUG
+            // Debug output for progress bar (only in debug mode and much less frequently)
+            if (Game_Time.total % 10.0f < 0.016f) // Show roughly once per 10 seconds in debug only
             {
                 if (currentWave != null)
                 {
                     Console.WriteLine($"[UI] Wave {waveNum} Progress: {currentWave.EnemiesDefeated}/{currentWave.TotalEnemiesInWave} = {currentProgress * 100:F1}%");
                 }
             }
+            #endif
         }
 
         public void clearStatusEffects()

@@ -13,6 +13,8 @@ namespace Projektarbeit.characters.enemy.controller
     public class SniperEnemyController : AI_Controller
     {
         private const float ClusterRadius = 200f;
+        private const int MinEnemyCount = 3;
+        private const int MaxEnemyCount = 7;
 
         public SniperEnemyController(Vector2 origin)
             : base(new List<Character>())
@@ -25,8 +27,7 @@ namespace Projektarbeit.characters.enemy.controller
         {
             var enemies = new List<Character>();
             var random = new Random();
-            // Spawn only 1 enemy - the wave system controls the number through spawners
-            int enemyCount = 1;
+            int enemyCount = random.Next(MinEnemyCount, MaxEnemyCount);
 
             for (int i = 0; i < enemyCount; i++)
             {
@@ -84,10 +85,6 @@ namespace Projektarbeit.characters.enemy.controller
             Game.Instance.get_active_map().allCharacter.Remove(enemy);
             characters.Remove(enemy);
             Game.Instance.Score++;
-            
-            // Update wave progress
-            var currentWave = Projektarbeit.Levels.Wave.GetCurrentWave();
-            currentWave?.EnemyDefeated();
         }
     }
 }

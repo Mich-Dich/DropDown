@@ -11,6 +11,9 @@ namespace Projektarbeit.characters.player.power_ups
     {
         private float customSpeedIncrease;
         private float customDuration;
+        
+        // Cache sound for power-up collection
+        private static readonly Sound powerUpSound = Resource_Manager.Get_Sound("assets/sounds/whoosh-flame01short.wav");
 
         public SpeedBoost(Vector2 position, float speedIncrease, float duration)
             : base(position, new Vector2(30, 30), new Sprite(new Texture("assets/textures/power-ups/speed_increaser.png")))
@@ -51,6 +54,10 @@ namespace Projektarbeit.characters.player.power_ups
         private void ActivatePowerUp(Character target)
         {
             target.ActivePowerUps.Add(this);
+            
+            // Play power-up collection sound
+            _ = powerUpSound.Play();
+            
             Console.WriteLine("SpeedBoost activated");
 
             if (target is CH_player player)

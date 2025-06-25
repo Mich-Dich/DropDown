@@ -10,6 +10,9 @@ namespace Projektarbeit.characters.enemy.controller
 {
     public class BossController : AI_Controller
     {
+        // Cache sounds for boss events
+        private static readonly Sound bossSpawnSound = Resource_Manager.Get_Sound("assets/sounds/sample1.WAV");
+        private static readonly Sound bossDeathSound = Resource_Manager.Get_Sound("assets/sounds/sample1.WAV");
         public BossController(Vector2 origin)
             : base(new List<Character>())
         {
@@ -17,9 +20,14 @@ namespace Projektarbeit.characters.enemy.controller
             characters.Add(boss);
             Game.Instance.get_active_map().Add_Character(boss, origin, 0, true);
             
+            // Play boss spawn sound for dramatic entrance
+            _ = bossSpawnSound.Play();
+            
             // Add death callback for wave progress tracking and dramatic death effects
             boss.death_callback = () =>
             {
+                // Play boss death sound
+                _ = bossDeathSound.Play();
                 BossDeathEffects(boss.transform.position);
                 
                 // XP drop (super orbs for bosses - more rewarding)
