@@ -1,11 +1,15 @@
 namespace Projektarbeit.characters.enemy.character
 {
-    using Core.Controllers.ai;
+    using Core.defaults;
+    using Core.world;
+    using Core.util;
     using Core.physics;
     using Core.render;
-    using Core.util;
+    using Core.Controllers.ai;
     using OpenTK.Mathematics;
     using Projektarbeit.projectiles;
+    using System;
+    using System.Threading.Tasks;
 
     public class Boss : CH_base_NPC
     {
@@ -17,6 +21,16 @@ namespace Projektarbeit.characters.enemy.character
         private int currentPhase = 1;
         private bool isPerformingSpecialAttack = false;
         
+        // Staggered attack system
+        private bool isStaggeredAttackActive = false;
+        private int staggeredAttackStep = 0;
+        private float staggeredAttackTimer = 0f;
+        private const float STAGGERED_ATTACK_DELAY = 0.1f; // 100ms between projectiles
+        
+        // Performance optimization - limit active projectiles
+        private const int MAX_ACTIVE_PROJECTILES = 20;
+        private static int activeProjectileCount = 0;
+
         // Attack patterns timing
         private const float SPECIAL_ATTACK_COOLDOWN = 8f;
         private const float MULTI_SHOT_COOLDOWN = 4f;
@@ -82,18 +96,33 @@ namespace Projektarbeit.characters.enemy.character
             orbitCenter = transform.position;
         }
 
-        public override void Attack()
+        public override void Update(float deltaTime)
         {
+            base.Update(deltaTime);
+            
+            // Update staggered attack system
+            if (isStaggeredAttackActive)
+            {
+                staggeredAttackTimer += deltaTime;
+                if (staggeredAttackTimer >= STAGGERED_ATTACK_DELAY)
+                {
+                    staggeredAttackTimer = 0f;
+                    ExecuteStaggeredAttackStep();
+                }
+            }
+            
             UpdatePhase();
             UpdateOrbitMovement();
             
-            // Check for special attacks based on phase
+            // Check for special attacks
             if (CanPerformSpecialAttack())
             {
                 PerformSpecialAttack();
-                return;
             }
+        }
 
+        public override void Attack()
+        {
             // Regular attack pattern based on phase
             switch (currentPhase)
             {
@@ -200,13 +229,11 @@ namespace Projektarbeit.characters.enemy.character
                 // Alternate between different projectile types for variety
                 if (random.NextDouble() < 0.6)
                 {
-                    var projectile = new SparkProjectile(transform.position, direction);
-                    Game.Instance.get_active_map().Add_Game_Object(projectile);
+                    CreateProjectileSafely<SparkProjectile>(transform.position, direction);
                 }
                 else
                 {
-                    var projectile = new SniperProjectile(transform.position, direction);
-                    Game.Instance.get_active_map().Add_Game_Object(projectile);
+                    CreateProjectileSafely<SniperProjectile>(transform.position, direction);
                 }
                 
                 lastShootTime = Game_Time.total;
@@ -223,15 +250,13 @@ namespace Projektarbeit.characters.enemy.character
                 {
                     // Regular sniper shot
                     Vector2 direction = GetDirectionToPlayer();
-                    var projectile = new SniperProjectile(transform.position, direction);
-                    Game.Instance.get_active_map().Add_Game_Object(projectile);
+                    CreateProjectileSafely<SniperProjectile>(transform.position, direction);
                 }
                 else
                 {
                     // Explosive projectile
                     Vector2 direction = GetDirectionToPlayer();
-                    var projectile = new ExplosivProjectile(transform.position, direction);
-                    Game.Instance.get_active_map().Add_Game_Object(projectile);
+                    CreateProjectileSafely<ExplosivProjectile>(transform.position, direction);
                 }
                 
                 lastShootTime = Game_Time.total;
@@ -256,18 +281,15 @@ namespace Projektarbeit.characters.enemy.character
                 // Alternate between different projectile types rapidly
                 if (random.NextDouble() < 0.4)
                 {
-                    var projectile = new SniperProjectile(transform.position, direction);
-                    Game.Instance.get_active_map().Add_Game_Object(projectile);
+                    CreateProjectileSafely<SniperProjectile>(transform.position, direction);
                 }
                 else if (random.NextDouble() < 0.7)
                 {
-                    var projectile = new ExplosivProjectile(transform.position, direction);
-                    Game.Instance.get_active_map().Add_Game_Object(projectile);
+                    CreateProjectileSafely<ExplosivProjectile>(transform.position, direction);
                 }
                 else
                 {
-                    var projectile = new EnemyTestProjectile(transform.position, direction);
-                    Game.Instance.get_active_map().Add_Game_Object(projectile);
+                    CreateProjectileSafely<EnemyTestProjectile>(transform.position, direction);
                 }
                 
                 lastShootTime = Game_Time.total;
@@ -284,33 +306,46 @@ namespace Projektarbeit.characters.enemy.character
 
         private void MultiDirectionalAttack()
         {
-            // Fire projectiles in 4 directions instead of 8 to reduce lag
-            for (int i = 0; i < 4; i++)
-            {
-                float angle = (i * MathF.PI * 2) / 4;
-                Vector2 direction = new Vector2(MathF.Cos(angle), MathF.Sin(angle));
-                
-                // Use simpler projectile for better performance
-                var projectile = new SniperProjectile(transform.position, direction);
-                Game.Instance.get_active_map().Add_Game_Object(projectile);
-            }
+            // Start staggered attack instead of firing all at once
+            isStaggeredAttackActive = true;
+            staggeredAttackStep = 0;
+            staggeredAttackTimer = 0f;
             
             // Trigger camera shake for impact
             Game.Instance.camera.transform.ApplyShake(CameraShake.LargeProjectileHit);
         }
+        
+        private void ExecuteStaggeredAttackStep()
+        {
+            if (staggeredAttackStep < 4) // Fire 4 projectiles total
+            {
+                float angle = (staggeredAttackStep * MathF.PI * 2) / 4;
+                Vector2 direction = new Vector2(MathF.Cos(angle), MathF.Sin(angle));
+                
+                // Use simpler projectile for better performance
+                CreateProjectileSafely<SniperProjectile>(transform.position, direction);
+                
+                staggeredAttackStep++;
+            }
+            else
+            {
+                // End staggered attack
+                isStaggeredAttackActive = false;
+                staggeredAttackStep = 0;
+            }
+        }
 
         private void ExplosiveBombardment()
         {
-            // Fire 3 explosive projectiles in a spread
+            // Fire 2 explosive projectiles instead of 3 to reduce lag
             Vector2 baseDirection = GetDirectionToPlayer();
             
-            for (int i = -1; i <= 1; i++)
+            for (int i = -1; i <= 1; i += 2) // Only fire 2 projectiles
             {
                 float angleOffset = i * 0.4f; // Spread the projectiles
                 Vector2 direction = RotateVector(baseDirection, angleOffset);
                 
-                var projectile = new ExplosivProjectile(transform.position, direction);
-                Game.Instance.get_active_map().Add_Game_Object(projectile);
+                CreateProjectileSafely<ExplosivProjectile>(transform.position, direction);
             }
             
             Game.Instance.camera.transform.ApplyShake(CameraShake.LargeProjectileHit);
@@ -318,24 +353,74 @@ namespace Projektarbeit.characters.enemy.character
 
         private void RapidFireBarrage()
         {
-            // Fire 3 projectiles immediately for rapid attack
-            for (int i = 0; i < 3; i++)
+            // Fire 2 projectiles instead of 3 to reduce lag
+            for (int i = 0; i < 2; i++)
             {
                 Vector2 direction = GetDirectionToPlayer();
                 // Add some spread to make it dodgeable
                 float spread = (float)(random.NextDouble() - 0.5) * 0.3f;
                 direction = RotateVector(direction, spread);
                 
-                var projectile = new SniperProjectile(transform.position, direction);
-                Game.Instance.get_active_map().Add_Game_Object(projectile);
+                CreateProjectileSafely<SniperProjectile>(transform.position, direction);
             }
         }
 
         private void FireMortar()
         {
             Vector2 direction = GetDirectionToPlayer();
-            var projectile = new MortarProjectile(transform.position, direction);
-            Game.Instance.get_active_map().Add_Game_Object(projectile);
+            CreateProjectileSafely<MortarProjectile>(transform.position, direction);
+        }
+        
+        private void CreateProjectileSafely<T>(Vector2 position, Vector2 direction) where T : Game_Object
+        {
+            // Check if we can create more projectiles
+            if (activeProjectileCount >= MAX_ACTIVE_PROJECTILES)
+            {
+                return; // Skip creating this projectile to prevent lag
+            }
+            
+            try
+            {
+                Game_Object projectile = null;
+                
+                // Create the appropriate projectile type
+                if (typeof(T) == typeof(SniperProjectile))
+                {
+                    projectile = new SniperProjectile(position, direction);
+                }
+                else if (typeof(T) == typeof(ExplosivProjectile))
+                {
+                    projectile = new ExplosivProjectile(position, direction);
+                }
+                else if (typeof(T) == typeof(SparkProjectile))
+                {
+                    projectile = new SparkProjectile(position, direction);
+                }
+                else if (typeof(T) == typeof(MortarProjectile))
+                {
+                    projectile = new MortarProjectile(position, direction);
+                }
+                else if (typeof(T) == typeof(EnemyTestProjectile))
+                {
+                    projectile = new EnemyTestProjectile(position, direction);
+                }
+                
+                if (projectile != null)
+                {
+                    Game.Instance.get_active_map().Add_Game_Object(projectile);
+                    activeProjectileCount++;
+                    
+                    // Schedule cleanup when projectile is destroyed
+                    Task.Delay(5000).ContinueWith(_ => {
+                        if (activeProjectileCount > 0)
+                            activeProjectileCount--;
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to create projectile: {ex.Message}");
+            }
         }
 
         public override void Hit(hitData hit)
@@ -351,14 +436,13 @@ namespace Projektarbeit.characters.enemy.character
 
         private void CounterAttack()
         {
-            // Quick multi-shot as counter-attack
+            // Quick multi-shot as counter-attack - reduced to 2 projectiles
             Vector2 baseDirection = GetDirectionToPlayer();
             
-            for (int i = -1; i <= 1; i++)
+            for (int i = -1; i <= 1; i += 2) // Only fire 2 projectiles
             {
                 Vector2 direction = RotateVector(baseDirection, i * 0.2f);
-                var projectile = new SniperProjectile(transform.position, direction);
-                Game.Instance.get_active_map().Add_Game_Object(projectile);
+                CreateProjectileSafely<SniperProjectile>(transform.position, direction);
             }
         }
     }

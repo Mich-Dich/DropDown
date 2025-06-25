@@ -23,7 +23,7 @@ namespace Projektarbeit.projectiles
         public MortarProjectile(Vector2 position, Vector2 direction)
             : base(position, direction, new Vector2(32, 22), 350f, 5f, Collision_Shape.Square)
         {
-            texture = new Texture("assets/textures/projectiles/firearrow.png");
+            texture = new Texture("assets/textures/projectiles/bomb-1.png");
             size = new Vector2(32, 22);
 
             Sprite sprite = new(texture);
